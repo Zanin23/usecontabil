@@ -4,11 +4,9 @@ import { Toaster } from "./design-system/mj-design-system-db98fa";
 import ContabilShell from "./components/ContabilShell";
 import Dashboard from "./pages/contabil/Dashboard";
 
-const Lancamentos = lazy(() => import("./pages/contabil/Lancamentos"));
-const Folha = lazy(() => import("./pages/contabil/Folha"));
-const ESocial = lazy(() => import("./pages/contabil/ESocial"));
-const Demonstracoes = lazy(() => import("./pages/contabil/Demonstracoes"));
-const IntegracaoERP = lazy(() => import("./pages/contabil/IntegracaoERP"));
+const AreaPage = lazy(() => import("./pages/contabil/AreaPage"));
+const CategoryPage = lazy(() => import("./pages/contabil/CategoryPage"));
+const ModulePage = lazy(() => import("./pages/contabil/ModulePage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const App = () => (
@@ -19,11 +17,9 @@ const App = () => (
         <Route element={<ContabilShell />}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/lancamentos" element={<Lancamentos />} />
-          <Route path="/folha" element={<Folha />} />
-          <Route path="/esocial" element={<ESocial />} />
-          <Route path="/demonstracoes" element={<Demonstracoes />} />
-          <Route path="/integracao" element={<IntegracaoERP />} />
+          <Route path="/:area" element={<AreaPage />} />
+          <Route path="/:area/:categoria" element={<CategoryPage />} />
+          <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
