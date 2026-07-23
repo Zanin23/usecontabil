@@ -1,0 +1,1 @@
+ALTER TABLE public.role_plays ADD COLUMN use_elevenlabs_agent BOOLEAN NOT NULL DEFAULT false;

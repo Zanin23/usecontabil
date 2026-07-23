@@ -1,0 +1,1 @@
+UPDATE public.role_plays SET use_elevenlabs_agent = true WHERE slug = 'the-pricing-conversation';

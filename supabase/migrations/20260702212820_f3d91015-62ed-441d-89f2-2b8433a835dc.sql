@@ -1,0 +1,1 @@
+UPDATE public.role_plays SET opening_line='Hey — Marcus. Got about 20 minutes, so let''s make it count. Where do you want to start?' WHERE id='da554fe0-cb65-4fd4-8ed7-7b40fcfa4c0d';

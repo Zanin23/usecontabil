@@ -1,0 +1,1 @@
+update lessons set component_key='finding-fire-sales-process', lesson_content=null where slug='finding-fire-lovable-sales-process';

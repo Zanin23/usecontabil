@@ -1,0 +1,1 @@
+ALTER TABLE public.lessons ADD COLUMN slides JSONB NOT NULL DEFAULT '[]'::jsonb;

@@ -1,0 +1,121 @@
+@import "./design-system/mj-design-system-db98fa/index.css";
+
+/* ============================================================
+   Project-level theme override (user-requested deviation).
+   Adopts the "Field Marketing Hub" visual language:
+   near-white canvas, cream cards, ink #1B1B1B, blue #4B73FF,
+   Outfit display + Figtree body. Keeps DS tokens semantic so
+   all components rewire automatically.
+   ============================================================ */
+
+@theme inline {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-ink: var(--ink);
+  --color-cream: var(--cream);
+}
+
+:root {
+  --radius: 0.5rem; /* Tighter corners — brand reads more editorial than playful */
+
+  /* Core surface + ink — light cream canvas, white cards.
+     Dark "ink" surfaces are an accent only — opt in with .bg-ink. */
+  --background: hsl(40 43% 95%);
+  --foreground: hsl(0 0% 11%);
+  --ink: hsl(0 0% 11%);
+  --cream: hsl(40 43% 95%);
+
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(0 0% 11%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(0 0% 11%);
+
+  /* Primary = ink (for text/structural); CTA-blue lives on .bg-brand-blue */
+  --primary: hsl(0 0% 11%);
+  --primary-foreground: hsl(40 30% 97%);
+
+  --secondary: hsl(44 35% 90%);
+  --secondary-foreground: hsl(0 0% 11%);
+  --muted: hsl(44 35% 92%);
+  --muted-foreground: hsl(0 0% 40%);
+  --accent: hsl(226 100% 65%);
+  --accent-foreground: hsl(0 0% 100%);
+  --destructive: hsl(357 93% 51%);
+  --destructive-foreground: hsl(0 0% 100%);
+
+  --border: hsl(0 0% 11% / 0.28);
+  --input: hsl(0 0% 11% / 0.18);
+  --ring: hsl(226 100% 65%);
+
+  /* Brand pops — map onto DS tokens so existing brand-* utilities keep working */
+  --brand-blue: hsl(226 100% 65%);    /* #4B73FF — primary CTA accent */
+  --brand-orange: hsl(226 100% 65%);  /* remapped to brand blue #4B73FF */
+  --brand-pink: hsl(332 100% 50%);    /* #FF0178 */
+  --brand-purple: hsl(235 100% 75%);
+  --brand-red: hsl(357 93% 51%);
+
+  --gradient-brand: linear-gradient(135deg, hsl(226 100% 65%) 0%, hsl(235 100% 75%) 50%, hsl(304 100% 83%) 100%);
+  --gradient-soft: linear-gradient(135deg, hsl(226 100% 95%) 0%, hsl(40 43% 97%) 100%);
+
+  --success: hsl(150 60% 40%);
+  --warn: hsl(37 100% 55%);
+  --surface: hsl(0 0% 100%);
+
+  --shadow-card: 0 1px 2px hsl(0 0% 11% / 0.04), 0 4px 16px -8px hsl(0 0% 11% / 0.06);
+  --shadow-elevated: 0 8px 32px -16px hsl(0 0% 11% / 0.12);
+  --shadow-glow: 0 0 0 1px hsl(226 100% 65% / 0.15), 0 12px 40px -8px hsl(226 100% 65% / 0.25);
+}
+
+.dark {
+  /* The product currently runs in light; keep dark as a graceful fallback. */
+  --background: hsl(0 0% 7%);
+  --foreground: hsl(40 30% 95%);
+  --card: hsl(0 0% 10%);
+  --card-foreground: hsl(40 30% 95%);
+  --border: hsl(40 30% 95% / 0.1);
+  --ink: hsl(40 30% 95%);
+  --cream: hsl(0 0% 12%);
+  --surface: hsl(0 0% 10%);
+}
+
+/* Headings use Outfit; tighten tracking per spec */
+@layer base {
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+  body { font-family: var(--font-sans); }
+}
+
+/* Override the aurora utility to a quiet near-white wash so existing
+   pages stop rendering the orange/pink gradient. */
+@layer utilities {
+  .bg-aurora {
+    background-color: hsl(40 43% 95%);
+    background-image: none;
+  }
+  .bg-aurora-soft {
+    background-color: hsl(40 43% 95%);
+    background-image: none;
+  }
+  .font-display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em; }
+  .bg-brand-blue { background-color: var(--brand-blue); }
+  .text-brand-blue { color: var(--brand-blue); }
+  .border-brand-blue { border-color: var(--brand-blue); }
+  .bg-ink { background-color: var(--ink); }
+  .text-ink { color: var(--ink); }
+  .bg-cream { background-color: var(--cream); }
+}
+
+@keyframes wave-bar {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-ticker { animation: ticker-scroll 40s linear infinite; }
+

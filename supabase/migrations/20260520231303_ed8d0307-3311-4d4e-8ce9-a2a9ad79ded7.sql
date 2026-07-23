@@ -1,0 +1,1 @@
+UPDATE public.role_plays SET voice_id = 'hq0O23H3N5UaPsvWxs10' WHERE slug = 'csm-prototype-trap';

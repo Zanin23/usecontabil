@@ -1,0 +1,1 @@
+ALTER TABLE public.role_plays ADD COLUMN IF NOT EXISTS voice_id text;
