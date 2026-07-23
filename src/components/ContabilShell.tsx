@@ -88,32 +88,44 @@ export default function ContabilShell() {
           {/* Areas */}
           {AREAS.map((area) => {
             const Icon = AREA_ICON[area.slug as keyof typeof AREA_ICON];
-            const isOpen = currentArea?.slug === area.slug;
+            const isOpen = openArea === area.slug;
+            const isActive = currentArea?.slug === area.slug;
             return (
               <div key={area.slug} className="space-y-1">
-                <NavLink
-                  to={`/${area.slug}`}
-                  end
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-lg px-3 py-2 text-sm border transition ${
-                      isActive || isOpen
-                        ? `${accentBorder[area.accent]} text-foreground`
-                        : "text-muted-foreground hover:bg-accent hover:text-foreground border-transparent"
-                    }`
-                  }
+                <button
+                  type="button"
+                  onClick={() => setOpenArea(isOpen ? null : area.slug)}
+                  className={`w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm border transition text-left ${
+                    isActive
+                      ? `${accentBorder[area.accent]} text-foreground`
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground border-transparent"
+                  }`}
                 >
                   <span className="text-[10px] font-mono text-muted-foreground/70 w-5">
                     {area.code}
                   </span>
-                  <Icon className={`h-4 w-4 ${isOpen ? accentText[area.accent] : ""}`} />
+                  <Icon className={`h-4 w-4 ${isActive ? accentText[area.accent] : ""}`} />
                   <span className="flex-1">{area.title}</span>
                   <ChevronRight
                     className={`h-3 w-3 transition ${isOpen ? "rotate-90 text-foreground" : "text-muted-foreground/60"}`}
                   />
-                </NavLink>
+                </button>
 
                 {isOpen && (
                   <div className="pl-8 space-y-0.5 border-l border-border/60 ml-4">
+                    <NavLink
+                      to={`/${area.slug}`}
+                      end
+                      className={({ isActive: linkActive }) =>
+                        `block rounded-md px-3 py-1.5 text-xs transition ${
+                          linkActive
+                            ? "text-foreground bg-accent"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`
+                      }
+                    >
+                      Visão geral
+                    </NavLink>
                     {area.categories.map((cat) => (
                       <NavLink
                         key={cat.slug}
