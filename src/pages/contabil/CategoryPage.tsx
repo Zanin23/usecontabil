@@ -9,6 +9,12 @@ const accentText: Record<string, string> = {
   purple: "text-brand-purple",
   pink: "text-brand-pink",
 };
+const accentBg: Record<string, string> = {
+  orange: "bg-brand-orange/15",
+  blue: "bg-brand-blue/15",
+  purple: "bg-brand-purple/15",
+  pink: "bg-brand-pink/15",
+};
 
 export default function CategoryPage() {
   const { area: areaSlug, categoria } = useParams();
@@ -55,7 +61,7 @@ export default function CategoryPage() {
               <Card className="h-full rounded-2xl border-border/70 hover:border-foreground/30 hover:shadow-elevated transition">
                 <CardContent className="p-5 space-y-4">
                   <div className="flex items-start justify-between">
-                    <div className="h-10 w-10 rounded-xl bg-accent grid place-items-center">
+                    <div className={`h-10 w-10 rounded-xl grid place-items-center ${accentBg[area.accent]}`}>
                       <Icon className={`h-5 w-5 ${accentText[area.accent]}`} />
                     </div>
                     <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition" />
