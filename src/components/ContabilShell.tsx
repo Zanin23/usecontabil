@@ -33,6 +33,11 @@ export default function ContabilShell() {
   const currentModuleSlug = seg[2];
   const currentModule = currentCategory?.modules.find((m) => m.slug === currentModuleSlug);
 
+  const [openArea, setOpenArea] = useState<string | null>(currentArea?.slug ?? null);
+  useEffect(() => {
+    if (currentArea?.slug) setOpenArea(currentArea.slug);
+  }, [currentArea?.slug]);
+
   const breadcrumbHeader = (() => {
     if (pathname.startsWith("/dashboard") || pathname === "/") {
       return { code: "01", label: "Dashboard" };
