@@ -9,6 +9,12 @@ const accentText: Record<string, string> = {
   purple: "text-brand-purple",
   pink: "text-brand-pink",
 };
+const accentBg: Record<string, string> = {
+  orange: "bg-brand-orange/15",
+  blue: "bg-brand-blue/15",
+  purple: "bg-brand-purple/15",
+  pink: "bg-brand-pink/15",
+};
 
 export default function CategoryPage() {
   const { area: areaSlug, categoria } = useParams();
