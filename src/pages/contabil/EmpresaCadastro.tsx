@@ -323,6 +323,8 @@ function AssistantPanel({
   const dragRef = useRef<{ dx: number; dy: number } | null>(null);
 
   const onDragStart = (e: React.PointerEvent) => {
+    // Don't start drag when interacting with buttons/links inside the header
+    if ((e.target as HTMLElement).closest("button, a")) return;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     dragRef.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y };
   };
