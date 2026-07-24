@@ -26,23 +26,37 @@ const statusClass = (v: string) => {
 
 export default function ModulePage() {
   const { area: areaSlug, categoria, modulo } = useParams();
+  const navigate = useNavigate();
   const { area, category, module } = findModule(areaSlug, categoria, modulo);
-  const [extraRows, setExtraRows] = useState<any[]>([]);
+  const [savedEmpresas, setSavedEmpresas] = useState<EmpresaRecord[]>([]);
+
+  const isEmpresas = module?.slug === "empresas" && category?.slug === "cadastros";
+
+  const refreshEmpresas = () => {
+    if (isEmpresas) setSavedEmpresas(loadEmpresas());
+    else setSavedEmpresas([]);
+  };
 
   useEffect(() => {
-    if (module?.slug === "empresas" && category?.slug === "cadastros") {
-      const saved = loadEmpresas().map((e) => ({
-        cnpj: e.cnpj,
-        razao: e.razao,
-        regime: e.regime,
-        atividade: e.atividade,
-        status: e.status,
-      }));
-      setExtraRows(saved);
-    } else {
-      setExtraRows([]);
-    }
+    refreshEmpresas();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [module?.slug, category?.slug]);
+
+  const handleDeleteEmpresa = (rec: EmpresaRecord) => {
+    if (!confirm(`Excluir "${rec.razao}"? Esta ação não pode ser desfeita.`)) return;
+    removeEmpresa(rec.id);
+    toast.success(`Empresa "${rec.razao}" removida`);
+    refreshEmpresas();
+  };
+
+  const extraRows = savedEmpresas.map((e) => ({
+    __empresaId: e.id,
+    cnpj: e.cnpj,
+    razao: e.razao,
+    regime: e.regime,
+    atividade: e.atividade,
+    status: e.status,
+  }));
 
   if (!area || !category || !module) {
     return (
