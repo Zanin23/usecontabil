@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, useState, ReactNode } from "react";
 
 export const COMPETENCIAS = [
-  "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11",
+  "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07",
 ];
 
 const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
