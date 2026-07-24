@@ -629,7 +629,8 @@ function DadosSection({
   onBuscarCnpj: () => void; loadingCnpj: boolean;
   onBuscarCep: () => void; loadingCep: boolean;
 }) {
-  const inp = "rounded-lg";
+  const inp = INPUT_CLASS;
+  const btn = "h-10 rounded-lg shrink-0 border-brand-blue/40 text-brand-blue hover:bg-brand-blue/10";
   return (
     <>
       <div className="rounded-xl border border-brand-blue/25 bg-brand-blue/5 p-3 flex items-start gap-3">
@@ -639,37 +640,36 @@ function DadosSection({
         </div>
       </div>
 
-      <SectionCard title="Geral">
-        <div className="grid grid-cols-12 gap-3">
-          <Field label="CNPJ/CPF/CEI" required className="col-span-5" tipKey="cnpj" onFocusTip={onTip}>
+      <SectionCard title="Identificação">
+        <div className="grid grid-cols-12 gap-x-4 gap-y-4">
+          <Field label="CNPJ / CPF / CEI" required className="col-span-6" tipKey="cnpj" onFocusTip={onTip}>
             <div className="flex gap-2">
               <Input
                 value={form.cnpj}
                 onChange={(e) => set({ cnpj: fmtCnpj(e.target.value) })}
                 placeholder="00.000.000/0000-00"
-                className={inp}
+                className={`${inp} font-mono tracking-tight`}
               />
               <Button
                 type="button" variant="outline"
-                className="rounded-lg shrink-0 border-brand-blue/40 text-brand-blue"
+                className={btn}
                 onClick={onBuscarCnpj} disabled={loadingCnpj}
               >
                 {loadingCnpj ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Search className="h-4 w-4 mr-1.5" />Buscar</>}
               </Button>
             </div>
           </Field>
-          <Field label="Inscrição Estadual" className="col-span-4" tipKey="ie" onFocusTip={onTip}>
+          <Field label="Inscrição Estadual" className="col-span-3" tipKey="ie" onFocusTip={onTip}>
             <Input value={form.ie} onChange={(e) => set({ ie: e.target.value })} className={inp} />
           </Field>
-          <div className="col-span-3 flex items-end gap-2 pb-2">
-            <input type="checkbox" id="trava" className="h-4 w-4 rounded border-border" />
-            <label htmlFor="trava" className="text-xs text-foreground">Bloquear lançamentos em atraso</label>
-          </div>
-
-          <Field label="Inscrição Municipal" required className="col-span-4" tipKey="im" onFocusTip={onTip}>
+          <Field label="Inscrição Municipal" required className="col-span-3" tipKey="im" onFocusTip={onTip}>
             <Input value={form.im} onChange={(e) => set({ im: e.target.value })} className={inp} />
           </Field>
-          <Field label="CNAE Principal" className="col-span-8" tipKey="cnae" onFocusTip={onTip}>
+
+          <Field label="Razão Social" required className="col-span-8" tipKey="razao" onFocusTip={onTip}>
+            <Input value={form.razao} onChange={(e) => set({ razao: e.target.value })} className={inp} />
+          </Field>
+          <Field label="CNAE Principal" className="col-span-4" tipKey="cnae" onFocusTip={onTip}>
             <Input
               value={form.cnaeDesc}
               onChange={(e) => set({ cnaeDesc: e.target.value })}
@@ -678,90 +678,91 @@ function DadosSection({
             />
           </Field>
 
-          <Field label="Razão Social" required className="col-span-12" tipKey="razao" onFocusTip={onTip}>
-            <Input value={form.razao} onChange={(e) => set({ razao: e.target.value })} className={inp} />
-          </Field>
-          <Field label="Nome Fantasia" required className="col-span-12" tipKey="fantasia" onFocusTip={onTip}>
+          <Field label="Nome Fantasia" required className="col-span-8" tipKey="fantasia" onFocusTip={onTip}>
             <Input value={form.fantasia} onChange={(e) => set({ fantasia: e.target.value })} className={inp} />
           </Field>
+          <div className="col-span-4 flex items-end pb-2.5">
+            <label className="flex items-center gap-2 text-xs text-foreground/80 cursor-pointer select-none">
+              <input type="checkbox" id="trava" className="h-4 w-4 rounded border-border accent-brand-blue" />
+              Bloquear lançamentos em atraso
+            </label>
+          </div>
         </div>
 
         <InlineDivider>Endereço</InlineDivider>
-        <div className="grid grid-cols-12 gap-3">
-          <Field label="CEP" required className="col-span-4" tipKey="cep" onFocusTip={onTip}>
+        <div className="grid grid-cols-12 gap-x-4 gap-y-4">
+          <Field label="CEP" required className="col-span-3" tipKey="cep" onFocusTip={onTip}>
             <div className="flex gap-2">
               <Input
                 value={form.cep}
                 onChange={(e) => set({ cep: fmtCep(e.target.value) })}
                 placeholder="00000-000"
-                className={inp}
+                className={`${inp} font-mono tracking-tight`}
               />
               <Button
                 type="button" variant="outline"
-                className="rounded-lg shrink-0 border-brand-blue/40 text-brand-blue"
+                className={btn}
                 onClick={onBuscarCep} disabled={loadingCep}
               >
                 {loadingCep ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               </Button>
             </div>
           </Field>
-          <Field label="Endereço" required className="col-span-6" tipKey="endereco" onFocusTip={onTip}>
+          <Field label="Logradouro" required className="col-span-7" tipKey="endereco" onFocusTip={onTip}>
             <Input value={form.endereco} onChange={(e) => set({ endereco: e.target.value })} className={inp} />
           </Field>
           <Field label="Número" required className="col-span-2" tipKey="numero" onFocusTip={onTip}>
             <Input value={form.numero} onChange={(e) => set({ numero: e.target.value })} className={inp} />
           </Field>
 
-          <Field label="Complemento" className="col-span-4">
+          <Field label="Complemento" className="col-span-3">
             <Input value={form.complemento} onChange={(e) => set({ complemento: e.target.value })} className={inp} />
           </Field>
-          <Field label="Bairro" className="col-span-4">
+          <Field label="Bairro" className="col-span-3">
             <Input value={form.bairro} onChange={(e) => set({ bairro: e.target.value })} className={inp} />
           </Field>
-          <Field label="Município" className="col-span-3">
+          <Field label="Município" className="col-span-4">
             <Input value={form.municipio} onChange={(e) => set({ municipio: e.target.value })} className={inp} />
           </Field>
-          <Field label="UF" className="col-span-1">
-            <Input value={form.uf} onChange={(e) => set({ uf: e.target.value.toUpperCase().slice(0,2) })} className={inp} />
+          <Field label="UF" className="col-span-2">
+            <Input
+              value={form.uf}
+              onChange={(e) => set({ uf: e.target.value.toUpperCase().slice(0,2) })}
+              maxLength={2}
+              className={`${inp} uppercase tracking-widest text-center font-mono`}
+            />
           </Field>
         </div>
 
         <InlineDivider>Contatos</InlineDivider>
-        <div className="grid grid-cols-12 gap-3">
-          <Field label="Nome" className="col-span-5" tipKey="contatoNome" onFocusTip={onTip}>
+        <div className="grid grid-cols-12 gap-x-4 gap-y-4">
+          <Field label="Nome do contato" className="col-span-6" tipKey="contatoNome" onFocusTip={onTip}>
             <Input value={form.contatoNome} onChange={(e) => set({ contatoNome: e.target.value })} className={inp} />
           </Field>
           <Field label="CPF" className="col-span-3">
-            <Input value={form.contatoCpf} onChange={(e) => set({ contatoCpf: e.target.value })} className={inp} />
+            <Input value={form.contatoCpf} onChange={(e) => set({ contatoCpf: e.target.value })} className={`${inp} font-mono`} />
           </Field>
-          <Field label="Telefone" className="col-span-4">
-            <Input value={form.contatoTel} onChange={(e) => set({ contatoTel: e.target.value })} className={inp} />
+          <Field label="Telefone" className="col-span-3">
+            <Input value={form.contatoTel} onChange={(e) => set({ contatoTel: e.target.value })} className={`${inp} font-mono`} />
           </Field>
 
-          <Field label="E-Mail" className="col-span-6" tipKey="email" onFocusTip={onTip}>
+          <Field label="E-mail" className="col-span-6" tipKey="email" onFocusTip={onTip}>
             <Input type="email" value={form.email} onChange={(e) => set({ email: e.target.value })} className={inp} />
           </Field>
-          <Field label="Celular/WhatsApp" className="col-span-6" tipKey="whatsapp" onFocusTip={onTip}>
-            <Input value={form.whatsapp} onChange={(e) => set({ whatsapp: e.target.value })} className={inp} />
+          <Field label="Celular / WhatsApp" className="col-span-3" tipKey="whatsapp" onFocusTip={onTip}>
+            <Input value={form.whatsapp} onChange={(e) => set({ whatsapp: e.target.value })} className={`${inp} font-mono`} />
           </Field>
-
-          <Field label="Página de Internet" className="col-span-12">
+          <Field label="Site" className="col-span-3">
             <Input value={form.site} onChange={(e) => set({ site: e.target.value })} placeholder="https://" className={inp} />
           </Field>
         </div>
 
         <InlineDivider>Responsável técnico</InlineDivider>
-        <div className="grid grid-cols-12 gap-3">
-          <Field label="Responsável Técnico" className="col-span-8" tipKey="respNome" onFocusTip={onTip}>
+        <div className="grid grid-cols-12 gap-x-4 gap-y-4">
+          <Field label="Nome do responsável" className="col-span-8" tipKey="respNome" onFocusTip={onTip}>
             <Input value={form.respNome} onChange={(e) => set({ respNome: e.target.value })} className={inp} />
           </Field>
-          <Field label="CPF do Responsável Técnico" className="col-span-4" tipKey="respCpf" onFocusTip={onTip}>
-            <Input value={form.respCpf} onChange={(e) => set({ respCpf: e.target.value })} className={inp} />
-          </Field>
-          <Field label="CNPJ do Responsável Técnico" className="col-span-8" tipKey="respCnpj" onFocusTip={onTip}>
-            <Input value={form.respCnpj} onChange={(e) => set({ respCnpj: e.target.value })} className={inp} />
-          </Field>
-          <Field label="Tipo" required className="col-span-4">
+          <Field label="Tipo de documento" required className="col-span-4">
             <Select value={form.respTipo} onValueChange={(v) => set({ respTipo: v })}>
               <SelectTrigger className={inp}><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -769,6 +770,12 @@ function DadosSection({
                 <SelectItem value="cnpj">CNPJ</SelectItem>
               </SelectContent>
             </Select>
+          </Field>
+          <Field label="CPF do responsável" className="col-span-6" tipKey="respCpf" onFocusTip={onTip}>
+            <Input value={form.respCpf} onChange={(e) => set({ respCpf: e.target.value })} className={`${inp} font-mono`} />
+          </Field>
+          <Field label="CNPJ do responsável" className="col-span-6" tipKey="respCnpj" onFocusTip={onTip}>
+            <Input value={form.respCnpj} onChange={(e) => set({ respCnpj: e.target.value })} className={`${inp} font-mono`} />
           </Field>
         </div>
       </SectionCard>
