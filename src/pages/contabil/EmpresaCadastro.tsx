@@ -187,22 +187,33 @@ async function fetchCep(cep: string) {
 
 /* ------------------------------ primitives ------------------------------ */
 
+/* ------------------------------ shared UI ------------------------------ */
+
+// Uniform sizing/appearance for every input, select-trigger and textarea in this form.
+const INPUT_CLASS =
+  "h-10 rounded-lg bg-background/60 border-border/70 text-sm text-foreground placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-brand-blue/60 focus-visible:border-brand-blue/60";
+
 function Field({
-  label, required, children, className = "", tipKey, onFocusTip,
+  label, required, children, className = "", tipKey, onFocusTip, hint,
 }: {
   label: string; required?: boolean; children: React.ReactNode;
   className?: string; tipKey?: string; onFocusTip?: (k: string) => void;
+  hint?: string;
 }) {
   return (
-    <div className={`space-y-1.5 ${className}`}
-      onFocus={() => tipKey && onFocusTip?.(tipKey)}>
-      <Label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
-        {label}{required && <span className="text-destructive">*</span>}
+    <div
+      className={`space-y-1 ${className}`}
+      onFocus={() => tipKey && onFocusTip?.(tipKey)}
+    >
+      <Label className="text-xs font-medium text-foreground/80 flex items-center gap-1 leading-none">
+        <span className="truncate">{label}</span>
+        {required && <span className="text-destructive">*</span>}
         {tipKey && TIPS[tipKey] && (
-          <HelpCircle className="h-3 w-3 text-brand-blue/70" />
+          <HelpCircle className="h-3 w-3 text-brand-blue/70 shrink-0" />
         )}
       </Label>
       {children}
+      {hint && <p className="text-[11px] text-muted-foreground leading-tight">{hint}</p>}
     </div>
   );
 }
@@ -212,29 +223,30 @@ function SectionCard({
 }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-2xl border border-border bg-card/40 overflow-hidden">
+    <div className="rounded-2xl border border-border/70 bg-card/40 overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-2.5 border-b border-border/70 bg-card/60"
+        className="w-full flex items-center justify-between px-4 py-2.5 border-b border-border/70 bg-card/70"
       >
-        <span className="text-sm font-medium text-foreground">{title}</span>
+        <span className="text-sm font-semibold text-foreground tracking-tight">{title}</span>
         <ChevronDown className={`h-4 w-4 text-muted-foreground transition ${open ? "" : "-rotate-90"}`} />
       </button>
-      {open && <div className="p-4">{children}</div>}
+      {open && <div className="p-5">{children}</div>}
     </div>
   );
 }
 
 function InlineDivider({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 my-4">
-      <div className="flex-1 h-px bg-border" />
-      <span className="text-xs uppercase tracking-[0.18em] text-brand-blue font-medium">{children}</span>
-      <div className="flex-1 h-px bg-border" />
+    <div className="flex items-center gap-3 mt-6 mb-4">
+      <div className="flex-1 h-px bg-border/70" />
+      <span className="text-[11px] uppercase tracking-[0.22em] text-brand-blue font-semibold">{children}</span>
+      <div className="flex-1 h-px bg-border/70" />
     </div>
   );
 }
+
 
 /* -------------------------------- panels -------------------------------- */
 
