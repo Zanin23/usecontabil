@@ -598,7 +598,7 @@ export default function EmpresaCadastro() {
           </Card>
         </div>
 
-        <div className={assistantOpen ? "col-span-3" : "col-span-2"}>
+        <div className="col-span-3">
           <div className="space-y-3">
             <div className="rounded-2xl border border-border bg-card/40 px-4 py-2.5 flex items-center gap-2">
               <FileText className="h-4 w-4 text-brand-blue" />
@@ -611,6 +611,12 @@ export default function EmpresaCadastro() {
           </div>
         </div>
       </div>
+
+      {assistantOpen && (
+        <div className="fixed right-4 bottom-4 z-40 w-[340px] max-w-[calc(100vw-2rem)] animate-in fade-in slide-in-from-bottom-2">
+          <AssistantPanel tipKey={activeTip} onClose={() => setAssistantOpen(false)} />
+        </div>
+      )}
     </div>
   );
 }
