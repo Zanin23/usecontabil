@@ -1361,8 +1361,8 @@ export const AREAS: Area[] = [
     code: "02",
     icon: Settings2,
     accent: "blue",
-    eyebrow: "Setup do escritório",
-    blurb: "Cadastros base do escritório, empresas atendidas e catálogo de serviços recorrentes.",
+    eyebrow: "Setup corporativo",
+    blurb: "Cadastros base do grupo: matriz, filiais, empresas do grupo e catálogo de serviços internos.",
     categories: preparativos,
   },
   {
