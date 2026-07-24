@@ -525,9 +525,10 @@ export default function EmpresaCadastro() {
                 <div className="flex gap-2">
                   <Button
                     className="rounded-full bg-brand-blue text-white hover:bg-brand-blue/90 px-6"
-                    onClick={() => toast.success("Cadastro salvo (protótipo)")}
+                    onClick={handleSalvar}
+                    disabled={saving}
                   >
-                    Salvar
+                    {saving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Salvando…</> : "Salvar"}
                   </Button>
                   <Button
                     variant="outline"
