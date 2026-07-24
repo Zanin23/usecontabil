@@ -38,7 +38,7 @@ export default function Lancamentos() {
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Lock className="h-3.5 w-3.5" />
-          Período 10/2024 aberto até 15/11/2024
+          Período {competenciaBR(competencia)} — filtro ativo
         </div>
       </div>
 
