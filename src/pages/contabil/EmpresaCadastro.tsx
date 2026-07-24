@@ -655,9 +655,7 @@ export default function EmpresaCadastro() {
       </div>
 
       {assistantOpen && (
-        <div className="fixed right-4 bottom-4 z-40 w-[340px] max-w-[calc(100vw-2rem)] animate-in fade-in slide-in-from-bottom-2">
-          <AssistantPanel tipKey={activeTip} onClose={() => setAssistantOpen(false)} />
-        </div>
+        <AssistantPanel tipKey={activeTip} onClose={() => setAssistantOpen(false)} />
       )}
     </div>
   );
