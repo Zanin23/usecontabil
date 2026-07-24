@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { saveEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
+import { saveEmpresa, getEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
 import {
   Button, Card, CardContent, Input, Label, Separator,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
