@@ -106,12 +106,12 @@ const TIPS: Record<string, Tip> = {
   },
   endereco: { title: "Endereço", steps: ["Preenchido pelo CEP. Confirme com o comprovante do cartão CNPJ."] },
   numero: { title: "Número", steps: ["Número do imóvel. Se não houver, informe S/N."] },
-  contatoNome: { title: "Contato principal", steps: ["Responsável interno pela relação com o escritório contábil."] },
+  contatoNome: { title: "Contato principal", steps: ["Responsável interno pelo relacionamento contábil/fiscal desta unidade."] },
   email: { title: "E-Mail", steps: ["Usado para envio de guias, relatórios e comunicados oficiais."] },
   whatsapp: { title: "Celular / WhatsApp", steps: ["Preferencial para notificações urgentes de vencimento e obrigações."] },
-  respNome: { title: "Responsável Técnico", steps: ["Contador responsável perante o CRC. Deve constar no contrato de honorários."] },
-  respCpf: { title: "CPF do Responsável", steps: ["CPF do contador registrado no CRC."] },
-  respCnpj: { title: "CNPJ do Escritório", steps: ["CNPJ do escritório contábil que responde pela empresa."] },
+  respNome: { title: "Responsável Técnico", steps: ["Contador interno responsável perante o CRC pelas escriturações desta empresa."] },
+  respCpf: { title: "CPF do Responsável", steps: ["CPF do contador interno registrado no CRC."] },
+  respCnpj: { title: "CNPJ da unidade responsável", steps: ["CNPJ da matriz ou unidade do grupo que responde tecnicamente por esta empresa."] },
   senhas: {
     title: "Senhas de acesso",
     steps: [
