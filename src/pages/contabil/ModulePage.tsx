@@ -77,13 +77,25 @@ export default function ModulePage() {
           >
             <Download className="h-4 w-4 mr-2" /> Exportar
           </Button>
-          <Button
-            className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
-            onClick={() => toast.success(`${module.primaryAction ?? "Novo registro"} — protótipo visual`)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            {module.primaryAction ?? "Novo registro"}
-          </Button>
+          {module.slug === "empresas" || module.slug === "dados-empresa" ? (
+            <Button
+              asChild
+              className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
+            >
+              <Link to={`/${area.slug}/${category.slug}/${module.slug}/novo`}>
+                <Plus className="h-4 w-4 mr-2" />
+                {module.primaryAction ?? "Novo registro"}
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
+              onClick={() => toast.success(`${module.primaryAction ?? "Novo registro"} — protótipo visual`)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {module.primaryAction ?? "Novo registro"}
+            </Button>
+          )}
         </div>
       </div>
 
