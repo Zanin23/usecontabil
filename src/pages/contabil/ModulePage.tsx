@@ -27,6 +27,22 @@ const statusClass = (v: string) => {
 export default function ModulePage() {
   const { area: areaSlug, categoria, modulo } = useParams();
   const { area, category, module } = findModule(areaSlug, categoria, modulo);
+  const [extraRows, setExtraRows] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (module?.slug === "empresas" && category?.slug === "cadastros") {
+      const saved = loadEmpresas().map((e) => ({
+        cnpj: e.cnpj,
+        razao: e.razao,
+        regime: e.regime,
+        atividade: e.atividade,
+        status: e.status,
+      }));
+      setExtraRows(saved);
+    } else {
+      setExtraRows([]);
+    }
+  }, [module?.slug, category?.slug]);
 
   if (!area || !category || !module) {
     return (
