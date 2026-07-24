@@ -382,8 +382,11 @@ function TributacaoCard({ kind }: { kind: TribKind }) {
 
 export default function EmpresaCadastro() {
   const navigate = useNavigate();
+  const { id: routeId } = useParams();
   const [section, setSection] = useState<SectionKey>("dados");
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [recordId, setRecordId] = useState<string | null>(null);
+  const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [activeTip, setActiveTip] = useState<string | null>(null);
   const [assistantOpen, setAssistantOpen] = useState(true);
   const [loadingCnpj, setLoadingCnpj] = useState(false);
@@ -391,6 +394,24 @@ export default function EmpresaCadastro() {
   const [saving, setSaving] = useState(false);
 
   const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));
+
+  useEffect(() => {
+    if (!routeId) {
+      setRecordId(null);
+      setCreatedAt(null);
+      setForm(EMPTY_FORM);
+      return;
+    }
+    const rec = getEmpresa(routeId);
+    if (!rec) {
+      toast.error("Empresa não encontrada");
+      navigate("/preparativos/cadastros/empresas", { replace: true });
+      return;
+    }
+    setRecordId(rec.id);
+    setCreatedAt(rec.createdAt);
+    setForm({ ...EMPTY_FORM, ...(rec.raw as Partial<FormState>) });
+  }, [routeId, navigate]);
 
   const handleSalvar = () => {
     const cnpjDigits = form.cnpj.replace(/\D/g, "");
@@ -407,17 +428,17 @@ export default function EmpresaCadastro() {
     setSaving(true);
     try {
       const rec: EmpresaRecord = {
-        id: `EMP-${Date.now()}`,
+        id: recordId ?? `EMP-${Date.now()}`,
         cnpj: form.cnpj,
         razao: form.razao,
         regime: "A definir",
         atividade: form.cnaeDesc || "—",
         status: "Ativa",
-        createdAt: new Date().toISOString(),
+        createdAt: createdAt ?? new Date().toISOString(),
         raw: { ...form },
       };
       saveEmpresa(rec);
-      toast.success(`Empresa "${rec.razao}" cadastrada`);
+      toast.success(`Empresa "${rec.razao}" ${recordId ? "atualizada" : "cadastrada"}`);
       navigate("/preparativos/cadastros/empresas");
     } catch (e: any) {
       toast.error(e?.message || "Falha ao salvar");
