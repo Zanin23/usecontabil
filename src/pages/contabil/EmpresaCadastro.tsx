@@ -400,7 +400,7 @@ export default function EmpresaCadastro() {
   const [recordId, setRecordId] = useState<string | null>(null);
   const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [activeTip, setActiveTip] = useState<string | null>(null);
-  const [assistantOpen, setAssistantOpen] = useState(true);
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const [loadingCnpj, setLoadingCnpj] = useState(false);
   const [loadingCep, setLoadingCep] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -530,12 +530,9 @@ export default function EmpresaCadastro() {
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-3 space-y-4">
           <LeftPanel form={form} />
-          {assistantOpen && (
-            <AssistantPanel tipKey={activeTip} onClose={() => setAssistantOpen(false)} />
-          )}
         </div>
 
-        <div className={assistantOpen ? "col-span-6" : "col-span-7"}>
+        <div className="col-span-6">
           <Card className="rounded-2xl border-border/70">
             <CardContent className="p-4 space-y-4">
               <h2 className="text-center text-base font-semibold text-foreground">
@@ -601,7 +598,7 @@ export default function EmpresaCadastro() {
           </Card>
         </div>
 
-        <div className={assistantOpen ? "col-span-3" : "col-span-2"}>
+        <div className="col-span-3">
           <div className="space-y-3">
             <div className="rounded-2xl border border-border bg-card/40 px-4 py-2.5 flex items-center gap-2">
               <FileText className="h-4 w-4 text-brand-blue" />
@@ -614,6 +611,12 @@ export default function EmpresaCadastro() {
           </div>
         </div>
       </div>
+
+      {assistantOpen && (
+        <div className="fixed right-4 bottom-4 z-40 w-[340px] max-w-[calc(100vw-2rem)] animate-in fade-in slide-in-from-bottom-2">
+          <AssistantPanel tipKey={activeTip} onClose={() => setAssistantOpen(false)} />
+        </div>
+      )}
     </div>
   );
 }
