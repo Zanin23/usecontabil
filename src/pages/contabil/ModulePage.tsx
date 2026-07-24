@@ -155,7 +155,7 @@ export default function ModulePage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {module.rows.map((row, ri) => (
+            {[...extraRows, ...module.rows].map((row, ri) => (
               <TableRow key={ri}>
                 {module.columns.map((c) => {
                   const v = row[c.key];
