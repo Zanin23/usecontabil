@@ -205,10 +205,16 @@ export default function ContabilShell() {
 
             <div className="flex items-center gap-2 rounded-md border border-border bg-card px-3 h-9 text-sm">
               <CalendarRange className="h-4 w-4 text-muted-foreground" />
-              <select className="bg-transparent outline-none text-foreground">
-                <option className="bg-card">Out/2024</option>
-                <option className="bg-card">Set/2024</option>
-                <option className="bg-card">Ago/2024</option>
+              <select
+                value={competencia}
+                onChange={(e) => setCompetencia(e.target.value)}
+                className="bg-transparent outline-none text-foreground"
+              >
+                {COMPETENCIAS.map((c) => (
+                  <option key={c} value={c} className="bg-card">
+                    {formatCompetencia(c)}
+                  </option>
+                ))}
               </select>
             </div>
 
