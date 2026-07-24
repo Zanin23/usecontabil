@@ -321,7 +321,7 @@ const preparativos: Category[] = [
           { campo: "Telefone", valor: "(31) 3512-8400" },
           { campo: "E-mail fiscal", valor: "fiscal@andrademetal.com.br" },
           { campo: "Responsável legal", valor: "Marcos Andrade — CPF 128.470.921-04" },
-          { campo: "Contador responsável", valor: "Elisa Nogueira — CRC MG-084.221/O-2" },
+          { campo: "Contador interno responsável", valor: "Elisa Nogueira — CRC MG-084.221/O-2" },
         ],
       },
       {
