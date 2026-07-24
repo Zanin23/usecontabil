@@ -24,6 +24,7 @@ const App = () => (
           <Route path="/:area/:categoria" element={<CategoryPage />} />
           <Route path="/preparativos/empresa/dados-empresa/novo" element={<EmpresaCadastro />} />
           <Route path="/preparativos/cadastros/empresas/novo" element={<EmpresaCadastro />} />
+          <Route path="/preparativos/cadastros/empresas/:id" element={<EmpresaCadastro />} />
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
