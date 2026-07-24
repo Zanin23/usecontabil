@@ -12,7 +12,7 @@ import {
   ChevronsLeft, ChevronsRight, Search, Plus, FileText, Trash2, Check,
   Landmark, KeyRound, Users2, DollarSign, FileSignature,
   Users, MessageSquare, HelpCircle, CircleAlert, Sparkles, Loader2,
-  Lightbulb, ExternalLink, Wand2, X,
+  Lightbulb, ExternalLink, Wand2, X, GripVertical,
 } from "lucide-react";
 
 type SectionKey = "dados" | "senhas" | "pessoal" | "fiscal" | "societario";
