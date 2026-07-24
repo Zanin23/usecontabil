@@ -630,12 +630,6 @@ export default function EmpresaCadastro() {
                       </button>
                     );
                   })}
-                  <button className="h-9 w-9 grid place-items-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent">
-                    <Users className="h-4 w-4" />
-                  </button>
-                  <button className="h-9 w-9 grid place-items-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent">
-                    <MessageSquare className="h-4 w-4" />
-                  </button>
                 </div>
               </div>
             </CardContent>
