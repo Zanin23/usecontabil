@@ -400,7 +400,7 @@ export default function EmpresaCadastro() {
   const [recordId, setRecordId] = useState<string | null>(null);
   const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [activeTip, setActiveTip] = useState<string | null>(null);
-  const [assistantOpen, setAssistantOpen] = useState(true);
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const [loadingCnpj, setLoadingCnpj] = useState(false);
   const [loadingCep, setLoadingCep] = useState(false);
   const [saving, setSaving] = useState(false);
