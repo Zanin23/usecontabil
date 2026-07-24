@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { saveEmpresa, getEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
@@ -12,7 +12,7 @@ import {
   ChevronsLeft, ChevronsRight, Search, Plus, FileText, Trash2, Check,
   Landmark, KeyRound, Users2, DollarSign, FileSignature,
   Users, MessageSquare, HelpCircle, CircleAlert, Sparkles, Loader2,
-  Lightbulb, ExternalLink, Wand2, X,
+  Lightbulb, ExternalLink, Wand2, X, GripVertical,
 } from "lucide-react";
 
 type SectionKey = "dados" | "senhas" | "pessoal" | "fiscal" | "societario";
@@ -313,26 +313,68 @@ function AssistantPanel({
   tipKey, onClose,
 }: { tipKey: string | null; onClose?: () => void }) {
   const tip = (tipKey && TIPS[tipKey]) || GENERAL_TIP;
-  return (
-    <Card className="rounded-2xl border-brand-blue/30 bg-brand-blue/5 sticky top-4">
-      <CardContent className="p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-brand-blue/15 grid place-items-center">
-              <Sparkles className="h-4 w-4 text-brand-blue" />
-            </div>
-            <div>
-              <div className="text-xs uppercase tracking-[0.16em] text-brand-blue font-medium">Assistente</div>
-              <div className="text-sm font-semibold text-foreground">{tip.title}</div>
-            </div>
-          </div>
-          {onClose && (
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onClose}>
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          )}
-        </div>
 
+  // Floating position + size (persisted per-session in memory)
+  const [pos, setPos] = useState<{ x: number; y: number }>(() => ({
+    x: Math.max(16, window.innerWidth - 360),
+    y: Math.max(16, window.innerHeight - 460),
+  }));
+  const [size, setSize] = useState<{ w: number; h: number }>({ w: 340, h: 420 });
+  const dragRef = useRef<{ dx: number; dy: number } | null>(null);
+
+  const onDragStart = (e: React.PointerEvent) => {
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    dragRef.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y };
+  };
+  const onDragMove = (e: React.PointerEvent) => {
+    if (!dragRef.current) return;
+    const nx = Math.min(Math.max(0, e.clientX - dragRef.current.dx), window.innerWidth - 80);
+    const ny = Math.min(Math.max(0, e.clientY - dragRef.current.dy), window.innerHeight - 40);
+    setPos({ x: nx, y: ny });
+  };
+  const onDragEnd = () => { dragRef.current = null; };
+
+  return (
+    <div
+      className="fixed z-50 shadow-elevated rounded-2xl border border-brand-blue/40 bg-card overflow-hidden flex flex-col"
+      style={{
+        left: pos.x, top: pos.y,
+        width: size.w, height: size.h,
+        resize: "both", minWidth: 260, minHeight: 220,
+        maxWidth: "90vw", maxHeight: "90vh",
+      }}
+      onMouseUp={(e) => {
+        // sync size after native resize handle drag
+        const el = e.currentTarget as HTMLDivElement;
+        const w = el.offsetWidth; const h = el.offsetHeight;
+        if (w !== size.w || h !== size.h) setSize({ w, h });
+      }}
+    >
+      <div
+        className="flex items-center justify-between px-3 py-2 border-b border-border bg-brand-blue/10 cursor-move select-none"
+        onPointerDown={onDragStart}
+        onPointerMove={onDragMove}
+        onPointerUp={onDragEnd}
+        onPointerCancel={onDragEnd}
+      >
+        <div className="flex items-center gap-2 min-w-0">
+          <GripVertical className="h-4 w-4 text-brand-blue/70 shrink-0" />
+          <div className="h-7 w-7 rounded-full bg-brand-blue/20 grid place-items-center shrink-0">
+            <Sparkles className="h-3.5 w-3.5 text-brand-blue" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-[10px] uppercase tracking-[0.16em] text-brand-blue font-medium leading-none">Assistente</div>
+            <div className="text-sm font-semibold text-foreground truncate leading-tight mt-0.5">{tip.title}</div>
+          </div>
+        </div>
+        {onClose && (
+          <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={onClose}>
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        )}
+      </div>
+
+      <div className="flex-1 overflow-auto p-4 space-y-3 bg-card">
         <ul className="space-y-2 text-xs text-foreground/90">
           {tip.steps.map((s, i) => (
             <li key={i} className="flex gap-2">
@@ -354,10 +396,10 @@ function AssistantPanel({
         <Separator />
 
         <div className="text-[11px] text-muted-foreground leading-relaxed">
-          Toque em qualquer campo do formulário para receber orientação específica sobre o que informar e onde encontrar a informação.
+          Toque em qualquer campo do formulário para receber orientação específica sobre o que informar e onde encontrar a informação. Arraste pelo topo para reposicionar, e use o canto inferior direito para redimensionar.
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -613,9 +655,7 @@ export default function EmpresaCadastro() {
       </div>
 
       {assistantOpen && (
-        <div className="fixed right-4 bottom-4 z-40 w-[340px] max-w-[calc(100vw-2rem)] animate-in fade-in slide-in-from-bottom-2">
-          <AssistantPanel tipKey={activeTip} onClose={() => setAssistantOpen(false)} />
-        </div>
+        <AssistantPanel tipKey={activeTip} onClose={() => setAssistantOpen(false)} />
       )}
     </div>
   );
