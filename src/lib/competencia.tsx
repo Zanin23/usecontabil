@@ -25,7 +25,7 @@ type Ctx = {
 const CompetenciaContext = createContext<Ctx | null>(null);
 
 export function CompetenciaProvider({ children }: { children: ReactNode }) {
-  const [competencia, setCompetencia] = useState("2024-10");
+  const [competencia, setCompetencia] = useState("2026-07");
   const value = useMemo<Ctx>(
     () => ({
       competencia,
