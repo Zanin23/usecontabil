@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Badge, Button, Card, CardContent, Input,
@@ -6,6 +7,7 @@ import {
 import { toast } from "sonner";
 import { ChevronRight, Download, Filter, Plus, Search } from "lucide-react";
 import { findModule } from "@/lib/contabilNav";
+import { loadEmpresas } from "@/lib/empresasStore";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
