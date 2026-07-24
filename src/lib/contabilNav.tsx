@@ -1382,7 +1382,7 @@ export const AREAS: Area[] = [
     icon: Wallet,
     accent: "orange",
     eyebrow: "Fiscal & tributário",
-    blurb: "Faturamento, apurações e regimes tributários das empresas atendidas.",
+    blurb: "Faturamento, apurações e regimes tributários das empresas do grupo.",
     categories: financeiro,
   },
 ];
