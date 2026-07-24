@@ -889,7 +889,7 @@ function SocietarioSection({ onTip }: { onTip: (k: string) => void }) {
           <Field label="Classe de Atividade" className="col-span-9"><Input className="rounded-lg" /></Field>
 
           <Field label="Código de Imobilizado" className="col-span-3"><Input className="rounded-lg" /></Field>
-          <Field label="Grupo Escritório" className="col-span-3">
+          <Field label="Grupo econômico" className="col-span-3">
             <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="nao">Não</SelectItem></SelectContent>
             </Select>
