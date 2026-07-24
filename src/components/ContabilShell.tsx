@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { EMPRESAS } from "@/lib/contabilMock";
 import { AREAS } from "@/lib/contabilNav";
+import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
