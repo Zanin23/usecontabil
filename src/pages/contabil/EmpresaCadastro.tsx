@@ -381,14 +381,50 @@ function TributacaoCard({ kind }: { kind: TribKind }) {
 /* --------------------------------- page --------------------------------- */
 
 export default function EmpresaCadastro() {
+  const navigate = useNavigate();
   const [section, setSection] = useState<SectionKey>("dados");
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [activeTip, setActiveTip] = useState<string | null>(null);
   const [assistantOpen, setAssistantOpen] = useState(true);
   const [loadingCnpj, setLoadingCnpj] = useState(false);
   const [loadingCep, setLoadingCep] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));
+
+  const handleSalvar = () => {
+    const cnpjDigits = form.cnpj.replace(/\D/g, "");
+    if (cnpjDigits.length !== 14) {
+      toast.error("Informe um CNPJ válido (14 dígitos)");
+      setSection("dados");
+      return;
+    }
+    if (!form.razao.trim()) {
+      toast.error("Informe a razão social");
+      setSection("dados");
+      return;
+    }
+    setSaving(true);
+    try {
+      const rec: EmpresaRecord = {
+        id: `EMP-${Date.now()}`,
+        cnpj: form.cnpj,
+        razao: form.razao,
+        regime: "A definir",
+        atividade: form.cnaeDesc || "—",
+        status: "Ativa",
+        createdAt: new Date().toISOString(),
+        raw: { ...form },
+      };
+      saveEmpresa(rec);
+      toast.success(`Empresa "${rec.razao}" cadastrada`);
+      navigate("/preparativos/cadastros/empresas");
+    } catch (e: any) {
+      toast.error(e?.message || "Falha ao salvar");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleBuscarCnpj = async () => {
     if (!form.cnpj.trim()) { toast.error("Informe o CNPJ"); return; }
