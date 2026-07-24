@@ -8,6 +8,7 @@ import { CompetenciaProvider } from "./lib/competencia";
 const AreaPage = lazy(() => import("./pages/contabil/AreaPage"));
 const CategoryPage = lazy(() => import("./pages/contabil/CategoryPage"));
 const ModulePage = lazy(() => import("./pages/contabil/ModulePage"));
+const EmpresaCadastro = lazy(() => import("./pages/contabil/EmpresaCadastro"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const App = () => (
@@ -21,6 +22,8 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/:area" element={<AreaPage />} />
           <Route path="/:area/:categoria" element={<CategoryPage />} />
+          <Route path="/preparativos/empresa/dados-empresa/novo" element={<EmpresaCadastro />} />
+          <Route path="/preparativos/cadastros/empresas/novo" element={<EmpresaCadastro />} />
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
