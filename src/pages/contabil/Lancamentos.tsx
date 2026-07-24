@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Badge, Button, Card, CardContent, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/design-system/mj-design-system-db98fa";
 import { Save, Upload, Zap, Filter, Lock, CircleCheck, CircleAlert } from "lucide-react";
 import { LANCAMENTOS, brl } from "@/lib/contabilMock";
+import { competenciaBR, useCompetencia } from "@/lib/competencia";
 
 const origemColor: Record<string, string> = {
   MANUAL: "bg-muted text-muted-foreground",
@@ -11,9 +12,15 @@ const origemColor: Record<string, string> = {
 
 export default function Lancamentos() {
   const [filtro, setFiltro] = useState("");
+  const { competencia, isInCompetencia } = useCompetencia();
   const rows = useMemo(
-    () => LANCAMENTOS.filter((l) => (l.historico + l.debito + l.credito + l.debitoNome + l.creditoNome).toLowerCase().includes(filtro.toLowerCase())),
-    [filtro],
+    () =>
+      LANCAMENTOS.filter((l) => isInCompetencia(l.data)).filter((l) =>
+        (l.historico + l.debito + l.credito + l.debitoNome + l.creditoNome)
+          .toLowerCase()
+          .includes(filtro.toLowerCase()),
+      ),
+    [filtro, isInCompetencia],
   );
 
   const totalDebitos = rows.reduce((s, r) => s + r.valor, 0);
