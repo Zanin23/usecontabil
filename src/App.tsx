@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "./design-system/mj-design-system-db98fa";
 import ContabilShell from "./components/ContabilShell";
 import Dashboard from "./pages/contabil/Dashboard";
+import { CompetenciaProvider } from "./lib/competencia";
 
 const AreaPage = lazy(() => import("./pages/contabil/AreaPage"));
 const CategoryPage = lazy(() => import("./pages/contabil/CategoryPage"));
@@ -11,6 +12,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 const App = () => (
   <BrowserRouter>
+    <CompetenciaProvider>
     <Toaster />
     <Suspense fallback={<div className="min-h-screen bg-background" />}>
       <Routes>
@@ -24,6 +26,7 @@ const App = () => (
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
+    </CompetenciaProvider>
   </BrowserRouter>
 );
 
