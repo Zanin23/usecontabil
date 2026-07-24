@@ -21,6 +21,10 @@ export function loadEmpresas(): EmpresaRecord[] {
   }
 }
 
+export function getEmpresa(id: string): EmpresaRecord | undefined {
+  return loadEmpresas().find((e) => e.id === id);
+}
+
 export function saveEmpresa(rec: EmpresaRecord) {
   const list = loadEmpresas();
   const idx = list.findIndex((e) => e.id === rec.id);

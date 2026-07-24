@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Badge, Button, Card, CardContent, Input,
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/design-system/mj-design-system-db98fa";
 import { toast } from "sonner";
-import { ChevronRight, Download, Filter, Plus, Search } from "lucide-react";
+import { ChevronRight, Download, Filter, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { findModule } from "@/lib/contabilNav";
-import { loadEmpresas } from "@/lib/empresasStore";
+import { loadEmpresas, removeEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
@@ -26,23 +26,37 @@ const statusClass = (v: string) => {
 
 export default function ModulePage() {
   const { area: areaSlug, categoria, modulo } = useParams();
+  const navigate = useNavigate();
   const { area, category, module } = findModule(areaSlug, categoria, modulo);
-  const [extraRows, setExtraRows] = useState<any[]>([]);
+  const [savedEmpresas, setSavedEmpresas] = useState<EmpresaRecord[]>([]);
+
+  const isEmpresas = module?.slug === "empresas" && category?.slug === "cadastros";
+
+  const refreshEmpresas = () => {
+    if (isEmpresas) setSavedEmpresas(loadEmpresas());
+    else setSavedEmpresas([]);
+  };
 
   useEffect(() => {
-    if (module?.slug === "empresas" && category?.slug === "cadastros") {
-      const saved = loadEmpresas().map((e) => ({
-        cnpj: e.cnpj,
-        razao: e.razao,
-        regime: e.regime,
-        atividade: e.atividade,
-        status: e.status,
-      }));
-      setExtraRows(saved);
-    } else {
-      setExtraRows([]);
-    }
+    refreshEmpresas();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [module?.slug, category?.slug]);
+
+  const handleDeleteEmpresa = (rec: EmpresaRecord) => {
+    if (!confirm(`Excluir "${rec.razao}"? Esta ação não pode ser desfeita.`)) return;
+    removeEmpresa(rec.id);
+    toast.success(`Empresa "${rec.razao}" removida`);
+    refreshEmpresas();
+  };
+
+  const extraRows = savedEmpresas.map((e) => ({
+    __empresaId: e.id,
+    cnpj: e.cnpj,
+    razao: e.razao,
+    regime: e.regime,
+    atividade: e.atividade,
+    status: e.status,
+  }));
 
   if (!area || !category || !module) {
     return (
@@ -152,29 +166,65 @@ export default function ModulePage() {
                   {c.label}
                 </TableHead>
               ))}
+              {isEmpresas && <TableHead className="text-right w-[120px]">Ações</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {[...extraRows, ...module.rows].map((row, ri) => (
-              <TableRow key={ri}>
-                {module.columns.map((c) => {
-                  const v = row[c.key];
-                  const isStatus = c.key === "status" || c.key === "situacao" || c.key === "abonada" || c.key === "resultado";
-                  return (
-                    <TableCell
-                      key={c.key}
-                      className={[
-                        c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : "",
-                        c.mono ? "font-mono text-xs" : "",
-                        isStatus && typeof v === "string" ? statusClass(v) : "",
-                      ].join(" ")}
-                    >
-                      {v as any}
+            {[...extraRows, ...module.rows].map((row: any, ri) => {
+              const empresaId = row.__empresaId as string | undefined;
+              return (
+                <TableRow
+                  key={ri}
+                  className={empresaId ? "cursor-pointer hover:bg-muted/40" : ""}
+                  onClick={() => empresaId && navigate(`/preparativos/cadastros/empresas/${empresaId}`)}
+                >
+                  {module.columns.map((c) => {
+                    const v = row[c.key];
+                    const isStatus = c.key === "status" || c.key === "situacao" || c.key === "abonada" || c.key === "resultado";
+                    return (
+                      <TableCell
+                        key={c.key}
+                        className={[
+                          c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : "",
+                          c.mono ? "font-mono text-xs" : "",
+                          isStatus && typeof v === "string" ? statusClass(v) : "",
+                        ].join(" ")}
+                      >
+                        {v as any}
+                      </TableCell>
+                    );
+                  })}
+                  {isEmpresas && (
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                      {empresaId ? (
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0 rounded-full"
+                            onClick={() => navigate(`/preparativos/cadastros/empresas/${empresaId}`)}
+                            aria-label="Editar"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0 rounded-full text-destructive hover:text-destructive"
+                            onClick={() => handleDeleteEmpresa(savedEmpresas.find((s) => s.id === empresaId)!)}
+                            aria-label="Excluir"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">exemplo</span>
+                      )}
                     </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
+                  )}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </Card>
