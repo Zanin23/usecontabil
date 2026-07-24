@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import {
-  Badge, Button, Card, CardContent, Input, Label, Separator,
+  Button, Card, CardContent, Input, Label, Separator,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
   Tabs, TabsList, TabsTrigger,
 } from "@/design-system/mj-design-system-db98fa";
 import {
   ArrowLeft, Building2, ChevronDown, ChevronLeft, ChevronRight,
   ChevronsLeft, ChevronsRight, Search, Plus, FileText, Trash2, Check,
-  Landmark, KeyRound, Users2, DollarSign, Calculator, FileSignature,
-  Users, MessageSquare, HelpCircle, CircleAlert, ChevronsUpDown,
+  Landmark, KeyRound, Users2, DollarSign, FileSignature,
+  Users, MessageSquare, HelpCircle, CircleAlert, Sparkles, Loader2,
+  Lightbulb, ExternalLink, Wand2, X,
 } from "lucide-react";
 
 type SectionKey = "dados" | "senhas" | "pessoal" | "fiscal" | "societario";
@@ -30,15 +32,174 @@ const SECTION_TITLES: Record<SectionKey, string> = {
   societario: "Societário",
 };
 
-/* ------------------------------- primitives ------------------------------- */
+/* ------------------------------ form state ------------------------------ */
+
+type FormState = {
+  cnpj: string; ie: string; im: string; cnae: string; cnaeDesc: string;
+  razao: string; fantasia: string;
+  cep: string; endereco: string; numero: string; complemento: string;
+  bairro: string; municipio: string; uf: string; codFederal: string;
+  dataAlteracao: string; geraAniv: string;
+  contatoNome: string; contatoCpf: string; contatoTel: string;
+  email: string; whatsapp: string; site: string;
+  respNome: string; respCpf: string; respCnpj: string; respTipo: string;
+  aberturaRF: string; inicioContrato: string;
+};
+
+const EMPTY_FORM: FormState = {
+  cnpj: "", ie: "", im: "", cnae: "", cnaeDesc: "",
+  razao: "", fantasia: "",
+  cep: "", endereco: "", numero: "", complemento: "",
+  bairro: "", municipio: "", uf: "", codFederal: "",
+  dataAlteracao: "", geraAniv: "nao",
+  contatoNome: "", contatoCpf: "", contatoTel: "",
+  email: "", whatsapp: "", site: "",
+  respNome: "", respCpf: "", respCnpj: "", respTipo: "cpf",
+  aberturaRF: "", inicioContrato: "",
+};
+
+/* --------------------------- assistant tips ---------------------------- */
+
+type Tip = { title: string; steps: string[]; link?: { label: string; url: string } };
+
+const TIPS: Record<string, Tip> = {
+  cnpj: {
+    title: "CNPJ / CPF / CEI",
+    steps: [
+      "Digite apenas os números do CNPJ (14 dígitos).",
+      "Use o botão 'Buscar CNPJ' — puxamos razão social, endereço, CNAE, telefone e abertura direto da base pública.",
+      "Se for CEI ou obra, informe manualmente.",
+    ],
+    link: { label: "Consultar cartão CNPJ", url: "https://solucoes.receita.fazenda.gov.br/servicos/cnpjreva/cnpjreva_solicitacao.asp" },
+  },
+  ie: {
+    title: "Inscrição Estadual",
+    steps: [
+      "Encontre no cartão da SEFAZ do estado.",
+      "Se a empresa for isenta, deixe em branco e marque 'Isento' na aba Tributações → Estadual.",
+    ],
+    link: { label: "SINTEGRA (todos os estados)", url: "http://www.sintegra.gov.br/" },
+  },
+  im: {
+    title: "Inscrição Municipal",
+    steps: [
+      "Obtida na prefeitura no ato do alvará de funcionamento.",
+      "Necessária para emissão de NFS-e.",
+    ],
+  },
+  cnae: {
+    title: "CNAE Principal",
+    steps: [
+      "Preenchido automaticamente ao buscar o CNPJ.",
+      "Para revisar, consulte o cartão CNPJ ou a CNAE do IBGE.",
+    ],
+    link: { label: "Consulta CNAE (IBGE)", url: "https://cnae.ibge.gov.br/" },
+  },
+  razao: { title: "Razão Social", steps: ["Nome oficial da empresa no cartão CNPJ.", "Preenchido pelo 'Buscar CNPJ'."] },
+  fantasia: { title: "Nome Fantasia", steps: ["Nome comercial. Se não houver, repita a razão social."] },
+  cep: {
+    title: "CEP",
+    steps: [
+      "8 dígitos. Use 'Buscar CEP' — preenchemos endereço, bairro, município e UF via ViaCEP/BrasilAPI.",
+    ],
+    link: { label: "Buscar CEP nos Correios", url: "https://buscacepinter.correios.com.br/" },
+  },
+  endereco: { title: "Endereço", steps: ["Preenchido pelo CEP. Confirme com o comprovante do cartão CNPJ."] },
+  numero: { title: "Número", steps: ["Número do imóvel. Se não houver, informe S/N."] },
+  contatoNome: { title: "Contato principal", steps: ["Responsável interno pela relação com o escritório contábil."] },
+  email: { title: "E-Mail", steps: ["Usado para envio de guias, relatórios e comunicados oficiais."] },
+  whatsapp: { title: "Celular / WhatsApp", steps: ["Preferencial para notificações urgentes de vencimento e obrigações."] },
+  respNome: { title: "Responsável Técnico", steps: ["Contador responsável perante o CRC. Deve constar no contrato de honorários."] },
+  respCpf: { title: "CPF do Responsável", steps: ["CPF do contador registrado no CRC."] },
+  respCnpj: { title: "CNPJ do Escritório", steps: ["CNPJ do escritório contábil que responde pela empresa."] },
+  senhas: {
+    title: "Senhas de acesso",
+    steps: [
+      "Salve senhas da Previdência, SEFAZ e e-Cac aqui.",
+      "As senhas são criptografadas e visíveis apenas para usuários autorizados.",
+    ],
+  },
+  esocial: {
+    title: "Classificação Tributária (eSocial)",
+    steps: [
+      "Consulte o Anexo I da tabela do eSocial para escolher a classificação correta.",
+      "MEI = 4, Simples com folha = 1, Simples sem folha = 3, Lucro Presumido/Real = 22.",
+    ],
+    link: { label: "Tabela 8 do eSocial", url: "https://www.gov.br/esocial/pt-br/documentacao-tecnica/leiautes-esocial-v-s-1-3/index.html" },
+  },
+  fpas: {
+    title: "FPAS",
+    steps: [
+      "Código do Fundo de Previdência e Assistência Social vinculado à atividade.",
+      "Indústria em geral = 507. Comércio = 515. Serviços = 566.",
+    ],
+  },
+  natureza: {
+    title: "Natureza Jurídica",
+    steps: [
+      "Preenchida pela Receita. Códigos comuns: 213-5 Empresário Individual, 206-2 LTDA, 230-5 EIRELI.",
+    ],
+  },
+};
+
+const GENERAL_TIP: Tip = {
+  title: "Antes de começar",
+  steps: [
+    "Tenha em mãos: cartão CNPJ, contrato social e cartão SEFAZ.",
+    "Comece digitando o CNPJ e clique em 'Buscar CNPJ' — preenchemos a maior parte automaticamente.",
+    "Depois preencha o CEP e clique em 'Buscar CEP' para o endereço completo.",
+    "Campos com * são obrigatórios para salvar.",
+  ],
+};
+
+/* ------------------------- BrasilAPI integrations ------------------------ */
+
+const digits = (s: string) => s.replace(/\D+/g, "");
+const fmtCnpj = (v: string) => {
+  const d = digits(v).slice(0, 14);
+  return d
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2");
+};
+const fmtCep = (v: string) => {
+  const d = digits(v).slice(0, 8);
+  return d.replace(/^(\d{5})(\d)/, "$1-$2");
+};
+
+async function fetchCnpj(cnpj: string) {
+  const d = digits(cnpj);
+  if (d.length !== 14) throw new Error("CNPJ inválido");
+  const r = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${d}`);
+  if (!r.ok) throw new Error("CNPJ não encontrado");
+  return r.json();
+}
+
+async function fetchCep(cep: string) {
+  const d = digits(cep);
+  if (d.length !== 8) throw new Error("CEP inválido");
+  const r = await fetch(`https://brasilapi.com.br/api/cep/v2/${d}`);
+  if (!r.ok) throw new Error("CEP não encontrado");
+  return r.json();
+}
+
+/* ------------------------------ primitives ------------------------------ */
 
 function Field({
-  label, required, children, className = "",
-}: { label: string; required?: boolean; children: React.ReactNode; className?: string }) {
+  label, required, children, className = "", tipKey, onFocusTip,
+}: {
+  label: string; required?: boolean; children: React.ReactNode;
+  className?: string; tipKey?: string; onFocusTip?: (k: string) => void;
+}) {
   return (
-    <div className={`space-y-1.5 ${className}`}>
-      <Label className="text-[11px] font-medium text-muted-foreground">
-        {label}{required && <span className="text-destructive ml-0.5">*</span>}
+    <div className={`space-y-1.5 ${className}`}
+      onFocus={() => tipKey && onFocusTip?.(tipKey)}>
+      <Label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
+        {label}{required && <span className="text-destructive">*</span>}
+        {tipKey && TIPS[tipKey] && (
+          <HelpCircle className="h-3 w-3 text-brand-blue/70" />
+        )}
       </Label>
       {children}
     </div>
@@ -46,8 +207,8 @@ function Field({
 }
 
 function SectionCard({
-  title, children, defaultOpen = true, actions,
-}: { title: string; children: React.ReactNode; defaultOpen?: boolean; actions?: React.ReactNode }) {
+  title, children, defaultOpen = true,
+}: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="rounded-2xl border border-border bg-card/40 overflow-hidden">
@@ -57,10 +218,7 @@ function SectionCard({
         className="w-full flex items-center justify-between px-4 py-2.5 border-b border-border/70 bg-card/60"
       >
         <span className="text-sm font-medium text-foreground">{title}</span>
-        <div className="flex items-center gap-2">
-          {actions}
-          <ChevronDown className={`h-4 w-4 text-muted-foreground transition ${open ? "" : "-rotate-90"}`} />
-        </div>
+        <ChevronDown className={`h-4 w-4 text-muted-foreground transition ${open ? "" : "-rotate-90"}`} />
       </button>
       {open && <div className="p-4">{children}</div>}
     </div>
@@ -77,9 +235,11 @@ function InlineDivider({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ---------------------------------- left ---------------------------------- */
+/* -------------------------------- panels -------------------------------- */
 
-function LeftPanel() {
+function LeftPanel({ form }: { form: FormState }) {
+  const displayName = form.razao || form.fantasia || "— nova empresa —";
+  const cnpjMasked = form.cnpj || "—";
   return (
     <Card className="rounded-2xl border-border/70">
       <CardContent className="p-4 space-y-4">
@@ -88,7 +248,7 @@ function LeftPanel() {
             <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronsLeft className="h-4 w-4" /></Button>
             <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronLeft className="h-4 w-4" /></Button>
           </div>
-          <span className="font-mono">1 de 1 Registro</span>
+          <span className="font-mono">Novo Registro</span>
           <div className="flex items-center gap-0.5">
             <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronRight className="h-4 w-4" /></Button>
             <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronsRight className="h-4 w-4" /></Button>
@@ -102,173 +262,437 @@ function LeftPanel() {
           <div className="h-16 w-16 rounded-full bg-muted grid place-items-center border border-border">
             <Building2 className="h-7 w-7 text-muted-foreground" />
           </div>
-          <span className="h-2.5 w-2.5 rounded-full bg-success mt-2" />
+          <span className="h-2.5 w-2.5 rounded-full bg-warn mt-2" title="Rascunho" />
         </div>
 
         <div className="text-center space-y-2">
-          <div className="font-semibold text-foreground leading-tight">
-            41.703.214 Helio Zanin Neto
+          <div className="font-semibold text-foreground leading-tight truncate" title={displayName}>
+            {displayName}
           </div>
           <div className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
-            <Building2 className="h-3.5 w-3.5" />
-            Código: <span className="text-brand-blue">694</span>
+            <Building2 className="h-3.5 w-3.5" /> Código: <span className="text-brand-blue">—</span>
           </div>
           <div className="text-xs text-muted-foreground">
-            Cnpj : <span className="text-brand-blue">41.703.214/0001-01</span>
+            Cnpj : <span className="text-brand-blue">{cnpjMasked}</span>
           </div>
         </div>
 
         <Separator />
 
         <dl className="space-y-2.5 text-xs">
-          <div>
-            <dt className="text-muted-foreground">Telefone</dt>
-            <dd className="text-foreground font-medium">(43) 9974-8887</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">Cnae - Descrição</dt>
-            <dd className="text-foreground font-medium truncate">
-              Confecção de peças de vestuário, exce…
-            </dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">Abertura - Receita Federal</dt>
-            <dd className="text-foreground font-medium">21/07/2026</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">Início contrato</dt>
-            <dd className="text-foreground font-medium">21/07/2026</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">Tipo cadastro</dt>
-            <dd className="text-success font-medium">Ativa</dd>
-          </div>
+          <div><dt className="text-muted-foreground">Telefone</dt>
+            <dd className="text-foreground font-medium">{form.contatoTel || "—"}</dd></div>
+          <div><dt className="text-muted-foreground">Cnae - Descrição</dt>
+            <dd className="text-foreground font-medium truncate" title={form.cnaeDesc}>{form.cnaeDesc || "—"}</dd></div>
+          <div><dt className="text-muted-foreground">Abertura - Receita Federal</dt>
+            <dd className="text-foreground font-medium">{form.aberturaRF || "—"}</dd></div>
+          <div><dt className="text-muted-foreground">Início contrato</dt>
+            <dd className="text-foreground font-medium">{form.inicioContrato || "—"}</dd></div>
+          <div><dt className="text-muted-foreground">Tipo cadastro</dt>
+            <dd className="text-warn font-medium">Rascunho</dd></div>
         </dl>
+      </CardContent>
+    </Card>
+  );
+}
 
-        <div className="space-y-2 pt-1">
-          <Select>
-            <SelectTrigger className="rounded-lg h-9 text-xs">
-              <SelectValue placeholder="Todos os módulos disponíveis" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os módulos disponíveis</SelectItem>
-              <SelectItem value="contabil">Contábil</SelectItem>
-              <SelectItem value="fiscal">Fiscal</SelectItem>
-              <SelectItem value="pessoal">Pessoal</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select>
-            <SelectTrigger className="rounded-lg h-9 text-xs">
-              <SelectValue placeholder="Todos os campos disponíveis" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os campos disponíveis</SelectItem>
-            </SelectContent>
-          </Select>
+function AssistantPanel({
+  tipKey, onClose,
+}: { tipKey: string | null; onClose?: () => void }) {
+  const tip = (tipKey && TIPS[tipKey]) || GENERAL_TIP;
+  return (
+    <Card className="rounded-2xl border-brand-blue/30 bg-brand-blue/5 sticky top-4">
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-brand-blue/15 grid place-items-center">
+              <Sparkles className="h-4 w-4 text-brand-blue" />
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-[0.16em] text-brand-blue font-medium">Assistente</div>
+              <div className="text-sm font-semibold text-foreground">{tip.title}</div>
+            </div>
+          </div>
+          {onClose && (
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onClose}>
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          )}
+        </div>
+
+        <ul className="space-y-2 text-xs text-foreground/90">
+          {tip.steps.map((s, i) => (
+            <li key={i} className="flex gap-2">
+              <Lightbulb className="h-3.5 w-3.5 text-warn shrink-0 mt-0.5" />
+              <span>{s}</span>
+            </li>
+          ))}
+        </ul>
+
+        {tip.link && (
+          <a
+            href={tip.link.url} target="_blank" rel="noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs text-brand-blue hover:underline"
+          >
+            {tip.link.label} <ExternalLink className="h-3 w-3" />
+          </a>
+        )}
+
+        <Separator />
+
+        <div className="text-[11px] text-muted-foreground leading-relaxed">
+          Toque em qualquer campo do formulário para receber orientação específica sobre o que informar e onde encontrar a informação.
         </div>
       </CardContent>
     </Card>
   );
 }
 
-/* --------------------------------- center --------------------------------- */
+/* -------------------------- Tributações (right) ------------------------- */
 
-function DadosSection() {
+type TribKind = "federal" | "pessoal" | "municipal" | "estadual";
+const TRIB: Record<TribKind, { label: string; icon: any; accent: string }> = {
+  federal: { label: "Federal", icon: Landmark, accent: "text-brand-blue" },
+  pessoal: { label: "Pessoal", icon: CircleAlert, accent: "text-warn" },
+  municipal: { label: "Municipal", icon: Landmark, accent: "text-brand-blue" },
+  estadual: { label: "Estadual", icon: Landmark, accent: "text-brand-purple" },
+};
+
+function TributacaoCard({ kind }: { kind: TribKind }) {
+  const s = TRIB[kind];
+  const Icon = s.icon;
+  return (
+    <div className="rounded-2xl border border-border bg-card/50 overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/70">
+        <div className="flex items-center gap-2">
+          <Icon className={`h-4 w-4 ${s.accent}`} />
+          <span className="text-sm font-medium text-foreground">{s.label}</span>
+        </div>
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-brand-blue"><Plus className="h-4 w-4" /></Button>
+      </div>
+      <div className="px-4 py-6 text-center text-xs text-muted-foreground">
+        Nenhum registro. Adicione após salvar o cadastro base.
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------------- page --------------------------------- */
+
+export default function EmpresaCadastro() {
+  const [section, setSection] = useState<SectionKey>("dados");
+  const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [activeTip, setActiveTip] = useState<string | null>(null);
+  const [assistantOpen, setAssistantOpen] = useState(true);
+  const [loadingCnpj, setLoadingCnpj] = useState(false);
+  const [loadingCep, setLoadingCep] = useState(false);
+
+  const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));
+
+  const handleBuscarCnpj = async () => {
+    if (!form.cnpj.trim()) { toast.error("Informe o CNPJ"); return; }
+    setLoadingCnpj(true);
+    try {
+      const d = await fetchCnpj(form.cnpj);
+      const abertura = d.data_inicio_atividade
+        ? d.data_inicio_atividade.split("-").reverse().join("/")
+        : "";
+      set({
+        cnpj: fmtCnpj(d.cnpj || form.cnpj),
+        razao: d.razao_social || "",
+        fantasia: d.nome_fantasia || d.razao_social || "",
+        cnae: String(d.cnae_fiscal || ""),
+        cnaeDesc: d.cnae_fiscal_descricao || "",
+        cep: d.cep ? fmtCep(String(d.cep)) : "",
+        endereco: [d.descricao_tipo_de_logradouro, d.logradouro].filter(Boolean).join(" "),
+        numero: d.numero || "",
+        complemento: d.complemento || "",
+        bairro: d.bairro || "",
+        municipio: d.municipio || "",
+        uf: d.uf || "",
+        contatoTel: d.ddd_telefone_1 ? `(${String(d.ddd_telefone_1).slice(0,2)}) ${String(d.ddd_telefone_1).slice(2)}` : "",
+        email: d.email || "",
+        aberturaRF: abertura,
+      });
+      toast.success("Dados da Receita Federal preenchidos");
+    } catch (e: any) {
+      toast.error(e.message || "Falha ao consultar CNPJ");
+    } finally { setLoadingCnpj(false); }
+  };
+
+  const handleBuscarCep = async () => {
+    if (!form.cep.trim()) { toast.error("Informe o CEP"); return; }
+    setLoadingCep(true);
+    try {
+      const d = await fetchCep(form.cep);
+      set({
+        endereco: d.street || form.endereco,
+        bairro: d.neighborhood || form.bairro,
+        municipio: d.city || form.municipio,
+        uf: d.state || form.uf,
+      });
+      toast.success("Endereço preenchido via CEP");
+    } catch (e: any) {
+      toast.error(e.message || "Falha ao consultar CEP");
+    } finally { setLoadingCep(false); }
+  };
+
+  const tipFocus = (k: string) => setActiveTip(k);
+
+  return (
+    <div className="space-y-4 -mx-2">
+      <div className="flex items-center justify-between pb-1">
+        <div className="flex items-center gap-2">
+          <Building2 className="h-5 w-5 text-brand-blue" />
+          <h1 className="text-lg font-semibold text-foreground">Empresas — Novo cadastro</h1>
+        </div>
+        {!assistantOpen && (
+          <Button
+            variant="outline" size="sm"
+            className="rounded-full border-brand-blue/40 text-brand-blue"
+            onClick={() => setAssistantOpen(true)}
+          >
+            <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Abrir assistente
+          </Button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-3 space-y-4">
+          <LeftPanel form={form} />
+          {assistantOpen && (
+            <AssistantPanel tipKey={activeTip} onClose={() => setAssistantOpen(false)} />
+          )}
+        </div>
+
+        <div className={assistantOpen ? "col-span-6" : "col-span-7"}>
+          <Card className="rounded-2xl border-border/70">
+            <CardContent className="p-4 space-y-4">
+              <h2 className="text-center text-base font-semibold text-foreground">
+                {SECTION_TITLES[section]}
+              </h2>
+
+              {section === "dados" && (
+                <DadosSection
+                  form={form} set={set} onTip={tipFocus}
+                  onBuscarCnpj={handleBuscarCnpj} loadingCnpj={loadingCnpj}
+                  onBuscarCep={handleBuscarCep} loadingCep={loadingCep}
+                />
+              )}
+              {section === "senhas" && <SenhasSection onTip={tipFocus} />}
+              {section === "pessoal" && <PessoalSection onTip={tipFocus} />}
+              {section === "fiscal" && <FiscalSection />}
+              {section === "societario" && <SocietarioSection onTip={tipFocus} />}
+
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex gap-2">
+                  <Button
+                    className="rounded-full bg-brand-blue text-white hover:bg-brand-blue/90 px-6"
+                    onClick={() => toast.success("Cadastro salvo (protótipo)")}
+                  >
+                    Salvar
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="rounded-full"
+                    onClick={() => { setForm(EMPTY_FORM); toast("Formulário limpo"); }}
+                  >
+                    Limpar
+                  </Button>
+                </div>
+                <div className="flex items-center gap-1">
+                  {SECTION_TABS.map((t) => {
+                    const Icon = t.icon;
+                    const active = section === t.key;
+                    return (
+                      <button
+                        key={t.key}
+                        onClick={() => setSection(t.key)}
+                        title={t.label}
+                        className={`h-9 w-9 grid place-items-center rounded-full transition ${
+                          active ? "bg-brand-blue/15 text-brand-blue"
+                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                        }`}
+                      >
+                        <Icon className="h-4 w-4" />
+                      </button>
+                    );
+                  })}
+                  <button className="h-9 w-9 grid place-items-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent">
+                    <Users className="h-4 w-4" />
+                  </button>
+                  <button className="h-9 w-9 grid place-items-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent">
+                    <MessageSquare className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className={assistantOpen ? "col-span-3" : "col-span-2"}>
+          <div className="space-y-3">
+            <div className="rounded-2xl border border-border bg-card/40 px-4 py-2.5 flex items-center gap-2">
+              <FileText className="h-4 w-4 text-brand-blue" />
+              <span className="text-sm font-medium">Tributações</span>
+            </div>
+            <TributacaoCard kind="federal" />
+            <TributacaoCard kind="pessoal" />
+            <TributacaoCard kind="municipal" />
+            <TributacaoCard kind="estadual" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------- sections ------------------------------ */
+
+function DadosSection({
+  form, set, onTip, onBuscarCnpj, loadingCnpj, onBuscarCep, loadingCep,
+}: {
+  form: FormState;
+  set: (p: Partial<FormState>) => void;
+  onTip: (k: string) => void;
+  onBuscarCnpj: () => void; loadingCnpj: boolean;
+  onBuscarCep: () => void; loadingCep: boolean;
+}) {
+  const inp = "rounded-lg";
   return (
     <>
+      <div className="rounded-xl border border-brand-blue/25 bg-brand-blue/5 p-3 flex items-start gap-3">
+        <Wand2 className="h-4 w-4 text-brand-blue shrink-0 mt-0.5" />
+        <div className="text-xs text-foreground/90">
+          <span className="font-medium">Preenchimento automático:</span> informe o CNPJ e clique em <b>Buscar CNPJ</b> para trazer razão social, endereço, CNAE, telefone e abertura direto da Receita Federal.
+        </div>
+      </div>
+
       <SectionCard title="Geral">
         <div className="grid grid-cols-12 gap-3">
-          <Field label="CNPJ/CPF/CEI" className="col-span-4">
-            <div className="relative">
-              <Input defaultValue="41.703.214/0001-01" className="pr-9 rounded-lg" />
-              <FileText className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Field label="CNPJ/CPF/CEI" required className="col-span-5" tipKey="cnpj" onFocusTip={onTip}>
+            <div className="flex gap-2">
+              <Input
+                value={form.cnpj}
+                onChange={(e) => set({ cnpj: fmtCnpj(e.target.value) })}
+                placeholder="00.000.000/0000-00"
+                className={inp}
+              />
+              <Button
+                type="button" variant="outline"
+                className="rounded-lg shrink-0 border-brand-blue/40 text-brand-blue"
+                onClick={onBuscarCnpj} disabled={loadingCnpj}
+              >
+                {loadingCnpj ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Search className="h-4 w-4 mr-1.5" />Buscar</>}
+              </Button>
             </div>
           </Field>
-          <Field label="Inscrição Estadual" className="col-span-4">
-            <Input className="rounded-lg" />
+          <Field label="Inscrição Estadual" className="col-span-4" tipKey="ie" onFocusTip={onTip}>
+            <Input value={form.ie} onChange={(e) => set({ ie: e.target.value })} className={inp} />
           </Field>
-          <div className="col-span-4 flex items-end gap-2 pb-2">
+          <div className="col-span-3 flex items-end gap-2 pb-2">
             <input type="checkbox" id="trava" className="h-4 w-4 rounded border-border" />
-            <label htmlFor="trava" className="text-xs text-foreground">Trava Atraso de Honorários</label>
+            <label htmlFor="trava" className="text-xs text-foreground">Trava Atraso Honorários</label>
           </div>
 
-          <Field label="Inscrição Municipal" required className="col-span-4">
-            <Input className="rounded-lg" />
+          <Field label="Inscrição Municipal" required className="col-span-4" tipKey="im" onFocusTip={onTip}>
+            <Input value={form.im} onChange={(e) => set({ im: e.target.value })} className={inp} />
           </Field>
-          <Field label="CNAE Principal" className="col-span-8">
-            <div className="relative">
-              <Input defaultValue="Confecção de peças de vestuário, exceto de roupas íntimas e ro…" className="pr-9 rounded-lg" />
-              <Search className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            </div>
+          <Field label="CNAE Principal" className="col-span-8" tipKey="cnae" onFocusTip={onTip}>
+            <Input
+              value={form.cnaeDesc}
+              onChange={(e) => set({ cnaeDesc: e.target.value })}
+              placeholder="Preenchido pela busca de CNPJ"
+              className={inp}
+            />
           </Field>
 
-          <Field label="Razão Social" required className="col-span-12">
-            <Input defaultValue="41.703.214 Helio Zanin Neto" className="rounded-lg" />
+          <Field label="Razão Social" required className="col-span-12" tipKey="razao" onFocusTip={onTip}>
+            <Input value={form.razao} onChange={(e) => set({ razao: e.target.value })} className={inp} />
           </Field>
-          <Field label="Nome Fantasia" required className="col-span-12">
-            <Input defaultValue="41.703.214 Helio Zanin Neto" className="rounded-lg" />
+          <Field label="Nome Fantasia" required className="col-span-12" tipKey="fantasia" onFocusTip={onTip}>
+            <Input value={form.fantasia} onChange={(e) => set({ fantasia: e.target.value })} className={inp} />
           </Field>
         </div>
 
         <InlineDivider>Endereço</InlineDivider>
         <div className="grid grid-cols-12 gap-3">
-          <Field label="CEP" required className="col-span-3">
-            <div className="relative">
-              <Input defaultValue="86800-470" className="pr-9 rounded-lg" />
-              <Search className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Field label="CEP" required className="col-span-4" tipKey="cep" onFocusTip={onTip}>
+            <div className="flex gap-2">
+              <Input
+                value={form.cep}
+                onChange={(e) => set({ cep: fmtCep(e.target.value) })}
+                placeholder="00000-000"
+                className={inp}
+              />
+              <Button
+                type="button" variant="outline"
+                className="rounded-lg shrink-0 border-brand-blue/40 text-brand-blue"
+                onClick={onBuscarCep} disabled={loadingCep}
+              >
+                {loadingCep ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+              </Button>
             </div>
           </Field>
-          <Field label="Endereço" required className="col-span-7">
-            <Input defaultValue="Rua Manoel Luiz da Silva" className="rounded-lg" />
+          <Field label="Endereço" required className="col-span-6" tipKey="endereco" onFocusTip={onTip}>
+            <Input value={form.endereco} onChange={(e) => set({ endereco: e.target.value })} className={inp} />
           </Field>
-          <Field label="Número" required className="col-span-2">
-            <Input defaultValue="62" className="rounded-lg" />
+          <Field label="Número" required className="col-span-2" tipKey="numero" onFocusTip={onTip}>
+            <Input value={form.numero} onChange={(e) => set({ numero: e.target.value })} className={inp} />
           </Field>
 
-          <Field label="Complemento" className="col-span-4"><Input className="rounded-lg" /></Field>
-          <Field label="Bairro" className="col-span-4"><Input defaultValue="Vila Sao Carlos" className="rounded-lg" /></Field>
-          <Field label="Município" className="col-span-4"><Input defaultValue="Apucarana" className="rounded-lg" /></Field>
-
-          <Field label="Código Federal" className="col-span-4">
-            <div className="relative">
-              <Input defaultValue="0" className="pr-9 rounded-lg text-right" />
-              <Search className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            </div>
+          <Field label="Complemento" className="col-span-4">
+            <Input value={form.complemento} onChange={(e) => set({ complemento: e.target.value })} className={inp} />
           </Field>
-          <Field label="Data de Alteração Endereço" className="col-span-4">
-            <Input placeholder="Ex 01/07/2026" className="rounded-lg" />
+          <Field label="Bairro" className="col-span-4">
+            <Input value={form.bairro} onChange={(e) => set({ bairro: e.target.value })} className={inp} />
           </Field>
-          <Field label="Gera Aniversário?" className="col-span-4">
-            <Select defaultValue="nao">
-              <SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="nao">Não</SelectItem>
-                <SelectItem value="sim">Sim</SelectItem>
-              </SelectContent>
-            </Select>
+          <Field label="Município" className="col-span-3">
+            <Input value={form.municipio} onChange={(e) => set({ municipio: e.target.value })} className={inp} />
+          </Field>
+          <Field label="UF" className="col-span-1">
+            <Input value={form.uf} onChange={(e) => set({ uf: e.target.value.toUpperCase().slice(0,2) })} className={inp} />
           </Field>
         </div>
 
         <InlineDivider>Contatos</InlineDivider>
         <div className="grid grid-cols-12 gap-3">
-          <Field label="Nome" className="col-span-5"><Input defaultValue="Helio Zanin Neto" className="rounded-lg" /></Field>
-          <Field label="CPF" className="col-span-3"><Input className="rounded-lg" /></Field>
-          <Field label="Telefone" className="col-span-4"><Input defaultValue="55 (43) 9974-8887" className="rounded-lg" /></Field>
+          <Field label="Nome" className="col-span-5" tipKey="contatoNome" onFocusTip={onTip}>
+            <Input value={form.contatoNome} onChange={(e) => set({ contatoNome: e.target.value })} className={inp} />
+          </Field>
+          <Field label="CPF" className="col-span-3">
+            <Input value={form.contatoCpf} onChange={(e) => set({ contatoCpf: e.target.value })} className={inp} />
+          </Field>
+          <Field label="Telefone" className="col-span-4">
+            <Input value={form.contatoTel} onChange={(e) => set({ contatoTel: e.target.value })} className={inp} />
+          </Field>
 
-          <Field label="E-Mail" className="col-span-6"><Input defaultValue="cutterfilms@gmail.com" className="rounded-lg" /></Field>
-          <Field label="Celular/WhatsApp" className="col-span-6"><Input defaultValue="55 (43) 9 9748-887_" className="rounded-lg" /></Field>
+          <Field label="E-Mail" className="col-span-6" tipKey="email" onFocusTip={onTip}>
+            <Input type="email" value={form.email} onChange={(e) => set({ email: e.target.value })} className={inp} />
+          </Field>
+          <Field label="Celular/WhatsApp" className="col-span-6" tipKey="whatsapp" onFocusTip={onTip}>
+            <Input value={form.whatsapp} onChange={(e) => set({ whatsapp: e.target.value })} className={inp} />
+          </Field>
 
-          <Field label="Página de Internet" className="col-span-12"><Input className="rounded-lg" /></Field>
+          <Field label="Página de Internet" className="col-span-12">
+            <Input value={form.site} onChange={(e) => set({ site: e.target.value })} placeholder="https://" className={inp} />
+          </Field>
         </div>
 
         <InlineDivider>Responsável técnico</InlineDivider>
         <div className="grid grid-cols-12 gap-3">
-          <Field label="Responsável Técnico" className="col-span-8"><Input defaultValue="Matheus Antonio Zanin" className="rounded-lg" /></Field>
-          <Field label="CPF do Responsável Técnico" className="col-span-4"><Input defaultValue="140.994.729-73" className="rounded-lg" /></Field>
-          <Field label="CNPJ do Responsável Técnico" className="col-span-8"><Input defaultValue="14.099.472/973_-__" className="rounded-lg" /></Field>
+          <Field label="Responsável Técnico" className="col-span-8" tipKey="respNome" onFocusTip={onTip}>
+            <Input value={form.respNome} onChange={(e) => set({ respNome: e.target.value })} className={inp} />
+          </Field>
+          <Field label="CPF do Responsável Técnico" className="col-span-4" tipKey="respCpf" onFocusTip={onTip}>
+            <Input value={form.respCpf} onChange={(e) => set({ respCpf: e.target.value })} className={inp} />
+          </Field>
+          <Field label="CNPJ do Responsável Técnico" className="col-span-8" tipKey="respCnpj" onFocusTip={onTip}>
+            <Input value={form.respCnpj} onChange={(e) => set({ respCnpj: e.target.value })} className={inp} />
+          </Field>
           <Field label="Tipo" required className="col-span-4">
-            <Select defaultValue="cpf">
-              <SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+            <Select value={form.respTipo} onValueChange={(v) => set({ respTipo: v })}>
+              <SelectTrigger className={inp}><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="cpf">CPF</SelectItem>
                 <SelectItem value="cnpj">CNPJ</SelectItem>
@@ -281,11 +705,11 @@ function DadosSection() {
   );
 }
 
-function SenhasSection() {
+function SenhasSection({ onTip }: { onTip: (k: string) => void }) {
   return (
     <>
       <SectionCard title="Geral">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3" onFocus={() => onTip("senhas")}>
           <Field label="Senha Previdência"><Input type="password" className="rounded-lg" /></Field>
           <Field label="Senha de acesso ao SEFAZ"><Input type="password" className="rounded-lg" /></Field>
           <Field label="Código de Acesso e-Cac" className="col-span-2"><Input type="password" className="rounded-lg" /></Field>
@@ -320,33 +744,30 @@ function SenhasSection() {
   );
 }
 
-function PessoalSection() {
+function PessoalSection({ onTip }: { onTip: (k: string) => void }) {
   return (
     <>
       <SectionCard title="E-Social">
         <div className="grid grid-cols-12 gap-3">
-          <Field label="Classificação Tributária" className="col-span-12">
-            <div className="relative">
-              <Input defaultValue="4 - MEI - Micro Empreendedor Individual;" className="pr-9 rounded-lg" />
-              <Search className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            </div>
+          <Field label="Classificação Tributária" className="col-span-12" tipKey="esocial" onFocusTip={onTip}>
+            <Input placeholder="Ex.: 4 - MEI, 1 - Simples com folha, 22 - Lucro Presumido" className="rounded-lg" />
           </Field>
-          <Field label="Identificação do tipo de ação do evento S-1000 Inclusão/Alteração" className="col-span-12">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+          <Field label="Identificação tipo de ação S-1000" className="col-span-12">
+            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="i">Inclusão</SelectItem>
                 <SelectItem value="a">Alteração</SelectItem>
               </SelectContent>
             </Select>
           </Field>
-          <Field label="Data inclusão S-1000" className="col-span-4"><Input placeholder="Ex 01/07/2026" className="rounded-lg" /></Field>
+          <Field label="Data inclusão S-1000" className="col-span-4"><Input placeholder="dd/mm/aaaa" className="rounded-lg" /></Field>
           <Field label="Indicativo de Cooperativa" className="col-span-4">
-            <Select defaultValue="0"><SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="0">0 - Não é cooperativa</SelectItem></SelectContent>
             </Select>
           </Field>
           <Field label="Indicativo de Construtora" className="col-span-4">
-            <Select defaultValue="0"><SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="0">0 - Não é construtora</SelectItem></SelectContent>
             </Select>
           </Field>
@@ -355,32 +776,20 @@ function PessoalSection() {
 
       <SectionCard title="Geral">
         <div className="grid grid-cols-12 gap-3">
-          <Field label="FPAS" required className="col-span-12">
-            <div className="relative">
-              <Input defaultValue="507 - Cooperativa - INDÚSTRIA - TRANSPORTE FERROVIÁRIO e de CARRIS URBANOS (inclusive cabos aé…" className="pr-9 rounded-lg" />
-              <Search className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            </div>
+          <Field label="FPAS" required className="col-span-12" tipKey="fpas" onFocusTip={onTip}>
+            <Input placeholder="Ex.: 507 - Indústria" className="rounded-lg" />
           </Field>
           <Field label="Sindicalizada?" className="col-span-3">
-            <Select defaultValue="nao"><SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="nao">Não</SelectItem><SelectItem value="sim">Sim</SelectItem></SelectContent>
             </Select>
           </Field>
           <Field label="Sindicato Profissional" className="col-span-9">
-            <div className="relative">
-              <Input defaultValue="MINISTERIO DO TRABALHO E EMPREGO - MTE" className="pr-9 rounded-lg" />
-              <Search className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            </div>
+            <Input className="rounded-lg" />
           </Field>
           <Field label="Grupo de CIPA" required className="col-span-12">
-            <div className="relative">
-              <Input defaultValue="C-01 - Indústria de Minerais" className="pr-9 rounded-lg" />
-              <Search className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            </div>
+            <Input className="rounded-lg" />
           </Field>
-        </div>
-        <div className="flex justify-center mt-4">
-          <Button variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">Cartão Ponto</Button>
         </div>
       </SectionCard>
 
@@ -393,11 +802,11 @@ function PessoalSection() {
         </Tabs>
         <div className="grid grid-cols-3 gap-3">
           <Field label="Participa do PAT">
-            <Select defaultValue="nao"><SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="nao">Não</SelectItem><SelectItem value="sim">Sim</SelectItem></SelectContent>
             </Select>
           </Field>
-          <Field label="Data Participa PAT"><Input placeholder="Ex 01/07/2026" className="rounded-lg" /></Field>
+          <Field label="Data Participa PAT"><Input placeholder="dd/mm/aaaa" className="rounded-lg" /></Field>
           <Field label="Número do Registro"><Input className="rounded-lg" /></Field>
         </div>
       </SectionCard>
@@ -416,7 +825,7 @@ function FiscalSection() {
           <Field label="Registro Inventário"><Input className="rounded-lg" /></Field>
           <Field label="Reg. Prest. Serviços"><Input className="rounded-lg" /></Field>
           <Field label="Reg. Ciap"><Input className="rounded-lg" /></Field>
-          <Field label="Reg. Apuração IPI" className="col-span-2 max-w-[calc(50%-0.375rem)]"><Input className="rounded-lg" /></Field>
+          <Field label="Reg. Apuração IPI"><Input className="rounded-lg" /></Field>
         </div>
       </SectionCard>
       <div className="flex justify-center gap-3">
@@ -427,7 +836,7 @@ function FiscalSection() {
   );
 }
 
-function SocietarioSection() {
+function SocietarioSection({ onTip }: { onTip: (k: string) => void }) {
   return (
     <>
       <div className="flex justify-center gap-2">
@@ -448,15 +857,12 @@ function SocietarioSection() {
           <Field label="Metragem Imóvel" className="col-span-4"><Input className="rounded-lg" /></Field>
           <Field label="Código Estado" className="col-span-2"><Input className="rounded-lg" /></Field>
           <Field label="Tipo de Empresa" className="col-span-2">
-            <Select defaultValue="5"><SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="5">EMPRESA - 5</SelectItem></SelectContent>
             </Select>
           </Field>
-          <Field label="Natureza Jurídica" required className="col-span-12">
-            <div className="relative">
-              <Input defaultValue="213-5 - Empresário (Individual)" className="pr-9 rounded-lg" />
-              <Search className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            </div>
+          <Field label="Natureza Jurídica" required className="col-span-12" tipKey="natureza" onFocusTip={onTip}>
+            <Input placeholder="Ex.: 213-5 - Empresário (Individual)" className="rounded-lg" />
           </Field>
         </div>
       </SectionCard>
@@ -465,206 +871,41 @@ function SocietarioSection() {
         <div className="grid grid-cols-12 gap-3">
           <Field label="Descrição do Órgão de Registro" className="col-span-5"><Input className="rounded-lg" /></Field>
           <Field label="Órgão de Registro" className="col-span-3">
-            <Select defaultValue="outros"><SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="outros">Outros</SelectItem></SelectContent>
             </Select>
           </Field>
           <Field label="Número de Registro" className="col-span-4"><Input className="rounded-lg" /></Field>
 
           <Field label="Nº Última Alteração" className="col-span-4"><Input className="rounded-lg" /></Field>
-          <Field label="Data Última Alteração" className="col-span-4"><Input defaultValue="21/07/2026" className="rounded-lg" /></Field>
+          <Field label="Data Última Alteração" className="col-span-4"><Input placeholder="dd/mm/aaaa" className="rounded-lg" /></Field>
           <Field label="NIRE" className="col-span-4"><Input className="rounded-lg" /></Field>
 
           <Field label="Enq. Comercial" className="col-span-3">
-            <Select defaultValue="me"><SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="me">ME</SelectItem></SelectContent>
             </Select>
           </Field>
-          <Field label="Classe de Atividade" className="col-span-9">
-            <div className="relative">
-              <Input defaultValue="Outros - 63" className="pr-9 rounded-lg" />
-              <Search className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            </div>
-          </Field>
+          <Field label="Classe de Atividade" className="col-span-9"><Input className="rounded-lg" /></Field>
 
           <Field label="Código de Imobilizado" className="col-span-3"><Input className="rounded-lg" /></Field>
           <Field label="Grupo Escritório" className="col-span-3">
-            <Select defaultValue="nao"><SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="nao">Não</SelectItem></SelectContent>
             </Select>
           </Field>
           <Field label="Documento" required className="col-span-3">
-            <Select defaultValue="recibo"><SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="recibo">Recibo</SelectItem></SelectContent>
             </Select>
           </Field>
           <Field label="Classe" className="col-span-3">
-            <Select defaultValue="a"><SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="a">A</SelectItem></SelectContent>
             </Select>
           </Field>
         </div>
       </SectionCard>
-
-      <SectionCard title="Outros" defaultOpen={false}>
-        <div className="text-xs text-muted-foreground">Informações complementares societárias.</div>
-      </SectionCard>
     </>
-  );
-}
-
-/* --------------------------------- right ---------------------------------- */
-
-type TribKind = "federal" | "pessoal" | "municipal" | "estadual";
-
-const TRIB_STYLE: Record<TribKind, { label: string; icon: any; accent: string; row: { data: string; tipo: string; extra: string; extraKey: string } }> = {
-  federal: { label: "Federal", icon: Landmark, accent: "text-brand-blue", row: { data: "21/07/2026", tipo: "Simei", extra: "Indústria", extraKey: "Atividade" } },
-  pessoal: { label: "Pessoal", icon: CircleAlert, accent: "text-warn", row: { data: "", tipo: "", extra: "", extraKey: "" } },
-  municipal: { label: "Municipal", icon: Landmark, accent: "text-brand-blue", row: { data: "21/07/2026", tipo: "Simei", extra: "Com movim…", extraKey: "Tipo Mov…" } },
-  estadual: { label: "Estadual", icon: Landmark, accent: "text-brand-purple", row: { data: "21/07/2026", tipo: "Isento", extra: "Sem movim…", extraKey: "Tipo Mov…" } },
-};
-
-function TributacaoCard({ kind }: { kind: TribKind }) {
-  const s = TRIB_STYLE[kind];
-  const Icon = s.icon;
-  const isEmpty = kind === "pessoal";
-  return (
-    <div className="rounded-2xl border border-border bg-card/50 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/70">
-        <div className="flex items-center gap-2">
-          <Icon className={`h-4 w-4 ${s.accent}`} />
-          <span className="text-sm font-medium text-foreground">{s.label}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7"><FileText className="h-3.5 w-3.5 text-brand-blue" /></Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7"><Calculator className="h-3.5 w-3.5 text-warn" /></Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-brand-blue"><Plus className="h-4 w-4" /></Button>
-        </div>
-      </div>
-
-      {isEmpty ? (
-        <div className="px-4 py-6 text-center text-xs text-muted-foreground">Sem registros</div>
-      ) : (
-        <>
-          <div className="grid grid-cols-3 gap-2 px-4 py-2 text-[11px] text-muted-foreground border-b border-border/50">
-            <span>Data Inicial</span>
-            <span>Tipo de Tributação</span>
-            <span>{s.row.extraKey}</span>
-          </div>
-          <div className="px-4 py-2 flex items-center gap-2 text-[11px] text-muted-foreground">
-            <Search className="h-3 w-3" />
-            <span>Pesquisar por tipo tributação</span>
-          </div>
-          <div className="px-4 py-2 border-t border-border/50 grid grid-cols-[auto_auto_1fr_auto_auto] items-center gap-2 text-xs">
-            <button className="h-5 w-5 rounded border border-success bg-success/10 grid place-items-center">
-              <Check className="h-3 w-3 text-success" />
-            </button>
-            <button className="h-5 w-5 rounded border border-destructive bg-destructive/10 grid place-items-center">
-              <Trash2 className="h-3 w-3 text-destructive" />
-            </button>
-            <span className="text-success font-mono">{s.row.data}</span>
-            <span className="text-foreground">{s.row.tipo}</span>
-            <span className="text-muted-foreground">{s.row.extra}</span>
-          </div>
-          <div className="px-4 py-2 flex items-center justify-center gap-2 text-[11px] text-muted-foreground border-t border-border/50">
-            <ChevronLeft className="h-3 w-3" />
-            <span className="px-2 py-0.5 rounded border border-border">1</span>
-            <span>/ 1</span>
-            <ChevronRight className="h-3 w-3" />
-            <span className="ml-1">1 Registro</span>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-function RightPanel() {
-  return (
-    <div className="space-y-3">
-      <div className="rounded-2xl border border-border bg-card/40 px-4 py-2.5 flex items-center gap-2">
-        <FileText className="h-4 w-4 text-brand-blue" />
-        <span className="text-sm font-medium">Tributações</span>
-      </div>
-      <TributacaoCard kind="federal" />
-      <TributacaoCard kind="pessoal" />
-      <TributacaoCard kind="municipal" />
-      <TributacaoCard kind="estadual" />
-    </div>
-  );
-}
-
-/* --------------------------------- page ----------------------------------- */
-
-export default function EmpresaCadastro() {
-  const [section, setSection] = useState<SectionKey>("dados");
-
-  return (
-    <div className="space-y-4 -mx-2">
-      {/* Page title bar */}
-      <div className="flex items-center gap-2 pb-1">
-        <Building2 className="h-5 w-5 text-brand-blue" />
-        <h1 className="text-lg font-semibold text-foreground">Empresas</h1>
-        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-      </div>
-
-      <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-3">
-          <LeftPanel />
-        </div>
-
-        <div className="col-span-6">
-          <Card className="rounded-2xl border-border/70">
-            <CardContent className="p-4 space-y-4">
-              <h2 className="text-center text-base font-semibold text-foreground">
-                {SECTION_TITLES[section]}
-              </h2>
-
-              {section === "dados" && <DadosSection />}
-              {section === "senhas" && <SenhasSection />}
-              {section === "pessoal" && <PessoalSection />}
-              {section === "fiscal" && <FiscalSection />}
-              {section === "societario" && <SocietarioSection />}
-
-              <div className="flex items-center justify-between pt-2">
-                <Button className="rounded-full bg-brand-blue text-white hover:bg-brand-blue/90 px-6">
-                  Salvar
-                </Button>
-                <div className="flex items-center gap-1">
-                  {SECTION_TABS.map((t) => {
-                    const Icon = t.icon;
-                    const active = section === t.key;
-                    return (
-                      <button
-                        key={t.key}
-                        onClick={() => setSection(t.key)}
-                        title={t.label}
-                        className={`h-9 w-9 grid place-items-center rounded-full transition ${
-                          active
-                            ? "bg-brand-blue/15 text-brand-blue"
-                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                        }`}
-                      >
-                        <Icon className="h-4 w-4" />
-                      </button>
-                    );
-                  })}
-                  <button className="h-9 w-9 grid place-items-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent">
-                    <Users className="h-4 w-4" />
-                  </button>
-                  <button className="h-9 w-9 grid place-items-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent">
-                    <MessageSquare className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="col-span-3">
-          <RightPanel />
-        </div>
-      </div>
-    </div>
   );
 }
