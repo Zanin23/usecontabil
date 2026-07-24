@@ -138,7 +138,7 @@ export default function ModulePage() {
       {/* Table */}
       <Card className="rounded-2xl border-border/70 overflow-hidden">
         <div className="px-4 py-3 border-b border-border flex items-center justify-between text-xs text-muted-foreground">
-          <span>{module.rows.length} registros exibidos</span>
+          <span>{module.rows.length + extraRows.length} registros exibidos</span>
           <span className="font-mono uppercase tracking-widest">Ambiente HOMOLOGAÇÃO</span>
         </div>
         <Table>
