@@ -162,13 +162,7 @@ const preparativos: Category[] = [
           { key: "atividade", label: "Atividade" },
           C.status,
         ],
-        rows: Array.from({ length: 6 }, (_, i) => ({
-          cnpj: cnpj(i + 1),
-          razao: pick(EMPRESAS, i),
-          regime: pick(["Lucro Real", "Simples Nacional", "Lucro Presumido", "SIMEI"], i),
-          atividade: pick(["Indústria", "Comércio", "Serviços", "Transporte"], i),
-          status: "Ativa",
-        })),
+        rows: [],
         primaryAction: "Nova empresa",
       },
       {
