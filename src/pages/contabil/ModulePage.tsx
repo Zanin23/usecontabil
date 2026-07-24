@@ -166,29 +166,65 @@ export default function ModulePage() {
                   {c.label}
                 </TableHead>
               ))}
+              {isEmpresas && <TableHead className="text-right w-[120px]">Ações</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {[...extraRows, ...module.rows].map((row, ri) => (
-              <TableRow key={ri}>
-                {module.columns.map((c) => {
-                  const v = row[c.key];
-                  const isStatus = c.key === "status" || c.key === "situacao" || c.key === "abonada" || c.key === "resultado";
-                  return (
-                    <TableCell
-                      key={c.key}
-                      className={[
-                        c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : "",
-                        c.mono ? "font-mono text-xs" : "",
-                        isStatus && typeof v === "string" ? statusClass(v) : "",
-                      ].join(" ")}
-                    >
-                      {v as any}
+            {[...extraRows, ...module.rows].map((row: any, ri) => {
+              const empresaId = row.__empresaId as string | undefined;
+              return (
+                <TableRow
+                  key={ri}
+                  className={empresaId ? "cursor-pointer hover:bg-muted/40" : ""}
+                  onClick={() => empresaId && navigate(`/preparativos/cadastros/empresas/${empresaId}`)}
+                >
+                  {module.columns.map((c) => {
+                    const v = row[c.key];
+                    const isStatus = c.key === "status" || c.key === "situacao" || c.key === "abonada" || c.key === "resultado";
+                    return (
+                      <TableCell
+                        key={c.key}
+                        className={[
+                          c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : "",
+                          c.mono ? "font-mono text-xs" : "",
+                          isStatus && typeof v === "string" ? statusClass(v) : "",
+                        ].join(" ")}
+                      >
+                        {v as any}
+                      </TableCell>
+                    );
+                  })}
+                  {isEmpresas && (
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                      {empresaId ? (
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0 rounded-full"
+                            onClick={() => navigate(`/preparativos/cadastros/empresas/${empresaId}`)}
+                            aria-label="Editar"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0 rounded-full text-destructive hover:text-destructive"
+                            onClick={() => handleDeleteEmpresa(savedEmpresas.find((s) => s.id === empresaId)!)}
+                            aria-label="Excluir"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">exemplo</span>
+                      )}
                     </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
+                  )}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </Card>
