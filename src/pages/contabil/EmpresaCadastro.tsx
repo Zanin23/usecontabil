@@ -187,22 +187,33 @@ async function fetchCep(cep: string) {
 
 /* ------------------------------ primitives ------------------------------ */
 
+/* ------------------------------ shared UI ------------------------------ */
+
+// Uniform sizing/appearance for every input, select-trigger and textarea in this form.
+const INPUT_CLASS =
+  "h-10 rounded-lg bg-background/60 border-border/70 text-sm text-foreground placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-brand-blue/60 focus-visible:border-brand-blue/60";
+
 function Field({
-  label, required, children, className = "", tipKey, onFocusTip,
+  label, required, children, className = "", tipKey, onFocusTip, hint,
 }: {
   label: string; required?: boolean; children: React.ReactNode;
   className?: string; tipKey?: string; onFocusTip?: (k: string) => void;
+  hint?: string;
 }) {
   return (
-    <div className={`space-y-1.5 ${className}`}
-      onFocus={() => tipKey && onFocusTip?.(tipKey)}>
-      <Label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
-        {label}{required && <span className="text-destructive">*</span>}
+    <div
+      className={`space-y-1 ${className}`}
+      onFocus={() => tipKey && onFocusTip?.(tipKey)}
+    >
+      <Label className="text-xs font-medium text-foreground/80 flex items-center gap-1 leading-none">
+        <span className="truncate">{label}</span>
+        {required && <span className="text-destructive">*</span>}
         {tipKey && TIPS[tipKey] && (
-          <HelpCircle className="h-3 w-3 text-brand-blue/70" />
+          <HelpCircle className="h-3 w-3 text-brand-blue/70 shrink-0" />
         )}
       </Label>
       {children}
+      {hint && <p className="text-[11px] text-muted-foreground leading-tight">{hint}</p>}
     </div>
   );
 }
@@ -212,29 +223,30 @@ function SectionCard({
 }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-2xl border border-border bg-card/40 overflow-hidden">
+    <div className="rounded-2xl border border-border/70 bg-card/40 overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-2.5 border-b border-border/70 bg-card/60"
+        className="w-full flex items-center justify-between px-4 py-2.5 border-b border-border/70 bg-card/70"
       >
-        <span className="text-sm font-medium text-foreground">{title}</span>
+        <span className="text-sm font-semibold text-foreground tracking-tight">{title}</span>
         <ChevronDown className={`h-4 w-4 text-muted-foreground transition ${open ? "" : "-rotate-90"}`} />
       </button>
-      {open && <div className="p-4">{children}</div>}
+      {open && <div className="p-5">{children}</div>}
     </div>
   );
 }
 
 function InlineDivider({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 my-4">
-      <div className="flex-1 h-px bg-border" />
-      <span className="text-xs uppercase tracking-[0.18em] text-brand-blue font-medium">{children}</span>
-      <div className="flex-1 h-px bg-border" />
+    <div className="flex items-center gap-3 mt-6 mb-4">
+      <div className="flex-1 h-px bg-border/70" />
+      <span className="text-[11px] uppercase tracking-[0.22em] text-brand-blue font-semibold">{children}</span>
+      <div className="flex-1 h-px bg-border/70" />
     </div>
   );
 }
+
 
 /* -------------------------------- panels -------------------------------- */
 
@@ -617,7 +629,8 @@ function DadosSection({
   onBuscarCnpj: () => void; loadingCnpj: boolean;
   onBuscarCep: () => void; loadingCep: boolean;
 }) {
-  const inp = "rounded-lg";
+  const inp = INPUT_CLASS;
+  const btn = "h-10 rounded-lg shrink-0 border-brand-blue/40 text-brand-blue hover:bg-brand-blue/10";
   return (
     <>
       <div className="rounded-xl border border-brand-blue/25 bg-brand-blue/5 p-3 flex items-start gap-3">
@@ -627,37 +640,36 @@ function DadosSection({
         </div>
       </div>
 
-      <SectionCard title="Geral">
-        <div className="grid grid-cols-12 gap-3">
-          <Field label="CNPJ/CPF/CEI" required className="col-span-5" tipKey="cnpj" onFocusTip={onTip}>
+      <SectionCard title="Identificação">
+        <div className="grid grid-cols-12 gap-x-4 gap-y-4">
+          <Field label="CNPJ / CPF / CEI" required className="col-span-6" tipKey="cnpj" onFocusTip={onTip}>
             <div className="flex gap-2">
               <Input
                 value={form.cnpj}
                 onChange={(e) => set({ cnpj: fmtCnpj(e.target.value) })}
                 placeholder="00.000.000/0000-00"
-                className={inp}
+                className={`${inp} font-mono tracking-tight`}
               />
               <Button
                 type="button" variant="outline"
-                className="rounded-lg shrink-0 border-brand-blue/40 text-brand-blue"
+                className={btn}
                 onClick={onBuscarCnpj} disabled={loadingCnpj}
               >
                 {loadingCnpj ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Search className="h-4 w-4 mr-1.5" />Buscar</>}
               </Button>
             </div>
           </Field>
-          <Field label="Inscrição Estadual" className="col-span-4" tipKey="ie" onFocusTip={onTip}>
+          <Field label="Inscrição Estadual" className="col-span-3" tipKey="ie" onFocusTip={onTip}>
             <Input value={form.ie} onChange={(e) => set({ ie: e.target.value })} className={inp} />
           </Field>
-          <div className="col-span-3 flex items-end gap-2 pb-2">
-            <input type="checkbox" id="trava" className="h-4 w-4 rounded border-border" />
-            <label htmlFor="trava" className="text-xs text-foreground">Bloquear lançamentos em atraso</label>
-          </div>
-
-          <Field label="Inscrição Municipal" required className="col-span-4" tipKey="im" onFocusTip={onTip}>
+          <Field label="Inscrição Municipal" required className="col-span-3" tipKey="im" onFocusTip={onTip}>
             <Input value={form.im} onChange={(e) => set({ im: e.target.value })} className={inp} />
           </Field>
-          <Field label="CNAE Principal" className="col-span-8" tipKey="cnae" onFocusTip={onTip}>
+
+          <Field label="Razão Social" required className="col-span-8" tipKey="razao" onFocusTip={onTip}>
+            <Input value={form.razao} onChange={(e) => set({ razao: e.target.value })} className={inp} />
+          </Field>
+          <Field label="CNAE Principal" className="col-span-4" tipKey="cnae" onFocusTip={onTip}>
             <Input
               value={form.cnaeDesc}
               onChange={(e) => set({ cnaeDesc: e.target.value })}
@@ -666,90 +678,91 @@ function DadosSection({
             />
           </Field>
 
-          <Field label="Razão Social" required className="col-span-12" tipKey="razao" onFocusTip={onTip}>
-            <Input value={form.razao} onChange={(e) => set({ razao: e.target.value })} className={inp} />
-          </Field>
-          <Field label="Nome Fantasia" required className="col-span-12" tipKey="fantasia" onFocusTip={onTip}>
+          <Field label="Nome Fantasia" required className="col-span-8" tipKey="fantasia" onFocusTip={onTip}>
             <Input value={form.fantasia} onChange={(e) => set({ fantasia: e.target.value })} className={inp} />
           </Field>
+          <div className="col-span-4 flex items-end pb-2.5">
+            <label className="flex items-center gap-2 text-xs text-foreground/80 cursor-pointer select-none">
+              <input type="checkbox" id="trava" className="h-4 w-4 rounded border-border accent-brand-blue" />
+              Bloquear lançamentos em atraso
+            </label>
+          </div>
         </div>
 
         <InlineDivider>Endereço</InlineDivider>
-        <div className="grid grid-cols-12 gap-3">
-          <Field label="CEP" required className="col-span-4" tipKey="cep" onFocusTip={onTip}>
+        <div className="grid grid-cols-12 gap-x-4 gap-y-4">
+          <Field label="CEP" required className="col-span-3" tipKey="cep" onFocusTip={onTip}>
             <div className="flex gap-2">
               <Input
                 value={form.cep}
                 onChange={(e) => set({ cep: fmtCep(e.target.value) })}
                 placeholder="00000-000"
-                className={inp}
+                className={`${inp} font-mono tracking-tight`}
               />
               <Button
                 type="button" variant="outline"
-                className="rounded-lg shrink-0 border-brand-blue/40 text-brand-blue"
+                className={btn}
                 onClick={onBuscarCep} disabled={loadingCep}
               >
                 {loadingCep ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               </Button>
             </div>
           </Field>
-          <Field label="Endereço" required className="col-span-6" tipKey="endereco" onFocusTip={onTip}>
+          <Field label="Logradouro" required className="col-span-7" tipKey="endereco" onFocusTip={onTip}>
             <Input value={form.endereco} onChange={(e) => set({ endereco: e.target.value })} className={inp} />
           </Field>
           <Field label="Número" required className="col-span-2" tipKey="numero" onFocusTip={onTip}>
             <Input value={form.numero} onChange={(e) => set({ numero: e.target.value })} className={inp} />
           </Field>
 
-          <Field label="Complemento" className="col-span-4">
+          <Field label="Complemento" className="col-span-3">
             <Input value={form.complemento} onChange={(e) => set({ complemento: e.target.value })} className={inp} />
           </Field>
-          <Field label="Bairro" className="col-span-4">
+          <Field label="Bairro" className="col-span-3">
             <Input value={form.bairro} onChange={(e) => set({ bairro: e.target.value })} className={inp} />
           </Field>
-          <Field label="Município" className="col-span-3">
+          <Field label="Município" className="col-span-4">
             <Input value={form.municipio} onChange={(e) => set({ municipio: e.target.value })} className={inp} />
           </Field>
-          <Field label="UF" className="col-span-1">
-            <Input value={form.uf} onChange={(e) => set({ uf: e.target.value.toUpperCase().slice(0,2) })} className={inp} />
+          <Field label="UF" className="col-span-2">
+            <Input
+              value={form.uf}
+              onChange={(e) => set({ uf: e.target.value.toUpperCase().slice(0,2) })}
+              maxLength={2}
+              className={`${inp} uppercase tracking-widest text-center font-mono`}
+            />
           </Field>
         </div>
 
         <InlineDivider>Contatos</InlineDivider>
-        <div className="grid grid-cols-12 gap-3">
-          <Field label="Nome" className="col-span-5" tipKey="contatoNome" onFocusTip={onTip}>
+        <div className="grid grid-cols-12 gap-x-4 gap-y-4">
+          <Field label="Nome do contato" className="col-span-6" tipKey="contatoNome" onFocusTip={onTip}>
             <Input value={form.contatoNome} onChange={(e) => set({ contatoNome: e.target.value })} className={inp} />
           </Field>
           <Field label="CPF" className="col-span-3">
-            <Input value={form.contatoCpf} onChange={(e) => set({ contatoCpf: e.target.value })} className={inp} />
+            <Input value={form.contatoCpf} onChange={(e) => set({ contatoCpf: e.target.value })} className={`${inp} font-mono`} />
           </Field>
-          <Field label="Telefone" className="col-span-4">
-            <Input value={form.contatoTel} onChange={(e) => set({ contatoTel: e.target.value })} className={inp} />
+          <Field label="Telefone" className="col-span-3">
+            <Input value={form.contatoTel} onChange={(e) => set({ contatoTel: e.target.value })} className={`${inp} font-mono`} />
           </Field>
 
-          <Field label="E-Mail" className="col-span-6" tipKey="email" onFocusTip={onTip}>
+          <Field label="E-mail" className="col-span-6" tipKey="email" onFocusTip={onTip}>
             <Input type="email" value={form.email} onChange={(e) => set({ email: e.target.value })} className={inp} />
           </Field>
-          <Field label="Celular/WhatsApp" className="col-span-6" tipKey="whatsapp" onFocusTip={onTip}>
-            <Input value={form.whatsapp} onChange={(e) => set({ whatsapp: e.target.value })} className={inp} />
+          <Field label="Celular / WhatsApp" className="col-span-3" tipKey="whatsapp" onFocusTip={onTip}>
+            <Input value={form.whatsapp} onChange={(e) => set({ whatsapp: e.target.value })} className={`${inp} font-mono`} />
           </Field>
-
-          <Field label="Página de Internet" className="col-span-12">
+          <Field label="Site" className="col-span-3">
             <Input value={form.site} onChange={(e) => set({ site: e.target.value })} placeholder="https://" className={inp} />
           </Field>
         </div>
 
         <InlineDivider>Responsável técnico</InlineDivider>
-        <div className="grid grid-cols-12 gap-3">
-          <Field label="Responsável Técnico" className="col-span-8" tipKey="respNome" onFocusTip={onTip}>
+        <div className="grid grid-cols-12 gap-x-4 gap-y-4">
+          <Field label="Nome do responsável" className="col-span-8" tipKey="respNome" onFocusTip={onTip}>
             <Input value={form.respNome} onChange={(e) => set({ respNome: e.target.value })} className={inp} />
           </Field>
-          <Field label="CPF do Responsável Técnico" className="col-span-4" tipKey="respCpf" onFocusTip={onTip}>
-            <Input value={form.respCpf} onChange={(e) => set({ respCpf: e.target.value })} className={inp} />
-          </Field>
-          <Field label="CNPJ do Responsável Técnico" className="col-span-8" tipKey="respCnpj" onFocusTip={onTip}>
-            <Input value={form.respCnpj} onChange={(e) => set({ respCnpj: e.target.value })} className={inp} />
-          </Field>
-          <Field label="Tipo" required className="col-span-4">
+          <Field label="Tipo de documento" required className="col-span-4">
             <Select value={form.respTipo} onValueChange={(v) => set({ respTipo: v })}>
               <SelectTrigger className={inp}><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -757,6 +770,12 @@ function DadosSection({
                 <SelectItem value="cnpj">CNPJ</SelectItem>
               </SelectContent>
             </Select>
+          </Field>
+          <Field label="CPF do responsável" className="col-span-6" tipKey="respCpf" onFocusTip={onTip}>
+            <Input value={form.respCpf} onChange={(e) => set({ respCpf: e.target.value })} className={`${inp} font-mono`} />
+          </Field>
+          <Field label="CNPJ do responsável" className="col-span-6" tipKey="respCnpj" onFocusTip={onTip}>
+            <Input value={form.respCnpj} onChange={(e) => set({ respCnpj: e.target.value })} className={`${inp} font-mono`} />
           </Field>
         </div>
       </SectionCard>
@@ -769,28 +788,28 @@ function SenhasSection({ onTip }: { onTip: (k: string) => void }) {
     <>
       <SectionCard title="Geral">
         <div className="grid grid-cols-2 gap-3" onFocus={() => onTip("senhas")}>
-          <Field label="Senha Previdência"><Input type="password" className="rounded-lg" /></Field>
-          <Field label="Senha de acesso ao SEFAZ"><Input type="password" className="rounded-lg" /></Field>
-          <Field label="Código de Acesso e-Cac" className="col-span-2"><Input type="password" className="rounded-lg" /></Field>
-          <Field label="Código de Acesso ao Simples" className="col-span-2"><Input type="password" className="rounded-lg" /></Field>
+          <Field label="Senha Previdência"><Input type="password" className={INPUT_CLASS} /></Field>
+          <Field label="Senha de acesso ao SEFAZ"><Input type="password" className={INPUT_CLASS} /></Field>
+          <Field label="Código de Acesso e-Cac" className="col-span-2"><Input type="password" className={INPUT_CLASS} /></Field>
+          <Field label="Código de Acesso ao Simples" className="col-span-2"><Input type="password" className={INPUT_CLASS} /></Field>
         </div>
       </SectionCard>
 
       <SectionCard title="SerPro">
         <div className="text-xs font-medium text-foreground mb-2">SerPro</div>
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Consumer Key"><Input className="rounded-lg" /></Field>
-          <Field label="Consumer Secret"><Input className="rounded-lg" /></Field>
+          <Field label="Consumer Key"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Consumer Secret"><Input className={INPUT_CLASS} /></Field>
         </div>
         <div className="text-xs font-medium text-foreground mt-4 mb-2">Prefeitura Espião</div>
         <div className="grid grid-cols-1 gap-3">
-          <Field label="Usuário Prefeitura ou Hash Validador"><Input className="rounded-lg" /></Field>
-          <Field label="Senha Prefeitura"><Input type="password" className="rounded-lg" /></Field>
+          <Field label="Usuário Prefeitura ou Hash Validador"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Senha Prefeitura"><Input type="password" className={INPUT_CLASS} /></Field>
         </div>
         <div className="text-xs font-medium text-foreground mt-4 mb-2">GOV.BR</div>
         <div className="grid grid-cols-2 gap-3">
-          <Field label="CPF"><Input className="rounded-lg" /></Field>
-          <Field label="Senha"><Input type="password" className="rounded-lg" /></Field>
+          <Field label="CPF"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Senha"><Input type="password" className={INPUT_CLASS} /></Field>
         </div>
       </SectionCard>
 
@@ -809,24 +828,24 @@ function PessoalSection({ onTip }: { onTip: (k: string) => void }) {
       <SectionCard title="E-Social">
         <div className="grid grid-cols-12 gap-3">
           <Field label="Classificação Tributária" className="col-span-12" tipKey="esocial" onFocusTip={onTip}>
-            <Input placeholder="Ex.: 4 - MEI, 1 - Simples com folha, 22 - Lucro Presumido" className="rounded-lg" />
+            <Input placeholder="Ex.: 4 - MEI, 1 - Simples com folha, 22 - Lucro Presumido" className={INPUT_CLASS} />
           </Field>
           <Field label="Identificação tipo de ação S-1000" className="col-span-12">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="i">Inclusão</SelectItem>
                 <SelectItem value="a">Alteração</SelectItem>
               </SelectContent>
             </Select>
           </Field>
-          <Field label="Data inclusão S-1000" className="col-span-4"><Input placeholder="dd/mm/aaaa" className="rounded-lg" /></Field>
+          <Field label="Data inclusão S-1000" className="col-span-4"><Input placeholder="dd/mm/aaaa" className={INPUT_CLASS} /></Field>
           <Field label="Indicativo de Cooperativa" className="col-span-4">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="0">0 - Não é cooperativa</SelectItem></SelectContent>
             </Select>
           </Field>
           <Field label="Indicativo de Construtora" className="col-span-4">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="0">0 - Não é construtora</SelectItem></SelectContent>
             </Select>
           </Field>
@@ -836,18 +855,18 @@ function PessoalSection({ onTip }: { onTip: (k: string) => void }) {
       <SectionCard title="Geral">
         <div className="grid grid-cols-12 gap-3">
           <Field label="FPAS" required className="col-span-12" tipKey="fpas" onFocusTip={onTip}>
-            <Input placeholder="Ex.: 507 - Indústria" className="rounded-lg" />
+            <Input placeholder="Ex.: 507 - Indústria" className={INPUT_CLASS} />
           </Field>
           <Field label="Sindicalizada?" className="col-span-3">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="nao">Não</SelectItem><SelectItem value="sim">Sim</SelectItem></SelectContent>
             </Select>
           </Field>
           <Field label="Sindicato Profissional" className="col-span-9">
-            <Input className="rounded-lg" />
+            <Input className={INPUT_CLASS} />
           </Field>
           <Field label="Grupo de CIPA" required className="col-span-12">
-            <Input className="rounded-lg" />
+            <Input className={INPUT_CLASS} />
           </Field>
         </div>
       </SectionCard>
@@ -861,12 +880,12 @@ function PessoalSection({ onTip }: { onTip: (k: string) => void }) {
         </Tabs>
         <div className="grid grid-cols-3 gap-3">
           <Field label="Participa do PAT">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="nao">Não</SelectItem><SelectItem value="sim">Sim</SelectItem></SelectContent>
             </Select>
           </Field>
-          <Field label="Data Participa PAT"><Input placeholder="dd/mm/aaaa" className="rounded-lg" /></Field>
-          <Field label="Número do Registro"><Input className="rounded-lg" /></Field>
+          <Field label="Data Participa PAT"><Input placeholder="dd/mm/aaaa" className={INPUT_CLASS} /></Field>
+          <Field label="Número do Registro"><Input className={INPUT_CLASS} /></Field>
         </div>
       </SectionCard>
     </>
@@ -878,13 +897,13 @@ function FiscalSection() {
     <>
       <SectionCard title="Livro">
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Registro de Entradas"><Input className="rounded-lg" /></Field>
-          <Field label="Registro de Saídas"><Input className="rounded-lg" /></Field>
-          <Field label="Registro Ap. ICMS"><Input className="rounded-lg" /></Field>
-          <Field label="Registro Inventário"><Input className="rounded-lg" /></Field>
-          <Field label="Reg. Prest. Serviços"><Input className="rounded-lg" /></Field>
-          <Field label="Reg. Ciap"><Input className="rounded-lg" /></Field>
-          <Field label="Reg. Apuração IPI"><Input className="rounded-lg" /></Field>
+          <Field label="Registro de Entradas"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Registro de Saídas"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Registro Ap. ICMS"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Registro Inventário"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Reg. Prest. Serviços"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Reg. Ciap"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Reg. Apuração IPI"><Input className={INPUT_CLASS} /></Field>
         </div>
       </SectionCard>
       <div className="flex justify-center gap-3">
@@ -912,54 +931,54 @@ function SocietarioSection({ onTip }: { onTip: (k: string) => void }) {
 
       <SectionCard title="Geral">
         <div className="grid grid-cols-12 gap-3">
-          <Field label="Núm. do Alvará" className="col-span-4"><Input className="rounded-lg" /></Field>
-          <Field label="Metragem Imóvel" className="col-span-4"><Input className="rounded-lg" /></Field>
-          <Field label="Código Estado" className="col-span-2"><Input className="rounded-lg" /></Field>
+          <Field label="Núm. do Alvará" className="col-span-4"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Metragem Imóvel" className="col-span-4"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Código Estado" className="col-span-2"><Input className={INPUT_CLASS} /></Field>
           <Field label="Tipo de Empresa" className="col-span-2">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="5">EMPRESA - 5</SelectItem></SelectContent>
             </Select>
           </Field>
           <Field label="Natureza Jurídica" required className="col-span-12" tipKey="natureza" onFocusTip={onTip}>
-            <Input placeholder="Ex.: 213-5 - Empresário (Individual)" className="rounded-lg" />
+            <Input placeholder="Ex.: 213-5 - Empresário (Individual)" className={INPUT_CLASS} />
           </Field>
         </div>
       </SectionCard>
 
       <SectionCard title="Registros">
         <div className="grid grid-cols-12 gap-3">
-          <Field label="Descrição do Órgão de Registro" className="col-span-5"><Input className="rounded-lg" /></Field>
+          <Field label="Descrição do Órgão de Registro" className="col-span-5"><Input className={INPUT_CLASS} /></Field>
           <Field label="Órgão de Registro" className="col-span-3">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="outros">Outros</SelectItem></SelectContent>
             </Select>
           </Field>
-          <Field label="Número de Registro" className="col-span-4"><Input className="rounded-lg" /></Field>
+          <Field label="Número de Registro" className="col-span-4"><Input className={INPUT_CLASS} /></Field>
 
-          <Field label="Nº Última Alteração" className="col-span-4"><Input className="rounded-lg" /></Field>
-          <Field label="Data Última Alteração" className="col-span-4"><Input placeholder="dd/mm/aaaa" className="rounded-lg" /></Field>
-          <Field label="NIRE" className="col-span-4"><Input className="rounded-lg" /></Field>
+          <Field label="Nº Última Alteração" className="col-span-4"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Data Última Alteração" className="col-span-4"><Input placeholder="dd/mm/aaaa" className={INPUT_CLASS} /></Field>
+          <Field label="NIRE" className="col-span-4"><Input className={INPUT_CLASS} /></Field>
 
           <Field label="Enq. Comercial" className="col-span-3">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="me">ME</SelectItem></SelectContent>
             </Select>
           </Field>
-          <Field label="Classe de Atividade" className="col-span-9"><Input className="rounded-lg" /></Field>
+          <Field label="Classe de Atividade" className="col-span-9"><Input className={INPUT_CLASS} /></Field>
 
-          <Field label="Código de Imobilizado" className="col-span-3"><Input className="rounded-lg" /></Field>
+          <Field label="Código de Imobilizado" className="col-span-3"><Input className={INPUT_CLASS} /></Field>
           <Field label="Grupo econômico" className="col-span-3">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="nao">Não</SelectItem></SelectContent>
             </Select>
           </Field>
           <Field label="Documento" required className="col-span-3">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="recibo">Recibo</SelectItem></SelectContent>
             </Select>
           </Field>
           <Field label="Classe" className="col-span-3">
-            <Select><SelectTrigger className="rounded-lg"><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="a">A</SelectItem></SelectContent>
             </Select>
           </Field>
