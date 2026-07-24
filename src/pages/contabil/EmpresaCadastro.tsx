@@ -592,7 +592,7 @@ function DadosSection({
           </Field>
           <div className="col-span-3 flex items-end gap-2 pb-2">
             <input type="checkbox" id="trava" className="h-4 w-4 rounded border-border" />
-            <label htmlFor="trava" className="text-xs text-foreground">Trava Atraso Honorários</label>
+            <label htmlFor="trava" className="text-xs text-foreground">Bloquear lançamentos em atraso</label>
           </div>
 
           <Field label="Inscrição Municipal" required className="col-span-4" tipKey="im" onFocusTip={onTip}>
