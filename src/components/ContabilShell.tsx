@@ -25,6 +25,7 @@ const accentBorder: Record<string, string> = {
 const AREA_ICON = { preparativos: Settings2, pessoal: Users2, financeiro: Wallet } as const;
 
 export default function ContabilShell() {
+  const { competencia, setCompetencia } = useCompetencia();
   const { pathname } = useLocation();
   const seg = pathname.split("/").filter(Boolean);
   const currentAreaSlug = seg[0];
