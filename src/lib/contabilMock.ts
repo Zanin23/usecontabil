@@ -7,22 +7,22 @@ export const EMPRESAS = [
   { id: "e4", cnpj: "22.333.444/0001-55", razao: "Transportes Litoral Ltda.", regime: "LUCRO_PRESUMIDO" },
 ];
 
-export const COMPETENCIAS = ["2024-08", "2024-09", "2024-10", "2024-11"];
+export const COMPETENCIAS = ["2026-04", "2026-05", "2026-07", "2026-06"];
 
 export const KPIS = [
-  { label: "Fechamento contábil", value: "Out/2024", trend: "Em aberto", tone: "warn" as const },
+  { label: "Fechamento contábil", value: "Jul/2026", trend: "Em aberto", tone: "warn" as const },
   { label: "Pendências eSocial", value: "12", trend: "+3 hoje", tone: "danger" as const },
   { label: "Impostos a vencer (7d)", value: "R$ 284.912,55", trend: "5 guias", tone: "warn" as const },
   { label: "Faturamento acumulado", value: "R$ 4.812.309,00", trend: "+8,4% MoM", tone: "success" as const },
 ];
 
 export const STATUS_FECHAMENTO = [
-  { modulo: "Pessoal (Folha)", competencia: "10/2024", responsavel: "Marina Costa", status: "CONCLUIDO", atualizado: "há 2h" },
-  { modulo: "Fiscal (Entradas)", competencia: "10/2024", responsavel: "Rafael Prado", status: "EM_ANDAMENTO", atualizado: "há 30min" },
-  { modulo: "Fiscal (Saídas)", competencia: "10/2024", responsavel: "Rafael Prado", status: "EM_ANDAMENTO", atualizado: "há 30min" },
-  { modulo: "Contábil (Diário)", competencia: "10/2024", responsavel: "Juliana Reis", status: "PENDENTE", atualizado: "ontem" },
-  { modulo: "Tributos (Apuração)", competencia: "10/2024", responsavel: "Juliana Reis", status: "PENDENTE", atualizado: "—" },
-  { modulo: "eSocial (Periódicos)", competencia: "10/2024", responsavel: "Marina Costa", status: "ATRASADO", atualizado: "há 3 dias" },
+  { modulo: "Pessoal (Folha)", competencia: "07/2026", responsavel: "Marina Costa", status: "CONCLUIDO", atualizado: "há 2h" },
+  { modulo: "Fiscal (Entradas)", competencia: "07/2026", responsavel: "Rafael Prado", status: "EM_ANDAMENTO", atualizado: "há 30min" },
+  { modulo: "Fiscal (Saídas)", competencia: "07/2026", responsavel: "Rafael Prado", status: "EM_ANDAMENTO", atualizado: "há 30min" },
+  { modulo: "Contábil (Diário)", competencia: "07/2026", responsavel: "Juliana Reis", status: "PENDENTE", atualizado: "ontem" },
+  { modulo: "Tributos (Apuração)", competencia: "07/2026", responsavel: "Juliana Reis", status: "PENDENTE", atualizado: "—" },
+  { modulo: "eSocial (Periódicos)", competencia: "07/2026", responsavel: "Marina Costa", status: "ATRASADO", atualizado: "há 3 dias" },
 ];
 
 export const ALERTAS = [
@@ -47,16 +47,16 @@ export type Lancamento = {
 };
 
 export const LANCAMENTOS: Lancamento[] = [
-  { id: "L-24081", data: "2024-10-31", debito: "1.1.02.001", debitoNome: "Bco Itaú c/c 0325-2", credito: "3.1.01.001", creditoNome: "Receita de vendas mercado interno", historico: "Faturamento NF 44821 — Cliente Delta", valor: 128_450.00, centro: "Comercial-SP", origem: "ERP" },
-  { id: "L-24082", data: "2024-10-31", debito: "4.1.02.005", debitoNome: "Salários e ordenados", credito: "2.1.03.001", creditoNome: "Salários a pagar", historico: "Folha competência 10/2024 — 128 colab.", valor: 612_308.75, centro: "Administrativo", origem: "MANUAL" },
-  { id: "L-24083", data: "2024-10-30", debito: "1.1.03.002", debitoNome: "Duplicatas a receber", credito: "3.1.01.001", creditoNome: "Receita de vendas mercado interno", historico: "NF 44819 — Cliente Vento Sul", valor: 34_290.00, centro: "Comercial-RS", origem: "ERP" },
-  { id: "L-24084", data: "2024-10-30", debito: "4.1.03.011", debitoNome: "Energia elétrica", credito: "1.1.02.001", creditoNome: "Bco Itaú c/c 0325-2", historico: "CEMIG matriz — competência 09/2024", valor: 18_770.42, centro: "Industrial", origem: "OFX" },
-  { id: "L-24085", data: "2024-10-30", debito: "1.1.02.001", debitoNome: "Bco Itaú c/c 0325-2", credito: "1.1.03.002", creditoNome: "Duplicatas a receber", historico: "Recebimento boleto NF 44780", valor: 9_420.00, centro: "Financeiro", origem: "OFX" },
-  { id: "L-24086", data: "2024-10-29", debito: "4.1.02.008", debitoNome: "INSS sobre folha", credito: "2.1.03.014", creditoNome: "INSS a recolher", historico: "INSS patronal 20% + RAT — 10/2024", valor: 147_154.10, centro: "Administrativo", origem: "MANUAL" },
-  { id: "L-24087", data: "2024-10-29", debito: "1.1.05.002", debitoNome: "Estoque produtos acabados", credito: "3.2.01.001", creditoNome: "Custo de produção", historico: "Baixa OP 8823 — Produto SKU-4412", valor: 82_016.00, centro: "Industrial", origem: "ERP" },
-  { id: "L-24088", data: "2024-10-28", debito: "4.1.05.001", debitoNome: "Despesas com viagens", credito: "1.1.02.001", creditoNome: "Bco Itaú c/c 0325-2", historico: "Reembolso vendedor R. Prado — SP-CWB", valor: 2_180.55, centro: "Comercial-SP", origem: "MANUAL" },
-  { id: "L-24089", data: "2024-10-28", debito: "1.2.03.001", debitoNome: "Máquinas e equipamentos", credito: "2.1.02.004", creditoNome: "Fornecedores nacionais", historico: "NF 118820 — Prensa hidráulica PH-40", valor: 214_500.00, centro: "Industrial", origem: "ERP" },
-  { id: "L-24090", data: "2024-10-27", debito: "4.1.03.007", debitoNome: "Aluguéis e condomínios", credito: "1.1.02.001", creditoNome: "Bco Itaú c/c 0325-2", historico: "Aluguel matriz — competência 10/2024", valor: 42_000.00, centro: "Administrativo", origem: "OFX" },
+  { id: "L-24081", data: "2026-07-31", debito: "1.1.02.001", debitoNome: "Bco Itaú c/c 0325-2", credito: "3.1.01.001", creditoNome: "Receita de vendas mercado interno", historico: "Faturamento NF 44821 — Cliente Delta", valor: 128_450.00, centro: "Comercial-SP", origem: "ERP" },
+  { id: "L-24082", data: "2026-07-31", debito: "4.1.02.005", debitoNome: "Salários e ordenados", credito: "2.1.03.001", creditoNome: "Salários a pagar", historico: "Folha competência 07/2026 — 128 colab.", valor: 612_308.75, centro: "Administrativo", origem: "MANUAL" },
+  { id: "L-24083", data: "2026-07-30", debito: "1.1.03.002", debitoNome: "Duplicatas a receber", credito: "3.1.01.001", creditoNome: "Receita de vendas mercado interno", historico: "NF 44819 — Cliente Vento Sul", valor: 34_290.00, centro: "Comercial-RS", origem: "ERP" },
+  { id: "L-24084", data: "2026-07-30", debito: "4.1.03.011", debitoNome: "Energia elétrica", credito: "1.1.02.001", creditoNome: "Bco Itaú c/c 0325-2", historico: "CEMIG matriz — competência 05/2026", valor: 18_770.42, centro: "Industrial", origem: "OFX" },
+  { id: "L-24085", data: "2026-07-30", debito: "1.1.02.001", debitoNome: "Bco Itaú c/c 0325-2", credito: "1.1.03.002", creditoNome: "Duplicatas a receber", historico: "Recebimento boleto NF 44780", valor: 9_420.00, centro: "Financeiro", origem: "OFX" },
+  { id: "L-24086", data: "2026-07-29", debito: "4.1.02.008", debitoNome: "INSS sobre folha", credito: "2.1.03.014", creditoNome: "INSS a recolher", historico: "INSS patronal 20% + RAT — 07/2026", valor: 147_154.10, centro: "Administrativo", origem: "MANUAL" },
+  { id: "L-24087", data: "2026-07-29", debito: "1.1.05.002", debitoNome: "Estoque produtos acabados", credito: "3.2.01.001", creditoNome: "Custo de produção", historico: "Baixa OP 8823 — Produto SKU-4412", valor: 82_016.00, centro: "Industrial", origem: "ERP" },
+  { id: "L-24088", data: "2026-07-28", debito: "4.1.05.001", debitoNome: "Despesas com viagens", credito: "1.1.02.001", creditoNome: "Bco Itaú c/c 0325-2", historico: "Reembolso vendedor R. Prado — SP-CWB", valor: 2_180.55, centro: "Comercial-SP", origem: "MANUAL" },
+  { id: "L-24089", data: "2026-07-28", debito: "1.2.03.001", debitoNome: "Máquinas e equipamentos", credito: "2.1.02.004", creditoNome: "Fornecedores nacionais", historico: "NF 118820 — Prensa hidráulica PH-40", valor: 214_500.00, centro: "Industrial", origem: "ERP" },
+  { id: "L-24090", data: "2026-07-27", debito: "4.1.03.007", debitoNome: "Aluguéis e condomínios", credito: "1.1.02.001", creditoNome: "Bco Itaú c/c 0325-2", historico: "Aluguel matriz — competência 07/2026", valor: 42_000.00, centro: "Administrativo", origem: "OFX" },
 ];
 
 export type Colaborador = {
@@ -98,14 +98,14 @@ export type EventoESocial = {
 };
 
 export const EVENTOS_ESOCIAL: EventoESocial[] = [
-  { id: "ev1", tipo: "S-1200", descricao: "Remuneração de trabalhador", colaborador: "Aline Bezerra", competencia: "10/2024", status: "ACEITO", recibo: "1.2.202410.00048291" },
-  { id: "ev2", tipo: "S-1200", descricao: "Remuneração de trabalhador", colaborador: "Bruno Tavares", competencia: "10/2024", status: "ACEITO", recibo: "1.2.202410.00048292" },
-  { id: "ev3", tipo: "S-1200", descricao: "Remuneração de trabalhador", colaborador: "Pedro Almeida", competencia: "10/2024", status: "REJEITADO", erro: "CPF divergente da base RET (Registro de Eventos Trabalhistas)" },
-  { id: "ev4", tipo: "S-1210", descricao: "Pagamentos de rendimentos do trabalho", competencia: "10/2024", status: "PROCESSANDO" },
-  { id: "ev5", tipo: "S-2200", descricao: "Admissão — Novo colaborador", colaborador: "Luana Freitas", competencia: "10/2024", status: "ENVIADO" },
-  { id: "ev6", tipo: "S-1299", descricao: "Fechamento dos eventos periódicos", competencia: "10/2024", status: "PENDENTE" },
-  { id: "ev7", tipo: "S-1000", descricao: "Informações do empregador", competencia: "—", status: "ACEITO", recibo: "1.2.202401.00000021" },
-  { id: "ev8", tipo: "S-2299", descricao: "Desligamento — Colaborador demitido", colaborador: "Marco Ribeiro", competencia: "10/2024", status: "ACEITO", recibo: "1.2.202410.00047102" },
+  { id: "ev1", tipo: "S-1200", descricao: "Remuneração de trabalhador", colaborador: "Aline Bezerra", competencia: "07/2026", status: "ACEITO", recibo: "1.2.202607.00048291" },
+  { id: "ev2", tipo: "S-1200", descricao: "Remuneração de trabalhador", colaborador: "Bruno Tavares", competencia: "07/2026", status: "ACEITO", recibo: "1.2.202607.00048292" },
+  { id: "ev3", tipo: "S-1200", descricao: "Remuneração de trabalhador", colaborador: "Pedro Almeida", competencia: "07/2026", status: "REJEITADO", erro: "CPF divergente da base RET (Registro de Eventos Trabalhistas)" },
+  { id: "ev4", tipo: "S-1210", descricao: "Pagamentos de rendimentos do trabalho", competencia: "07/2026", status: "PROCESSANDO" },
+  { id: "ev5", tipo: "S-2200", descricao: "Admissão — Novo colaborador", colaborador: "Luana Freitas", competencia: "07/2026", status: "ENVIADO" },
+  { id: "ev6", tipo: "S-1299", descricao: "Fechamento dos eventos periódicos", competencia: "07/2026", status: "PENDENTE" },
+  { id: "ev7", tipo: "S-1000", descricao: "Informações do empregador", competencia: "—", status: "ACEITO", recibo: "1.2.202601.00000021" },
+  { id: "ev8", tipo: "S-2299", descricao: "Desligamento — Colaborador demitido", colaborador: "Marco Ribeiro", competencia: "07/2026", status: "ACEITO", recibo: "1.2.202607.00047102" },
 ];
 
 export const DRE = [

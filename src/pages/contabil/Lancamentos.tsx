@@ -53,7 +53,7 @@ export default function Lancamentos() {
           <div className="grid grid-cols-12 gap-2">
             <div className="col-span-2">
               <label className="text-[10px] uppercase tracking-widest text-muted-foreground">Data</label>
-              <Input defaultValue="31/10/2024" className="h-9 rounded-md mt-1 font-mono text-sm" />
+              <Input defaultValue="31/07/2026" className="h-9 rounded-md mt-1 font-mono text-sm" />
             </div>
             <div className="col-span-3">
               <label className="text-[10px] uppercase tracking-widest text-muted-foreground">Conta débito</label>
