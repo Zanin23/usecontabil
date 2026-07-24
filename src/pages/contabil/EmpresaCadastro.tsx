@@ -530,12 +530,9 @@ export default function EmpresaCadastro() {
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-3 space-y-4">
           <LeftPanel form={form} />
-          {assistantOpen && (
-            <AssistantPanel tipKey={activeTip} onClose={() => setAssistantOpen(false)} />
-          )}
         </div>
 
-        <div className={assistantOpen ? "col-span-6" : "col-span-7"}>
+        <div className="col-span-6">
           <Card className="rounded-2xl border-border/70">
             <CardContent className="p-4 space-y-4">
               <h2 className="text-center text-base font-semibold text-foreground">
