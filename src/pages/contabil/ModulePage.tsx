@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Badge, Button, Card, CardContent, Input,
@@ -6,6 +7,7 @@ import {
 import { toast } from "sonner";
 import { ChevronRight, Download, Filter, Plus, Search } from "lucide-react";
 import { findModule } from "@/lib/contabilNav";
+import { loadEmpresas } from "@/lib/empresasStore";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
@@ -25,6 +27,22 @@ const statusClass = (v: string) => {
 export default function ModulePage() {
   const { area: areaSlug, categoria, modulo } = useParams();
   const { area, category, module } = findModule(areaSlug, categoria, modulo);
+  const [extraRows, setExtraRows] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (module?.slug === "empresas" && category?.slug === "cadastros") {
+      const saved = loadEmpresas().map((e) => ({
+        cnpj: e.cnpj,
+        razao: e.razao,
+        regime: e.regime,
+        atividade: e.atividade,
+        status: e.status,
+      }));
+      setExtraRows(saved);
+    } else {
+      setExtraRows([]);
+    }
+  }, [module?.slug, category?.slug]);
 
   if (!area || !category || !module) {
     return (
@@ -120,7 +138,7 @@ export default function ModulePage() {
       {/* Table */}
       <Card className="rounded-2xl border-border/70 overflow-hidden">
         <div className="px-4 py-3 border-b border-border flex items-center justify-between text-xs text-muted-foreground">
-          <span>{module.rows.length} registros exibidos</span>
+          <span>{module.rows.length + extraRows.length} registros exibidos</span>
           <span className="font-mono uppercase tracking-widest">Ambiente HOMOLOGAÇÃO</span>
         </div>
         <Table>
@@ -137,7 +155,7 @@ export default function ModulePage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {module.rows.map((row, ri) => (
+            {[...extraRows, ...module.rows].map((row, ri) => (
               <TableRow key={ri}>
                 {module.columns.map((c) => {
                   const v = row[c.key];

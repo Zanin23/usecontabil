@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { saveEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
 import {
   Button, Card, CardContent, Input, Label, Separator,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -380,14 +381,50 @@ function TributacaoCard({ kind }: { kind: TribKind }) {
 /* --------------------------------- page --------------------------------- */
 
 export default function EmpresaCadastro() {
+  const navigate = useNavigate();
   const [section, setSection] = useState<SectionKey>("dados");
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [activeTip, setActiveTip] = useState<string | null>(null);
   const [assistantOpen, setAssistantOpen] = useState(true);
   const [loadingCnpj, setLoadingCnpj] = useState(false);
   const [loadingCep, setLoadingCep] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));
+
+  const handleSalvar = () => {
+    const cnpjDigits = form.cnpj.replace(/\D/g, "");
+    if (cnpjDigits.length !== 14) {
+      toast.error("Informe um CNPJ válido (14 dígitos)");
+      setSection("dados");
+      return;
+    }
+    if (!form.razao.trim()) {
+      toast.error("Informe a razão social");
+      setSection("dados");
+      return;
+    }
+    setSaving(true);
+    try {
+      const rec: EmpresaRecord = {
+        id: `EMP-${Date.now()}`,
+        cnpj: form.cnpj,
+        razao: form.razao,
+        regime: "A definir",
+        atividade: form.cnaeDesc || "—",
+        status: "Ativa",
+        createdAt: new Date().toISOString(),
+        raw: { ...form },
+      };
+      saveEmpresa(rec);
+      toast.success(`Empresa "${rec.razao}" cadastrada`);
+      navigate("/preparativos/cadastros/empresas");
+    } catch (e: any) {
+      toast.error(e?.message || "Falha ao salvar");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleBuscarCnpj = async () => {
     if (!form.cnpj.trim()) { toast.error("Informe o CNPJ"); return; }
@@ -488,9 +525,10 @@ export default function EmpresaCadastro() {
                 <div className="flex gap-2">
                   <Button
                     className="rounded-full bg-brand-blue text-white hover:bg-brand-blue/90 px-6"
-                    onClick={() => toast.success("Cadastro salvo (protótipo)")}
+                    onClick={handleSalvar}
+                    disabled={saving}
                   >
-                    Salvar
+                    {saving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Salvando…</> : "Salvar"}
                   </Button>
                   <Button
                     variant="outline"
