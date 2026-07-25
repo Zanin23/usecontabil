@@ -15,12 +15,11 @@ import {
   Lightbulb, ExternalLink, Wand2, X, GripVertical,
 } from "lucide-react";
 
-type SectionKey = "dados" | "senhas" | "pessoal" | "fiscal" | "societario";
+type SectionKey = "dados" | "senhas" | "fiscal" | "societario";
 
 const SECTION_TABS: { key: SectionKey; label: string; icon: any }[] = [
   { key: "dados", label: "Dados empresa", icon: Landmark },
   { key: "senhas", label: "Senhas e Certificados", icon: KeyRound },
-  { key: "pessoal", label: "Pessoal", icon: Users2 },
   { key: "fiscal", label: "Fiscal", icon: DollarSign },
   { key: "societario", label: "Societário", icon: FileSignature },
 ];
@@ -28,7 +27,6 @@ const SECTION_TABS: { key: SectionKey; label: string; icon: any }[] = [
 const SECTION_TITLES: Record<SectionKey, string> = {
   dados: "Dados empresa",
   senhas: "Senhas e Certificados",
-  pessoal: "Pessoal",
   fiscal: "Fiscal",
   societario: "Societário",
 };
