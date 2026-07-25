@@ -405,10 +405,9 @@ function AssistantPanel({
 
 /* -------------------------- Tributações (right) ------------------------- */
 
-type TribKind = "federal" | "pessoal" | "municipal" | "estadual";
+type TribKind = "federal" | "municipal" | "estadual";
 const TRIB: Record<TribKind, { label: string; icon: any; accent: string }> = {
   federal: { label: "Federal", icon: Landmark, accent: "text-brand-blue" },
-  pessoal: { label: "Pessoal", icon: CircleAlert, accent: "text-warn" },
   municipal: { label: "Municipal", icon: Landmark, accent: "text-brand-blue" },
   estadual: { label: "Estadual", icon: Landmark, accent: "text-brand-purple" },
 };
@@ -589,7 +588,7 @@ export default function EmpresaCadastro() {
                 />
               )}
               {section === "senhas" && <SenhasSection onTip={tipFocus} />}
-              {section === "pessoal" && <PessoalSection onTip={tipFocus} />}
+              
               {section === "fiscal" && <FiscalSection />}
               {section === "societario" && <SocietarioSection onTip={tipFocus} />}
 
@@ -641,7 +640,7 @@ export default function EmpresaCadastro() {
               <span className="text-sm font-medium">Tributações</span>
             </div>
             <TributacaoCard kind="federal" />
-            <TributacaoCard kind="pessoal" />
+            
             <TributacaoCard kind="municipal" />
             <TributacaoCard kind="estadual" />
           </div>
