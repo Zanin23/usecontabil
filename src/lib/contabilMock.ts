@@ -17,12 +17,12 @@ export const KPIS = [
 ];
 
 export const STATUS_FECHAMENTO = [
-  { modulo: "Pessoal (Folha)", competencia: "07/2026", responsavel: "Marina Costa", status: "CONCLUIDO", atualizado: "há 2h" },
+  
   { modulo: "Fiscal (Entradas)", competencia: "07/2026", responsavel: "Rafael Prado", status: "EM_ANDAMENTO", atualizado: "há 30min" },
   { modulo: "Fiscal (Saídas)", competencia: "07/2026", responsavel: "Rafael Prado", status: "EM_ANDAMENTO", atualizado: "há 30min" },
   { modulo: "Contábil (Diário)", competencia: "07/2026", responsavel: "Juliana Reis", status: "PENDENTE", atualizado: "ontem" },
   { modulo: "Tributos (Apuração)", competencia: "07/2026", responsavel: "Juliana Reis", status: "PENDENTE", atualizado: "—" },
-  { modulo: "eSocial (Periódicos)", competencia: "07/2026", responsavel: "Marina Costa", status: "ATRASADO", atualizado: "há 3 dias" },
+  
 ];
 
 export const ALERTAS = [

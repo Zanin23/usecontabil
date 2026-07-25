@@ -15,12 +15,11 @@ import {
   Lightbulb, ExternalLink, Wand2, X, GripVertical,
 } from "lucide-react";
 
-type SectionKey = "dados" | "senhas" | "pessoal" | "fiscal" | "societario";
+type SectionKey = "dados" | "senhas" | "fiscal" | "societario";
 
 const SECTION_TABS: { key: SectionKey; label: string; icon: any }[] = [
   { key: "dados", label: "Dados empresa", icon: Landmark },
   { key: "senhas", label: "Senhas e Certificados", icon: KeyRound },
-  { key: "pessoal", label: "Pessoal", icon: Users2 },
   { key: "fiscal", label: "Fiscal", icon: DollarSign },
   { key: "societario", label: "Societário", icon: FileSignature },
 ];
@@ -28,7 +27,6 @@ const SECTION_TABS: { key: SectionKey; label: string; icon: any }[] = [
 const SECTION_TITLES: Record<SectionKey, string> = {
   dados: "Dados empresa",
   senhas: "Senhas e Certificados",
-  pessoal: "Pessoal",
   fiscal: "Fiscal",
   societario: "Societário",
 };
@@ -407,10 +405,9 @@ function AssistantPanel({
 
 /* -------------------------- Tributações (right) ------------------------- */
 
-type TribKind = "federal" | "pessoal" | "municipal" | "estadual";
+type TribKind = "federal" | "municipal" | "estadual";
 const TRIB: Record<TribKind, { label: string; icon: any; accent: string }> = {
   federal: { label: "Federal", icon: Landmark, accent: "text-brand-blue" },
-  pessoal: { label: "Pessoal", icon: CircleAlert, accent: "text-warn" },
   municipal: { label: "Municipal", icon: Landmark, accent: "text-brand-blue" },
   estadual: { label: "Estadual", icon: Landmark, accent: "text-brand-purple" },
 };
@@ -591,7 +588,7 @@ export default function EmpresaCadastro() {
                 />
               )}
               {section === "senhas" && <SenhasSection onTip={tipFocus} />}
-              {section === "pessoal" && <PessoalSection onTip={tipFocus} />}
+              
               {section === "fiscal" && <FiscalSection />}
               {section === "societario" && <SocietarioSection onTip={tipFocus} />}
 
@@ -643,7 +640,7 @@ export default function EmpresaCadastro() {
               <span className="text-sm font-medium">Tributações</span>
             </div>
             <TributacaoCard kind="federal" />
-            <TributacaoCard kind="pessoal" />
+            
             <TributacaoCard kind="municipal" />
             <TributacaoCard kind="estadual" />
           </div>
@@ -861,75 +858,6 @@ function SenhasSection({ onTip }: { onTip: (k: string) => void }) {
   );
 }
 
-function PessoalSection({ onTip }: { onTip: (k: string) => void }) {
-  return (
-    <>
-      <SectionCard title="E-Social">
-        <div className="grid grid-cols-12 gap-3">
-          <Field label="Classificação Tributária" className="col-span-12" tipKey="esocial" onFocusTip={onTip}>
-            <Input placeholder="Ex.: 4 - MEI, 1 - Simples com folha, 22 - Lucro Presumido" className={INPUT_CLASS} />
-          </Field>
-          <Field label="Identificação tipo de ação S-1000" className="col-span-12">
-            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="i">Inclusão</SelectItem>
-                <SelectItem value="a">Alteração</SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field label="Data inclusão S-1000" className="col-span-4"><Input placeholder="dd/mm/aaaa" className={INPUT_CLASS} /></Field>
-          <Field label="Indicativo de Cooperativa" className="col-span-4">
-            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
-              <SelectContent><SelectItem value="0">0 - Não é cooperativa</SelectItem></SelectContent>
-            </Select>
-          </Field>
-          <Field label="Indicativo de Construtora" className="col-span-4">
-            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
-              <SelectContent><SelectItem value="0">0 - Não é construtora</SelectItem></SelectContent>
-            </Select>
-          </Field>
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Geral">
-        <div className="grid grid-cols-12 gap-3">
-          <Field label="FPAS" required className="col-span-12" tipKey="fpas" onFocusTip={onTip}>
-            <Input placeholder="Ex.: 507 - Indústria" className={INPUT_CLASS} />
-          </Field>
-          <Field label="Sindicalizada?" className="col-span-3">
-            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
-              <SelectContent><SelectItem value="nao">Não</SelectItem><SelectItem value="sim">Sim</SelectItem></SelectContent>
-            </Select>
-          </Field>
-          <Field label="Sindicato Profissional" className="col-span-9">
-            <Input className={INPUT_CLASS} />
-          </Field>
-          <Field label="Grupo de CIPA" required className="col-span-12">
-            <Input className={INPUT_CLASS} />
-          </Field>
-        </div>
-      </SectionCard>
-
-      <SectionCard title="PAT — Programa de Alimentação">
-        <Tabs defaultValue="benef">
-          <TabsList className="rounded-full bg-muted p-1 mb-4">
-            <TabsTrigger value="benef" className="rounded-full data-[state=active]:bg-brand-blue data-[state=active]:text-white">Beneficiária</TabsTrigger>
-            <TabsTrigger value="forn" className="rounded-full">Fornecedora</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <div className="grid grid-cols-3 gap-3">
-          <Field label="Participa do PAT">
-            <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
-              <SelectContent><SelectItem value="nao">Não</SelectItem><SelectItem value="sim">Sim</SelectItem></SelectContent>
-            </Select>
-          </Field>
-          <Field label="Data Participa PAT"><Input placeholder="dd/mm/aaaa" className={INPUT_CLASS} /></Field>
-          <Field label="Número do Registro"><Input className={INPUT_CLASS} /></Field>
-        </div>
-      </SectionCard>
-    </>
-  );
-}
 
 function FiscalSection() {
   return (

@@ -22,7 +22,7 @@ const accentBorder: Record<string, string> = {
   pink: "border-brand-pink/30 bg-brand-pink/10",
 };
 
-const AREA_ICON = { preparativos: Settings2, pessoal: Users2, financeiro: Wallet } as const;
+const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 
 export default function ContabilShell() {
   const { competencia, setCompetencia } = useCompetencia();
