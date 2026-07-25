@@ -710,16 +710,6 @@ export const AREAS: Area[] = [
     categories: preparativos,
   },
   {
-    slug: "pessoal",
-    title: "Pessoal",
-    code: "03",
-    icon: Users2,
-    accent: "purple",
-    eyebrow: "Departamento pessoal",
-    blurb: "Folha, eSocial, colaboradores e todo o ciclo do departamento pessoal.",
-    categories: pessoal,
-  },
-  {
     slug: "financeiro",
     title: "Financeiro",
     code: "04",
