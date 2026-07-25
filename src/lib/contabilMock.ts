@@ -22,7 +22,7 @@ export const STATUS_FECHAMENTO = [
   { modulo: "Fiscal (Saídas)", competencia: "07/2026", responsavel: "Rafael Prado", status: "EM_ANDAMENTO", atualizado: "há 30min" },
   { modulo: "Contábil (Diário)", competencia: "07/2026", responsavel: "Juliana Reis", status: "PENDENTE", atualizado: "ontem" },
   { modulo: "Tributos (Apuração)", competencia: "07/2026", responsavel: "Juliana Reis", status: "PENDENTE", atualizado: "—" },
-  { modulo: "eSocial (Periódicos)", competencia: "07/2026", responsavel: "Marina Costa", status: "ATRASADO", atualizado: "há 3 dias" },
+  
 ];
 
 export const ALERTAS = [
