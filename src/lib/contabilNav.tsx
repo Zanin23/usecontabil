@@ -712,7 +712,7 @@ export const AREAS: Area[] = [
   {
     slug: "financeiro",
     title: "Financeiro",
-    code: "04",
+    code: "03",
     icon: Wallet,
     accent: "orange",
     eyebrow: "Fiscal & tributário",
