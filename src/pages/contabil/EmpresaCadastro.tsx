@@ -43,6 +43,7 @@ type FormState = {
   email: string; whatsapp: string; site: string;
   respNome: string; respCpf: string; respCnpj: string; respTipo: string;
   aberturaRF: string; inicioContrato: string;
+  classeAtividadeId: string;
 };
 
 const EMPTY_FORM: FormState = {
@@ -55,6 +56,7 @@ const EMPTY_FORM: FormState = {
   email: "", whatsapp: "", site: "",
   respNome: "", respCpf: "", respCnpj: "", respTipo: "cpf",
   aberturaRF: "", inicioContrato: "",
+  classeAtividadeId: "",
 };
 
 /* --------------------------- assistant tips ---------------------------- */
@@ -485,7 +487,10 @@ export default function EmpresaCadastro() {
         cnpj: form.cnpj,
         razao: form.razao,
         regime: "A definir",
-        atividade: form.cnaeDesc || "—",
+        atividade:
+          (form.classeAtividadeId
+            ? loadAtividades().find((a) => a.id === form.classeAtividadeId)?.descricao
+            : "") || form.cnaeDesc || "—",
         status: "Ativa",
         createdAt: createdAt ?? new Date().toISOString(),
         raw: { ...form },
@@ -590,7 +595,9 @@ export default function EmpresaCadastro() {
               {section === "senhas" && <SenhasSection onTip={tipFocus} />}
               
               {section === "fiscal" && <FiscalSection />}
-              {section === "societario" && <SocietarioSection onTip={tipFocus} />}
+              {section === "societario" && (
+                <SocietarioSection onTip={tipFocus} form={form} set={set} />
+              )}
 
               <div className="flex items-center justify-between pt-2">
                 <div className="flex gap-2">
@@ -881,7 +888,14 @@ function FiscalSection() {
   );
 }
 
-function SocietarioSection({ onTip }: { onTip: (k: string) => void }) {
+function SocietarioSection({
+  onTip, form, set,
+}: {
+  onTip: (k: string) => void;
+  form: FormState;
+  set: (patch: Partial<FormState>) => void;
+}) {
+  const { atividades } = useAtividades();
   return (
     <>
       <div className="flex justify-center gap-2">
@@ -931,7 +945,28 @@ function SocietarioSection({ onTip }: { onTip: (k: string) => void }) {
               <SelectContent><SelectItem value="me">ME</SelectItem></SelectContent>
             </Select>
           </Field>
-          <Field label="Classe de Atividade" className="col-span-9"><Input className={INPUT_CLASS} /></Field>
+          <Field label="Classe de Atividade" className="col-span-9">
+            <div className="flex items-center gap-2">
+              <Select
+                value={form.classeAtividadeId}
+                onValueChange={(v) => set({ classeAtividadeId: v })}
+              >
+                <SelectTrigger className={INPUT_CLASS}>
+                  <SelectValue placeholder="Selecione a classe cadastrada…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {atividades
+                    .filter((a) => a.status === "Ativa")
+                    .map((a) => (
+                      <SelectItem key={a.id} value={a.id}>{formatAtividade(a)}</SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <Button asChild variant="outline" size="sm" className="rounded-full shrink-0">
+                <Link to="/preparativos/cadastros/classe-atividades">Gerenciar</Link>
+              </Button>
+            </div>
+          </Field>
 
           <Field label="Código de Imobilizado" className="col-span-3"><Input className={INPUT_CLASS} /></Field>
           <Field label="Grupo econômico" className="col-span-3">
