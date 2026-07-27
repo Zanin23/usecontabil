@@ -15,7 +15,7 @@ export default function TabelaSimei() {
       badgeKey="atividade"
       colunas={["atividade", "inss", "icms", "iss", "total"]}
       campos={[
-        { key: "atividade", label: "Atividade", required: true, span: 2, options: [], placeholder: "Comércio, Serviços…" },
+        { key: "atividade", label: "Atividade", required: true, span: 2, placeholder: "Comércio, Serviços…" },
         { key: "inss", label: "INSS (R$)", mono: true, align: "right", required: true, placeholder: "70,60" },
         { key: "icms", label: "ICMS (R$)", mono: true, align: "right", placeholder: "1,00" },
         { key: "iss", label: "ISS (R$)", mono: true, align: "right", placeholder: "5,00" },
