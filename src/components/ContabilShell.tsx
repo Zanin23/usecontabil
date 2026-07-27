@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
   Settings2, Users2, Wallet, ChevronRight,
 } from "lucide-react";
-import { EMPRESAS } from "@/lib/contabilMock";
+import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
 
@@ -26,6 +26,8 @@ const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 
 export default function ContabilShell() {
   const { competencia, setCompetencia } = useCompetencia();
+  const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
+
   const { pathname } = useLocation();
   const seg = pathname.split("/").filter(Boolean);
   const currentAreaSlug = seg[0];

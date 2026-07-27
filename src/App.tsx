@@ -16,8 +16,10 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const App = () => (
   <BrowserRouter>
     <CompetenciaProvider>
+    <EmpresaProvider>
     <Toaster />
     <Suspense fallback={<div className="min-h-screen bg-background" />}>
+
       <Routes>
         <Route element={<ContabilShell />}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -32,7 +34,9 @@ const App = () => (
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
+    </EmpresaProvider>
     </CompetenciaProvider>
+
   </BrowserRouter>
 );
 
