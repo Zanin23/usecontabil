@@ -1,6 +1,13 @@
 // Simple localStorage-backed store for user-created empresa records (prototype).
 const KEY = "usecontabil.empresas.v1";
 
+export const EMPRESAS_EVENT = "usecontabil:empresas-changed";
+
+function notify() {
+  window.dispatchEvent(new Event(EMPRESAS_EVENT));
+}
+
+
 export type EmpresaRecord = {
   id: string;
   cnpj: string;
