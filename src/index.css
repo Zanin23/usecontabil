@@ -1,4 +1,5 @@
-@import "./design-system/mj-design-system-db98fa/index.css";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap");
+@import "./design-system/mj-design-system-db98fa/styles/theme.css";
 
 /* ============================================================
    Project-level theme override (user-requested deviation).

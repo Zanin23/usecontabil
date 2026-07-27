@@ -92,7 +92,7 @@ export default function ContabilShell() {
 
           {/* Areas */}
           {AREAS.map((area) => {
-            const Icon = AREA_ICON[area.slug as keyof typeof AREA_ICON];
+            const Icon = area.icon ?? AREA_ICON[area.slug as keyof typeof AREA_ICON] ?? Settings2;
             const isOpen = openArea === area.slug;
             const isActive = currentArea?.slug === area.slug;
             return (
