@@ -4,6 +4,8 @@ import { Toaster } from "./design-system/mj-design-system-db98fa";
 import ContabilShell from "./components/ContabilShell";
 import Dashboard from "./pages/contabil/Dashboard";
 import { CompetenciaProvider } from "./lib/competencia";
+import { EmpresaProvider } from "./lib/empresaAtual";
+
 
 const AreaPage = lazy(() => import("./pages/contabil/AreaPage"));
 const CategoryPage = lazy(() => import("./pages/contabil/CategoryPage"));
