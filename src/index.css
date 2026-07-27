@@ -76,7 +76,20 @@
   --ink: hsl(40 30% 95%);
   --cream: hsl(0 0% 12%);
   --surface: hsl(0 0% 10%);
+
+  --popover: hsl(0 0% 10%);
+  --popover-foreground: hsl(40 30% 95%);
+  --primary: hsl(40 30% 95%);
+  --primary-foreground: hsl(0 0% 11%);
+  --secondary: hsl(0 0% 15%);
+  --secondary-foreground: hsl(40 30% 95%);
+  --muted: hsl(0 0% 16%);
+  --muted-foreground: hsl(40 12% 68%);
+  --accent: hsl(24 40% 18%);
+  --accent-foreground: hsl(40 30% 95%);
+  --input: hsl(40 30% 95% / 0.16);
 }
+
 
 /* Headings use Outfit; tighten tracking per spec */
 @layer base {
