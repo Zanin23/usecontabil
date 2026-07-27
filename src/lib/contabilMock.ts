@@ -150,3 +150,84 @@ export function brl(v: number) {
   const sign = v < 0 ? "-" : "";
   return sign + "R$ " + Math.abs(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+
+/* ------------------------------------------------------------------
+   Séries visuais do dashboard (mock — sem integração real)
+------------------------------------------------------------------ */
+
+export const SERIE_RESULTADO = [
+  { mes: "Fev", receita: 612_400, despesa: 468_120, lucro: 144_280 },
+  { mes: "Mar", receita: 704_950, despesa: 521_880, lucro: 183_070 },
+  { mes: "Abr", receita: 668_310, despesa: 545_410, lucro: 122_900 },
+  { mes: "Mai", receita: 812_770, despesa: 592_340, lucro: 220_430 },
+  { mes: "Jun", receita: 884_120, despesa: 631_705, lucro: 252_415 },
+  { mes: "Jul", receita: 1_129_759, despesa: 773_347, lucro: 356_412 },
+];
+
+export const SERIE_TRIBUTOS = [
+  { tributo: "ICMS", valor: 98_412.30, vencimento: "10/08" },
+  { tributo: "PIS/COFINS", valor: 62_180.44, vencimento: "25/08" },
+  { tributo: "IRPJ/CSLL", valor: 71_904.12, vencimento: "31/08" },
+  { tributo: "ISS", valor: 18_240.00, vencimento: "15/08" },
+  { tributo: "INSS/FGTS", valor: 34_175.69, vencimento: "07/08" },
+];
+
+export const COMPOSICAO_DESPESA = [
+  { nome: "Comerciais", valor: 428_190 },
+  { nome: "Administrativas", valor: 612_309 },
+  { nome: "Gerais", valor: 163_814 },
+  { nome: "Tributárias", valor: 284_913 },
+];
+
+export const SERIE_LANCAMENTOS_DIA = [
+  { dia: "01", qtd: 42 }, { dia: "05", qtd: 61 }, { dia: "10", qtd: 88 },
+  { dia: "15", qtd: 74 }, { dia: "20", qtd: 119 }, { dia: "25", qtd: 96 },
+  { dia: "31", qtd: 143 },
+];
+
+export const KPI_DETALHES: Record<string, {
+  resumo: string;
+  spark: number[];
+  linhas: { rotulo: string; valor: string; tom?: "success" | "warn" | "danger" }[];
+}> = {
+  "Fechamento contábil": {
+    resumo: "4 de 6 módulos ainda em aberto para a competência Jul/2026.",
+    spark: [3, 4, 4, 5, 5, 6, 4],
+    linhas: [
+      { rotulo: "Módulos concluídos", valor: "2 de 6", tom: "warn" },
+      { rotulo: "Prazo interno", valor: "10/08/2026" },
+      { rotulo: "Lançamentos pendentes de revisão", valor: "37", tom: "warn" },
+      { rotulo: "Última movimentação", valor: "há 30 min" },
+    ],
+  },
+  "Pendências eSocial": {
+    resumo: "12 eventos aguardando correção antes da transmissão do fechamento.",
+    spark: [4, 6, 5, 9, 7, 10, 12],
+    linhas: [
+      { rotulo: "Rejeições S-1200", valor: "5", tom: "danger" },
+      { rotulo: "Eventos não transmitidos", valor: "4", tom: "warn" },
+      { rotulo: "Aguardando retorno", valor: "3" },
+      { rotulo: "Prazo legal", valor: "15/08/2026", tom: "warn" },
+    ],
+  },
+  "Impostos a vencer (7d)": {
+    resumo: "5 guias consolidadas com vencimento nos próximos 7 dias.",
+    spark: [180, 210, 240, 205, 268, 254, 285],
+    linhas: [
+      { rotulo: "ICMS", valor: "R$ 98.412,30" },
+      { rotulo: "IRPJ/CSLL", valor: "R$ 71.904,12" },
+      { rotulo: "PIS/COFINS", valor: "R$ 62.180,44" },
+      { rotulo: "INSS/FGTS + ISS", valor: "R$ 52.415,69" },
+    ],
+  },
+  "Faturamento acumulado": {
+    resumo: "Acumulado de 2026 com crescimento consistente desde março.",
+    spark: [612, 705, 668, 813, 884, 1130],
+    linhas: [
+      { rotulo: "Mercado interno", valor: "R$ 3.910.842,00", tom: "success" },
+      { rotulo: "Serviços", valor: "R$ 901.467,00", tom: "success" },
+      { rotulo: "Ticket médio por NF", valor: "R$ 18.402,11" },
+      { rotulo: "Notas emitidas", valor: "1.204" },
+    ],
+  },
+};
