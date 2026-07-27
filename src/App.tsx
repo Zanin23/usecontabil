@@ -11,7 +11,10 @@ const AreaPage = lazy(() => import("./pages/contabil/AreaPage"));
 const CategoryPage = lazy(() => import("./pages/contabil/CategoryPage"));
 const ModulePage = lazy(() => import("./pages/contabil/ModulePage"));
 const EmpresaCadastro = lazy(() => import("./pages/contabil/EmpresaCadastro"));
+const ClasseAtividades = lazy(() => import("./pages/contabil/ClasseAtividades"));
+const ResumoClasseAtividades = lazy(() => import("./pages/contabil/ResumoClasseAtividades"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+
 
 const App = () => (
   <BrowserRouter>
@@ -28,7 +31,10 @@ const App = () => (
           <Route path="/:area/:categoria" element={<CategoryPage />} />
           <Route path="/preparativos/empresa/dados-empresa/novo" element={<EmpresaCadastro />} />
           <Route path="/preparativos/cadastros/empresas/novo" element={<EmpresaCadastro />} />
+          <Route path="/preparativos/cadastros/classe-atividades" element={<ClasseAtividades />} />
+          <Route path="/preparativos/cadastros/resumo-classe-atividades" element={<ResumoClasseAtividades />} />
           <Route path="/preparativos/cadastros/empresas/:id" element={<EmpresaCadastro />} />
+
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
