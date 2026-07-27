@@ -1,6 +1,13 @@
 // Simple localStorage-backed store for user-created empresa records (prototype).
 const KEY = "usecontabil.empresas.v1";
 
+export const EMPRESAS_EVENT = "usecontabil:empresas-changed";
+
+function notify() {
+  window.dispatchEvent(new Event(EMPRESAS_EVENT));
+}
+
+
 export type EmpresaRecord = {
   id: string;
   cnpj: string;
@@ -31,9 +38,12 @@ export function saveEmpresa(rec: EmpresaRecord) {
   if (idx >= 0) list[idx] = rec;
   else list.unshift(rec);
   localStorage.setItem(KEY, JSON.stringify(list));
+  notify();
 }
 
 export function removeEmpresa(id: string) {
   const list = loadEmpresas().filter((e) => e.id !== id);
   localStorage.setItem(KEY, JSON.stringify(list));
+  notify();
 }
+

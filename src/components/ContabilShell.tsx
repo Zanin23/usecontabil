@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
   Settings2, Users2, Wallet, ChevronRight,
 } from "lucide-react";
-import { EMPRESAS } from "@/lib/contabilMock";
+import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
 
@@ -26,6 +26,8 @@ const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 
 export default function ContabilShell() {
   const { competencia, setCompetencia } = useCompetencia();
+  const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
+
   const { pathname } = useLocation();
   const seg = pathname.split("/").filter(Boolean);
   const currentAreaSlug = seg[0];
@@ -194,14 +196,28 @@ export default function ContabilShell() {
 
             <div className="hidden md:flex items-center gap-2 rounded-md border border-border bg-card px-3 h-9 text-sm min-w-[280px]">
               <Building2 className="h-4 w-4 text-muted-foreground" />
-              <select className="bg-transparent outline-none flex-1 text-foreground">
-                {EMPRESAS.map((e) => (
-                  <option key={e.id} value={e.id} className="bg-card">
-                    {e.razao}
-                  </option>
-                ))}
-              </select>
+              {empresas.length === 0 ? (
+                <NavLink
+                  to="/preparativos/cadastros/empresas/novo"
+                  className="flex-1 text-muted-foreground hover:text-foreground transition truncate"
+                >
+                  Nenhuma empresa — cadastrar
+                </NavLink>
+              ) : (
+                <select
+                  value={empresaId ?? ""}
+                  onChange={(e) => setEmpresaId(e.target.value)}
+                  className="bg-transparent outline-none flex-1 text-foreground"
+                >
+                  {empresas.map((e) => (
+                    <option key={e.id} value={e.id} className="bg-card">
+                      {e.razao}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
+
 
             <div className="flex items-center gap-2 rounded-md border border-border bg-card px-3 h-9 text-sm">
               <CalendarRange className="h-4 w-4 text-muted-foreground" />
