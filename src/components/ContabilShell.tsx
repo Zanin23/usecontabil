@@ -56,9 +56,10 @@ export default function ContabilShell() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Sidebar */}
       <aside className="fixed inset-y-0 left-0 w-64 border-r border-border bg-card/60 backdrop-blur flex flex-col">
+        <div className="h-0.5 bg-gradient-brand" />
         <div className="px-5 py-5 border-b border-border">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-brand-orange grid place-items-center">
+            <div className="h-8 w-8 rounded-lg bg-brand-orange grid place-items-center shadow-glow">
               <span className="text-primary-foreground font-display text-lg leading-none">U</span>
             </div>
             <div>
@@ -116,15 +117,15 @@ export default function ContabilShell() {
                 </button>
 
                 {isOpen && (
-                  <div className="pl-8 space-y-0.5 border-l border-border/60 ml-4">
+                  <div className="pl-8 space-y-0.5 border-l border-brand-orange/30 ml-4">
                     <NavLink
                       to={`/${area.slug}`}
                       end
                       className={({ isActive: linkActive }) =>
                         `block rounded-md px-3 py-1.5 text-xs transition ${
                           linkActive
-                            ? "text-foreground bg-accent"
-                            : "text-muted-foreground hover:text-foreground"
+                            ? "text-foreground bg-brand-orange/10 border-l-2 border-brand-orange -ml-px"
+                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
                         }`
                       }
                     >
@@ -137,8 +138,8 @@ export default function ContabilShell() {
                         className={({ isActive }) =>
                           `block rounded-md px-3 py-1.5 text-xs transition ${
                             isActive || currentCategory?.slug === cat.slug
-                              ? "text-foreground bg-accent"
-                              : "text-muted-foreground hover:text-foreground"
+                              ? "text-foreground bg-brand-orange/10 border-l-2 border-brand-orange -ml-px"
+                              : "text-muted-foreground hover:text-foreground hover:bg-accent"
                           }`
                         }
                       >
