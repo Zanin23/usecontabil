@@ -282,7 +282,7 @@ export default function Dashboard() {
                   <span className="text-muted-foreground">Progresso</span>
                   <span className="font-mono text-brand-orange">{progressoFechamento}%</span>
                 </div>
-                <Progress value={progressoFechamento} className="h-1.5" />
+                <Progress value={progressoFechamento} className="h-1.5 [&>*]:bg-brand-orange" />
               </div>
             </div>
             <Table>
@@ -304,7 +304,7 @@ export default function Dashboard() {
                       <TableCell className="font-mono text-xs text-muted-foreground">{row.competencia}</TableCell>
                       <TableCell className="text-sm">{row.responsavel}</TableCell>
                       <TableCell>
-                        <Progress value={s.pct} className="h-1.5" />
+                        <Progress value={s.pct} className="h-1.5 [&>*]:bg-brand-orange" />
                       </TableCell>
                       <TableCell className="pr-6 text-right">
                         <span className={`inline-flex items-center gap-2 text-xs ${s.text}`}>
