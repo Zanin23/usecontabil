@@ -14,6 +14,10 @@ const EmpresaCadastro = lazy(() => import("./pages/contabil/EmpresaCadastro"));
 const ClasseAtividades = lazy(() => import("./pages/contabil/ClasseAtividades"));
 const Filiais = lazy(() => import("./pages/contabil/Filiais"));
 const ResumoClasseAtividades = lazy(() => import("./pages/contabil/ResumoClasseAtividades"));
+const ServicosGestao = lazy(() => import("./pages/contabil/ServicosGestao"));
+const FasesProcessos = lazy(() => import("./pages/contabil/FasesProcessos"));
+const CadastroTarefas = lazy(() => import("./pages/contabil/CadastroTarefas"));
+const Encerramentos = lazy(() => import("./pages/contabil/Encerramentos"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
