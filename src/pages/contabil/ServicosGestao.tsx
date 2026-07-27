@@ -9,6 +9,7 @@ import {
   AlertTriangle, CheckCircle2, ChevronRight, ClipboardList, Circle, Lock, LockOpen, RotateCcw,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
+import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import {
   FASES, TarefaStatus, execKey, fecharPeriodo, pendenciasCadastro, reabrirPeriodo,
@@ -364,6 +365,38 @@ export default function ServicosGestao() {
           )}
         </CardContent>
       </Card>
+
+      <AssistenteFechamento
+        resumo={`${empresa ? empresa.razao : "Sem empresa"} · ${formatCompetencia(competencia)}`}
+        contexto={{
+          empresa: empresa
+            ? { razao: empresa.razao, cnpj: empresa.cnpj, regime: empresa.regime }
+            : null,
+          competencia: formatCompetencia(competencia),
+          periodoFechado: Boolean(fechado),
+          progressoGeral: `${progresso}%`,
+          fases: fases.map((f) => ({
+            fase: f.title,
+            objetivo: f.desc,
+            concluidas: f.concluidas,
+            total: f.total,
+            progresso: `${f.progresso}%`,
+          })),
+          pendenciasCadastro: pendCadastro
+            .filter((p) => !p.resolvida)
+            .map((p) => ({ item: p.titulo, detalhe: p.detalhe, tela: p.destino, bloqueia: p.critica })),
+          tarefasPendentes: tarefasPendentes.map((m) => ({
+            codigo: m.id,
+            tarefa: m.titulo,
+            fase: FASES.find((f) => f.slug === m.fase)?.title,
+            responsavel: m.responsavel,
+            prazoDia: m.diaPrazo,
+            obrigatoria: m.obrigatoria,
+            situacao: statusOf(m.id),
+          })),
+          podeEncerrar: Boolean(podeFechar),
+        }}
+      />
     </div>
   );
 }
