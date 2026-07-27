@@ -24,6 +24,16 @@
   <meta name="twitter:description" content="Plataforma corporativa de contabilidade, folha de pagamento, eSocial e demonstrações financeiras para departamentos contábeis internos.">
   <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c8dcbfc2-0fb3-471a-8743-82ba99f0ae6c/id-preview-6503b257--8cf183be-7da0-47bb-9eb3-326c4f8b6c3c.lovable.app-1784838269113.png">
   <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c8dcbfc2-0fb3-471a-8743-82ba99f0ae6c/id-preview-6503b257--8cf183be-7da0-47bb-9eb3-326c4f8b6c3c.lovable.app-1784838269113.png">
+  <script>
+    (function () {
+      try {
+        var s = localStorage.getItem("usecontabil.tema");
+        var d = s === "dark" || (!s && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", d);
+        document.documentElement.style.colorScheme = d ? "dark" : "light";
+      } catch (e) {}
+    })();
+  </script>
 </head>
   <body>
     <div id="root"></div>
