@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { saveEmpresa, getEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
+import { formatAtividade, loadAtividades, useAtividades } from "@/lib/atividadesStore";
+
 import {
   Button, Card, CardContent, Input, Label, Separator,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
