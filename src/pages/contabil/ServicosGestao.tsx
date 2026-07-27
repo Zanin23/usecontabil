@@ -370,7 +370,7 @@ export default function ServicosGestao() {
         resumo={`${empresa ? empresa.razao : "Sem empresa"} · ${formatCompetencia(competencia)}`}
         contexto={{
           empresa: empresa
-            ? { razao: empresa.razao, cnpj: empresa.cnpj, regime: empresa.regime, atividade: empresa.atividade }
+            ? { razao: empresa.razao, cnpj: empresa.cnpj, regime: empresa.regime }
             : null,
           competencia: formatCompetencia(competencia),
           periodoFechado: Boolean(fechado),
