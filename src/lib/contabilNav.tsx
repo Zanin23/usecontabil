@@ -8,6 +8,8 @@ import {
   Percent, FileSpreadsheet, Coins, TrendingUp, ScrollText, Banknote, FileBarChart2,
   BadgeDollarSign, Cog, type LucideIcon,
 } from "lucide-react";
+import { fiscal, administrativo } from "./contabilNavAreas";
+
 
 // ------------------------------------------------------------
 // Types
