@@ -1,0 +1,80 @@
+import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { EMPRESAS_EVENT, loadEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
+
+const SELECTED_KEY = "usecontabil.empresaAtual.v1";
+
+export type EmpresaOption = {
+  id: string;
+  razao: string;
+  cnpj: string;
+  regime: string;
+};
+
+type Ctx = {
+  empresas: EmpresaOption[];
+  empresaId: string | null;
+  empresa: EmpresaOption | null;
+  setEmpresaId: (id: string) => void;
+};
+
+const EmpresaContext = createContext<Ctx | null>(null);
+
+function toOption(e: EmpresaRecord): EmpresaOption {
+  return { id: e.id, razao: e.razao, cnpj: e.cnpj, regime: e.regime };
+}
+
+export function EmpresaProvider({ children }: { children: ReactNode }) {
+  const [empresas, setEmpresas] = useState<EmpresaOption[]>(() => loadEmpresas().map(toOption));
+  const [empresaId, setEmpresaIdState] = useState<string | null>(
+    () => localStorage.getItem(SELECTED_KEY),
+  );
+
+  useEffect(() => {
+    const refresh = () => setEmpresas(loadEmpresas().map(toOption));
+    window.addEventListener(EMPRESAS_EVENT, refresh);
+    window.addEventListener("storage", refresh);
+    window.addEventListener("focus", refresh);
+    return () => {
+      window.removeEventListener(EMPRESAS_EVENT, refresh);
+      window.removeEventListener("storage", refresh);
+      window.removeEventListener("focus", refresh);
+    };
+  }, []);
+
+  // Keep the selection valid whenever the list changes.
+  useEffect(() => {
+    if (empresas.length === 0) {
+      if (empresaId !== null) {
+        setEmpresaIdState(null);
+        localStorage.removeItem(SELECTED_KEY);
+      }
+      return;
+    }
+    if (!empresaId || !empresas.some((e) => e.id === empresaId)) {
+      const next = empresas[0].id;
+      setEmpresaIdState(next);
+      localStorage.setItem(SELECTED_KEY, next);
+    }
+  }, [empresas, empresaId]);
+
+  const value = useMemo<Ctx>(() => {
+    const setEmpresaId = (id: string) => {
+      setEmpresaIdState(id);
+      localStorage.setItem(SELECTED_KEY, id);
+    };
+    return {
+      empresas,
+      empresaId,
+      empresa: empresas.find((e) => e.id === empresaId) ?? null,
+      setEmpresaId,
+    };
+  }, [empresas, empresaId]);
+
+  return <EmpresaContext.Provider value={value}>{children}</EmpresaContext.Provider>;
+}
+
+export function useEmpresaAtual() {
+  const ctx = useContext(EmpresaContext);
+  if (!ctx) throw new Error("useEmpresaAtual must be used within EmpresaProvider");
+  return ctx;
+}
