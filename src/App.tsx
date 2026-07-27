@@ -23,7 +23,16 @@ const EmpresaInscricoes = lazy(() => import("./pages/contabil/EmpresaInscricoes"
 const EmpresaPagamentos = lazy(() => import("./pages/contabil/EmpresaPagamentos"));
 const EmpresaParametros = lazy(() => import("./pages/contabil/EmpresaParametros"));
 const EmpresaCertificados = lazy(() => import("./pages/contabil/EmpresaCertificados"));
+const FinServicos = lazy(() => import("./pages/contabil/financeiro/CadastroServicos"));
+const FinSimei = lazy(() => import("./pages/contabil/financeiro/TabelaSimei"));
+const FinSimples = lazy(() => import("./pages/contabil/financeiro/TabelaSimplesNacional"));
+const FinLucroReal = lazy(() => import("./pages/contabil/financeiro/TabelaLucroReal"));
+const FinLucroPresumido = lazy(() => import("./pages/contabil/financeiro/TabelaLucroPresumido"));
+const FinAjusteApuracao = lazy(() => import("./pages/contabil/financeiro/TabelaAjusteApuracao"));
+const FinAjusteDoc = lazy(() => import("./pages/contabil/financeiro/TabelaAjusteDocumentoFiscal"));
+const FinPisCofins = lazy(() => import("./pages/contabil/financeiro/TabelaApuracaoPisCofins"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+
 
 
 const App = () => (
