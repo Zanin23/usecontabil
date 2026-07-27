@@ -141,13 +141,7 @@ const preparativos: Category[] = [
           { key: "responsavel", label: "Responsável interno" },
           C.status,
         ],
-        rows: [
-          { codigo: "UN-001", nome: "Matriz — Sede administrativa", cidade: "São Paulo/SP", responsavel: "M. Andrade", status: "Ativa" },
-          { codigo: "UN-002", nome: "Filial Sul", cidade: "Porto Alegre/RS", responsavel: "R. Prado", status: "Ativa" },
-          { codigo: "UN-003", nome: "Filial Nordeste", cidade: "Recife/PE", responsavel: "C. Mendes", status: "Ativa" },
-          { codigo: "UN-004", nome: "Unidade Fabril", cidade: "Betim/MG", responsavel: "H. Vilela", status: "Ativa" },
-          { codigo: "UN-005", nome: "Centro de Distribuição Sul", cidade: "Curitiba/PR", responsavel: "E. Nogueira", status: "Inativa" },
-        ],
+        rows: [],
         primaryAction: "Nova unidade",
       },
       {
