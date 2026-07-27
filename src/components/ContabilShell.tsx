@@ -117,15 +117,15 @@ export default function ContabilShell() {
                 </button>
 
                 {isOpen && (
-                  <div className="pl-8 space-y-0.5 border-l border-border/60 ml-4">
+                  <div className="pl-8 space-y-0.5 border-l border-brand-orange/30 ml-4">
                     <NavLink
                       to={`/${area.slug}`}
                       end
                       className={({ isActive: linkActive }) =>
                         `block rounded-md px-3 py-1.5 text-xs transition ${
                           linkActive
-                            ? "text-foreground bg-accent"
-                            : "text-muted-foreground hover:text-foreground"
+                            ? "text-foreground bg-brand-orange/10 border-l-2 border-brand-orange -ml-px"
+                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
                         }`
                       }
                     >
@@ -138,8 +138,8 @@ export default function ContabilShell() {
                         className={({ isActive }) =>
                           `block rounded-md px-3 py-1.5 text-xs transition ${
                             isActive || currentCategory?.slug === cat.slug
-                              ? "text-foreground bg-accent"
-                              : "text-muted-foreground hover:text-foreground"
+                              ? "text-foreground bg-brand-orange/10 border-l-2 border-brand-orange -ml-px"
+                              : "text-muted-foreground hover:text-foreground hover:bg-accent"
                           }`
                         }
                       >
