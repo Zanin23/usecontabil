@@ -32,6 +32,7 @@ const App = () => (
           <Route path="/:area/:categoria" element={<CategoryPage />} />
           <Route path="/preparativos/empresa/dados-empresa/novo" element={<EmpresaCadastro />} />
           <Route path="/preparativos/cadastros/empresas/novo" element={<EmpresaCadastro />} />
+          <Route path="/preparativos/cadastros/filiais" element={<Filiais />} />
           <Route path="/preparativos/cadastros/classe-atividades" element={<ClasseAtividades />} />
           <Route path="/preparativos/cadastros/resumo-classe-atividades" element={<ResumoClasseAtividades />} />
           <Route path="/preparativos/cadastros/empresas/:id" element={<EmpresaCadastro />} />
