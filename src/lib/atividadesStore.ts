@@ -80,3 +80,20 @@ export function nextAtividadeId(): string {
 export function formatAtividade(a: AtividadeRecord) {
   return `${a.cnae} — ${a.descricao}`;
 }
+
+// Hook reativo — recarrega quando o cadastro muda em qualquer tela.
+import { useEffect, useState } from "react";
+
+export function useAtividades() {
+  const [atividades, setAtividades] = useState<AtividadeRecord[]>(() => loadAtividades());
+  useEffect(() => {
+    const refresh = () => setAtividades(loadAtividades());
+    window.addEventListener(ATIVIDADES_EVENT, refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener(ATIVIDADES_EVENT, refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+  return { atividades, refresh: () => setAtividades(loadAtividades()) };
+}
