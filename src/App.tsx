@@ -14,6 +14,10 @@ const EmpresaCadastro = lazy(() => import("./pages/contabil/EmpresaCadastro"));
 const ClasseAtividades = lazy(() => import("./pages/contabil/ClasseAtividades"));
 const Filiais = lazy(() => import("./pages/contabil/Filiais"));
 const ResumoClasseAtividades = lazy(() => import("./pages/contabil/ResumoClasseAtividades"));
+const ServicosGestao = lazy(() => import("./pages/contabil/ServicosGestao"));
+const FasesProcessos = lazy(() => import("./pages/contabil/FasesProcessos"));
+const CadastroTarefas = lazy(() => import("./pages/contabil/CadastroTarefas"));
+const Encerramentos = lazy(() => import("./pages/contabil/Encerramentos"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
@@ -36,6 +40,10 @@ const App = () => (
           <Route path="/preparativos/cadastros/classe-atividades" element={<ClasseAtividades />} />
           <Route path="/preparativos/cadastros/resumo-classe-atividades" element={<ResumoClasseAtividades />} />
           <Route path="/preparativos/cadastros/empresas/:id" element={<EmpresaCadastro />} />
+          <Route path="/preparativos/servicos/gestao" element={<ServicosGestao />} />
+          <Route path="/preparativos/servicos/fases-processos" element={<FasesProcessos />} />
+          <Route path="/preparativos/servicos/cadastro-tarefas" element={<CadastroTarefas />} />
+          <Route path="/preparativos/servicos/encerramentos" element={<Encerramentos />} />
 
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>
