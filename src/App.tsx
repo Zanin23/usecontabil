@@ -40,6 +40,10 @@ const App = () => (
           <Route path="/preparativos/cadastros/classe-atividades" element={<ClasseAtividades />} />
           <Route path="/preparativos/cadastros/resumo-classe-atividades" element={<ResumoClasseAtividades />} />
           <Route path="/preparativos/cadastros/empresas/:id" element={<EmpresaCadastro />} />
+          <Route path="/preparativos/servicos/gestao" element={<ServicosGestao />} />
+          <Route path="/preparativos/servicos/fases-processos" element={<FasesProcessos />} />
+          <Route path="/preparativos/servicos/cadastro-tarefas" element={<CadastroTarefas />} />
+          <Route path="/preparativos/servicos/encerramentos" element={<Encerramentos />} />
 
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>
