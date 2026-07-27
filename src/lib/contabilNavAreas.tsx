@@ -4,7 +4,7 @@ import {
   FileCog, Layers, ListChecks, Building2, Users2, Briefcase, ClipboardList,
   CalendarClock, FolderArchive, Lock, Cog, BadgeDollarSign, Wallet2, Split,
   PieChart, FileDown, FileUp, Truck, ShoppingCart, PackageSearch, KeyRound,
-  History, Boxes, HandCoins, Barcode, ShieldCheck, type LucideIcon,
+  History, Boxes, Radio, ListTree, HandCoins, Barcode, ShieldCheck, type LucideIcon,
 } from "lucide-react";
 import type { Category, Col, Module, Row } from "./contabilNav";
 
@@ -197,7 +197,7 @@ export const fiscal: Category[] = [
         { obrigacao: "DCTFWeb mensal", competencia: "07/2026", prazo: "15/08/2026", responsavel: "Equipe fiscal", status: "Pendente" },
         { obrigacao: "DCTF mensal", competencia: "06/2026", prazo: "15/07/2026", responsavel: "Equipe fiscal", status: "Transmitida" },
       ]),
-      mod("reinf", "EFD-Reinf", Radio2, "Retenções e informações de terceiros.", COLS_OBRIG, [
+      mod("reinf", "EFD-Reinf", Radio, "Retenções e informações de terceiros.", COLS_OBRIG, [
         { obrigacao: "EFD-Reinf — eventos R-2010", competencia: "07/2026", prazo: "15/08/2026", responsavel: "Equipe fiscal", status: "Em geração" },
         { obrigacao: "EFD-Reinf — fechamento R-2099", competencia: "06/2026", prazo: "15/07/2026", responsavel: "Equipe fiscal", status: "Transmitida" },
       ]),
@@ -320,7 +320,7 @@ export const administrativo: Category[] = [
         { banco: "Itaú", agencia: "0456", conta: "11223-8", tipo: "Conta corrente", saldo: brl(96_240.1) },
         { banco: "Santander", agencia: "3390", conta: "44120-0", tipo: "Aplicação CDB", saldo: brl(280_000) },
       ], "Nova conta"),
-      mod("plano-gerencial", "Plano de contas gerencial", ListTreeIcon, "Estrutura gerencial usada nos relatórios internos.", [
+      mod("plano-gerencial", "Plano de contas gerencial", ListTree, "Estrutura gerencial usada nos relatórios internos.", [
         col("conta", "Conta", { mono: true }), col("descricao", "Descrição"), col("natureza", "Natureza"), col("nivel", "Nível", { align: "center", mono: true }),
       ], [
         { conta: "3.1", descricao: "Receita operacional", natureza: "Receita", nivel: "2" },
