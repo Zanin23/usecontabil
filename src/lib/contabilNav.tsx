@@ -704,16 +704,37 @@ export const AREAS: Area[] = [
     categories: preparativos,
   },
   {
+    slug: "fiscal",
+    title: "Fiscal",
+    code: "03",
+    icon: Receipt,
+    accent: "orange",
+    eyebrow: "Documentos & obrigações",
+    blurb: "Documentos fiscais, escrituração, apurações, obrigações acessórias e guias das empresas do grupo.",
+    categories: fiscal,
+  },
+  {
     slug: "financeiro",
     title: "Financeiro",
-    code: "03",
+    code: "04",
     icon: Wallet,
     accent: "orange",
-    eyebrow: "Fiscal & tributário",
+    eyebrow: "Tributário",
     blurb: "Faturamento, apurações e regimes tributários das empresas do grupo.",
     categories: financeiro,
   },
+  {
+    slug: "administrativo",
+    title: "Administrativo",
+    code: "05",
+    icon: Briefcase,
+    accent: "purple",
+    eyebrow: "Rotina corporativa",
+    blurb: "Cadastros, contas a pagar e receber, contratos, patrimônio, compras e controles internos.",
+    categories: administrativo,
+  },
 ];
+
 
 export const AREA_MAP = Object.fromEntries(AREAS.map((a) => [a.slug, a]));
 
