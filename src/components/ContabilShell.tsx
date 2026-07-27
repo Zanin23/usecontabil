@@ -56,9 +56,10 @@ export default function ContabilShell() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Sidebar */}
       <aside className="fixed inset-y-0 left-0 w-64 border-r border-border bg-card/60 backdrop-blur flex flex-col">
+        <div className="h-0.5 bg-gradient-brand" />
         <div className="px-5 py-5 border-b border-border">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-brand-orange grid place-items-center">
+            <div className="h-8 w-8 rounded-lg bg-brand-orange grid place-items-center shadow-glow">
               <span className="text-primary-foreground font-display text-lg leading-none">U</span>
             </div>
             <div>
