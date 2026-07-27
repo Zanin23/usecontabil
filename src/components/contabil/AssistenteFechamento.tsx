@@ -168,12 +168,12 @@ export default function AssistenteFechamento({
               key={i}
               className={
                 m.role === "user"
-                  ? "ml-auto max-w-[85%] rounded-2xl bg-brand-orange/10 px-3 py-2 text-sm"
-                  : "max-w-[90%] rounded-2xl bg-muted px-3 py-2 text-sm"
+                  ? "ml-auto max-w-[85%] rounded-2xl bg-brand-orange/15 text-foreground px-3 py-2 text-sm"
+                  : "max-w-[90%] rounded-2xl bg-muted text-foreground px-3 py-2 text-sm"
               }
             >
               {m.role === "assistant" ? (
-                <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0 text-foreground">
+                <div className="text-sm leading-relaxed text-foreground space-y-2 [&_p]:my-1 [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:my-1 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:my-0 [&_strong]:text-brand-orange [&_strong]:font-semibold [&_a]:text-brand-orange [&_a]:underline [&_code]:text-foreground [&_code]:bg-background/60 [&_code]:px-1 [&_code]:rounded [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_h1]:font-semibold [&_h2]:font-semibold [&_h3]:font-semibold">
                   <ReactMarkdown>{m.content}</ReactMarkdown>
                 </div>
               ) : (
@@ -181,6 +181,7 @@ export default function AssistenteFechamento({
               )}
             </div>
           ))}
+
 
           {loading && messages[messages.length - 1]?.role === "user" && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
