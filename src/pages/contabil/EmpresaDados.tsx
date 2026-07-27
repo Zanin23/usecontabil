@@ -171,6 +171,7 @@ export default function EmpresaDados() {
           },
         }}
         resumo={`Dados da empresa · ${empresa?.razao ?? "sem empresa"}`}
+        rotulo="IA ajudante"
       />
     </div>
   );

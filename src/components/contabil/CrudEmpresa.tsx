@@ -270,6 +270,7 @@ export default function CrudEmpresa({
       <AssistenteFechamento
         contexto={contexto}
         resumo={`${titulo} · ${empresa?.razao ?? "sem empresa"}`}
+        rotulo="IA ajudante"
       />
     </div>
   );

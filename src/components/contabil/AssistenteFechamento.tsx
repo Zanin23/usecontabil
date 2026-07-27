@@ -19,9 +19,11 @@ const SUGESTOES = [
 export default function AssistenteFechamento({
   contexto,
   resumo,
+  rotulo = "IA do fechamento",
 }: {
   contexto: AssistenteContexto;
   resumo: string;
+  rotulo?: string;
 }) {
   const [aberto, setAberto] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -113,7 +115,7 @@ export default function AssistenteFechamento({
         onClick={() => setAberto(true)}
         className="fixed bottom-6 right-6 z-40 rounded-full bg-brand-orange hover:bg-brand-orange/90 shadow-glow"
       >
-        <Sparkles className="h-4 w-4 mr-2" /> IA do fechamento
+        <Sparkles className="h-4 w-4 mr-2" /> {rotulo}
       </Button>
     );
   }
@@ -126,7 +128,7 @@ export default function AssistenteFechamento({
             <Bot className="h-4 w-4 text-brand-orange" />
           </div>
           <div className="min-w-0">
-            <div className="text-sm font-medium truncate">Assistente do fechamento</div>
+            <div className="text-sm font-medium truncate">{rotulo}</div>
             <p className="text-xs text-muted-foreground truncate">{resumo}</p>
           </div>
         </div>
