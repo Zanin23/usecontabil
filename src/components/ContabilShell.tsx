@@ -3,10 +3,11 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
-  Settings2, Users2, Wallet, ChevronRight,
+  Settings2, Users2, Wallet, ChevronRight, Sun, Moon,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
+import { useTema } from "@/lib/tema";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
 
 const accentText: Record<string, string> = {
