@@ -3,10 +3,11 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
-  Settings2, Users2, Wallet, ChevronRight,
+  Settings2, Users2, Wallet, ChevronRight, Sun, Moon,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
+import { useTema } from "@/lib/tema";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
 
 const accentText: Record<string, string> = {
@@ -27,6 +28,7 @@ const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 export default function ContabilShell() {
   const { competencia, setCompetencia } = useCompetencia();
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
+  const { tema, alternar } = useTema();
 
   const { pathname } = useLocation();
   const seg = pathname.split("/").filter(Boolean);
@@ -242,6 +244,17 @@ export default function ContabilShell() {
                 <Command className="h-3 w-3" />K
               </kbd>
             </button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-md h-9"
+              onClick={alternar}
+              aria-label={tema === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
+              title={tema === "dark" ? "Modo claro" : "Modo escuro"}
+            >
+              {tema === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
 
             <Button variant="outline" size="sm" className="rounded-md h-9 relative">
               <Bell className="h-4 w-4" />
