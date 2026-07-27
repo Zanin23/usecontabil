@@ -38,9 +38,12 @@ export function saveEmpresa(rec: EmpresaRecord) {
   if (idx >= 0) list[idx] = rec;
   else list.unshift(rec);
   localStorage.setItem(KEY, JSON.stringify(list));
+  notify();
 }
 
 export function removeEmpresa(id: string) {
   const list = loadEmpresas().filter((e) => e.id !== id);
   localStorage.setItem(KEY, JSON.stringify(list));
+  notify();
 }
+
