@@ -64,6 +64,16 @@ const App = () => (
           <Route path="/preparativos/servicos/cadastro-tarefas" element={<CadastroTarefas />} />
           <Route path="/preparativos/servicos/encerramentos" element={<Encerramentos />} />
 
+          <Route path="/financeiro/cadastros/servicos" element={<FinServicos />} />
+          <Route path="/financeiro/tabelas/simei" element={<FinSimei />} />
+          <Route path="/financeiro/tabelas/simples-nacional" element={<FinSimples />} />
+          <Route path="/financeiro/tabelas/lucro-real" element={<FinLucroReal />} />
+          <Route path="/financeiro/tabelas/lucro-presumido" element={<FinLucroPresumido />} />
+          <Route path="/financeiro/tabelas/ajuste-apuracao" element={<FinAjusteApuracao />} />
+          <Route path="/financeiro/tabelas/ajuste-documento-fiscal" element={<FinAjusteDoc />} />
+          <Route path="/financeiro/tabelas/apuracao-pis-cofins" element={<FinPisCofins />} />
+
+
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
