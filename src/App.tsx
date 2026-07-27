@@ -12,6 +12,7 @@ const CategoryPage = lazy(() => import("./pages/contabil/CategoryPage"));
 const ModulePage = lazy(() => import("./pages/contabil/ModulePage"));
 const EmpresaCadastro = lazy(() => import("./pages/contabil/EmpresaCadastro"));
 const ClasseAtividades = lazy(() => import("./pages/contabil/ClasseAtividades"));
+const Filiais = lazy(() => import("./pages/contabil/Filiais"));
 const ResumoClasseAtividades = lazy(() => import("./pages/contabil/ResumoClasseAtividades"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
