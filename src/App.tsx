@@ -18,6 +18,11 @@ const ServicosGestao = lazy(() => import("./pages/contabil/ServicosGestao"));
 const FasesProcessos = lazy(() => import("./pages/contabil/FasesProcessos"));
 const CadastroTarefas = lazy(() => import("./pages/contabil/CadastroTarefas"));
 const Encerramentos = lazy(() => import("./pages/contabil/Encerramentos"));
+const EmpresaDados = lazy(() => import("./pages/contabil/EmpresaDados"));
+const EmpresaInscricoes = lazy(() => import("./pages/contabil/EmpresaInscricoes"));
+const EmpresaPagamentos = lazy(() => import("./pages/contabil/EmpresaPagamentos"));
+const EmpresaParametros = lazy(() => import("./pages/contabil/EmpresaParametros"));
+const EmpresaCertificados = lazy(() => import("./pages/contabil/EmpresaCertificados"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
@@ -40,6 +45,11 @@ const App = () => (
           <Route path="/preparativos/cadastros/classe-atividades" element={<ClasseAtividades />} />
           <Route path="/preparativos/cadastros/resumo-classe-atividades" element={<ResumoClasseAtividades />} />
           <Route path="/preparativos/cadastros/empresas/:id" element={<EmpresaCadastro />} />
+          <Route path="/preparativos/empresa/dados-empresa" element={<EmpresaDados />} />
+          <Route path="/preparativos/empresa/inscricoes" element={<EmpresaInscricoes />} />
+          <Route path="/preparativos/empresa/pagamentos" element={<EmpresaPagamentos />} />
+          <Route path="/preparativos/empresa/parametros" element={<EmpresaParametros />} />
+          <Route path="/preparativos/empresa/certificados" element={<EmpresaCertificados />} />
           <Route path="/preparativos/servicos/gestao" element={<ServicosGestao />} />
           <Route path="/preparativos/servicos/fases-processos" element={<FasesProcessos />} />
           <Route path="/preparativos/servicos/cadastro-tarefas" element={<CadastroTarefas />} />
