@@ -54,3 +54,23 @@ export function removeRegistro(colecao: Colecao, id: string) {
 export function novoId(prefixo: string) {
   return `${prefixo}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 }
+
+/* ------------------------------- react hook ------------------------------ */
+import { useEffect, useState } from "react";
+
+export function useRegistros(colecao: Colecao, empresaId?: string | null) {
+  const [registros, setRegistros] = useState<Registro[]>(() => loadRegistros(colecao, empresaId));
+
+  useEffect(() => {
+    const refresh = () => setRegistros(loadRegistros(colecao, empresaId));
+    refresh();
+    window.addEventListener(EMPRESA_DADOS_EVENT, refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener(EMPRESA_DADOS_EVENT, refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, [colecao, empresaId]);
+
+  return registros;
+}
