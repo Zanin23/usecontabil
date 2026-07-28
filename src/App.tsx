@@ -81,6 +81,14 @@ const App = () => (
           <Route path="/financeiro/tabelas/apuracao-pis-cofins" element={<FinPisCofins />} />
 
 
+          <Route path="/fiscal/documentos/entradas" element={<FiscalEntradas />} />
+          <Route path="/fiscal/documentos/saidas" element={<FiscalSaidas />} />
+          <Route path="/fiscal/documentos/servicos-tomados" element={<FiscalServTomados />} />
+          <Route path="/fiscal/documentos/servicos-prestados" element={<FiscalServPrestados />} />
+          <Route path="/fiscal/documentos/transporte" element={<FiscalTransporte />} />
+          <Route path="/fiscal/documentos/cupons" element={<FiscalCupons />} />
+          <Route path="/fiscal/documentos/manifestacao" element={<FiscalManifestacao />} />
+
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
