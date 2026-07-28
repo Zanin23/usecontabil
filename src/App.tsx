@@ -31,6 +31,13 @@ const FinLucroPresumido = lazy(() => import("./pages/contabil/financeiro/TabelaL
 const FinAjusteApuracao = lazy(() => import("./pages/contabil/financeiro/TabelaAjusteApuracao"));
 const FinAjusteDoc = lazy(() => import("./pages/contabil/financeiro/TabelaAjusteDocumentoFiscal"));
 const FinPisCofins = lazy(() => import("./pages/contabil/financeiro/TabelaApuracaoPisCofins"));
+const FiscalEntradas = lazy(() => import("./pages/contabil/fiscal/NotasEntrada"));
+const FiscalSaidas = lazy(() => import("./pages/contabil/fiscal/NotasSaida"));
+const FiscalServTomados = lazy(() => import("./pages/contabil/fiscal/ServicosTomados"));
+const FiscalServPrestados = lazy(() => import("./pages/contabil/fiscal/ServicosPrestados"));
+const FiscalTransporte = lazy(() => import("./pages/contabil/fiscal/ConhecimentosTransporte"));
+const FiscalCupons = lazy(() => import("./pages/contabil/fiscal/CuponsFiscais"));
+const FiscalManifestacao = lazy(() => import("./pages/contabil/fiscal/ManifestacaoDestinatario"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
