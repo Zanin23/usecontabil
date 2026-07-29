@@ -220,7 +220,7 @@ export const fiscal: Category[] = [
         { codigo: "5856", tributo: "COFINS não cumulativo", vencimento: "25/08/2026", valor: brl(15_352), status: "Emitida" },
         { codigo: "2362", tributo: "IRPJ estimativa", vencimento: "31/08/2026", valor: brl(25_790), status: "Pendente" },
       ]),
-      mod("gnre-gare", "GNRE / GARE / DAE", Landmark, "Guias estaduais de ICMS, ST e DIFAL.", [
+      mod("estaduais", "GNRE / GARE / DAE", Landmark, "Guias estaduais de ICMS, ST e DIFAL.", [
         col("guia", "Guia"), col("uf", "UF", { align: "center" }), col("vencimento", "Vencimento", { mono: true }), num("valor", "Valor"), col("status", "Status", { align: "center" }),
       ], [
         { guia: "GARE ICMS próprio", uf: "SP", vencimento: "20/08/2026", valor: brl(29_465), status: "Emitida" },

@@ -60,6 +60,11 @@ const ObrEcdEcf = lazy(() => import("./pages/contabil/fiscal/obrigacoes/EcdEcf")
 const ObrDctfWeb = lazy(() => import("./pages/contabil/fiscal/obrigacoes/DctfWeb"));
 const ObrReinf = lazy(() => import("./pages/contabil/fiscal/obrigacoes/Reinf"));
 const ObrEstaduais = lazy(() => import("./pages/contabil/fiscal/obrigacoes/Estaduais"));
+const GuiasHub = lazy(() => import("./pages/contabil/fiscal/guias/Hub"));
+const GuiasDarf = lazy(() => import("./pages/contabil/fiscal/guias/Darf"));
+const GuiasEstaduais = lazy(() => import("./pages/contabil/fiscal/guias/Estaduais"));
+const GuiasParcelamentos = lazy(() => import("./pages/contabil/fiscal/guias/Parcelamentos"));
+const GuiasCalendario = lazy(() => import("./pages/contabil/fiscal/guias/Calendario"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
@@ -135,7 +140,14 @@ const App = () => (
           <Route path="/fiscal/obrigacoes/reinf" element={<ObrReinf />} />
           <Route path="/fiscal/obrigacoes/estaduais" element={<ObrEstaduais />} />
 
+          <Route path="/fiscal/guias" element={<GuiasHub />} />
+          <Route path="/fiscal/guias/darf" element={<GuiasDarf />} />
+          <Route path="/fiscal/guias/estaduais" element={<GuiasEstaduais />} />
+          <Route path="/fiscal/guias/parcelamentos" element={<GuiasParcelamentos />} />
+          <Route path="/fiscal/guias/calendario" element={<GuiasCalendario />} />
+
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
+
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
