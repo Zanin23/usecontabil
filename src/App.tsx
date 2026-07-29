@@ -114,6 +114,20 @@ const App = () => (
           <Route path="/financeiro/tabelas/ajuste-documento-fiscal" element={<FinAjusteDoc />} />
           <Route path="/financeiro/tabelas/apuracao-pis-cofins" element={<FinPisCofins />} />
 
+          <Route path="/financeiro/cadastros/produtos" element={<FinProdutos />} />
+          <Route path="/financeiro/cadastros/clientes-fornecedores" element={<FinParceiros />} />
+          <Route path="/financeiro/movimentos/servicos" element={<FinMovServicos />} />
+          <Route path="/financeiro/movimentos/faturamento" element={<FinMovFaturamento />} />
+          <Route path="/financeiro/movimentos/demais-documentos" element={<FinMovDemais />} />
+          <Route path="/financeiro/movimentos/conclusao-fiscal" element={<FinConclusaoFiscal />} />
+          <Route path="/financeiro/tributacao/difal" element={<FinDifal />} />
+          <Route path="/financeiro/tributacao/st-icms" element={<FinSt />} />
+          <Route path="/financeiro/tributacao/defis" element={<FinDefis />} />
+          <Route path="/financeiro/tributacao/avancada" element={<FinTribAvancada />} />
+          <Route path="/financeiro/tributacao/motor-tributario" element={<FinMotor />} />
+          <Route path="/financeiro/tributacao/dashboard-executivo" element={<FinDashExec />} />
+
+
 
           <Route path="/fiscal/documentos/entradas" element={<FiscalEntradas />} />
           <Route path="/fiscal/documentos/saidas" element={<FiscalSaidas />} />
