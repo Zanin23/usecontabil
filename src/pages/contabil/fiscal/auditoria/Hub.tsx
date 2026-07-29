@@ -62,9 +62,25 @@ export default function AuditoriaHub() {
   const rd = resumoCertidoes(certs);
 
   const dados = useMemo(
-    () => CRITICIDADES.map((c) => ({ nome: c, qtd: achados.filter((a) => a.criticidade === c).length })),
+    () =>
+      CRITICIDADES.map((c) => {
+        const doGrupo = achados.filter((a) => a.criticidade === c);
+        return { nome: c, qtd: doGrupo.length, valor: doGrupo.reduce((s, a) => s + a.valor, 0) };
+      }),
     [achados],
   );
+
+  const maximo = Math.max(1, ...dados.map((d) => d.qtd));
+
+  const diagnostico =
+    r.total === 0
+      ? { rotulo: "Sem apontamentos", tom: "bg-brand-blue/15 text-brand-blue", texto: "Nenhuma regra fiscal foi violada nesta competência. Execute a auditoria após novas importações." }
+      : r.score >= 90
+        ? { rotulo: "Conformidade alta", tom: "bg-brand-blue/15 text-brand-blue", texto: "Apontamentos residuais. Trate os itens abertos antes da transmissão das obrigações." }
+        : r.score >= 70
+          ? { rotulo: "Atenção", tom: "bg-brand-orange/15 text-brand-orange", texto: "Há inconsistências relevantes em aberto que podem impactar apurações e SPED." }
+          : { rotulo: "Risco fiscal", tom: "bg-destructive/15 text-destructive", texto: "Volume elevado de achados críticos. Priorize a correção antes de fechar a competência." };
+
 
   const porCategoria = useMemo(
     () => CATEGORIAS.map((c) => ({
