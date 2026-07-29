@@ -710,6 +710,34 @@ const financeiro: Category[] = [
     ],
 
   },
+  {
+    slug: "operacional",
+    title: "Operacional",
+    modules: [
+      {
+        slug: "conciliacao",
+        title: "Conciliação bancária",
+        icon: Landmark,
+        desc: "Conciliação de extratos bancários com a movimentação contábil.",
+        columns: [
+          { key: "conta", label: "Conta", mono: true },
+          { key: "banco", label: "Banco" },
+          { key: "agencia", label: "Agência", mono: true },
+          { key: "saldoBanco", label: "Saldo banco", align: "right", mono: true },
+          { key: "saldoContabil", label: "Saldo contábil", align: "right", mono: true },
+          { key: "diferenca", label: "Diferença", align: "right", mono: true },
+          { key: "status", label: "Status" },
+        ],
+        rows: [
+          { conta: "237 / CC 12345-6", banco: "Bradesco", agencia: "1234", saldoBanco: "R$ 1.248.920,33", saldoContabil: "R$ 1.248.920,33", diferenca: "R$ 0,00", status: "Conciliado" },
+          { conta: "341 / CC 98765-4", banco: "Itaú", agencia: "5678", saldoBanco: "R$ 842.115,50", saldoContabil: "R$ 841.315,50", diferenca: "R$ 800,00", status: "Divergente" },
+          { conta: "001 / CC 45678-9", banco: "Banco do Brasil", agencia: "9012", saldoBanco: "R$ 315.440,00", saldoContabil: "R$ 315.440,00", diferenca: "R$ 0,00", status: "Conciliado" },
+          { conta: "104 / CC 00012-3", banco: "Caixa Econômica", agencia: "3456", saldoBanco: "R$ 0,00", saldoContabil: "R$ 0,00", diferenca: "R$ 0,00", status: "Não utilizada" },
+        ],
+      },
+    ],
+
+  },
 ];
 
 // helper for "tabela por faixas" pattern used in financeiro/tabelas
