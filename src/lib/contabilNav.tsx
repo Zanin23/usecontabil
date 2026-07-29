@@ -6,7 +6,7 @@ import {
   Stethoscope, BarChart3, PieChart, LineChart, ClipboardCheck, Radio, FileCog, Award,
   Database, ListChecks, Lock, Send, Fingerprint as Punch, Landmark, FolderArchive, Split,
   Percent, FileSpreadsheet, Coins, TrendingUp, ScrollText, Banknote, FileBarChart2,
-  BadgeDollarSign, Cog, type LucideIcon,
+  BadgeDollarSign, Cog, Package, Sparkles, Gauge, type LucideIcon,
 } from "lucide-react";
 import { fiscal, administrativo } from "./contabilNavAreas";
 
@@ -436,8 +436,25 @@ const financeiro: Category[] = [
           { codigo: "SVC-005", servico: "Planejamento tributário", cnae: "7020-4/00", iss: "2,50%", valor: brl(12_000) },
         ],
       },
+      {
+        slug: "produtos",
+        title: "Produtos",
+        icon: Package,
+        desc: "Cadastro fiscal com NCM, CEST, CFOP e tributação.",
+        columns: [C.codigo, { key: "descricao", label: "Produto" }, { key: "ncm", label: "NCM", mono: true }],
+        rows: [],
+      },
+      {
+        slug: "clientes-fornecedores",
+        title: "Clientes e fornecedores",
+        icon: Users2,
+        desc: "Parceiros com regime, inscrições e retenções.",
+        columns: [{ key: "nome", label: "Parceiro" }, { key: "documento", label: "CNPJ/CPF", mono: true }, { key: "uf", label: "UF" }],
+        rows: [],
+      },
     ],
   },
+
   {
     slug: "tabelas",
     title: "Tabelas",
@@ -666,7 +683,32 @@ const financeiro: Category[] = [
           { empresa: "Comércio Andes Eireli", anoBase: "2023", receita: brl(2_412_800), status: "Retificada" },
         ],
       },
+      {
+        slug: "avancada",
+        title: "Tributação avançada",
+        icon: Sparkles,
+        desc: "Monofásico, drawback, ZFM, suspensão, diferimento e incentivos.",
+        columns: [{ key: "motor", label: "Motor" }, { key: "tributo", label: "Tributo" }],
+        rows: [],
+      },
+      {
+        slug: "motor-tributario",
+        title: "Motor tributário",
+        icon: Cog,
+        desc: "Rule engine com vigência, UF, versão e correção sugerida.",
+        columns: [{ key: "regra", label: "Regra" }, { key: "categoria", label: "Categoria" }],
+        rows: [],
+      },
+      {
+        slug: "dashboard-executivo",
+        title: "Dashboard executivo",
+        icon: Gauge,
+        desc: "KPIs de faturamento, carga tributária e compliance.",
+        columns: [{ key: "indicador", label: "Indicador" }, { key: "valor", label: "Valor", align: "right", mono: true }],
+        rows: [],
+      },
     ],
+
   },
 ];
 

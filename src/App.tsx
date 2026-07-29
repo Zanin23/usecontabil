@@ -33,6 +33,18 @@ const FinLucroPresumido = lazy(() => import("./pages/contabil/financeiro/TabelaL
 const FinAjusteApuracao = lazy(() => import("./pages/contabil/financeiro/TabelaAjusteApuracao"));
 const FinAjusteDoc = lazy(() => import("./pages/contabil/financeiro/TabelaAjusteDocumentoFiscal"));
 const FinPisCofins = lazy(() => import("./pages/contabil/financeiro/TabelaApuracaoPisCofins"));
+const FinProdutos = lazy(() => import("./pages/contabil/financeiro/cadastros/Produtos"));
+const FinParceiros = lazy(() => import("./pages/contabil/financeiro/cadastros/ClientesFornecedores"));
+const FinMovServicos = lazy(() => import("./pages/contabil/financeiro/movimentos/Servicos"));
+const FinMovFaturamento = lazy(() => import("./pages/contabil/financeiro/movimentos/Faturamento"));
+const FinMovDemais = lazy(() => import("./pages/contabil/financeiro/movimentos/DemaisDocumentos"));
+const FinConclusaoFiscal = lazy(() => import("./pages/contabil/financeiro/movimentos/ConclusaoFiscal"));
+const FinDifal = lazy(() => import("./pages/contabil/financeiro/tributacao/Difal"));
+const FinSt = lazy(() => import("./pages/contabil/financeiro/tributacao/SubstituicaoTributaria"));
+const FinDefis = lazy(() => import("./pages/contabil/financeiro/tributacao/Defis"));
+const FinTribAvancada = lazy(() => import("./pages/contabil/financeiro/tributacao/TributacaoAvancada"));
+const FinMotor = lazy(() => import("./pages/contabil/financeiro/tributacao/MotorTributario"));
+const FinDashExec = lazy(() => import("./pages/contabil/financeiro/tributacao/DashboardExecutivo"));
 const FiscalEntradas = lazy(() => import("./pages/contabil/fiscal/NotasEntrada"));
 const FiscalSaidas = lazy(() => import("./pages/contabil/fiscal/NotasSaida"));
 const FiscalServTomados = lazy(() => import("./pages/contabil/fiscal/ServicosTomados"));
@@ -113,6 +125,20 @@ const App = () => (
           <Route path="/financeiro/tabelas/ajuste-apuracao" element={<FinAjusteApuracao />} />
           <Route path="/financeiro/tabelas/ajuste-documento-fiscal" element={<FinAjusteDoc />} />
           <Route path="/financeiro/tabelas/apuracao-pis-cofins" element={<FinPisCofins />} />
+
+          <Route path="/financeiro/cadastros/produtos" element={<FinProdutos />} />
+          <Route path="/financeiro/cadastros/clientes-fornecedores" element={<FinParceiros />} />
+          <Route path="/financeiro/movimentos/servicos" element={<FinMovServicos />} />
+          <Route path="/financeiro/movimentos/faturamento" element={<FinMovFaturamento />} />
+          <Route path="/financeiro/movimentos/demais-documentos" element={<FinMovDemais />} />
+          <Route path="/financeiro/movimentos/conclusao-fiscal" element={<FinConclusaoFiscal />} />
+          <Route path="/financeiro/tributacao/difal" element={<FinDifal />} />
+          <Route path="/financeiro/tributacao/st-icms" element={<FinSt />} />
+          <Route path="/financeiro/tributacao/defis" element={<FinDefis />} />
+          <Route path="/financeiro/tributacao/avancada" element={<FinTribAvancada />} />
+          <Route path="/financeiro/tributacao/motor-tributario" element={<FinMotor />} />
+          <Route path="/financeiro/tributacao/dashboard-executivo" element={<FinDashExec />} />
+
 
 
           <Route path="/fiscal/documentos/entradas" element={<FiscalEntradas />} />
