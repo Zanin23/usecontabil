@@ -34,12 +34,29 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
     window.addEventListener(EMPRESAS_EVENT, refresh);
     window.addEventListener("storage", refresh);
     window.addEventListener("focus", refresh);
+
+    // Carrega da nuvem sempre que houver sessão (login, refresh de token, F5).
+    const puxar = () => {
+      sincronizarEmpresas()
+        .then(refresh)
+        .catch(() => {
+          /* offline: segue com o cache local */
+        });
+    };
+    puxar();
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (session) puxar();
+      else refresh();
+    });
+
     return () => {
+      sub.subscription.unsubscribe();
       window.removeEventListener(EMPRESAS_EVENT, refresh);
       window.removeEventListener("storage", refresh);
       window.removeEventListener("focus", refresh);
     };
   }, []);
+
 
   // Keep the selection valid whenever the list changes.
   useEffect(() => {
