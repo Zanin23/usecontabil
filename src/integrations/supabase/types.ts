@@ -59,6 +59,45 @@ export type Database = {
         }
         Relationships: []
       }
+      empresas: {
+        Row: {
+          atividade: string
+          cnpj: string
+          created_at: string
+          id: string
+          raw: Json
+          razao: string
+          regime: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          atividade?: string
+          cnpj?: string
+          created_at?: string
+          id: string
+          raw?: Json
+          razao?: string
+          regime?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          atividade?: string
+          cnpj?: string
+          created_at?: string
+          id?: string
+          raw?: Json
+          razao?: string
+          regime?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       knowledge_docs: {
         Row: {
           content: string

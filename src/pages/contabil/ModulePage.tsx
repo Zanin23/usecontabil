@@ -52,12 +52,17 @@ export default function ModulePage() {
   }, [module?.slug, category?.slug]);
 
 
-  const handleDeleteEmpresa = (rec: EmpresaRecord) => {
+  const handleDeleteEmpresa = async (rec: EmpresaRecord) => {
     if (!confirm(`Excluir "${rec.razao}"? Esta ação não pode ser desfeita.`)) return;
-    removeEmpresa(rec.id);
-    toast.success(`Empresa "${rec.razao}" removida`);
+    try {
+      await removeEmpresa(rec.id);
+      toast.success(`Empresa "${rec.razao}" removida`);
+    } catch (e: any) {
+      toast.error(e?.message || "Não foi possível excluir na nuvem");
+    }
     refreshEmpresas();
   };
+
 
   const extraRows = savedEmpresas.map((e) => ({
     __empresaId: e.id,

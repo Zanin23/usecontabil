@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { saveEmpresa, getEmpresa, findEmpresaPorCnpj, type EmpresaRecord } from "@/lib/empresasStore";
+import { saveEmpresa, getEmpresa, findEmpresaPorCnpj, sincronizarEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
 import { formatAtividade, loadAtividades, useAtividades } from "@/lib/atividadesStore";
 
 import {
@@ -452,24 +452,44 @@ export default function EmpresaCadastro() {
   const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));
 
   useEffect(() => {
+    let cancelado = false;
     if (!routeId) {
       setRecordId(null);
       setCreatedAt(null);
       setForm(EMPTY_FORM);
       return;
     }
+    const aplicar = (rec: EmpresaRecord) => {
+      if (cancelado) return;
+      setRecordId(rec.id);
+      setCreatedAt(rec.createdAt);
+      setForm({ ...EMPTY_FORM, ...(rec.raw as Partial<FormState>) });
+    };
     const rec = getEmpresa(routeId);
-    if (!rec) {
-      toast.error("Empresa não encontrada");
-      navigate("/preparativos/cadastros/empresas", { replace: true });
-      return;
+    if (rec) {
+      aplicar(rec);
+    } else {
+      // Cache ainda não carregado: busca na nuvem antes de desistir.
+      sincronizarEmpresas()
+        .then(() => {
+          if (cancelado) return;
+          const atual = getEmpresa(routeId);
+          if (atual) return aplicar(atual);
+          toast.error("Empresa não encontrada");
+          navigate("/preparativos/cadastros/empresas", { replace: true });
+        })
+        .catch(() => {
+          if (cancelado) return;
+          toast.error("Não foi possível carregar o cadastro");
+        });
     }
-    setRecordId(rec.id);
-    setCreatedAt(rec.createdAt);
-    setForm({ ...EMPTY_FORM, ...(rec.raw as Partial<FormState>) });
+    return () => {
+      cancelado = true;
+    };
   }, [routeId, navigate]);
 
-  const handleSalvar = () => {
+
+  const handleSalvar = async () => {
     const cnpjDigits = form.cnpj.replace(/\D/g, "");
     if (cnpjDigits.length !== 14) {
       toast.error("Informe um CNPJ válido (14 dígitos)");
@@ -497,7 +517,7 @@ export default function EmpresaCadastro() {
         createdAt: createdAt ?? existente?.createdAt ?? new Date().toISOString(),
         raw: { ...form },
       };
-      const salvo = saveEmpresa(rec);
+      const salvo = await saveEmpresa(rec);
       setRecordId(salvo.id);
       setCreatedAt(salvo.createdAt);
       toast.success(
