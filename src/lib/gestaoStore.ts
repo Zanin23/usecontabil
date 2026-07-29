@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { loadEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
 import { loadFiliais } from "@/lib/filiaisStore";
+import { documentosPendentes, linhasDoPeriodo, somar } from "@/lib/escrituracaoStore";
 
 const KEY_MODELOS = "usecontabil.tarefaModelos.v1";
 const KEY_EXEC = "usecontabil.tarefaExec.v1";
