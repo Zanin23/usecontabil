@@ -123,6 +123,15 @@ const App = () => (
           <Route path="/fiscal/apuracoes/simples-nacional" element={<ApSimples />} />
           <Route path="/fiscal/apuracoes/retencoes" element={<ApRetencoes />} />
 
+          <Route path="/fiscal/obrigacoes" element={<ObrigacoesHub />} />
+          <Route path="/fiscal/obrigacoes/agenda" element={<ObrAgenda />} />
+          <Route path="/fiscal/obrigacoes/sped-fiscal" element={<ObrSpedFiscal />} />
+          <Route path="/fiscal/obrigacoes/efd-contribuicoes" element={<ObrEfdContribuicoes />} />
+          <Route path="/fiscal/obrigacoes/ecd-ecf" element={<ObrEcdEcf />} />
+          <Route path="/fiscal/obrigacoes/dctfweb" element={<ObrDctfWeb />} />
+          <Route path="/fiscal/obrigacoes/reinf" element={<ObrReinf />} />
+          <Route path="/fiscal/obrigacoes/estaduais" element={<ObrEstaduais />} />
+
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
