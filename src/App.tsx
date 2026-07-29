@@ -190,6 +190,12 @@ const App = () => (
           <Route path="/fiscal/auditoria/certidoes" element={<AudCertidoes />} />
           <Route path="/fiscal/auditoria/regras" element={<AudRegras />} />
 
+          <Route path="/administrativo/pesquisa" element={<AdmPesquisa />} />
+          <Route path="/administrativo/dashboard" element={<AdmDashboard />} />
+          <Route path="/administrativo/auditoria" element={<AdmAuditoria />} />
+          <Route path="/administrativo/cadastros" element={<AdmHub />} />
+          <Route path="/administrativo/cadastros/:dominio" element={<AdmDominio />} />
+
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
 
         </Route>
