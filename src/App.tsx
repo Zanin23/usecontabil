@@ -108,6 +108,13 @@ const App = () => (
           <Route path="/fiscal/escrituracao/inventario" element={<EscInventario />} />
           <Route path="/fiscal/escrituracao/ciap" element={<EscCiap />} />
 
+          <Route path="/fiscal/apuracoes" element={<ApuracoesHub />} />
+          <Route path="/fiscal/apuracoes/pis-cofins" element={<ApPisCofins />} />
+          <Route path="/fiscal/apuracoes/iss" element={<ApIss />} />
+          <Route path="/fiscal/apuracoes/irpj-csll" element={<ApIrpjCsll />} />
+          <Route path="/fiscal/apuracoes/simples-nacional" element={<ApSimples />} />
+          <Route path="/fiscal/apuracoes/retencoes" element={<ApRetencoes />} />
+
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
