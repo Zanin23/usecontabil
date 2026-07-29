@@ -88,6 +88,7 @@ const AdmDominio = lazy(() => import("./pages/contabil/administrativo/Dominio"))
 const AdmPesquisa = lazy(() => import("./pages/contabil/administrativo/PesquisaGlobal"));
 const AdmDashboard = lazy(() => import("./pages/contabil/administrativo/DashboardExecutivo"));
 const AdmAuditoria = lazy(() => import("./pages/contabil/administrativo/AuditoriaCadastral"));
+const AdmContasCaixa = lazy(() => import("./pages/contabil/administrativo/ContasCaixa"));
 const FinConciliacao = lazy(() => import("./pages/contabil/financeiro/operacional/ConciliacaoBancaria"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -195,6 +196,8 @@ const App = () => (
           <Route path="/administrativo/dashboard" element={<AdmDashboard />} />
           <Route path="/administrativo/auditoria" element={<AdmAuditoria />} />
           <Route path="/financeiro/operacional/conciliacao" element={<FinConciliacao />} />
+
+          <Route path="/administrativo/financeiro-operacional/:modulo" element={<AdmContasCaixa />} />
 
           <Route path="/administrativo/cadastros" element={<AdmHub />} />
           <Route path="/administrativo/cadastros/:dominio" element={<AdmDominio />} />
