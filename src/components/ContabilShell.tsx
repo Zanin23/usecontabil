@@ -290,7 +290,7 @@ export default function ContabilShell() {
 
             <div className="flex-1" />
 
-            <div className="hidden md:flex items-center gap-2 rounded-md border border-border bg-card px-3 h-9 text-sm min-w-[280px]">
+            <div className="hidden xl:flex items-center gap-2 rounded-md border border-border bg-card px-3 h-9 text-sm min-w-[280px]">
               <Building2 className="h-4 w-4 text-muted-foreground" />
               {empresas.length === 0 ? (
                 <NavLink
@@ -315,7 +315,7 @@ export default function ContabilShell() {
             </div>
 
 
-            <div className="flex items-center gap-2 rounded-md border border-border bg-card px-2 lg:px-3 h-9 text-sm min-w-0">
+            <div className="flex items-center gap-2 rounded-md border border-border bg-card px-2 lg:px-3 h-9 text-sm shrink-0">
               <CalendarRange className="h-4 w-4 text-muted-foreground" />
               <select
                 value={competencia}
@@ -332,7 +332,7 @@ export default function ContabilShell() {
 
             <button
               onClick={() => setBuscaAberta(true)}
-              className="hidden md:flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card text-sm text-muted-foreground hover:text-foreground transition">
+              className="hidden lg:flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card text-sm text-muted-foreground hover:text-foreground transition">
               <Search className="h-4 w-4" />
               <span>Buscar…</span>
               <kbd className="ml-2 inline-flex items-center gap-1 rounded border border-border px-1.5 py-0.5 text-[10px] font-mono">
