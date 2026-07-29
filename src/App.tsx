@@ -60,6 +60,11 @@ const ObrEcdEcf = lazy(() => import("./pages/contabil/fiscal/obrigacoes/EcdEcf")
 const ObrDctfWeb = lazy(() => import("./pages/contabil/fiscal/obrigacoes/DctfWeb"));
 const ObrReinf = lazy(() => import("./pages/contabil/fiscal/obrigacoes/Reinf"));
 const ObrEstaduais = lazy(() => import("./pages/contabil/fiscal/obrigacoes/Estaduais"));
+const GuiasHub = lazy(() => import("./pages/contabil/fiscal/guias/Hub"));
+const GuiasDarf = lazy(() => import("./pages/contabil/fiscal/guias/Darf"));
+const GuiasEstaduais = lazy(() => import("./pages/contabil/fiscal/guias/Estaduais"));
+const GuiasParcelamentos = lazy(() => import("./pages/contabil/fiscal/guias/Parcelamentos"));
+const GuiasCalendario = lazy(() => import("./pages/contabil/fiscal/guias/Calendario"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
