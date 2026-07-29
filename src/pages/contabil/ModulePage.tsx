@@ -7,7 +7,7 @@ import {
 import { toast } from "sonner";
 import { ChevronRight, Download, Filter, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { findModule } from "@/lib/contabilNav";
-import { loadEmpresas, removeEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
+import { EMPRESAS_EVENT, loadEmpresas, removeEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
