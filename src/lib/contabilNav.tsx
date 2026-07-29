@@ -6,7 +6,7 @@ import {
   Stethoscope, BarChart3, PieChart, LineChart, ClipboardCheck, Radio, FileCog, Award,
   Database, ListChecks, Lock, Send, Fingerprint as Punch, Landmark, FolderArchive, Split,
   Percent, FileSpreadsheet, Coins, TrendingUp, ScrollText, Banknote, FileBarChart2,
-  BadgeDollarSign, Cog, type LucideIcon,
+  BadgeDollarSign, Cog, Package, Sparkles, Gauge, type LucideIcon,
 } from "lucide-react";
 import { fiscal, administrativo } from "./contabilNavAreas";
 
