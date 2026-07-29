@@ -65,6 +65,12 @@ const GuiasDarf = lazy(() => import("./pages/contabil/fiscal/guias/Darf"));
 const GuiasEstaduais = lazy(() => import("./pages/contabil/fiscal/guias/Estaduais"));
 const GuiasParcelamentos = lazy(() => import("./pages/contabil/fiscal/guias/Parcelamentos"));
 const GuiasCalendario = lazy(() => import("./pages/contabil/fiscal/guias/Calendario"));
+const AuditoriaHub = lazy(() => import("./pages/contabil/fiscal/auditoria/Hub"));
+const AudXml = lazy(() => import("./pages/contabil/fiscal/auditoria/XmlEscrituracao"));
+const AudClassificacao = lazy(() => import("./pages/contabil/fiscal/auditoria/Classificacao"));
+const AudCreditos = lazy(() => import("./pages/contabil/fiscal/auditoria/Creditos"));
+const AudCertidoes = lazy(() => import("./pages/contabil/fiscal/auditoria/Certidoes"));
+const AudRegras = lazy(() => import("./pages/contabil/fiscal/auditoria/Regras"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
@@ -145,6 +151,13 @@ const App = () => (
           <Route path="/fiscal/guias/estaduais" element={<GuiasEstaduais />} />
           <Route path="/fiscal/guias/parcelamentos" element={<GuiasParcelamentos />} />
           <Route path="/fiscal/guias/calendario" element={<GuiasCalendario />} />
+
+          <Route path="/fiscal/auditoria" element={<AuditoriaHub />} />
+          <Route path="/fiscal/auditoria/xml-escrituracao" element={<AudXml />} />
+          <Route path="/fiscal/auditoria/classificacao" element={<AudClassificacao />} />
+          <Route path="/fiscal/auditoria/creditos" element={<AudCreditos />} />
+          <Route path="/fiscal/auditoria/certidoes" element={<AudCertidoes />} />
+          <Route path="/fiscal/auditoria/regras" element={<AudRegras />} />
 
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
 
