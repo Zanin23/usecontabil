@@ -9,6 +9,7 @@ import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
 import { useTema } from "@/lib/tema";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
+import BuscaTelas from "@/components/contabil/BuscaTelas";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
@@ -29,6 +30,18 @@ export default function ContabilShell() {
   const { competencia, setCompetencia } = useCompetencia();
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
   const { tema, alternar } = useTema();
+  const [buscaAberta, setBuscaAberta] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setBuscaAberta((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const { pathname } = useLocation();
   const seg = pathname.split("/").filter(Boolean);
@@ -237,7 +250,9 @@ export default function ContabilShell() {
               </select>
             </div>
 
-            <button className="hidden md:flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card text-sm text-muted-foreground hover:text-foreground transition">
+            <button
+              onClick={() => setBuscaAberta(true)}
+              className="hidden md:flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card text-sm text-muted-foreground hover:text-foreground transition">
               <Search className="h-4 w-4" />
               <span>Buscar…</span>
               <kbd className="ml-2 inline-flex items-center gap-1 rounded border border-border px-1.5 py-0.5 text-[10px] font-mono">
@@ -267,6 +282,8 @@ export default function ContabilShell() {
           <Outlet />
         </main>
       </div>
+
+      <BuscaTelas open={buscaAberta} onOpenChange={setBuscaAberta} />
     </div>
   );
 }
