@@ -43,7 +43,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
   const { empresa } = useEmpresaAtual();
   const { competencia } = useCompetencia();
   const estado = useObrEstado(obr, empresa?.id, competencia);
-  const filiais = useFiliais().filter((f) => !empresa || f.empresaId === empresa.id);
+  const filiais = useFiliais().filiais.filter((f) => !empresa || f.empresaId === empresa.id);
 
   const [filial, setFilial] = useState("todas");
   const [query, setQuery] = useState("");
