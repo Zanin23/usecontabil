@@ -163,7 +163,7 @@ export type Documento = {
 export type Certificado = {
   id: string;
   empresaId?: string;
-  tipo: "e-CNPJ A1" | "e-CNPJ A3" | "e-CPF A1" | "Certificado NFS-e" | "Procuração e-CAC" | "Procuração estadual";
+  tipo: "e-CNPJ A1" | "e-CNPJ A3" | "e-CPF A1" | "e-CPF A3" | "Certificado NFS-e" | "Procuração e-CAC" | "Procuração estadual";
   titular: string;
   documento: string;
   emissao: string;
