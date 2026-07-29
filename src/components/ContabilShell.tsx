@@ -69,24 +69,25 @@ export default function ContabilShell() {
           recolhida ? "w-16" : "w-64"
         }`}
       >
-        <div className="h-0.5 bg-gradient-brand" />
-        <div className={`py-5 border-b border-border ${recolhida ? "px-3" : "px-5"}`}>
-          <div className="flex items-center gap-2">
+        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-brand z-10" />
+        <div className={`h-14 flex items-center border-b border-border ${recolhida ? "px-3" : "px-5"}`}>
+          <div className="flex items-center gap-2 min-w-0">
             <div className="h-8 w-8 shrink-0 rounded-lg bg-brand-orange grid place-items-center shadow-glow">
               <span className="text-primary-foreground font-display text-lg leading-none">U</span>
             </div>
             {!recolhida && (
-              <div className="min-w-0">
-                <div className="font-display text-lg leading-none truncate">
+              <div className="min-w-0 leading-tight">
+                <div className="font-display text-base leading-none truncate">
                   Use <span className="text-brand-orange">Contábil</span>
                 </div>
-                <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-1">
+                <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-0.5">
                   v2.4 · corporate
                 </div>
               </div>
             )}
           </div>
         </div>
+
 
         <nav className={`flex-1 overflow-y-auto py-4 space-y-4 ${recolhida ? "px-2" : "px-3"}`}>
           {/* Dashboard */}
