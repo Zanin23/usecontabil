@@ -38,8 +38,12 @@ export default function ServicosGestao() {
   const fechado = fechamentos.find((f) => f.key === `${empresaId}|${competencia}`);
 
   const pendCadastro = useMemo(() => pendenciasCadastro(empresa?.id ?? null), [empresa, execucoes]);
+  const pendEscrituracao = useMemo(
+    () => pendenciasEscrituracao(empresa?.id ?? null, competencia),
+    [empresa, competencia, execucoes],
+  );
   const cadastrosPendentes = pendCadastro.filter((p) => !p.resolvida);
-  const bloqueios = cadastrosPendentes.filter((p) => p.critica);
+  const bloqueios = [...cadastrosPendentes, ...pendEscrituracao.filter((p) => !p.resolvida)].filter((p) => p.critica);
 
   const ativos = modelos.filter((m) => m.ativa);
   const statusOf = (modeloId: string): TarefaStatus =>
