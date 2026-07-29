@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   AlertTriangle, CalendarClock, CheckCircle2, ChevronRight, Download, FileText, FolderArchive,
@@ -504,9 +504,8 @@ function Contratos() {
               </TableHeader>
               <TableBody>
                 {filtrados.map((c) => (
-                  <>
+                  <Fragment key={c.id}>
                     <TableRow
-                      key={c.id}
                       className="cursor-pointer"
                       onClick={() => setDetalhe(detalhe === c.id ? null : c.id)}
                     >
@@ -544,7 +543,7 @@ function Contratos() {
                     </TableRow>
 
                     {detalhe === c.id && (
-                      <TableRow key={`${c.id}-det`}>
+                      <TableRow>
                         <TableCell colSpan={7} className="bg-muted/30">
                           <div className="grid gap-4 p-2 md:grid-cols-3">
                             <div className="space-y-1 text-xs">
@@ -599,7 +598,7 @@ function Contratos() {
                         </TableCell>
                       </TableRow>
                     )}
-                  </>
+                  </Fragment>
                 ))}
                 {filtrados.length === 0 && (
                   <TableRow><TableCell colSpan={7} className="py-10 text-center text-sm text-muted-foreground">Nenhum contrato encontrado com os filtros atuais.</TableCell></TableRow>
