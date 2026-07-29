@@ -347,7 +347,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
                   <div className="mt-3 font-display text-2xl text-brand-orange">{total}</div>
                   {isConciliacoes && (
                     <Link
-                      to="/financeiro/financeiro-operacional/conciliacao"
+                      to="/financeiro/operacional/conciliacao"
                       className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-brand-orange hover:underline"
                       onClick={(e) => e.stopPropagation()}
                     >
