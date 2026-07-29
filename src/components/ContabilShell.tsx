@@ -3,26 +3,13 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
-  Settings2, Users2, Wallet, ChevronRight, Sun, Moon,
+  Settings2, Users2, Wallet, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
 import { useTema } from "@/lib/tema";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
 import BuscaTelas from "@/components/contabil/BuscaTelas";
-
-const accentText: Record<string, string> = {
-  orange: "text-brand-orange",
-  blue: "text-brand-blue",
-  purple: "text-brand-purple",
-  pink: "text-brand-pink",
-};
-const accentBorder: Record<string, string> = {
-  orange: "border-brand-orange/30 bg-brand-orange/10",
-  blue: "border-brand-blue/30 bg-brand-blue/10",
-  purple: "border-brand-purple/30 bg-brand-purple/10",
-  pink: "border-brand-pink/30 bg-brand-pink/10",
-};
 
 const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 
@@ -31,6 +18,12 @@ export default function ContabilShell() {
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
   const { tema, alternar } = useTema();
   const [buscaAberta, setBuscaAberta] = useState(false);
+  const [recolhida, setRecolhida] = useState(
+    () => typeof window !== "undefined" && localStorage.getItem("uc:sidebar") === "recolhida",
+  );
+  useEffect(() => {
+    localStorage.setItem("uc:sidebar", recolhida ? "recolhida" : "expandida");
+  }, [recolhida]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
