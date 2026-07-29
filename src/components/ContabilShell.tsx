@@ -221,22 +221,27 @@ export default function ContabilShell() {
 
           {!recolhida && (
             <>
-              <div className="flex items-center justify-between text-muted-foreground">
-                <span>Ambiente</span>
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
+                <span className="shrink-0">Ambiente</span>
                 <Badge variant="outline" className="rounded-md h-5 text-[10px] border-brand-orange/40 text-brand-orange">
                   HOMOLOGAÇÃO
                 </Badge>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
-                <span>Usuário</span>
-                <span className="text-foreground font-medium">M. Andrade</span>
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
+                <span className="shrink-0">Usuário</span>
+                <span className="text-foreground font-medium truncate max-w-[60%]" title={usuarioNome}>
+                  {usuarioNome}
+                </span>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
-                <span>Perfil</span>
-                <span className="text-foreground">Controller</span>
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
+                <span className="shrink-0">Perfil</span>
+                <span className="text-foreground truncate max-w-[60%]" title={usuarioPerfil}>
+                  {usuarioPerfil}
+                </span>
               </div>
             </>
           )}
+
         </div>
       </aside>
 
