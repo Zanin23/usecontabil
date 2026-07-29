@@ -223,9 +223,9 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
         {g.kpis.map((k) => (
           <div
             key={k.label}
-            className={`rounded-2xl border p-3 ${k.destaque ? "border-destructive/40 bg-destructive/5" : "border-border/70"}`}
+            className={`min-w-0 rounded-2xl border p-3 ${k.destaque ? "border-destructive/40 bg-destructive/5" : "border-border/70"}`}
           >
-            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{k.label}</div>
+            <div className="text-[10px] uppercase tracking-[0.06em] leading-tight break-words text-muted-foreground">{k.label}</div>
             <div className={`mt-0.5 font-mono text-lg ${k.destaque ? "text-destructive" : ""}`}>{k.valor}</div>
           </div>
         ))}
@@ -778,7 +778,7 @@ function ListaValidacoes({ itens, vazio }: { itens: Validacao[]; vazio: string }
 function Secao({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
     <div className="rounded-2xl border border-border/70 p-4 space-y-1.5">
-      <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{titulo}</div>
+      <div className="text-[10px] uppercase tracking-[0.06em] leading-tight break-words text-muted-foreground">{titulo}</div>
       {children}
     </div>
   );
