@@ -111,54 +111,94 @@ export default function AuditoriaHub() {
       </div>
 
       <Card className="rounded-3xl border-border/70 shadow-card">
-        <CardContent className="grid gap-6 p-6 lg:grid-cols-[minmax(0,320px)_1fr]">
+        <CardContent className="grid gap-6 p-6 lg:grid-cols-[minmax(0,300px)_1fr]">
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs uppercase tracking-[0.06em] text-muted-foreground">
               <Gauge className="h-4 w-4 text-brand-orange" /> Tax compliance score
             </div>
-            <div className="font-display text-6xl">{r.score}<span className="text-2xl text-muted-foreground">/100</span></div>
+            <div className="flex flex-wrap items-end gap-3">
+              <div className="font-display text-6xl leading-none">
+                {r.score}<span className="text-2xl text-muted-foreground">/100</span>
+              </div>
+              <Badge className={`mb-1 rounded-full ${diagnostico.tom}`}>{diagnostico.rotulo}</Badge>
+            </div>
             <Progress value={r.score} />
-            <p className="text-xs text-muted-foreground">
-              Score calculado pelas inconsistências em aberto, ponderadas por criticidade.
-            </p>
+            <p className="text-xs text-muted-foreground">{diagnostico.texto}</p>
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-2xl border border-border/70 p-3">
                 <div className="text-[10px] uppercase tracking-[0.06em] text-muted-foreground">Valor em risco</div>
-                <div className="font-mono text-sm text-destructive">{brlAud(r.valorEmRisco)}</div>
+                <div className={`font-mono text-sm ${r.valorEmRisco > 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                  {brlAud(r.valorEmRisco)}
+                </div>
               </div>
               <div className="rounded-2xl border border-border/70 p-3">
                 <div className="text-[10px] uppercase tracking-[0.06em] text-muted-foreground">Recuperável</div>
-                <div className="font-mono text-sm text-brand-orange">{brlAud(rc.recuperavel)}</div>
+                <div className={`font-mono text-sm ${rc.recuperavel > 0 ? "text-brand-orange" : "text-muted-foreground"}`}>
+                  {brlAud(rc.recuperavel)}
+                </div>
               </div>
             </div>
           </div>
-          <div className="min-w-0">
-            <div className="mb-2 text-xs uppercase tracking-[0.06em] text-muted-foreground">
-              Inconsistências por criticidade
+
+          <div className="min-w-0 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs uppercase tracking-[0.06em] text-muted-foreground">
+                Inconsistências por criticidade
+              </span>
+              <Badge variant="secondary" className="rounded-full text-[10px]">
+                {r.total} achado(s) · {r.abertos} em aberto
+              </Badge>
             </div>
-            <div className="h-[220px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={dados}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="nome" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-                  <Tooltip
-                    contentStyle={{
-                      background: "hsl(var(--popover))",
-                      color: "hsl(var(--popover-foreground))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "0.75rem",
-                    }}
-                  />
-                  <Bar dataKey="qtd" radius={[8, 8, 0, 0]}>
-                    {dados.map((d) => <Cell key={d.nome} fill={CORES_GRAFICO[d.nome]} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+
+            {r.total === 0 ? (
+              <div className="flex h-full min-h-[200px] flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border/70 p-6 text-center">
+                <ShieldCheck className="h-8 w-8 text-brand-orange" />
+                <p className="font-display text-xl">Nenhuma inconsistência nesta competência</p>
+                <p className="max-w-md text-sm text-muted-foreground">
+                  {empresa
+                    ? "Importe documentos fiscais e execute a auditoria para cruzar XML, escrituração, apurações e obrigações."
+                    : "Selecione uma empresa no topo da tela para auditar a competência."}
+                </p>
+                <Button size="sm" className="mt-1 rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={executar}>
+                  <RefreshCw className="mr-1.5 h-4 w-4" /> Executar auditoria
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {dados.map((d) => (
+                  <div key={d.nome} className="flex items-center gap-3">
+                    <span className="w-24 shrink-0 text-xs text-muted-foreground">{d.nome}</span>
+                    <div className="h-2.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full transition-[width]"
+                        style={{ width: `${maximo ? (d.qtd / maximo) * 100 : 0}%`, background: CORES_GRAFICO[d.nome] }}
+                      />
+                    </div>
+                    <span className="w-10 shrink-0 text-right font-mono text-sm">{d.qtd}</span>
+                    <span className="hidden w-28 shrink-0 text-right font-mono text-[11px] text-muted-foreground sm:block">
+                      {brlAud(d.valor)}
+                    </span>
+                  </div>
+                ))}
+                <div className="mt-4 grid gap-2 sm:grid-cols-4">
+                  {[
+                    { label: "Abertas", v: r.abertos },
+                    { label: "Em análise", v: r.emAnalise },
+                    { label: "Corrigidas", v: r.corrigidos },
+                    { label: "Ignoradas", v: r.ignorados },
+                  ].map((t) => (
+                    <div key={t.label} className="rounded-2xl border border-border/70 p-3">
+                      <div className="text-[10px] uppercase tracking-[0.06em] text-muted-foreground">{t.label}</div>
+                      <div className="font-display text-2xl">{t.v}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
+
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi label="Inconsistências abertas" valor={String(r.abertos)} hint={`${r.total} no total`} tom={r.abertos ? "risco" : undefined} />
