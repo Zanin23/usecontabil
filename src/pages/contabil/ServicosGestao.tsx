@@ -15,6 +15,7 @@ import {
   FASES, TarefaStatus, execKey, fecharPeriodo, pendenciasCadastro, pendenciasEscrituracao, reabrirPeriodo,
   resetExecucoes, resumoFases, setExecucao, useGestao,
 } from "@/lib/gestaoStore";
+import { pendenciasObrigacoes } from "@/lib/obrigacoesStore";
 
 const STATUS: TarefaStatus[] = ["Pendente", "Em andamento", "Concluída", "Não se aplica"];
 
@@ -42,8 +43,16 @@ export default function ServicosGestao() {
     () => pendenciasEscrituracao(empresa?.id ?? null, competencia),
     [empresa, competencia, execucoes],
   );
+  const pendObrigacoes = useMemo(
+    () => pendenciasObrigacoes(empresa?.id ?? null, competencia),
+    [empresa, competencia, execucoes],
+  );
   const cadastrosPendentes = pendCadastro.filter((p) => !p.resolvida);
-  const bloqueios = [...cadastrosPendentes, ...pendEscrituracao.filter((p) => !p.resolvida)].filter((p) => p.critica);
+  const bloqueios = [
+    ...cadastrosPendentes,
+    ...pendEscrituracao.filter((p) => !p.resolvida),
+    ...pendObrigacoes.filter((p) => !p.resolvida),
+  ].filter((p) => p.critica);
 
   const ativos = modelos.filter((m) => m.ativa);
   const statusOf = (modeloId: string): TarefaStatus =>
@@ -254,6 +263,39 @@ export default function ServicosGestao() {
                       {!p.resolvida && (
                         <Link to={p.destino} className="text-xs text-brand-orange hover:underline">
                           Resolver agora
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {pendObrigacoes.length ? (
+          <Card className="rounded-2xl border-border/70 lg:col-span-2">
+            <CardContent className="p-5 space-y-3">
+              <h2 className="font-display text-2xl">Obrigações acessórias</h2>
+              <p className="text-xs text-muted-foreground">
+                Situação de geração, validação e transmissão em {formatCompetencia(competencia)}.
+              </p>
+              <div className="grid gap-3 md:grid-cols-2">
+                {pendObrigacoes.map((p) => (
+                  <div key={p.id} className="flex items-start gap-3 rounded-xl border border-border/70 p-3">
+                    {p.resolvida ? (
+                      <CheckCircle2 className="h-4 w-4 text-success mt-0.5 shrink-0" />
+                    ) : p.critica ? (
+                      <AlertTriangle className="h-4 w-4 text-brand-orange mt-0.5 shrink-0" />
+                    ) : (
+                      <Circle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                    )}
+                    <div className="min-w-0">
+                      <div className="text-sm">{p.titulo}</div>
+                      <p className="text-xs text-muted-foreground">{p.detalhe}</p>
+                      {!p.resolvida && (
+                        <Link to={p.destino} className="text-xs text-brand-orange hover:underline">
+                          Abrir obrigação
                         </Link>
                       )}
                     </div>
