@@ -366,12 +366,12 @@ export const administrativo: Category[] = [
         valor: brl(6_400 + i * 2_120),
         status: pick(["Em aberto", "Recebido", "Vencido"], i),
       })), "Novo título"),
-      mod("conciliacao", "Conciliação bancária", ClipboardCheck, "Extrato x lançamentos internos.", [
-        col("data", "Data", { mono: true }), col("historico", "Histórico"), num("extrato", "Extrato"), num("sistema", "Sistema"), col("situacao", "Situação", { align: "center" }),
+      mod("caixa", "Caixa e tesouraria", Wallet2, "Saldos de caixa, bancos, aplicações e movimento auditável.", [
+        col("conta", "Conta"), col("tipo", "Tipo"), col("agencia", "Agência / número", { mono: true }), num("saldo", "Saldo atual"),
       ], [
-        { data: "03/07/2026", historico: "Recebimento cliente Andes", extrato: brl(18_400), sistema: brl(18_400), situacao: "Conciliado" },
-        { data: "10/07/2026", historico: "Pagamento fornecedor Norte", extrato: brl(9_280), sistema: brl(9_280), situacao: "Conciliado" },
-        { data: "16/07/2026", historico: "Tarifa bancária", extrato: brl(148.9), sistema: brl(0), situacao: "Divergente" },
+        { conta: "Caixa matriz", tipo: "Caixa", agencia: "CX-001", saldo: brl(12_400) },
+        { conta: "Banco do Brasil · Movimento", tipo: "Conta corrente", agencia: "1234-5 / 98765-4", saldo: brl(412_880.4) },
+        { conta: "Itaú · Cobrança", tipo: "Conta corrente", agencia: "0456 / 11223-8", saldo: brl(96_240.1) },
       ]),
       mod("fluxo-caixa", "Fluxo de caixa", TrendingUp, "Projeção de entradas e saídas por semana.", [
         col("periodo", "Período"), num("entradas", "Entradas"), num("saidas", "Saídas"), num("saldo", "Saldo projetado"),
