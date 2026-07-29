@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
+  Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
+  Dialog, DialogContent, DialogTitle,
 } from "@/design-system/mj-design-system-db98fa";
 import { LayoutDashboard, Building2, CornerDownLeft, type LucideIcon } from "lucide-react";
 import { AREAS } from "@/lib/contabilNav";
@@ -109,7 +110,10 @@ export default function BuscaTelas({
   };
 
   return (
-    <CommandDialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="overflow-hidden p-0 max-w-2xl">
+        <DialogTitle className="sr-only">Buscar telas</DialogTitle>
+        <Command shouldFilter={false} className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]]:px-2">
       <CommandInput
         placeholder="Buscar telas, módulos e cadastros…"
         value={busca}
@@ -144,6 +148,8 @@ export default function BuscaTelas({
           </CommandGroup>
         ))}
       </CommandList>
-    </CommandDialog>
+        </Command>
+      </DialogContent>
+    </Dialog>
   );
 }
