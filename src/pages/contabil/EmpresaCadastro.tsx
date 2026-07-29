@@ -469,7 +469,7 @@ export default function EmpresaCadastro() {
     setForm({ ...EMPTY_FORM, ...(rec.raw as Partial<FormState>) });
   }, [routeId, navigate]);
 
-  const handleSalvar = () => {
+  const handleSalvar = async () => {
     const cnpjDigits = form.cnpj.replace(/\D/g, "");
     if (cnpjDigits.length !== 14) {
       toast.error("Informe um CNPJ válido (14 dígitos)");
@@ -497,7 +497,7 @@ export default function EmpresaCadastro() {
         createdAt: createdAt ?? existente?.createdAt ?? new Date().toISOString(),
         raw: { ...form },
       };
-      const salvo = saveEmpresa(rec);
+      const salvo = await saveEmpresa(rec);
       setRecordId(salvo.id);
       setCreatedAt(salvo.createdAt);
       toast.success(
