@@ -436,8 +436,25 @@ const financeiro: Category[] = [
           { codigo: "SVC-005", servico: "Planejamento tributário", cnae: "7020-4/00", iss: "2,50%", valor: brl(12_000) },
         ],
       },
+      {
+        slug: "produtos",
+        title: "Produtos",
+        icon: Boxes,
+        desc: "Cadastro fiscal com NCM, CEST, CFOP e tributação.",
+        columns: [C.codigo, { key: "descricao", label: "Produto" }, { key: "ncm", label: "NCM", mono: true }],
+        rows: [],
+      },
+      {
+        slug: "clientes-fornecedores",
+        title: "Clientes e fornecedores",
+        icon: Users,
+        desc: "Parceiros com regime, inscrições e retenções.",
+        columns: [{ key: "nome", label: "Parceiro" }, { key: "documento", label: "CNPJ/CPF", mono: true }, { key: "uf", label: "UF" }],
+        rows: [],
+      },
     ],
   },
+
   {
     slug: "tabelas",
     title: "Tabelas",
