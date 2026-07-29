@@ -255,7 +255,7 @@ export const fiscal: Category[] = [
         { chave: "NF-e 10281", divergencia: "Valor divergente", origem: "ERP", impacto: "ICMS a maior", status: "Em análise" },
         { chave: "CT-e 3308", divergencia: "CFOP incompatível", origem: "ERP", impacto: "Reclassificação", status: "Aberta" },
       ]),
-      mod("cadastros-criticos", "Divergências de NCM / CST / CFOP", ListChecks, "Itens com classificação fiscal inconsistente.", [
+      mod("classificacao", "Divergências de NCM / CST / CFOP", ListChecks, "Itens com classificação fiscal inconsistente.", [
         col("item", "Item"), col("ncm", "NCM", { mono: true }), col("cst", "CST", { mono: true }), col("cfop", "CFOP", { mono: true }), col("alerta", "Alerta"),
       ], [
         { item: "Cabo flexível 2,5mm", ncm: "8544.42.00", cst: "060", cfop: "5405", alerta: "NCM sujeito a ST não configurado" },
@@ -275,6 +275,13 @@ export const fiscal: Category[] = [
         { orgao: "SEFAZ-SP", certidao: "CND estadual", emissao: "02/07/2026", validade: "30/09/2026", status: "Válida" },
         { orgao: "Prefeitura SP", certidao: "CND municipal", emissao: "18/03/2026", validade: "16/07/2026", status: "Vencida" },
         { orgao: "Caixa", certidao: "CRF do FGTS", emissao: "10/07/2026", validade: "07/09/2026", status: "Válida" },
+      ]),
+      mod("regras", "Motor de regras", ListChecks, "Catálogo de regras fiscais, criticidade e parametrização.", [
+        col("regra", "Regra"), col("grupo", "Grupo"), col("criticidade", "Criticidade", { align: "center" }), col("status", "Status", { align: "center" }),
+      ], [
+        { regra: "XML não escriturado", grupo: "XML x escrituração", criticidade: "Crítica", status: "Ativa" },
+        { regra: "CFOP incompatível com a operação", grupo: "Classificação", criticidade: "Alta", status: "Ativa" },
+        { regra: "CEST ausente em item sujeito a ST", grupo: "Classificação", criticidade: "Média", status: "Ativa" },
       ]),
     ],
   },
