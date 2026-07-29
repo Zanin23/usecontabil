@@ -226,7 +226,7 @@ export default function CrudEmpresa({
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? "Editar registro" : labelNovo}</DialogTitle>
           </DialogHeader>
