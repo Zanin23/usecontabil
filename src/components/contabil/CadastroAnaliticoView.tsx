@@ -21,6 +21,14 @@ import {
 
 const CORES = ["var(--brand-orange)", "var(--brand-purple)", "var(--brand-blue)", "var(--brand-pink)", "hsl(var(--muted-foreground))"];
 
+/** R$ 6,1 mi / R$ 480 mil — rótulos curtos para eixos e barras. */
+function compacto(v: number) {
+  const abs = Math.abs(v);
+  if (abs >= 1_000_000) return `R$ ${(v / 1_000_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
+  if (abs >= 1_000) return `R$ ${(v / 1_000).toLocaleString("pt-BR", { maximumFractionDigits: 0 })} mil`;
+  return brl(v);
+}
+
 function Kpi({ label, valor, hint }: { label: string; valor: string; hint?: string }) {
   return (
     <Card className="rounded-3xl border-border/70">
