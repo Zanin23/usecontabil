@@ -6,9 +6,6 @@ import {
 import {
   Badge, Button, Card, CardContent, Progress,
 } from "@/design-system/mj-design-system-db98fa";
-import {
-  Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis,
-} from "recharts";
 import { toast } from "sonner";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
