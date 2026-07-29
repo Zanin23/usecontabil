@@ -20,7 +20,7 @@ import { loadDocs, valorBR, moedaBR, type DocFiscal, type DocSlug } from "@/lib/
 import {
   gerarLivroEntradas, gerarLivroSaidas, somar, competenciaAnterior,
 } from "@/lib/escrituracaoStore";
-import { apurar, regimeDaEmpresa, type MotorSlug } from "@/lib/apuracaoStore";
+import { apurar, getEstado, regimeDaEmpresa, type MotorSlug } from "@/lib/apuracaoStore";
 import { monitorar } from "@/lib/obrigacoesStore";
 
 export const AUDITORIA_EVENT = "usecontabil:auditoria-changed";
@@ -621,7 +621,8 @@ function cruzamentos(empresaId: string, competencia: string): Achado[] {
 
   // Fiscal × EFD Contribuições (PIS/COFINS)
   try {
-    const pis = apurar("pis-cofins" as MotorSlug, empresaId, competencia);
+    const motor = "pis-cofins" as MotorSlug;
+    const pis = apurar(motor, empresaId, competencia, getEstado(motor, empresaId, competencia));
     const receitaApurada = pis.resumo.reduce((s, x) => s + valorBR(x.valor.replace("R$", "")), 0);
     const dif = Math.abs(baseSaidas - receitaApurada);
     if (baseSaidas > 0 && receitaApurada > 0 && dif / baseSaidas > 0.05) {
@@ -678,7 +679,7 @@ function cruzamentos(empresaId: string, competencia: string): Achado[] {
 
   // Fiscal × Obrigações acessórias
   const monitor = monitorar(empresaId, competencia);
-  const atrasadas = monitor.filter((m) => /atras|vencid|pend/i.test(String(m.situacao ?? m.status ?? "")));
+  const atrasadas = monitor.filter((m) => m.status !== "Transmitida" && (m.dias < 0 || m.erros > 0));
   if (atrasadas.length) {
     add("CRZ-005", "Fiscal × Obrigações acessórias", "Legal", "Crítica",
       `${atrasadas.length} obrigação(ões) da competência ainda não transmitida(s).`,
@@ -686,7 +687,7 @@ function cruzamentos(empresaId: string, competencia: string): Achado[] {
       "Concluir a geração/validação e transmitir antes do prazo para evitar multa.",
       0, [{ campo: "Obrigações transmitidas", esperado: `${monitor.length}`, encontrado: `${monitor.length - atrasadas.length}` }],
       "Monitor de obrigações",
-      atrasadas.slice(0, 6).map((m) => ({ label: String(m.nome ?? m.obr), valor: String(m.situacao ?? m.status ?? "Pendente") })));
+      atrasadas.slice(0, 6).map((m) => ({ label: m.titulo, valor: `${m.status} · vence em ${m.prazo}` })));
   }
 
   // Fiscal × Estoque / Compras — produto vendido sem entrada
