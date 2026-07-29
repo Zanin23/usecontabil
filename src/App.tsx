@@ -50,6 +50,14 @@ const ApIss = lazy(() => import("./pages/contabil/fiscal/apuracoes/Iss"));
 const ApIrpjCsll = lazy(() => import("./pages/contabil/fiscal/apuracoes/IrpjCsll"));
 const ApSimples = lazy(() => import("./pages/contabil/fiscal/apuracoes/SimplesNacional"));
 const ApRetencoes = lazy(() => import("./pages/contabil/fiscal/apuracoes/Retencoes"));
+const ObrigacoesHub = lazy(() => import("./pages/contabil/fiscal/obrigacoes/Hub"));
+const ObrAgenda = lazy(() => import("./pages/contabil/fiscal/obrigacoes/Agenda"));
+const ObrSpedFiscal = lazy(() => import("./pages/contabil/fiscal/obrigacoes/SpedFiscal"));
+const ObrEfdContribuicoes = lazy(() => import("./pages/contabil/fiscal/obrigacoes/EfdContribuicoes"));
+const ObrEcdEcf = lazy(() => import("./pages/contabil/fiscal/obrigacoes/EcdEcf"));
+const ObrDctfWeb = lazy(() => import("./pages/contabil/fiscal/obrigacoes/DctfWeb"));
+const ObrReinf = lazy(() => import("./pages/contabil/fiscal/obrigacoes/Reinf"));
+const ObrEstaduais = lazy(() => import("./pages/contabil/fiscal/obrigacoes/Estaduais"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
