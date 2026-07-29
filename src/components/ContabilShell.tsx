@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
-  Settings2, Users2, Wallet, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen,
+  Settings2, Users2, Wallet, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen, ArrowLeft,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
@@ -36,6 +36,7 @@ export default function ContabilShell() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const seg = pathname.split("/").filter(Boolean);
   const currentAreaSlug = seg[0];
