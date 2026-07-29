@@ -12,7 +12,7 @@ import { useEmpresaAtual } from "@/lib/empresaAtual";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import {
-  FASES, TarefaStatus, execKey, fecharPeriodo, pendenciasCadastro, reabrirPeriodo,
+  FASES, TarefaStatus, execKey, fecharPeriodo, pendenciasCadastro, pendenciasEscrituracao, reabrirPeriodo,
   resetExecucoes, resumoFases, setExecucao, useGestao,
 } from "@/lib/gestaoStore";
 
