@@ -43,8 +43,16 @@ export default function ServicosGestao() {
     () => pendenciasEscrituracao(empresa?.id ?? null, competencia),
     [empresa, competencia, execucoes],
   );
+  const pendObrigacoes = useMemo(
+    () => pendenciasObrigacoes(empresa?.id ?? null, competencia),
+    [empresa, competencia, execucoes],
+  );
   const cadastrosPendentes = pendCadastro.filter((p) => !p.resolvida);
-  const bloqueios = [...cadastrosPendentes, ...pendEscrituracao.filter((p) => !p.resolvida)].filter((p) => p.critica);
+  const bloqueios = [
+    ...cadastrosPendentes,
+    ...pendEscrituracao.filter((p) => !p.resolvida),
+    ...pendObrigacoes.filter((p) => !p.resolvida),
+  ].filter((p) => p.critica);
 
   const ativos = modelos.filter((m) => m.ativa);
   const statusOf = (modeloId: string): TarefaStatus =>
