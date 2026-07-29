@@ -83,6 +83,11 @@ const AudClassificacao = lazy(() => import("./pages/contabil/fiscal/auditoria/Cl
 const AudCreditos = lazy(() => import("./pages/contabil/fiscal/auditoria/Creditos"));
 const AudCertidoes = lazy(() => import("./pages/contabil/fiscal/auditoria/Certidoes"));
 const AudRegras = lazy(() => import("./pages/contabil/fiscal/auditoria/Regras"));
+const AdmHub = lazy(() => import("./pages/contabil/administrativo/Hub"));
+const AdmDominio = lazy(() => import("./pages/contabil/administrativo/Dominio"));
+const AdmPesquisa = lazy(() => import("./pages/contabil/administrativo/PesquisaGlobal"));
+const AdmDashboard = lazy(() => import("./pages/contabil/administrativo/DashboardExecutivo"));
+const AdmAuditoria = lazy(() => import("./pages/contabil/administrativo/AuditoriaCadastral"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
@@ -184,6 +189,12 @@ const App = () => (
           <Route path="/fiscal/auditoria/creditos" element={<AudCreditos />} />
           <Route path="/fiscal/auditoria/certidoes" element={<AudCertidoes />} />
           <Route path="/fiscal/auditoria/regras" element={<AudRegras />} />
+
+          <Route path="/administrativo/pesquisa" element={<AdmPesquisa />} />
+          <Route path="/administrativo/dashboard" element={<AdmDashboard />} />
+          <Route path="/administrativo/auditoria" element={<AdmAuditoria />} />
+          <Route path="/administrativo/cadastros" element={<AdmHub />} />
+          <Route path="/administrativo/cadastros/:dominio" element={<AdmDominio />} />
 
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
 
