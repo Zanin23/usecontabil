@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
-  Settings2, Users2, Wallet, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen,
+  Settings2, Users2, Wallet, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen, ArrowLeft,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
@@ -36,6 +36,7 @@ export default function ContabilShell() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const seg = pathname.split("/").filter(Boolean);
   const currentAreaSlug = seg[0];
@@ -233,7 +234,23 @@ export default function ContabilShell() {
 
         <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
           <div className="px-8 h-14 flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-md h-9 w-9 p-0 shrink-0"
+              aria-label="Voltar para a tela anterior"
+              title="Voltar"
+              disabled={pathname === "/"}
+              onClick={() => {
+                const parts = pathname.split("/").filter(Boolean);
+                if (parts.length > 1) navigate("/" + parts.slice(0, -1).join("/"));
+                else if (parts.length === 1) navigate("/");
+              }}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
             <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
+
               <span className="font-mono">{breadcrumbHeader.code}</span>
               <span>/</span>
               <span className="text-foreground truncate">{breadcrumbHeader.label}</span>

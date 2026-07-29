@@ -271,9 +271,8 @@ function LeftPanel({ form }: { form: FormState }) {
         </div>
 
         <div className="flex items-start justify-between">
-          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-            <Link to="/preparativos/cadastros/empresas"><ArrowLeft className="h-4 w-4" /></Link>
-          </Button>
+          <span className="h-8 w-8" />
+
           <div className="h-16 w-16 rounded-full bg-muted grid place-items-center border border-border">
             <Building2 className="h-7 w-7 text-muted-foreground" />
           </div>
