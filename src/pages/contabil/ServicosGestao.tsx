@@ -15,6 +15,7 @@ import {
   FASES, TarefaStatus, execKey, fecharPeriodo, pendenciasCadastro, pendenciasEscrituracao, reabrirPeriodo,
   resetExecucoes, resumoFases, setExecucao, useGestao,
 } from "@/lib/gestaoStore";
+import { pendenciasObrigacoes } from "@/lib/obrigacoesStore";
 
 const STATUS: TarefaStatus[] = ["Pendente", "Em andamento", "Concluída", "Não se aplica"];
 
