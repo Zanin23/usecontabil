@@ -4,7 +4,7 @@ import {
   AlertTriangle, ChevronRight, Lock, RefreshCw, Search, ShieldCheck, X,
 } from "lucide-react";
 import {
-  Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
+  Bar, BarChart, Cell, LabelList, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import {
   Badge, Button, Card, CardContent, Input, Progress, ScrollArea, Select, SelectContent,
