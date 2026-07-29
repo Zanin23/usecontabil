@@ -269,7 +269,7 @@ export default function ContabilShell() {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
+            <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground min-w-0">
 
               <span className="font-mono">{breadcrumbHeader.code}</span>
               <span>/</span>
@@ -315,7 +315,7 @@ export default function ContabilShell() {
             </div>
 
 
-            <div className="flex items-center gap-2 rounded-md border border-border bg-card px-3 h-9 text-sm">
+            <div className="flex items-center gap-2 rounded-md border border-border bg-card px-2 lg:px-3 h-9 text-sm min-w-0">
               <CalendarRange className="h-4 w-4 text-muted-foreground" />
               <select
                 value={competencia}
