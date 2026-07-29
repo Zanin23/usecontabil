@@ -7,7 +7,7 @@ import {
 import { toast } from "sonner";
 import { ChevronRight, Download, Filter, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { findModule } from "@/lib/contabilNav";
-import { loadEmpresas, removeEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
+import { EMPRESAS_EVENT, loadEmpresas, removeEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
@@ -39,8 +39,18 @@ export default function ModulePage() {
 
   useEffect(() => {
     refreshEmpresas();
+    const onChange = () => refreshEmpresas();
+    window.addEventListener(EMPRESAS_EVENT, onChange);
+    window.addEventListener("storage", onChange);
+    window.addEventListener("focus", onChange);
+    return () => {
+      window.removeEventListener(EMPRESAS_EVENT, onChange);
+      window.removeEventListener("storage", onChange);
+      window.removeEventListener("focus", onChange);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [module?.slug, category?.slug]);
+
 
   const handleDeleteEmpresa = (rec: EmpresaRecord) => {
     if (!confirm(`Excluir "${rec.razao}"? Esta ação não pode ser desfeita.`)) return;

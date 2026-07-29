@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { saveEmpresa, getEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
+import { saveEmpresa, getEmpresa, findEmpresaPorCnpj, type EmpresaRecord } from "@/lib/empresasStore";
 import { formatAtividade, loadAtividades, useAtividades } from "@/lib/atividadesStore";
 
 import {
@@ -483,8 +483,9 @@ export default function EmpresaCadastro() {
     }
     setSaving(true);
     try {
+      const existente = recordId ? null : findEmpresaPorCnpj(form.cnpj);
       const rec: EmpresaRecord = {
-        id: recordId ?? `EMP-${Date.now()}`,
+        id: recordId ?? existente?.id ?? `EMP-${Date.now()}`,
         cnpj: form.cnpj,
         razao: form.razao,
         regime: "A definir",
@@ -493,17 +494,22 @@ export default function EmpresaCadastro() {
             ? loadAtividades().find((a) => a.id === form.classeAtividadeId)?.descricao
             : "") || form.cnaeDesc || "—",
         status: "Ativa",
-        createdAt: createdAt ?? new Date().toISOString(),
+        createdAt: createdAt ?? existente?.createdAt ?? new Date().toISOString(),
         raw: { ...form },
       };
-      saveEmpresa(rec);
-      toast.success(`Empresa "${rec.razao}" ${recordId ? "atualizada" : "cadastrada"}`);
+      const salvo = saveEmpresa(rec);
+      setRecordId(salvo.id);
+      setCreatedAt(salvo.createdAt);
+      toast.success(
+        `Empresa "${salvo.razao}" ${recordId || existente ? "atualizada" : "cadastrada"}`,
+      );
       navigate("/preparativos/cadastros/empresas");
     } catch (e: any) {
       toast.error(e?.message || "Falha ao salvar");
     } finally {
       setSaving(false);
     }
+
   };
 
   const handleBuscarCnpj = async () => {
