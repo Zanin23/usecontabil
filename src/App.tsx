@@ -38,6 +38,12 @@ const FiscalServPrestados = lazy(() => import("./pages/contabil/fiscal/ServicosP
 const FiscalTransporte = lazy(() => import("./pages/contabil/fiscal/ConhecimentosTransporte"));
 const FiscalCupons = lazy(() => import("./pages/contabil/fiscal/CuponsFiscais"));
 const FiscalManifestacao = lazy(() => import("./pages/contabil/fiscal/ManifestacaoDestinatario"));
+const EscLivroEntradas = lazy(() => import("./pages/contabil/fiscal/escrituracao/LivroEntradas"));
+const EscLivroSaidas = lazy(() => import("./pages/contabil/fiscal/escrituracao/LivroSaidas"));
+const EscApuracaoIcms = lazy(() => import("./pages/contabil/fiscal/escrituracao/ApuracaoIcms"));
+const EscApuracaoIpi = lazy(() => import("./pages/contabil/fiscal/escrituracao/ApuracaoIpi"));
+const EscInventario = lazy(() => import("./pages/contabil/fiscal/escrituracao/Inventario"));
+const EscCiap = lazy(() => import("./pages/contabil/fiscal/escrituracao/Ciap"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
