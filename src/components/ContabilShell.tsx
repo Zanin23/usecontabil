@@ -22,7 +22,13 @@ export default function ContabilShell() {
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
   const { tema, alternar } = useTema();
   const [som, setSom] = useState(somAtivo);
-  useEffect(() => assinarSom(setSom), []);
+  useEffect(() => {
+    const cancelar = assinarSom(setSom);
+    return () => {
+      cancelar();
+    };
+  }, []);
+
 
 
   const [usuarioNome, setUsuarioNome] = useState("—");
