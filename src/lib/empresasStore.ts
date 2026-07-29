@@ -1,15 +1,12 @@
-// Store das empresas do grupo, persistido no navegador.
-// Escrita defensiva: nunca sobrescreve a lista quando a leitura falha e
-// confere o gravado logo após salvar (evita perda silenciosa de cadastros).
-const KEY = "usecontabil.empresas.v1";
-const BACKUP_KEY = "usecontabil.empresas.backup.v1";
-const CORRUPT_KEY = "usecontabil.empresas.corrompido.v1";
+// Store das empresas do grupo.
+// Fonte de verdade: banco de dados na nuvem (tabela `empresas`, por usuário).
+// O localStorage é apenas um cache local para leitura instantânea/offline.
+import { supabase } from "@/integrations/supabase/client";
+
+const CACHE_KEY = "usecontabil.empresas.cache.v1";
+const LEGACY_KEYS = ["usecontabil.empresas.v1", "usecontabil.empresas.backup.v1"];
 
 export const EMPRESAS_EVENT = "usecontabil:empresas-changed";
-
-function notify() {
-  window.dispatchEvent(new Event(EMPRESAS_EVENT));
-}
 
 export type EmpresaRecord = {
   id: string;
@@ -24,6 +21,10 @@ export type EmpresaRecord = {
 
 export const soDigitos = (v: string) => (v ?? "").replace(/\D/g, "");
 
+function notify() {
+  window.dispatchEvent(new Event(EMPRESAS_EVENT));
+}
+
 function parseList(raw: string | null): EmpresaRecord[] | null {
   if (!raw) return null;
   try {
@@ -34,71 +35,159 @@ function parseList(raw: string | null): EmpresaRecord[] | null {
   }
 }
 
-/** Lê a lista; se o conteúdo principal estiver corrompido, recupera o backup. */
-export function loadEmpresas(): EmpresaRecord[] {
-  try {
-    const principal = localStorage.getItem(KEY);
-    const lista = parseList(principal);
-    if (lista) return lista;
+function lerCacheLocal(): EmpresaRecord[] {
+  const atual = parseList(localStorage.getItem(CACHE_KEY));
+  if (atual) return atual;
+  for (const k of LEGACY_KEYS) {
+    const antigo = parseList(localStorage.getItem(k));
+    if (antigo?.length) return antigo;
+  }
+  return [];
+}
 
-    // Conteúdo inválido: guarda para diagnóstico e tenta o backup.
-    if (principal) localStorage.setItem(CORRUPT_KEY, principal);
-    const backup = parseList(localStorage.getItem(BACKUP_KEY));
-    if (backup) {
-      localStorage.setItem(KEY, JSON.stringify(backup));
-      return backup;
-    }
-    return [];
+let cache: EmpresaRecord[] = (() => {
+  try {
+    return lerCacheLocal();
   } catch {
     return [];
   }
+})();
+
+function gravarCache(list: EmpresaRecord[]) {
+  cache = list;
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(list));
+  } catch {
+    /* cache é best-effort */
+  }
+  notify();
+}
+
+/* ------------------------------ leitura ------------------------------ */
+
+export function loadEmpresas(): EmpresaRecord[] {
+  return cache;
 }
 
 export function getEmpresa(id: string): EmpresaRecord | undefined {
-  return loadEmpresas().find((e) => e.id === id);
+  return cache.find((e) => e.id === id);
 }
 
 export function findEmpresaPorCnpj(cnpj: string): EmpresaRecord | undefined {
   const alvo = soDigitos(cnpj);
   if (!alvo) return undefined;
-  return loadEmpresas().find((e) => soDigitos(e.cnpj) === alvo);
+  return cache.find((e) => soDigitos(e.cnpj) === alvo);
 }
 
-function persist(list: EmpresaRecord[]) {
-  const payload = JSON.stringify(list);
-  try {
-    localStorage.setItem(KEY, payload);
-  } catch (e) {
-    throw new Error(
-      "Não foi possível salvar: o armazenamento do navegador está cheio ou bloqueado. Libere espaço ou desative a navegação anônima.",
-    );
+/* ------------------------------- nuvem ------------------------------- */
+
+type Row = {
+  id: string;
+  cnpj: string;
+  razao: string;
+  regime: string;
+  atividade: string;
+  status: string;
+  raw: any;
+  created_at: string;
+};
+
+const toRecord = (r: Row): EmpresaRecord => ({
+  id: r.id,
+  cnpj: r.cnpj,
+  razao: r.razao,
+  regime: r.regime,
+  atividade: r.atividade,
+  status: r.status,
+  createdAt: r.created_at,
+  raw: (r.raw ?? {}) as Record<string, any>,
+});
+
+async function userId(): Promise<string | null> {
+  const { data } = await supabase.auth.getUser();
+  return data.user?.id ?? null;
+}
+
+function toRow(rec: EmpresaRecord, uid: string) {
+  return {
+    id: rec.id,
+    user_id: uid,
+    cnpj: rec.cnpj ?? "",
+    razao: rec.razao ?? "",
+    regime: rec.regime ?? "",
+    atividade: rec.atividade ?? "",
+    status: rec.status ?? "Ativa",
+    raw: rec.raw ?? {},
+    created_at: rec.createdAt || new Date().toISOString(),
+  };
+}
+
+/** Baixa as empresas da nuvem e (na primeira vez) sobe os cadastros locais antigos. */
+export async function sincronizarEmpresas(): Promise<EmpresaRecord[]> {
+  const uid = await userId();
+  if (!uid) return cache;
+
+  const { data, error } = await supabase
+    .from("empresas")
+    .select("id,cnpj,razao,regime,atividade,status,raw,created_at")
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+
+  let remotas = (data ?? []).map((r) => toRecord(r as Row));
+
+  // Migração única: cadastros que só existiam neste navegador vão para a nuvem.
+  const locais = lerCacheLocal();
+  const faltantes = locais.filter(
+    (l) => !remotas.some((r) => r.id === l.id || (soDigitos(r.cnpj) && soDigitos(r.cnpj) === soDigitos(l.cnpj))),
+  );
+  if (faltantes.length) {
+    const { error: upErr } = await supabase
+      .from("empresas")
+      .upsert(faltantes.map((f) => toRow(f, uid)));
+    if (!upErr) remotas = [...faltantes, ...remotas];
   }
-  // Confere se realmente ficou gravado (modo anônimo/quota podem falhar em silêncio).
-  if (localStorage.getItem(KEY) !== payload) {
-    throw new Error("Não foi possível confirmar a gravação do cadastro no navegador.");
-  }
+
+  gravarCache(remotas);
+  return remotas;
+}
+
+export async function saveEmpresa(rec: EmpresaRecord): Promise<EmpresaRecord> {
+  const uid = await userId();
+  if (!uid) throw new Error("Faça login para salvar o cadastro na nuvem.");
+
+  // Casa por id ou CNPJ para não duplicar o mesmo cadastro.
+  const existente =
+    cache.find((e) => e.id === rec.id) ??
+    (soDigitos(rec.cnpj) ? cache.find((e) => soDigitos(e.cnpj) === soDigitos(rec.cnpj)) : undefined);
+  const final: EmpresaRecord = existente
+    ? { ...existente, ...rec, id: existente.id, createdAt: existente.createdAt }
+    : rec;
+
+  const { error } = await supabase.from("empresas").upsert(toRow(final, uid));
+  if (error) throw new Error(error.message);
+
+  const list = existente
+    ? cache.map((e) => (e.id === final.id ? final : e))
+    : [final, ...cache];
+  gravarCache(list);
+  return final;
+}
+
+export async function removeEmpresa(id: string): Promise<void> {
+  const uid = await userId();
+  if (!uid) throw new Error("Faça login para excluir o cadastro.");
+  const { error } = await supabase.from("empresas").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  gravarCache(cache.filter((e) => e.id !== id));
+}
+
+export function limparCacheEmpresas() {
+  cache = [];
   try {
-    localStorage.setItem(BACKUP_KEY, payload);
+    localStorage.removeItem(CACHE_KEY);
+    LEGACY_KEYS.forEach((k) => localStorage.removeItem(k));
   } catch {
-    /* backup é best-effort */
+    /* noop */
   }
   notify();
-}
-
-export function saveEmpresa(rec: EmpresaRecord) {
-  const list = loadEmpresas();
-  // Casa por id ou, na falta dele, pelo CNPJ — evita cadastros duplicados
-  // que depois "somem" da lista por serem sobrescritos.
-  let idx = list.findIndex((e) => e.id === rec.id);
-  if (idx < 0 && soDigitos(rec.cnpj)) {
-    idx = list.findIndex((e) => soDigitos(e.cnpj) === soDigitos(rec.cnpj));
-  }
-  if (idx >= 0) list[idx] = { ...list[idx], ...rec, id: list[idx].id };
-  else list.unshift(rec);
-  persist(list);
-  return idx >= 0 ? list[idx] : rec;
-}
-
-export function removeEmpresa(id: string) {
-  persist(loadEmpresas().filter((e) => e.id !== id));
 }
