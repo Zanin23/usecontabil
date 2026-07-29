@@ -157,7 +157,7 @@ export default function ObrigacoesHub() {
               <div key={m.label} className="rounded-2xl border border-border/70 p-3">
                 <m.icone className={`h-4 w-4 ${m.cor}`} />
                 <div className="mt-1 font-mono text-xl">{m.valor}</div>
-                <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">{m.label}</div>
+                <div className="text-[10px] uppercase tracking-[0.06em] leading-tight break-words text-muted-foreground">{m.label}</div>
               </div>
             ))}
           </div>

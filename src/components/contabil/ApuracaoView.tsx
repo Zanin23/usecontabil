@@ -215,7 +215,7 @@ export default function ApuracaoView({
             className={`rounded-2xl border-border/70 ${k.destaque ? "bg-brand-orange/5 border-brand-orange/40" : ""}`}
           >
             <CardContent className="p-4">
-              <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{k.label}</div>
+              <div className="text-[11px] uppercase tracking-[0.08em] leading-tight break-words text-muted-foreground">{k.label}</div>
               <div className={`mt-1 font-display text-2xl ${k.destaque ? "text-brand-orange" : ""}`}>{k.valor}</div>
             </CardContent>
           </Card>
@@ -601,7 +601,7 @@ export default function ApuracaoView({
           {detalhe && (
             <div className="mt-4 space-y-4 text-sm">
               <div>
-                <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Origem</div>
+                <div className="text-[11px] uppercase tracking-[0.08em] leading-tight break-words text-muted-foreground">Origem</div>
                 <div>{detalhe.titulo}</div>
               </div>
               {detalhe.extras?.length ? (
@@ -615,19 +615,19 @@ export default function ApuracaoView({
                 </div>
               ) : null}
               <div className="rounded-xl border border-border/70 p-3 space-y-1">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Regra aplicada</div>
+                <div className="text-[11px] uppercase tracking-[0.08em] leading-tight break-words text-muted-foreground">Regra aplicada</div>
                 <div className="text-xs">{detalhe.memoria.regra}</div>
               </div>
               <div className="rounded-xl border border-border/70 p-3 space-y-1">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Legislação</div>
+                <div className="text-[11px] uppercase tracking-[0.08em] leading-tight break-words text-muted-foreground">Legislação</div>
                 <div className="text-xs">{detalhe.memoria.legislacao}</div>
               </div>
               <div className="rounded-xl border border-border/70 p-3 space-y-1">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Fórmula</div>
+                <div className="text-[11px] uppercase tracking-[0.08em] leading-tight break-words text-muted-foreground">Fórmula</div>
                 <div className="font-mono text-xs">{detalhe.memoria.formula}</div>
               </div>
               <div className="rounded-xl border border-border/70 p-3">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-2">Passos</div>
+                <div className="text-[11px] uppercase tracking-[0.08em] leading-tight break-words text-muted-foreground mb-2">Passos</div>
                 {detalhe.memoria.passos.map((p) => (
                   <div key={p.label} className="flex justify-between border-b border-border/40 py-1 text-xs">
                     <span className="text-muted-foreground">{p.label}</span>
