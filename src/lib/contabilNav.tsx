@@ -683,7 +683,32 @@ const financeiro: Category[] = [
           { empresa: "Comércio Andes Eireli", anoBase: "2023", receita: brl(2_412_800), status: "Retificada" },
         ],
       },
+      {
+        slug: "avancada",
+        title: "Tributação avançada",
+        icon: Sparkles,
+        desc: "Monofásico, drawback, ZFM, suspensão, diferimento e incentivos.",
+        columns: [{ key: "motor", label: "Motor" }, { key: "tributo", label: "Tributo" }],
+        rows: [],
+      },
+      {
+        slug: "motor-tributario",
+        title: "Motor tributário",
+        icon: Cog,
+        desc: "Rule engine com vigência, UF, versão e correção sugerida.",
+        columns: [{ key: "regra", label: "Regra" }, { key: "categoria", label: "Categoria" }],
+        rows: [],
+      },
+      {
+        slug: "dashboard-executivo",
+        title: "Dashboard executivo",
+        icon: Gauge,
+        desc: "KPIs de faturamento, carga tributária e compliance.",
+        columns: [{ key: "indicador", label: "Indicador" }, { key: "valor", label: "Valor", align: "right", mono: true }],
+        rows: [],
+      },
     ],
+
   },
 ];
 
