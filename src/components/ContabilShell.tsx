@@ -4,10 +4,12 @@ import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
   Settings2, Users2, Wallet, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut,
+  Volume2, VolumeX,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
 import { useTema } from "@/lib/tema";
+import { assinarSom, definirSom, somAtivo } from "@/lib/uiSound";
 import { supabase } from "@/integrations/supabase/client";
 import { limparCacheEmpresas } from "@/lib/empresasStore";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
@@ -19,6 +21,15 @@ export default function ContabilShell() {
   const { competencia, setCompetencia } = useCompetencia();
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
   const { tema, alternar } = useTema();
+  const [som, setSom] = useState(somAtivo);
+  useEffect(() => {
+    const cancelar = assinarSom(setSom);
+    return () => {
+      cancelar();
+    };
+  }, []);
+
+
 
   const [usuarioNome, setUsuarioNome] = useState("—");
   const [usuarioPerfil, setUsuarioPerfil] = useState("Usuário");
@@ -387,12 +398,24 @@ export default function ContabilShell() {
               variant="outline"
               size="sm"
               className="rounded-md h-9"
+              onClick={() => definirSom(!som)}
+              aria-label={som ? "Desativar sons" : "Ativar sons"}
+              title={som ? "Sons ativados" : "Sons desativados"}
+            >
+              {som ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-md h-9"
               onClick={alternar}
               aria-label={tema === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
               title={tema === "dark" ? "Modo claro" : "Modo escuro"}
             >
               {tema === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
+
 
             <Button variant="outline" size="sm" className="rounded-md h-9 relative">
               <Bell className="h-4 w-4" />

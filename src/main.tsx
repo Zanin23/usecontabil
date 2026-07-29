@@ -5,5 +5,9 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
 import "./index.css";
+import { instalarSonsUI } from "./lib/uiSound";
+
+instalarSonsUI();
 
 createRoot(document.getElementById("root")!).render(<App />);
+
