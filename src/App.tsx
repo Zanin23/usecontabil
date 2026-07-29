@@ -140,7 +140,14 @@ const App = () => (
           <Route path="/fiscal/obrigacoes/reinf" element={<ObrReinf />} />
           <Route path="/fiscal/obrigacoes/estaduais" element={<ObrEstaduais />} />
 
+          <Route path="/fiscal/guias" element={<GuiasHub />} />
+          <Route path="/fiscal/guias/darf" element={<GuiasDarf />} />
+          <Route path="/fiscal/guias/estaduais" element={<GuiasEstaduais />} />
+          <Route path="/fiscal/guias/parcelamentos" element={<GuiasParcelamentos />} />
+          <Route path="/fiscal/guias/calendario" element={<GuiasCalendario />} />
+
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
+
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
