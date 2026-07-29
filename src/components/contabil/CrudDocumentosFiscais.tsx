@@ -11,6 +11,7 @@ import {
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
+import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import {
   chaveFicticia, competenciaDaData, formatarChave, limparPeriodo, moedaBR, novoDocId,
   primeiroDia, removeDoc, saveDoc, saveDocs, useDocsFiscais, valorBR,
@@ -356,6 +357,7 @@ export default function CrudDocumentosFiscais({
           <DialogHeader>
             <DialogTitle>{editing ? "Editar documento" : labelNovo}</DialogTitle>
           </DialogHeader>
+          <AssistenteCampos titulo={titulo} campos={campos} draft={draft} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {campos.map((c) => (
               <div key={c.key} className={c.span === 2 ? "md:col-span-2 space-y-1.5" : "space-y-1.5"}>

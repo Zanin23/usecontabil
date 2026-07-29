@@ -12,6 +12,7 @@ import {
   type LinhaTabela, type TabelaSlug,
 } from "@/lib/financeiroStore";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
+import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 
 export type CampoTabela = {
   key: string;
@@ -242,10 +243,11 @@ export default function CrudTabelaFinanceiro({
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? "Editar linha" : labelNovo}</DialogTitle>
           </DialogHeader>
+          <AssistenteCampos titulo={titulo} campos={campos} draft={draft} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {campos.map((c) => (
               <div key={c.key} className={c.span === 2 ? "md:col-span-2 space-y-1.5" : "space-y-1.5"}>
