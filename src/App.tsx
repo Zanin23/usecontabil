@@ -38,6 +38,12 @@ const FiscalServPrestados = lazy(() => import("./pages/contabil/fiscal/ServicosP
 const FiscalTransporte = lazy(() => import("./pages/contabil/fiscal/ConhecimentosTransporte"));
 const FiscalCupons = lazy(() => import("./pages/contabil/fiscal/CuponsFiscais"));
 const FiscalManifestacao = lazy(() => import("./pages/contabil/fiscal/ManifestacaoDestinatario"));
+const EscLivroEntradas = lazy(() => import("./pages/contabil/fiscal/escrituracao/LivroEntradas"));
+const EscLivroSaidas = lazy(() => import("./pages/contabil/fiscal/escrituracao/LivroSaidas"));
+const EscApuracaoIcms = lazy(() => import("./pages/contabil/fiscal/escrituracao/ApuracaoIcms"));
+const EscApuracaoIpi = lazy(() => import("./pages/contabil/fiscal/escrituracao/ApuracaoIpi"));
+const EscInventario = lazy(() => import("./pages/contabil/fiscal/escrituracao/Inventario"));
+const EscCiap = lazy(() => import("./pages/contabil/fiscal/escrituracao/Ciap"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
@@ -88,6 +94,13 @@ const App = () => (
           <Route path="/fiscal/documentos/transporte" element={<FiscalTransporte />} />
           <Route path="/fiscal/documentos/cupons" element={<FiscalCupons />} />
           <Route path="/fiscal/documentos/manifestacao" element={<FiscalManifestacao />} />
+
+          <Route path="/fiscal/escrituracao/livro-entradas" element={<EscLivroEntradas />} />
+          <Route path="/fiscal/escrituracao/livro-saidas" element={<EscLivroSaidas />} />
+          <Route path="/fiscal/escrituracao/apuracao-icms" element={<EscApuracaoIcms />} />
+          <Route path="/fiscal/escrituracao/apuracao-ipi" element={<EscApuracaoIpi />} />
+          <Route path="/fiscal/escrituracao/inventario" element={<EscInventario />} />
+          <Route path="/fiscal/escrituracao/ciap" element={<EscCiap />} />
 
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>

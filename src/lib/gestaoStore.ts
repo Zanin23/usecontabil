@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { loadEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
 import { loadFiliais } from "@/lib/filiaisStore";
+import { documentosPendentes, linhasDoPeriodo, somar } from "@/lib/escrituracaoStore";
 
 const KEY_MODELOS = "usecontabil.tarefaModelos.v1";
 const KEY_EXEC = "usecontabil.tarefaExec.v1";
@@ -327,4 +328,82 @@ export function useGestao() {
     };
   }, []);
   return state;
+}
+
+/**
+ * Pendências da fase de Escrituração — derivadas do estado real das telas
+ * de Fiscal › Escrituração (livros, apurações, inventário e CIAP).
+ */
+export function pendenciasEscrituracao(
+  empresaId: string | null,
+  competencia: string,
+): PendenciaCadastro[] {
+  if (!empresaId) return [];
+  const entradas = linhasDoPeriodo("livro-entradas", empresaId, competencia);
+  const saidas = linhasDoPeriodo("livro-saidas", empresaId, competencia);
+  const icms = linhasDoPeriodo("apuracao-icms", empresaId, competencia);
+  const inventario = linhasDoPeriodo("inventario", empresaId, competencia);
+  const ciap = linhasDoPeriodo("ciap", empresaId, competencia);
+  const pendentes = documentosPendentes(empresaId, competencia);
+  const mes = competencia.split("-")[1];
+
+  const items: PendenciaCadastro[] = [
+    {
+      id: "docs-pendentes",
+      titulo: "Documentos fiscais sem pendência",
+      detalhe: pendentes
+        ? `${pendentes} documento(s) pendentes ou divergentes na competência.`
+        : "Todos os documentos da competência estão escriturados.",
+      destino: "/fiscal/documentos/entradas",
+      critica: true,
+      resolvida: pendentes === 0,
+    },
+    {
+      id: "livro-entradas",
+      titulo: "Livro de entradas gerado",
+      detalhe: "Entradas consolidadas por CFOP a partir dos documentos.",
+      destino: "/fiscal/escrituracao/livro-entradas",
+      critica: true,
+      resolvida: entradas.length > 0,
+    },
+    {
+      id: "livro-saidas",
+      titulo: "Livro de saídas gerado",
+      detalhe: "Saídas, cupons e serviços prestados consolidados por CFOP.",
+      destino: "/fiscal/escrituracao/livro-saidas",
+      critica: true,
+      resolvida: saidas.length > 0,
+    },
+    {
+      id: "apuracao-icms",
+      titulo: "ICMS apurado",
+      detalhe: "Débitos, créditos e saldo do período calculados a partir dos livros.",
+      destino: "/fiscal/escrituracao/apuracao-icms",
+      critica: true,
+      resolvida: icms.length > 0,
+    },
+    {
+      id: "ciap",
+      titulo: "CIAP atualizado",
+      detalhe: ciap.length
+        ? `Crédito de ativo apropriado no mês: R$ ${somar(ciap, "mes").toLocaleString("pt-BR", { minimumFractionDigits: 2 })}.`
+        : "Sem bens em apropriação — informe se a empresa tiver ativo imobilizado com crédito.",
+      destino: "/fiscal/escrituracao/ciap",
+      critica: false,
+      resolvida: ciap.length > 0,
+    },
+  ];
+
+  if (mes === "12") {
+    items.push({
+      id: "inventario",
+      titulo: "Inventário anual (Bloco H)",
+      detalhe: "Estoque declarado com data-base 31/12.",
+      destino: "/fiscal/escrituracao/inventario",
+      critica: true,
+      resolvida: inventario.length > 0,
+    });
+  }
+
+  return items;
 }
