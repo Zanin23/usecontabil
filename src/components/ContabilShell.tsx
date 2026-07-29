@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
-  Settings2, Users2, Wallet, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen, ArrowLeft,
+  Settings2, Users2, Wallet, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
@@ -18,6 +18,7 @@ export default function ContabilShell() {
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
   const { tema, alternar } = useTema();
   const [buscaAberta, setBuscaAberta] = useState(false);
+  const [menuAberto, setMenuAberto] = useState(false);
   const [recolhida, setRecolhida] = useState(
     () => typeof window !== "undefined" && localStorage.getItem("uc:sidebar") === "recolhida",
   );
@@ -38,6 +39,7 @@ export default function ContabilShell() {
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  useEffect(() => setMenuAberto(false), [pathname]);
   const seg = pathname.split("/").filter(Boolean);
   const currentAreaSlug = seg[0];
   const currentArea = AREAS.find((a) => a.slug === currentAreaSlug);
@@ -65,9 +67,9 @@ export default function ContabilShell() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 border-r border-border bg-card/60 backdrop-blur flex flex-col transition-[width] duration-200 ${
-          recolhida ? "w-16" : "w-64"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 border-r border-border bg-card lg:bg-card/60 backdrop-blur flex flex-col transition-[width,transform] duration-200 ${
+          recolhida ? "lg:w-16" : "lg:w-64"
+        } w-64 ${menuAberto ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
         <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-brand z-10" />
         <div className={`h-14 flex items-center border-b border-border ${recolhida ? "px-3" : "px-5"}`}>
@@ -195,7 +197,7 @@ export default function ContabilShell() {
             type="button"
             onClick={() => setRecolhida((v) => !v)}
             title={recolhida ? "Expandir menu" : "Recolher menu"}
-            className={`w-full flex items-center gap-2 rounded-lg border border-border py-2 text-muted-foreground hover:text-foreground hover:bg-accent transition ${
+            className={`w-full hidden lg:flex items-center gap-2 rounded-lg border border-border py-2 text-muted-foreground hover:text-foreground hover:bg-accent transition ${
               recolhida ? "justify-center px-0" : "px-3"
             }`}
           >
@@ -231,10 +233,27 @@ export default function ContabilShell() {
       </aside>
 
       {/* Main */}
-      <div className={`transition-[padding] duration-200 ${recolhida ? "pl-16" : "pl-64"}`}>
+      {menuAberto && (
+        <div
+          className="fixed inset-0 z-40 bg-foreground/40 lg:hidden"
+          onClick={() => setMenuAberto(false)}
+          aria-hidden
+        />
+      )}
+
+      <div className={`transition-[padding] duration-200 pl-0 ${recolhida ? "lg:pl-16" : "lg:pl-64"}`}>
 
         <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
-          <div className="px-8 h-14 flex items-center gap-4">
+          <div className="px-4 lg:px-8 h-14 flex items-center gap-2 lg:gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-md h-9 w-9 p-0 shrink-0 lg:hidden"
+              aria-label={menuAberto ? "Fechar menu" : "Abrir menu"}
+              onClick={() => setMenuAberto((v) => !v)}
+            >
+              {menuAberto ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -250,7 +269,7 @@ export default function ContabilShell() {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
+            <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground min-w-0">
 
               <span className="font-mono">{breadcrumbHeader.code}</span>
               <span>/</span>
@@ -271,7 +290,7 @@ export default function ContabilShell() {
 
             <div className="flex-1" />
 
-            <div className="hidden md:flex items-center gap-2 rounded-md border border-border bg-card px-3 h-9 text-sm min-w-[280px]">
+            <div className="hidden xl:flex items-center gap-2 rounded-md border border-border bg-card px-3 h-9 text-sm min-w-[280px]">
               <Building2 className="h-4 w-4 text-muted-foreground" />
               {empresas.length === 0 ? (
                 <NavLink
@@ -296,7 +315,7 @@ export default function ContabilShell() {
             </div>
 
 
-            <div className="flex items-center gap-2 rounded-md border border-border bg-card px-3 h-9 text-sm">
+            <div className="flex items-center gap-2 rounded-md border border-border bg-card px-2 lg:px-3 h-9 text-sm shrink-0">
               <CalendarRange className="h-4 w-4 text-muted-foreground" />
               <select
                 value={competencia}
@@ -313,7 +332,7 @@ export default function ContabilShell() {
 
             <button
               onClick={() => setBuscaAberta(true)}
-              className="hidden md:flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card text-sm text-muted-foreground hover:text-foreground transition">
+              className="hidden lg:flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card text-sm text-muted-foreground hover:text-foreground transition">
               <Search className="h-4 w-4" />
               <span>Buscar…</span>
               <kbd className="ml-2 inline-flex items-center gap-1 rounded border border-border px-1.5 py-0.5 text-[10px] font-mono">
@@ -339,7 +358,7 @@ export default function ContabilShell() {
           </div>
         </header>
 
-        <main className="px-8 py-8">
+        <main className="px-4 lg:px-8 py-6 lg:py-8">
           <Outlet />
         </main>
       </div>

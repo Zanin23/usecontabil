@@ -85,15 +85,15 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <div className="flex items-end justify-between gap-6">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-6">
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Painel de controle</div>
-          <h1 className="font-display text-4xl mt-2">
+          <h1 className="font-display text-3xl md:text-4xl mt-2">
             Visão geral <span className="text-brand-orange">contábil</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-1.5">Competência 07/2026 — Metalúrgica Andrade S.A.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" className="rounded-md h-9">
             <RefreshCw className="h-4 w-4 mr-1.5" /> Sincronizar ERP
           </Button>
