@@ -355,6 +355,18 @@ export default function ContabilShell() {
               <Bell className="h-4 w-4" />
               <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive" />
             </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-md h-9"
+              onClick={sair}
+              aria-label="Sair da conta"
+              title="Sair"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+
           </div>
         </header>
 
