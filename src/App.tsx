@@ -44,6 +44,12 @@ const EscApuracaoIcms = lazy(() => import("./pages/contabil/fiscal/escrituracao/
 const EscApuracaoIpi = lazy(() => import("./pages/contabil/fiscal/escrituracao/ApuracaoIpi"));
 const EscInventario = lazy(() => import("./pages/contabil/fiscal/escrituracao/Inventario"));
 const EscCiap = lazy(() => import("./pages/contabil/fiscal/escrituracao/Ciap"));
+const ApuracoesHub = lazy(() => import("./pages/contabil/fiscal/apuracoes/Hub"));
+const ApPisCofins = lazy(() => import("./pages/contabil/fiscal/apuracoes/PisCofins"));
+const ApIss = lazy(() => import("./pages/contabil/fiscal/apuracoes/Iss"));
+const ApIrpjCsll = lazy(() => import("./pages/contabil/fiscal/apuracoes/IrpjCsll"));
+const ApSimples = lazy(() => import("./pages/contabil/fiscal/apuracoes/SimplesNacional"));
+const ApRetencoes = lazy(() => import("./pages/contabil/fiscal/apuracoes/Retencoes"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
