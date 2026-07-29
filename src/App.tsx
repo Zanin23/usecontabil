@@ -44,6 +44,12 @@ const EscApuracaoIcms = lazy(() => import("./pages/contabil/fiscal/escrituracao/
 const EscApuracaoIpi = lazy(() => import("./pages/contabil/fiscal/escrituracao/ApuracaoIpi"));
 const EscInventario = lazy(() => import("./pages/contabil/fiscal/escrituracao/Inventario"));
 const EscCiap = lazy(() => import("./pages/contabil/fiscal/escrituracao/Ciap"));
+const ApuracoesHub = lazy(() => import("./pages/contabil/fiscal/apuracoes/Hub"));
+const ApPisCofins = lazy(() => import("./pages/contabil/fiscal/apuracoes/PisCofins"));
+const ApIss = lazy(() => import("./pages/contabil/fiscal/apuracoes/Iss"));
+const ApIrpjCsll = lazy(() => import("./pages/contabil/fiscal/apuracoes/IrpjCsll"));
+const ApSimples = lazy(() => import("./pages/contabil/fiscal/apuracoes/SimplesNacional"));
+const ApRetencoes = lazy(() => import("./pages/contabil/fiscal/apuracoes/Retencoes"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 
@@ -101,6 +107,13 @@ const App = () => (
           <Route path="/fiscal/escrituracao/apuracao-ipi" element={<EscApuracaoIpi />} />
           <Route path="/fiscal/escrituracao/inventario" element={<EscInventario />} />
           <Route path="/fiscal/escrituracao/ciap" element={<EscCiap />} />
+
+          <Route path="/fiscal/apuracoes" element={<ApuracoesHub />} />
+          <Route path="/fiscal/apuracoes/pis-cofins" element={<ApPisCofins />} />
+          <Route path="/fiscal/apuracoes/iss" element={<ApIss />} />
+          <Route path="/fiscal/apuracoes/irpj-csll" element={<ApIrpjCsll />} />
+          <Route path="/fiscal/apuracoes/simples-nacional" element={<ApSimples />} />
+          <Route path="/fiscal/apuracoes/retencoes" element={<ApRetencoes />} />
 
           <Route path="/:area/:categoria/:modulo" element={<ModulePage />} />
         </Route>
