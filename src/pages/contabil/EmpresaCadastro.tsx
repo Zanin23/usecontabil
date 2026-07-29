@@ -367,7 +367,7 @@ function AssistantPanel({
             <Sparkles className="h-3.5 w-3.5 text-brand-blue" />
           </div>
           <div className="min-w-0">
-            <div className="text-[10px] uppercase tracking-[0.16em] text-brand-blue font-medium leading-none">Assistente</div>
+            <div className="text-[10px] uppercase tracking-[0.16em] text-brand-blue font-medium leading-none">IA ajudante</div>
             <div className="text-sm font-semibold text-foreground truncate leading-tight mt-0.5">{tip.title}</div>
           </div>
         </div>
