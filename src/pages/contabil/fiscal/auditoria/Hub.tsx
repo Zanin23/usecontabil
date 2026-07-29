@@ -55,7 +55,7 @@ export default function AuditoriaHub() {
   const achados = useAuditoria(empresa?.id, competencia);
   const creditos = useOportunidades(empresa?.id, competencia);
   const certs = useCertidoes(empresa?.id);
-  const log = useLogAuditoria().slice(0, 8);
+  const log = useLogAuditoria().log.slice(0, 8);
 
   const r = resumoAchados(achados);
   const rc = resumoCreditos(creditos);
