@@ -1,34 +1,61 @@
 ## Objetivo
 
-Hoje `Fiscal › Escrituração` são 6 telas estáticas geradas pelo manifesto (`contabilNavAreas.tsx`): tabela fixa, sem CRUD, sem cálculo, sem ajudante. A proposta é transformá-las em telas funcionais no mesmo padrão das últimas entregas (documentos fiscais / tabelas do financeiro): CRUD persistido por empresa + competência, indicadores no topo, importação simulada, dicas e **IA ajudante de campos**.
+Transformar a categoria **Fiscal › Obrigações acessórias** (hoje telas de listagem mockadas) em um módulo funcional, no mesmo padrão do módulo de Apurações: hub com cartões grandes por obrigação, motores independentes de geração/validação/transmissão e uma camada comum de auditoria, versionamento e monitoramento.
 
-Regra central adotada: **a escrituração não é digitada do zero — ela é derivada dos documentos fiscais já lançados**. É assim que os sistemas contábeis do mercado funcionam (Domínio, Alterdata, Questor): o livro nasce da nota, e a apuração nasce do livro.
+Tudo continua **interno e visual** — nenhuma comunicação real com Receita Federal, SEFAZ ou prefeituras. Geração de arquivo, assinatura e transmissão são simuladas de forma realista (protocolos, recibos, logs, tempos de processamento).
 
-## Telas e regras contábeis
+## Arquitetura
 
-**1. Livro de entradas** — gerado a partir das Notas de entrada, CT-e e serviços tomados da competência. Agrupa por CFOP/CST, com colunas: valor contábil, base de cálculo, ICMS, IPI, isentas, outras. Botão "Gerar a partir dos documentos" reprocessa o livro; linhas manuais continuam possíveis. CFOPs de uso e consumo (1556) e ST (1403/5405) não geram crédito — a tela marca isso e explica.
+**Camada de dados — `src/lib/obrigacoesStore.ts`**
+Motor único com registro de obrigações, cada uma com seu gerador próprio. Lê dados reais já existentes no app: documentos fiscais (`fiscalStore`), escrituração (`escrituracaoStore`), apurações (`apuracaoStore`), empresa e filiais.
 
-**2. Livro de saídas** — mesma lógica sobre notas de saída, NFS-e e cupons. Débito de ICMS por CFOP, destaque de ST e de operações sem tributação (bonificação, remessa).
+Por obrigação e competência, guarda: status, versão do layout, blocos/registros gerados, validações, inconsistências, advertências, versões do arquivo, assinaturas, transmissões, protocolos e log imutável de auditoria. Persistência em localStorage, no mesmo padrão dos demais stores.
 
-**3. Apuração de ICMS** — calculada, não digitada: débitos das saídas − créditos das entradas + saldo credor anterior = saldo a recolher ou a transportar. Linhas separadas para ICMS próprio, ICMS-ST e DIFAL. Mostra a memória de cálculo aberta e trava o encerramento se houver documento pendente na competência.
+**Motores de geração** (um por obrigação, desacoplados):
+- SPED Fiscal (EFD ICMS/IPI) — blocos 0, C, D, E, H, G, 9
+- EFD-Contribuições — blocos 0, A, C, D, F, M, 1, 9
+- ECD e ECF — plano de contas, lançamentos, LALUR/LACS, recuperação da ECD
+- DCTF / DCTFWeb — débitos, créditos, vinculações, DARF
+- EFD-Reinf — eventos R-1000, R-2010, R-2020, R-2055, R-2099
+- Estaduais e municipais — GIA, Sintegra, DeSTDA, DES, DECLAN, ISS, NFTS
 
-**4. Apuração de IPI** — mesma mecânica, restrita a itens com IPI destacado, com decêndio/mês conforme o parâmetro da empresa.
+Cada motor declara seu layout: versão vigente, versões anteriores, registros, campos obrigatórios/condicionais, tipos, tamanhos e dependências entre blocos.
 
-**5. Inventário (Bloco H)** — CRUD por item (NCM, quantidade, custo unitário, total calculado), com totalizador do estoque, indicação da data-base e alerta quando o inventário da competência de encerramento não existe.
+**Motor de validação**
+Conjunto de regras executadas antes da geração, classificadas em erro / advertência / pendência: empresa sem contador ou sem certificado, CFOP incompatível com CST, NCM ausente, natureza da receita inválida, participante duplicado, documento sem chave, período fechado, obrigação já transmitida, base divergente da apuração, entre outras.
 
-**6. CIAP** — controle de crédito do ativo imobilizado em 48 parcelas: cadastro do bem, crédito total, parcela atual, apropriação mensal calculada automaticamente e baixa ao completar as parcelas. O crédito do mês alimenta a apuração de ICMS.
+**Cruzamentos inteligentes**
+Comparação automática entre módulos: SPED Fiscal × EFD-Contribuições, ECF × ECD, DCTFWeb × apuração de retenções, Reinf × documentos com retenção, PGDAS × notas emitidas. Divergências viram inconsistências rastreáveis.
 
-Além disso: encadeamento com o módulo de gestão — as tarefas da fase "Escrituração" passam a refletir o estado real dessas telas (livros gerados, apurações fechadas, inventário presente).
+## Telas
 
-## Padrão de tela (igual às últimas)
+**Hub — `/fiscal/obrigacoes`**
+Cartões grandes por obrigação com indicadores ao vivo (arquivos gerados, transmitidos, pendências, erros, advertências, última transmissão) e botão "Abrir obrigação". Acima, painel de monitoramento: pendentes, transmitidas, em processamento, rejeitadas, com advertências, vencidas e próximas do vencimento.
 
-Cada tela terá: cabeçalho com ícone/descrição, faixa de indicadores, barra de ações (Novo / Gerar / Importar / Exportar), tabela com edição e exclusão, diálogo de cadastro com **IA ajudante** explicando cada campo, e bloco de dicas contextuais. Filtro por empresa selecionada e competência global, como nas demais telas.
+**Dashboard da obrigação — componente compartilhado `ObrigacaoView.tsx`**
+Cabeçalho com empresa, filial, competência, obrigação, status, versão do layout, responsável e última atualização. Faixa de KPIs. Abas: Resumo · Dados · Blocos · Registros · Validações · Pendências · Advertências · Transmissões · Protocolos · Arquivos · Auditoria · Configurações.
+
+**Visualização hierárquica de registros**
+Árvore Bloco → Registro → linhas. Ao clicar em um registro, painel lateral com origem do dado (tabela, documento, campo), valor, regra aplicada, legislação, número da linha no arquivo e memória de geração completa.
+
+**Fluxo operacional guiado**
+Barra de progresso em 12 etapas — importação, validação, cruzamento, inconsistências, correções, geração, assinatura, validação PVA, transmissão, protocolo, armazenamento, auditoria — com feedback visual de processamento em tempo real.
+
+**Agenda fiscal — `/fiscal/obrigacoes/agenda`**
+Calendário por competência com prazo legal, status, responsável, prioridade, dias restantes e alertas automáticos de vencimento.
+
+**Assinatura digital**
+Integrada aos certificados já cadastrados em Preparativos › Empresa › Certificados: seleção do certificado, validação de validade, histórico de assinaturas. Simulada, sem uso real de chave privada.
 
 ## Detalhes técnicos
 
-- Novo `src/lib/escrituracaoStore.ts`: persistência em localStorage por `empresa + competência`, tipos de livro/apuração/inventário/CIAP, e funções de derivação a partir de `fiscalStore` (documentos já lançados).
-- Novo componente `src/components/contabil/CrudEscrituracao.tsx`, no molde de `CrudDocumentosFiscais`, com suporte a colunas calculadas, linha de totais e ação "Gerar a partir dos documentos".
-- 6 páginas em `src/pages/contabil/fiscal/escrituracao/` reutilizando esse componente; apurações usam uma variação com painel de memória de cálculo.
-- Rotas lazy em `src/App.tsx` sob `/fiscal/escrituracao/*` e remoção dos módulos estáticos correspondentes em `contabilNavAreas.tsx` para não duplicar.
-- `AssistenteCampos` reaproveitado em todos os diálogos; sem alteração na edge function.
-- Nenhuma integração real com a Receita — cálculo e dados permanecem internos/simulados.
+- Novos arquivos: `src/lib/obrigacoesStore.ts` (motores + validações + cruzamentos), `src/components/contabil/ObrigacaoView.tsx`, `src/components/contabil/RegistrosSped.tsx`, páginas em `src/pages/contabil/fiscal/obrigacoes/` (Hub, Agenda e 6 obrigações), rotas em `src/App.tsx`.
+- Reutiliza os padrões existentes: Card/Tabs/Sheet do design system, IA ajudante (`AssistenteCampos` / `AssistenteFechamento`), competência global e empresa atual via contextos.
+- `contabilNavAreas.tsx` passa a apontar a categoria "Obrigações acessórias" para as rotas reais.
+- `gestaoStore.ts` ganha pendências de obrigações, refletidas no painel de fechamento em Serviços › Gestão.
+- Filtros rápidos por competência, empresa, obrigação, status e responsável; busca global já existente (⌘K) indexa as novas telas.
+- Dark mode e responsividade seguem o padrão atual.
+
+## Fora do escopo
+
+Transmissão real a órgãos governamentais, assinatura criptográfica real com certificado, integração com e-mail/Teams/Slack e persistência em banco (o módulo segue em localStorage como o restante do sistema). Quando quiser levar isso ao banco, vale um passo separado com controle de acesso por empresa/filial e logs somente-inserção.
