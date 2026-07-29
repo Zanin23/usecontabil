@@ -20,11 +20,41 @@ export default function ContabilShell() {
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
   const { tema, alternar } = useTema();
 
+  const [usuarioNome, setUsuarioNome] = useState("—");
+  const [usuarioPerfil, setUsuarioPerfil] = useState("Usuário");
+
+  useEffect(() => {
+    let ativo = true;
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      const user = data.user;
+      if (!ativo || !user) return;
+
+      const [{ data: perfil }, { data: papeis }] = await Promise.all([
+        supabase.from("profiles").select("display_name").eq("id", user.id).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", user.id),
+      ]);
+      if (!ativo) return;
+
+      const nome =
+        perfil?.display_name?.trim() ||
+        (user.user_metadata?.full_name as string | undefined)?.trim() ||
+        user.email?.split("@")[0] ||
+        "Usuário";
+      setUsuarioNome(nome);
+      setUsuarioPerfil(papeis?.some((p) => p.role === "admin") ? "Administrador" : "Usuário");
+    })();
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
   const sair = async () => {
     await supabase.auth.signOut();
     limparCacheEmpresas();
     window.location.href = "/auth";
   };
+
   const [buscaAberta, setBuscaAberta] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
   const [recolhida, setRecolhida] = useState(
