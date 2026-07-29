@@ -439,7 +439,7 @@ const financeiro: Category[] = [
       {
         slug: "produtos",
         title: "Produtos",
-        icon: Boxes,
+        icon: Package,
         desc: "Cadastro fiscal com NCM, CEST, CFOP e tributação.",
         columns: [C.codigo, { key: "descricao", label: "Produto" }, { key: "ncm", label: "NCM", mono: true }],
         rows: [],
@@ -447,7 +447,7 @@ const financeiro: Category[] = [
       {
         slug: "clientes-fornecedores",
         title: "Clientes e fornecedores",
-        icon: Users,
+        icon: Users2,
         desc: "Parceiros com regime, inscrições e retenções.",
         columns: [{ key: "nome", label: "Parceiro" }, { key: "documento", label: "CNPJ/CPF", mono: true }, { key: "uf", label: "UF" }],
         rows: [],
