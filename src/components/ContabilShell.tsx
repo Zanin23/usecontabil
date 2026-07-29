@@ -3,26 +3,13 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
-  Settings2, Users2, Wallet, ChevronRight, Sun, Moon,
+  Settings2, Users2, Wallet, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
 import { useTema } from "@/lib/tema";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
 import BuscaTelas from "@/components/contabil/BuscaTelas";
-
-const accentText: Record<string, string> = {
-  orange: "text-brand-orange",
-  blue: "text-brand-blue",
-  purple: "text-brand-purple",
-  pink: "text-brand-pink",
-};
-const accentBorder: Record<string, string> = {
-  orange: "border-brand-orange/30 bg-brand-orange/10",
-  blue: "border-brand-blue/30 bg-brand-blue/10",
-  purple: "border-brand-purple/30 bg-brand-purple/10",
-  pink: "border-brand-pink/30 bg-brand-pink/10",
-};
 
 const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 
@@ -31,6 +18,12 @@ export default function ContabilShell() {
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
   const { tema, alternar } = useTema();
   const [buscaAberta, setBuscaAberta] = useState(false);
+  const [recolhida, setRecolhida] = useState(
+    () => typeof window !== "undefined" && localStorage.getItem("uc:sidebar") === "recolhida",
+  );
+  useEffect(() => {
+    localStorage.setItem("uc:sidebar", recolhida ? "recolhida" : "expandida");
+  }, [recolhida]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -70,65 +63,92 @@ export default function ContabilShell() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 w-64 border-r border-border bg-card/60 backdrop-blur flex flex-col">
+      <aside
+        className={`fixed inset-y-0 left-0 border-r border-border bg-card/60 backdrop-blur flex flex-col transition-[width] duration-200 ${
+          recolhida ? "w-16" : "w-64"
+        }`}
+      >
         <div className="h-0.5 bg-gradient-brand" />
-        <div className="px-5 py-5 border-b border-border">
+        <div className={`py-5 border-b border-border ${recolhida ? "px-3" : "px-5"}`}>
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-brand-orange grid place-items-center shadow-glow">
+            <div className="h-8 w-8 shrink-0 rounded-lg bg-brand-orange grid place-items-center shadow-glow">
               <span className="text-primary-foreground font-display text-lg leading-none">U</span>
             </div>
-            <div>
-              <div className="font-display text-lg leading-none">
-                Use <span className="text-brand-orange">Contábil</span>
+            {!recolhida && (
+              <div className="min-w-0">
+                <div className="font-display text-lg leading-none truncate">
+                  Use <span className="text-brand-orange">Contábil</span>
+                </div>
+                <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-1">
+                  v2.4 · corporate
+                </div>
               </div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-1">
-                v2.4 · corporate
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
+        <nav className={`flex-1 overflow-y-auto py-4 space-y-4 ${recolhida ? "px-2" : "px-3"}`}>
           {/* Dashboard */}
           <NavLink
             to="/dashboard"
+            title="Dashboard"
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-lg px-3 py-2 text-sm border transition ${
+              `flex items-center gap-3 rounded-lg py-2 text-sm border transition ${
+                recolhida ? "justify-center px-0" : "px-3"
+              } ${
                 isActive
                   ? "bg-brand-orange/15 text-foreground border-brand-orange/30"
                   : "text-muted-foreground hover:bg-accent hover:text-foreground border-transparent"
               }`
             }
           >
-            <span className="text-[10px] font-mono text-muted-foreground/70 w-5">01</span>
-            <LayoutDashboard className="h-4 w-4" />
-            <span>Dashboard</span>
+            {!recolhida && (
+              <span className="text-[10px] font-mono text-muted-foreground/70 w-5">01</span>
+            )}
+            <LayoutDashboard className="h-4 w-4 shrink-0" />
+            {!recolhida && <span>Dashboard</span>}
           </NavLink>
 
           {/* Areas */}
           {AREAS.map((area) => {
             const Icon = area.icon ?? AREA_ICON[area.slug as keyof typeof AREA_ICON] ?? Settings2;
-            const isOpen = openArea === area.slug;
+            const isOpen = !recolhida && openArea === area.slug;
             const isActive = currentArea?.slug === area.slug;
             return (
               <div key={area.slug} className="space-y-1">
                 <button
                   type="button"
-                  onClick={() => setOpenArea(isOpen ? null : area.slug)}
-                  className={`w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm border transition text-left ${
+                  title={area.title}
+                  onClick={() => {
+                    if (recolhida) {
+                      setRecolhida(false);
+                      setOpenArea(area.slug);
+                      return;
+                    }
+                    setOpenArea(isOpen ? null : area.slug);
+                  }}
+                  className={`w-full flex items-center gap-3 rounded-lg py-2 text-sm border transition text-left ${
+                    recolhida ? "justify-center px-0" : "px-3"
+                  } ${
                     isActive
-                      ? `${accentBorder[area.accent]} text-foreground`
+                      ? "bg-brand-orange/15 text-foreground border-brand-orange/30"
                       : "text-muted-foreground hover:bg-accent hover:text-foreground border-transparent"
                   }`}
                 >
-                  <span className="text-[10px] font-mono text-muted-foreground/70 w-5">
-                    {area.code}
-                  </span>
-                  <Icon className={`h-4 w-4 ${isActive ? accentText[area.accent] : ""}`} />
-                  <span className="flex-1">{area.title}</span>
-                  <ChevronRight
-                    className={`h-3 w-3 transition ${isOpen ? "rotate-90 text-foreground" : "text-muted-foreground/60"}`}
-                  />
+                  {!recolhida && (
+                    <span className="text-[10px] font-mono text-muted-foreground/70 w-5">
+                      {area.code}
+                    </span>
+                  )}
+                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-brand-orange" : ""}`} />
+                  {!recolhida && (
+                    <>
+                      <span className="flex-1">{area.title}</span>
+                      <ChevronRight
+                        className={`h-3 w-3 transition ${isOpen ? "rotate-90 text-brand-orange" : "text-muted-foreground/60"}`}
+                      />
+                    </>
+                  )}
                 </button>
 
                 {isOpen && (
@@ -168,26 +188,49 @@ export default function ContabilShell() {
           })}
         </nav>
 
-        <div className="px-4 py-4 border-t border-border space-y-2 text-xs">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span>Ambiente</span>
-            <Badge variant="outline" className="rounded-md h-5 text-[10px] border-warn/40 text-warn">
-              HOMOLOGAÇÃO
-            </Badge>
-          </div>
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span>Usuário</span>
-            <span className="text-foreground font-medium">M. Andrade</span>
-          </div>
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span>Perfil</span>
-            <span className="text-foreground">Controller</span>
-          </div>
+        <div className={`py-4 border-t border-border space-y-2 text-xs ${recolhida ? "px-2" : "px-4"}`}>
+          <button
+            type="button"
+            onClick={() => setRecolhida((v) => !v)}
+            title={recolhida ? "Expandir menu" : "Recolher menu"}
+            className={`w-full flex items-center gap-2 rounded-lg border border-border py-2 text-muted-foreground hover:text-foreground hover:bg-accent transition ${
+              recolhida ? "justify-center px-0" : "px-3"
+            }`}
+          >
+            {recolhida ? (
+              <PanelLeftOpen className="h-4 w-4" />
+            ) : (
+              <>
+                <PanelLeftClose className="h-4 w-4" />
+                <span>Recolher menu</span>
+              </>
+            )}
+          </button>
+
+          {!recolhida && (
+            <>
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span>Ambiente</span>
+                <Badge variant="outline" className="rounded-md h-5 text-[10px] border-brand-orange/40 text-brand-orange">
+                  HOMOLOGAÇÃO
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span>Usuário</span>
+                <span className="text-foreground font-medium">M. Andrade</span>
+              </div>
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span>Perfil</span>
+                <span className="text-foreground">Controller</span>
+              </div>
+            </>
+          )}
         </div>
       </aside>
 
       {/* Main */}
-      <div className="pl-64">
+      <div className={`transition-[padding] duration-200 ${recolhida ? "pl-16" : "pl-64"}`}>
+
         <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
           <div className="px-8 h-14 flex items-center gap-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
