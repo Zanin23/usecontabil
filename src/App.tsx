@@ -2,6 +2,8 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "./design-system/mj-design-system-db98fa";
 import ContabilShell from "./components/ContabilShell";
+import RequireAuth from "./components/RequireAuth";
+import Auth from "./pages/Auth";
 import Dashboard from "./pages/contabil/Dashboard";
 import { CompetenciaProvider } from "./lib/competencia";
 import { EmpresaProvider } from "./lib/empresaAtual";
@@ -70,7 +72,8 @@ const App = () => (
     <Suspense fallback={<div className="min-h-screen bg-background" />}>
 
       <Routes>
-        <Route element={<ContabilShell />}>
+        <Route path="/auth" element={<Auth />} />
+        <Route element={<RequireAuth><ContabilShell /></RequireAuth>}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/:area" element={<AreaPage />} />
