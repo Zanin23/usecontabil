@@ -335,6 +335,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
             {dominio.relatorios.map((rel) => {
               const total = dominio.registros.filter(rel.filtro).length;
               const ativo = relatorio === rel.slug;
+              const isConciliacoes = dominio.slug === "bancos" && rel.slug === "conciliacoes";
               return (
                 <button
                   key={rel.slug}
@@ -344,6 +345,15 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
                   <div className="text-sm font-medium">{rel.titulo}</div>
                   <div className="mt-1 text-xs text-muted-foreground">{rel.desc}</div>
                   <div className="mt-3 font-display text-2xl text-brand-orange">{total}</div>
+                  {isConciliacoes && (
+                    <Link
+                      to="/financeiro/operacional/conciliacao"
+                      className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-brand-orange hover:underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Ir para conciliações <ChevronRight className="h-3 w-3" />
+                    </Link>
+                  )}
                 </button>
               );
             })}
