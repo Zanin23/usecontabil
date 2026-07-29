@@ -4,7 +4,7 @@ import {
   AlertTriangle, ChevronRight, Lock, RefreshCw, Search, ShieldCheck, X,
 } from "lucide-react";
 import {
-  Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
+  Bar, BarChart, Cell, LabelList, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import {
   Badge, Button, Card, CardContent, Input, Progress, ScrollArea, Select, SelectContent,
@@ -20,6 +20,14 @@ import {
 } from "@/lib/adminStore";
 
 const CORES = ["var(--brand-orange)", "var(--brand-purple)", "var(--brand-blue)", "var(--brand-pink)", "hsl(var(--muted-foreground))"];
+
+/** R$ 6,1 mi / R$ 480 mil — rótulos curtos para eixos e barras. */
+function compacto(v: number) {
+  const abs = Math.abs(v);
+  if (abs >= 1_000_000) return `R$ ${(v / 1_000_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
+  if (abs >= 1_000) return `R$ ${(v / 1_000).toLocaleString("pt-BR", { maximumFractionDigits: 0 })} mil`;
+  return brl(v);
+}
 
 function Kpi({ label, valor, hint }: { label: string; valor: string; hint?: string }) {
   return (
@@ -81,6 +89,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
   const distribuicao = agrupar(dominio.registros, facetaPrincipal).slice(0, 10);
   const distribuicao2 = agrupar(dominio.registros, dominio.facetas[dominio.facetas.length - 1].key).slice(0, 6);
   const topValor = valorKey ? somaPor(dominio.registros, dominio.rotulo, valorKey, 7) : [];
+  const topSoma = topValor.reduce((a, t) => a + t.total, 0);
 
   const relSelecionado = dominio.relatorios.find((r) => r.slug === relatorio);
   const relLinhas = relSelecionado ? dominio.registros.filter(relSelecionado.filtro) : [];
@@ -183,22 +192,68 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
           {!!topValor.length && (
             <Card className="rounded-3xl border-border/70">
               <CardContent className="p-5">
-                <div className="mb-4 text-sm font-medium">
-                  {dominio.slug === "bancos" ? "Saldo por conta" : "Top registros por volume financeiro"}
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-medium">
+                      {dominio.slug === "bancos" ? "Saldo por conta" : "Top registros por volume financeiro"}
+                    </div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {topValor.length} maiores de {dominio.registros.length} registros · concentram{" "}
+                      <strong className="text-foreground">
+                        {totalValor ? Math.round((topSoma / totalValor) * 100) : 0}%
+                      </strong>{" "}
+                      do total de {brl(totalValor)}
+                    </div>
+                  </div>
+                  <Badge className="rounded-full border-0 bg-brand-orange/15 text-brand-orange">
+                    Líder: {topValor[0].nome} · {brl(topValor[0].total)}
+                  </Badge>
                 </div>
-                <div className="h-64">
+
+                <div className="mt-5 h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={topValor} margin={{ left: 8, right: 8 }}>
-                      <XAxis dataKey="nome" tick={{ fontSize: 10 }} interval={0} height={60} angle={-18} textAnchor="end" />
-                      <YAxis tick={{ fontSize: 10 }} width={70} />
+                    <BarChart data={topValor} layout="vertical" margin={{ left: 8, right: 72 }}>
+                      <XAxis type="number" hide />
+                      <YAxis
+                        dataKey="nome"
+                        type="category"
+                        width={190}
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(v: string) => (v.length > 26 ? `${v.slice(0, 25)}…` : v)}
+                      />
                       <Tooltip formatter={(v) => brl(Number(v))} cursor={{ fill: "hsl(var(--muted))" }} />
-                      <Bar dataKey="total" radius={[8, 8, 0, 0]} fill="var(--brand-purple)" />
+                      <Bar dataKey="total" radius={[0, 8, 8, 0]} barSize={18}>
+                        {topValor.map((_, i) => (
+                          <Cell key={i} fill={i === 0 ? "var(--brand-orange)" : "var(--brand-purple)"} />
+                        ))}
+                        <LabelList
+                          dataKey="total"
+                          position="right"
+                          className="fill-muted-foreground"
+                          fontSize={11}
+                          formatter={(v: number) => compacto(Number(v))}
+                        />
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
+                </div>
+
+                <div className="mt-4 space-y-2 border-t border-border/70 pt-4">
+                  {topValor.map((t, i) => (
+                    <div key={t.nome} className="flex items-center gap-3 text-sm">
+                      <span className="w-5 shrink-0 text-xs text-muted-foreground">{i + 1}º</span>
+                      <span className="min-w-0 flex-1 truncate">{t.nome}</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {totalValor ? ((t.total / totalValor) * 100).toFixed(1) : "0.0"}%
+                      </span>
+                      <span className="w-32 shrink-0 text-right tabular-nums">{brl(t.total)}</span>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
           )}
+
         </TabsContent>
 
         {/* ---------------------------- registros ---------------------------- */}
