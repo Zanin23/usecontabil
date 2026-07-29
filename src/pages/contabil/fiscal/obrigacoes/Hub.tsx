@@ -102,11 +102,12 @@ function Cartao({ slug }: { slug: ObrSlug }) {
 
 function Indicador({ label, valor, hint, destaque }: { label: string; valor: string; hint?: string; destaque?: boolean }) {
   return (
-    <div className={`rounded-2xl border p-3 ${destaque ? "border-destructive/40 bg-destructive/5" : "border-border/70"}`}>
-      <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{label}</div>
-      <div className={`mt-0.5 font-mono text-sm ${destaque ? "text-destructive" : ""}`}>{valor}</div>
-      {hint && <div className="text-[10px] text-muted-foreground">{hint}</div>}
+    <div className={`min-w-0 rounded-2xl border p-3 ${destaque ? "border-destructive/40 bg-destructive/5" : "border-border/70"}`}>
+      <div className="text-[10px] uppercase tracking-[0.06em] leading-tight break-words hyphens-auto text-muted-foreground">{label}</div>
+      <div className={`mt-0.5 font-mono text-sm break-words ${destaque ? "text-destructive" : ""}`}>{valor}</div>
+      {hint && <div className="text-[10px] text-muted-foreground break-words">{hint}</div>}
     </div>
+
   );
 }
 
