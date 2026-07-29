@@ -32,18 +32,18 @@ const RESULTADOS: { v: Regra["resultado"]; l: string }[] = [
   { v: "reduzir-base", l: "Reduzir base de cálculo" },
 ];
 
-const AJUDA = [
-  { campo: "Nome", descricao: "Identificação da regra nos alertas e na trilha de auditoria." },
-  { campo: "Categoria", descricao: "Agrupa a regra por domínio tributário (ICMS, PIS/COFINS, Cadastro...)." },
-  { campo: "Prioridade", descricao: "Ordem de execução. Menor número executa antes." },
-  { campo: "Legislação", descricao: "Fundamento legal que sustenta a regra (lei, convênio, ajuste SINIEF)." },
-  { campo: "Vigência", descricao: "Período em que a regra é aplicada. Regras fora da vigência ficam inativas automaticamente." },
-  { campo: "Versão", descricao: "Controle de versionamento. Ao alterar uma regra vigente, crie uma nova versão." },
-  { campo: "UF", descricao: "Restringe a regra a um estado. Use TODAS para aplicação nacional." },
-  { campo: "Condição", descricao: "Campo + operador + valor avaliados em cada documento fiscal." },
-  { campo: "Resultado", descricao: "O que acontece quando a condição é verdadeira." },
-  { campo: "Mensagem", descricao: "Texto exibido ao operador quando a regra dispara." },
-  { campo: "Correção sugerida", descricao: "Orientação prática de como resolver a inconsistência." },
+const AJUDA: CampoAjuda[] = [
+  { key: "nome", label: "Nome", required: true, ajuda: "Identificação da regra nos alertas e na trilha de auditoria." },
+  { key: "categoria", label: "Categoria", ajuda: "Agrupa a regra por domínio tributário (ICMS, PIS/COFINS, Cadastro...)." },
+  { key: "prioridade", label: "Prioridade", ajuda: "Ordem de execução. Menor número executa antes." },
+  { key: "legislacao", label: "Legislação", ajuda: "Fundamento legal que sustenta a regra (lei, convênio, ajuste SINIEF)." },
+  { key: "vigencia", label: "Vigência", ajuda: "Período em que a regra é aplicada. Fora da vigência ela não é avaliada." },
+  { key: "versao", label: "Versão", ajuda: "Controle de versionamento. Ao alterar uma regra vigente, crie uma nova versão." },
+  { key: "uf", label: "UF", ajuda: "Restringe a regra a um estado. Use TODAS para aplicação nacional." },
+  { key: "condicao", label: "Condição", required: true, ajuda: "Campo + operador + valor avaliados em cada documento fiscal." },
+  { key: "resultado", label: "Resultado", ajuda: "O que acontece quando a condição é verdadeira." },
+  { key: "mensagem", label: "Mensagem", required: true, ajuda: "Texto exibido ao operador quando a regra dispara." },
+  { key: "correcao", label: "Correção sugerida", ajuda: "Orientação prática de como resolver a inconsistência." },
 ];
 
 const vazia = (): Regra => ({
