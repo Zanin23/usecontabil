@@ -9,7 +9,7 @@ import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
-import AssistenteCampos from "@/components/contabil/AssistenteCampos";
+import AssistenteCampos, { type CampoAjuda } from "@/components/contabil/AssistenteCampos";
 import {
   CAMPOS_REGRA, CATEGORIAS_REGRA, hojeISO, novoId, regrasVigentes, removerRegra,
   salvarRegra, UFS, useTributario, type OperadorRegra, type Regra,
