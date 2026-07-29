@@ -61,11 +61,11 @@ const corSituacao = (s: string) =>
 
 const CHART_TOOLTIP = {
   contentStyle: {
-    background: "hsl(var(--card))",
-    border: "1px solid hsl(var(--border))",
+    background: "var(--card)",
+    border: "1px solid var(--border)",
     borderRadius: 16,
     fontSize: 12,
-    color: "hsl(var(--foreground))",
+    color: "var(--foreground)",
   },
 } as const;
 
@@ -349,13 +349,13 @@ function Carteira({ tipo }: { tipo: TipoTitulo }) {
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={r.porFaixa}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                    <XAxis dataKey="faixa" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                    <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `${Math.round(Number(v) / 1000)}k`} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                    <XAxis dataKey="faixa" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
+                    <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} tickFormatter={(v) => `${Math.round(Number(v) / 1000)}k`} />
                     <Tooltip {...CHART_TOOLTIP} formatter={(v: number) => brl(Number(v))} />
                     <Bar dataKey="valor" radius={[8, 8, 0, 0]}>
                       {r.porFaixa.map((f, i) => (
-                        <Cell key={f.faixa} fill={i === 0 ? "hsl(var(--brand-blue))" : i > 3 ? "hsl(var(--destructive))" : "hsl(var(--brand-orange))"} />
+                        <Cell key={f.faixa} fill={i === 0 ? "var(--brand-blue)" : i > 3 ? "var(--destructive)" : "var(--brand-orange)"} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -669,27 +669,27 @@ function FluxoCaixa() {
               <AreaChart data={dados}>
                 <defs>
                   <linearGradient id="grad-acum" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--brand-orange))" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="hsl(var(--brand-orange))" stopOpacity={0} />
+                    <stop offset="0%" stopColor="var(--brand-orange)" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="var(--brand-orange)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis dataKey="rotulo" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `${Math.round(Number(v) / 1000)}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="rotulo" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
+                <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} tickFormatter={(v) => `${Math.round(Number(v) / 1000)}k`} />
                 <Tooltip {...CHART_TOOLTIP} formatter={(v: number) => brl(Number(v))} />
-                <Area type="monotone" dataKey="acumulado" stroke="hsl(var(--brand-orange))" strokeWidth={2} fill="url(#grad-acum)" />
+                <Area type="monotone" dataKey="acumulado" stroke="var(--brand-orange)" strokeWidth={2} fill="url(#grad-acum)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={dados}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis dataKey="rotulo" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickFormatter={(v) => `${Math.round(Number(v) / 1000)}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="rotulo" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
+                <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} tickFormatter={(v) => `${Math.round(Number(v) / 1000)}k`} />
                 <Tooltip {...CHART_TOOLTIP} formatter={(v: number) => brl(Number(v))} />
-                <Bar dataKey="entradas" fill="hsl(var(--brand-blue))" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="saidas" fill="hsl(var(--destructive))" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="entradas" fill="var(--brand-blue)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="saidas" fill="var(--destructive)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
