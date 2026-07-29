@@ -89,6 +89,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
   const distribuicao = agrupar(dominio.registros, facetaPrincipal).slice(0, 10);
   const distribuicao2 = agrupar(dominio.registros, dominio.facetas[dominio.facetas.length - 1].key).slice(0, 6);
   const topValor = valorKey ? somaPor(dominio.registros, dominio.rotulo, valorKey, 7) : [];
+  const topSoma = topValor.reduce((a, t) => a + t.total, 0);
 
   const relSelecionado = dominio.relatorios.find((r) => r.slug === relatorio);
   const relLinhas = relSelecionado ? dominio.registros.filter(relSelecionado.filtro) : [];
