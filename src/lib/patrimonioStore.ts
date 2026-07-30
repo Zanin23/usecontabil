@@ -340,17 +340,21 @@ export function calcularBem(b: Bem, competencia: string): BemCalculado {
 
   // R3 — começa no mês seguinte ao início de operação
   const compInicio = compDe(b.inicioOperacao || b.aquisicao);
+  const acumuladaAte = (comp: string) => {
+    if (!b.deprecia) return 0;
+    const limite = b.baixaData ? menor(compDe(b.baixaData), comp) : comp;
+    const meses = Math.max(Math.min(mesesEntre(compInicio, limite), vidaEfetiva), 0);
+    return round(Math.min(quotaBase * meses, baseDepreciavel));
+  };
   const compLimite = b.baixaData ? menor(compDe(b.baixaData), competencia) : competencia;
   const decorridos = mesesEntre(compInicio, compLimite); // 0 no mês da entrada
   const mesesDepreciados = b.deprecia ? Math.max(Math.min(decorridos, vidaEfetiva), 0) : 0;
 
-  const depreciacaoAcumulada = round(Math.min(quotaBase * mesesDepreciados, baseDepreciavel));
+  const depreciacaoAcumulada = acumuladaAte(competencia);
   const encerrado = mesesDepreciados >= vidaEfetiva;
-  const dentroDaCompetencia =
-    b.deprecia && decorridos > 0 && !encerradoAntes(mesesDepreciados, vidaEfetiva) &&
-    (!b.baixaData || compDe(b.baixaData) > competencia);
   const quotaMensal = b.deprecia && !encerrado ? quotaBase : 0;
-  const depreciacaoCompetencia = dentroDaCompetencia ? round(Math.min(quotaBase, baseDepreciavel - depreciacaoAcumulada + quotaBase)) : 0;
+  const depreciacaoCompetencia = round(depreciacaoAcumulada - acumuladaAte(mesAnterior(competencia)));
+
 
   const valorContabil = round(valorCorrigido - depreciacaoAcumulada);
   const percentDepreciado = baseDepreciavel > 0 ? round((depreciacaoAcumulada / baseDepreciavel) * 100) : 0;
