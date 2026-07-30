@@ -504,7 +504,15 @@ function Usuarios() {
         </CardContent>
       </Card>
 
-      {edicao && <DialogUsuario usuario={edicao} onClose={() => setEdicao(null)} />}
+      {edicao && (
+        <DialogUsuario
+          usuario={edicao}
+          onClose={() => setEdicao(null)}
+          onSenha={(nome, email, senha) => setCredencial({ nome, email, senha })}
+        />
+      )}
+      {credencial && <DialogSenha dados={credencial} onClose={() => setCredencial(null)} />}
+
     </div>
   );
 }
