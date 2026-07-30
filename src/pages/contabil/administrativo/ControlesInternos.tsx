@@ -1589,6 +1589,8 @@ export default function ControlesInternos() {
       {modulo === "centros-custo" && <CentrosCusto />}
       {modulo === "parametros" && <Parametros />}
       {modulo === "politicas" && <Politicas />}
+      {modulo === "avisos" && <Avisos />}
+
     </div>
   );
 }
