@@ -137,3 +137,8 @@
 }
 .animate-ticker { animation: ticker-scroll 40s linear infinite; }
 
+
+/* Densidade compacta (preferência da conta) */
+[data-densidade="compacta"] main { padding-top: 1rem; padding-bottom: 1rem; }
+[data-densidade="compacta"] table td,
+[data-densidade="compacta"] table th { padding-top: 0.35rem; padding-bottom: 0.35rem; }

@@ -4,7 +4,7 @@ import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
   Settings2, Users2, Wallet, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut,
-  Volume2, VolumeX,
+  Volume2, VolumeX, SlidersHorizontal,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
@@ -14,6 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { limparCacheEmpresas } from "@/lib/empresasStore";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
 import BuscaTelas from "@/components/contabil/BuscaTelas";
+import ConfiguracoesConta from "@/components/contabil/ConfiguracoesConta";
+import { AMBIENTES, usePreferencias } from "@/lib/preferencias";
 
 const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 
@@ -22,6 +24,8 @@ export default function ContabilShell() {
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
   const { tema, alternar } = useTema();
   const [som, setSom] = useState(somAtivo);
+  const { prefs } = usePreferencias();
+  const [configAberta, setConfigAberta] = useState(false);
   useEffect(() => {
     const cancelar = assinarSom(setSom);
     return () => {
@@ -264,9 +268,15 @@ export default function ContabilShell() {
             <>
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="shrink-0">Ambiente</span>
-                <Badge variant="outline" className="rounded-md h-5 text-[10px] border-brand-orange/40 text-brand-orange">
-                  HOMOLOGAÇÃO
-                </Badge>
+                <button
+                  type="button"
+                  onClick={() => setConfigAberta(true)}
+                  title="Alterar ambiente nas configurações"
+                >
+                  <Badge variant="outline" className="rounded-md h-5 text-[10px] border-brand-orange/40 text-brand-orange">
+                    {(AMBIENTES.find((a) => a.id === prefs.ambiente)?.nome ?? "Ambiente").toUpperCase()}
+                  </Badge>
+                </button>
               </div>
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="shrink-0">Usuário</span>
@@ -417,6 +427,17 @@ export default function ContabilShell() {
             </Button>
 
 
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-md h-9"
+              onClick={() => setConfigAberta(true)}
+              aria-label="Configurações da conta"
+              title="Configurações da conta"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </Button>
+
             <Button variant="outline" size="sm" className="rounded-md h-9 relative">
               <Bell className="h-4 w-4" />
               <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive" />
@@ -442,6 +463,12 @@ export default function ContabilShell() {
       </div>
 
       <BuscaTelas open={buscaAberta} onOpenChange={setBuscaAberta} />
+      <ConfiguracoesConta
+        open={configAberta}
+        onOpenChange={setConfigAberta}
+        usuario={usuarioNome}
+        perfil={usuarioPerfil}
+      />
     </div>
   );
 }
