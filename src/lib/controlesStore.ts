@@ -103,7 +103,10 @@ export type Usuario = {
   ultimoAcesso: string;
   criadoEm: string;
   observacao?: string;
+  /** true quando existe conta de acesso real (login) vinculada. */
+  contaDeAcesso?: boolean;
 };
+
 
 export type LogEntrada = {
   id: string;
