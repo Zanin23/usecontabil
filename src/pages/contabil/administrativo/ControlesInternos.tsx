@@ -2,7 +2,7 @@ import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   AlertTriangle, ChevronRight, Cog, Download, History, KeyRound, Lock, Power, Scale, Search,
-  ShieldCheck, Split, Trash2, Users2, Pencil, Plus, Calculator,
+  ShieldCheck, Split, Trash2, Users2, Pencil, Plus, Calculator, BellRing,
 
 } from "lucide-react";
 import {
