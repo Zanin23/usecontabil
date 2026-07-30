@@ -156,60 +156,8 @@ export const CRITERIOS_RATEIO = [
 
 const perm = (area: Area, acoes: AcaoPermissao[]): Permissao => ({ area, acoes });
 
-const USUARIOS_SEED: Usuario[] = [
-  {
-    id: "usr-marina", nome: "Marina Costa", email: "marina.costa@grupo.com.br", perfil: "Controladoria",
-    cargo: "Controller", duploFator: true, ativo: true, ultimoAcesso: "2026-07-27T09:12:00",
-    criadoEm: "2025-02-11",
-    permissoes: [
-      perm("Preparativos", ["visualizar", "incluir", "editar", "aprovar"]),
-      perm("Financeiro", ["visualizar", "aprovar"]),
-      perm("Fiscal", ["visualizar", "aprovar", "encerrar"]),
-      perm("Administrativo", ["visualizar", "incluir", "editar", "aprovar"]),
-    ],
-  },
-  {
-    id: "usr-rafael", nome: "Rafael Prado", email: "rafael.prado@grupo.com.br", perfil: "Fiscal",
-    cargo: "Analista fiscal sênior", duploFator: true, ativo: true, ultimoAcesso: "2026-07-26T17:44:00",
-    criadoEm: "2025-04-02",
-    permissoes: [
-      perm("Fiscal", ["visualizar", "incluir", "editar", "encerrar"]),
-      perm("Financeiro", ["visualizar"]),
-    ],
-  },
-  {
-    id: "usr-carla", nome: "Carla Mendes", email: "carla.mendes@grupo.com.br", perfil: "Administrativo",
-    cargo: "Analista administrativa", duploFator: false, ativo: true, ultimoAcesso: "2026-07-24T11:03:00",
-    criadoEm: "2025-08-19",
-    permissoes: [perm("Administrativo", ["visualizar", "incluir", "editar"])],
-  },
-  {
-    id: "usr-diego", nome: "Diego Almeida", email: "diego.almeida@grupo.com.br", perfil: "Financeiro",
-    cargo: "Coordenador financeiro", duploFator: false, ativo: true, ultimoAcesso: "2026-07-27T08:20:00",
-    criadoEm: "2025-06-05",
-    permissoes: [
-      // conflito proposital de segregação: executa e aprova na mesma área
-      perm("Financeiro", ["visualizar", "incluir", "editar", "aprovar"]),
-      perm("Administrativo", ["visualizar"]),
-    ],
-  },
-  {
-    id: "usr-helena", nome: "Helena Duarte", email: "helena.duarte@grupo.com.br", perfil: "Diretoria",
-    cargo: "Diretora administrativa", duploFator: true, ativo: true, ultimoAcesso: "2026-07-21T15:37:00",
-    criadoEm: "2025-01-15",
-    permissoes: [
-      perm("Financeiro", ["visualizar", "aprovar"]),
-      perm("Administrativo", ["visualizar", "aprovar"]),
-      perm("Fiscal", ["visualizar"]),
-    ],
-  },
-  {
-    id: "usr-bruno", nome: "Bruno Tavares", email: "bruno.tavares@grupo.com.br", perfil: "Consulta",
-    cargo: "Auditoria interna", duploFator: false, ativo: false, ultimoAcesso: "2026-03-30T10:12:00",
-    criadoEm: "2025-09-23", observacao: "Acesso suspenso ao fim do ciclo de auditoria 2025.",
-    permissoes: [perm("Fiscal", ["visualizar"]), perm("Financeiro", ["visualizar"])],
-  },
-];
+// Usuários não têm semente: o cadastro é real e vem do backend (contas de acesso).
+
 
 const CENTROS_SEED: CentroCusto[] = [
   { id: "cc-01", codigo: "CC-01", nome: "Industrial", responsavel: "Gerência industrial", criterio: "Horas máquina", percentual: 48, natureza: "Produtivo", ativo: true },
