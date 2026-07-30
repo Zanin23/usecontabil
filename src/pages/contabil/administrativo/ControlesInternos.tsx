@@ -61,7 +61,13 @@ const TELAS: Record<string, { titulo: string; desc: string; icon: typeof Users2 
     desc: "Faixas de aprovação por valor e área, com simulador de alçada e checagem de lacunas.",
     icon: Lock,
   },
+  avisos: {
+    titulo: "Avisos e notificações",
+    desc: "Publicação de notificações manuais no sino do sistema, com nível, empresa e vigência.",
+    icon: BellRing,
+  },
 };
+
 
 const CHART_TOOLTIP = {
   contentStyle: {
