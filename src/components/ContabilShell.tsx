@@ -3,13 +3,12 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
-  Settings2, Users2, Wallet, ChevronRight, Sun, Moon, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut,
-  Volume2, VolumeX, SlidersHorizontal,
+  Settings2, Users2, Wallet, ChevronRight, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut,
+  SlidersHorizontal,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
 import { useTema } from "@/lib/tema";
-import { assinarSom, definirSom, somAtivo } from "@/lib/uiSound";
 import { supabase } from "@/integrations/supabase/client";
 import { limparCacheEmpresas } from "@/lib/empresasStore";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
@@ -22,16 +21,10 @@ const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 export default function ContabilShell() {
   const { competencia, setCompetencia } = useCompetencia();
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
-  const { tema, alternar } = useTema();
-  const [som, setSom] = useState(somAtivo);
+  useTema();
   const { prefs } = usePreferencias();
   const [configAberta, setConfigAberta] = useState(false);
-  useEffect(() => {
-    const cancelar = assinarSom(setSom);
-    return () => {
-      cancelar();
-    };
-  }, []);
+
 
 
 
@@ -404,27 +397,8 @@ export default function ContabilShell() {
               </kbd>
             </button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-md h-9"
-              onClick={() => definirSom(!som)}
-              aria-label={som ? "Desativar sons" : "Ativar sons"}
-              title={som ? "Sons ativados" : "Sons desativados"}
-            >
-              {som ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-            </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-md h-9"
-              onClick={alternar}
-              aria-label={tema === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
-              title={tema === "dark" ? "Modo claro" : "Modo escuro"}
-            >
-              {tema === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+
 
 
             <Button
