@@ -11,11 +11,13 @@ import { CATALOGO, diasRestantes, getObrEstado, vencimentoBR, OBRIGACOES_EVENT }
 import { agendaConsolidada, CONTRATOS_EVENT } from "@/lib/contratosStore";
 import { pendenciasCadastro, getFechamento, GESTAO_EVENT } from "@/lib/gestaoStore";
 import { preferencias, type Preferencias } from "@/lib/preferencias";
+import { avisosVigentes, AVISOS_EVENT } from "@/lib/avisosStore";
 
 export const NOTIFICACOES_EVENT = "usecontabil:notificacoes-changed";
 
 export type NotifNivel = "critico" | "atencao" | "info";
-export type NotifCategoria = "vencimentos" | "fechamento" | "inconsistencias" | "resumo";
+export type NotifCategoria = "vencimentos" | "fechamento" | "inconsistencias" | "resumo" | "manual";
+
 
 export type Notificacao = {
   id: string;
@@ -64,12 +66,14 @@ export function limparLeituras() {
   gravarEstado({ lidas: [] });
 }
 
-const CATEGORIA_ATIVA: Record<NotifCategoria, keyof Preferencias> = {
+/** Categorias derivadas do sistema respeitam as preferências. Avisos manuais não. */
+const CATEGORIA_ATIVA: Record<Exclude<NotifCategoria, "manual">, keyof Preferencias> = {
   vencimentos: "notifVencimentos",
   fechamento: "notifFechamento",
   inconsistencias: "notifInconsistencias",
   resumo: "notifResumoDiario",
 };
+
 
 /** Gera a lista de notificações a partir do estado atual do sistema. */
 export function gerarNotificacoes(empresaId: string | null, competencia: string): Notificacao[] {
@@ -218,11 +222,25 @@ export function gerarNotificacoes(empresaId: string | null, competencia: string)
     });
   }
 
+  /* ---- Avisos manuais publicados pela controladoria ---- */
+  for (const a of avisosVigentes(empresaId, hoje)) {
+    out.push({
+      id: `aviso-${a.id}`,
+      categoria: "manual",
+      nivel: a.nivel,
+      titulo: a.titulo,
+      detalhe: a.mensagem,
+      quando: a.inicio,
+      destino: a.destino,
+    });
+  }
+
   const ordem: Record<NotifNivel, number> = { critico: 0, atencao: 1, info: 2 };
   return out
-    .filter((n) => prefs[CATEGORIA_ATIVA[n.categoria]])
+    .filter((n) => n.categoria === "manual" || prefs[CATEGORIA_ATIVA[n.categoria]])
     .sort((a, b) => ordem[a.nivel] - ordem[b.nivel] || a.quando.localeCompare(b.quando));
 }
+
 
 /** Hook reativo com as notificações e o estado de leitura. */
 export function useNotificacoes(empresaId: string | null, competencia: string) {
@@ -236,7 +254,10 @@ export function useNotificacoes(empresaId: string | null, competencia: string) {
       CONTRATOS_EVENT,
       GESTAO_EVENT,
       NOTIFICACOES_EVENT,
+      AVISOS_EVENT,
       "usecontabil:preferencias-changed",
+
+
     ];
     eventos.forEach((e) => window.addEventListener(e, recarregar));
     return () => eventos.forEach((e) => window.removeEventListener(e, recarregar));

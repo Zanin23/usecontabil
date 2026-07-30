@@ -4,7 +4,7 @@ import {
   FileCog, Layers, ListChecks, Building2, Users2, Briefcase, ClipboardList,
   CalendarClock, FolderArchive, Lock, Cog, BadgeDollarSign, Wallet2, Split,
   PieChart, FileDown, FileUp, Truck, ShoppingCart, PackageSearch, KeyRound,
-  History, Boxes, Radio, ListTree, HandCoins, Barcode, ShieldCheck, type LucideIcon,
+  History, Boxes, Radio, ListTree, HandCoins, Barcode, ShieldCheck, BellRing, type LucideIcon,
 } from "lucide-react";
 import type { Category, Col, Module, Row } from "./contabilNav";
 
@@ -524,6 +524,13 @@ export const administrativo: Category[] = [
         { politica: "Pagamento a fornecedor", area: "Administrativo", alcada: "Acima de R$ 10.000", aprovador: "Diretoria" },
         { politica: "Ajuste de apuração fiscal", area: "Fiscal", alcada: "Qualquer valor", aprovador: "Controladoria" },
       ]),
+      mod("avisos", "Avisos e notificações", BellRing, "Notificações manuais publicadas no sino do sistema.", [
+        col("aviso", "Aviso"), col("nivel", "Nível"), col("empresa", "Empresa"), col("vigencia", "Vigência"), col("situacao", "Situação", { align: "center" }),
+      ], [
+        { aviso: "Antecipação do fechamento", nivel: "Atenção", empresa: "Todas as empresas", vigencia: "01/07/2026 → 31/07/2026", situacao: "Ativo" },
+        { aviso: "Bloqueio de lançamentos", nivel: "Crítico", empresa: "Todas as empresas", vigencia: "28/07/2026 → sem fim", situacao: "Ativo" },
+      ], "Novo aviso"),
+
     ],
   },
 ];
