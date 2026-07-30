@@ -594,7 +594,7 @@ export default function ApuracaoView({
       <Sheet open={!!detalhe} onOpenChange={(o) => !o && setDetalhe(null)}>
         <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
           <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
+            <SheetTitle className="flex flex-wrap items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-brand-orange" /> Memória de cálculo
             </SheetTitle>
           </SheetHeader>

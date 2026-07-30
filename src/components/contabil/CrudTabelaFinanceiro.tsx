@@ -123,7 +123,7 @@ export default function CrudTabelaFinanceiro({
             ) : null}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {padrao?.length ? (
             <Button variant="outline" className="rounded-full" onClick={carregarPadrao}>
               <Download className="h-4 w-4 mr-2" /> Carregar tabela vigente
@@ -168,7 +168,7 @@ export default function CrudTabelaFinanceiro({
               <p className="text-sm text-muted-foreground">
                 Tabela vazia. Carregue a tabela vigente ou cadastre as linhas manualmente.
               </p>
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex flex-wrap items-center justify-center gap-2">
                 {padrao?.length ? (
                   <Button variant="outline" className="rounded-full" onClick={carregarPadrao}>
                     <Download className="h-4 w-4 mr-2" /> Carregar tabela vigente

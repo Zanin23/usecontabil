@@ -156,13 +156,16 @@ export default function ConciliacaoBancaria() {
       </div>
 
       <Tabs defaultValue="contas">
-        <TabsList className="rounded-full">
-          <TabsTrigger value="contas" className="rounded-full">Contas</TabsTrigger>
-          <TabsTrigger value="workspace" className="rounded-full">Conciliar</TabsTrigger>
-          <TabsTrigger value="divergencias" className="rounded-full">Divergências</TabsTrigger>
-          <TabsTrigger value="importacao" className="rounded-full">Importação</TabsTrigger>
-          <TabsTrigger value="historico" className="rounded-full">Histórico</TabsTrigger>
-        </TabsList>
+        <div className="-mx-4 px-4 overflow-x-auto lg:mx-0 lg:px-0">
+          <TabsList className="rounded-full">
+            <TabsTrigger value="contas" className="rounded-full">Contas</TabsTrigger>
+            <TabsTrigger value="workspace" className="rounded-full">Conciliar</TabsTrigger>
+            <TabsTrigger value="divergencias" className="rounded-full">Divergências</TabsTrigger>
+            <TabsTrigger value="importacao" className="rounded-full">Importação</TabsTrigger>
+            <TabsTrigger value="historico" className="rounded-full">Histórico</TabsTrigger>
+          </TabsList>
+        </div>
+
 
         {/* ---------------------------------------------------------- contas */}
         <TabsContent value="contas" className="mt-6">

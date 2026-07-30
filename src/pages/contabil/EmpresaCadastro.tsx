@@ -626,8 +626,9 @@ export default function EmpresaCadastro() {
                 <SocietarioSection onTip={tipFocus} form={form} set={set} />
               )}
 
-              <div className="flex items-center justify-between pt-2">
-                <div className="flex gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <div className="flex flex-wrap gap-2">
+
                   <Button
                     className="rounded-full bg-brand-blue text-white hover:bg-brand-blue/90 px-6"
                     onClick={handleSalvar}
@@ -643,7 +644,7 @@ export default function EmpresaCadastro() {
                     Limpar
                   </Button>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex flex-wrap items-center gap-1">
                   {SECTION_TABS.map((t) => {
                     const Icon = t.icon;
                     const active = section === t.key;

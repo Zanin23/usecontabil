@@ -107,7 +107,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
           <h1 className="mt-2 font-display text-4xl">{dominio.titulo}</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{dominio.desc}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Badge className="rounded-full border-0 bg-muted text-muted-foreground">
             <Lock className="mr-1 h-3 w-3" /> Somente leitura
           </Badge>

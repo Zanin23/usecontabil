@@ -134,7 +134,7 @@ export default function CrudEmpresa({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {sugestoes?.length ? (
             <Button variant="outline" className="rounded-full" onClick={aplicarSugestoes}>
               <Sparkles className="h-4 w-4 mr-2" /> Modelos sugeridos
