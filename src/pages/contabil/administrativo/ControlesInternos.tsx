@@ -25,6 +25,13 @@ import {
   type AcaoPermissao, type Area, type CentroCusto, type Parametro, type Perfil, type Politica,
   type Usuario,
 } from "@/lib/controlesStore";
+import {
+  DESTINOS as DESTINOS_AVISO, NIVEIS as NIVEIS_AVISO, alternarAviso,
+  dataBR as dataBRAviso, excluirAviso, hojeISO as hojeISOAviso, salvarAviso,
+  situacaoAviso, useAvisos, type Aviso, type AvisoNivel,
+} from "@/lib/avisosStore";
+import { useEmpresaAtual } from "@/lib/empresaAtual";
+
 
 /* ============================== apoio visual ============================= */
 
