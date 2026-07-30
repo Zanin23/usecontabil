@@ -5,10 +5,14 @@
  */
 
 const CHAVE = "usecontabil.som.ui";
+const CHAVE_VOL = "usecontabil.som.volume";
+const CHAVE_DIGIT = "usecontabil.som.digitacao";
 
 let ctx: AudioContext | null = null;
 let ativo = typeof window !== "undefined" ? localStorage.getItem(CHAVE) !== "off" : true;
 let ultimo = 0;
+let volume = typeof window !== "undefined" ? Number(localStorage.getItem(CHAVE_VOL) ?? "1") || 1 : 1;
+let digitacao = typeof window !== "undefined" ? localStorage.getItem(CHAVE_DIGIT) !== "off" : true;
 
 const ouvintes = new Set<(v: boolean) => void>();
 
@@ -25,6 +29,33 @@ export function definirSom(v: boolean) {
   }
   ouvintes.forEach((f) => f(v));
   if (v) tocar("click");
+}
+
+export function volumeSom() {
+  return volume;
+}
+
+export function definirVolumeSom(v: number) {
+  volume = Math.min(2, Math.max(0, v));
+  try {
+    localStorage.setItem(CHAVE_VOL, String(volume));
+  } catch {
+    /* ignore */
+  }
+  tocar("click");
+}
+
+export function somDigitacaoAtivo() {
+  return digitacao;
+}
+
+export function definirSomDigitacao(v: boolean) {
+  digitacao = v;
+  try {
+    localStorage.setItem(CHAVE_DIGIT, v ? "on" : "off");
+  } catch {
+    /* ignore */
+  }
 }
 
 export function assinarSom(f: (v: boolean) => void) {
@@ -68,7 +99,7 @@ export function tocar(tipo: Tipo) {
   osc.frequency.exponentialRampToValueAtTime(freq * 0.7, t + dur);
 
   gain.gain.setValueAtTime(0.0001, t);
-  gain.gain.exponentialRampToValueAtTime(vol, t + 0.006);
+  gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, vol * volume), t + 0.006);
   gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
 
   osc.connect(gain).connect(ac.destination);
@@ -109,6 +140,7 @@ export function instalarSonsUI() {
           alvo.getAttribute("role") === "combobox");
       if (!editavel) return;
 
+      if (!digitacao) return;
       if (e.key === "Enter" || e.key === "Tab") tocar("click");
       else if (e.key === " " || e.key === "Backspace") tocar("space");
       else if (e.key.length === 1) tocar("key");
