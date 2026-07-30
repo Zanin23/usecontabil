@@ -4,7 +4,7 @@ import {
   FileCog, Layers, ListChecks, Building2, Users2, Briefcase, ClipboardList,
   CalendarClock, FolderArchive, Lock, Cog, BadgeDollarSign, Wallet2, Split,
   PieChart, FileDown, FileUp, Truck, ShoppingCart, PackageSearch, KeyRound,
-  History, Boxes, Radio, ListTree, HandCoins, Barcode, ShieldCheck, type LucideIcon,
+  History, Boxes, Radio, ListTree, HandCoins, Barcode, ShieldCheck, BellRing, type LucideIcon,
 } from "lucide-react";
 import type { Category, Col, Module, Row } from "./contabilNav";
 
