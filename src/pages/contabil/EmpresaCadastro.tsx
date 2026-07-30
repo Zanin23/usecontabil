@@ -584,10 +584,11 @@ export default function EmpresaCadastro() {
 
   return (
     <div className="space-y-4 -mx-2">
-      <div className="flex items-center justify-between pb-1">
-        <div className="flex items-center gap-2">
-          <Building2 className="h-5 w-5 text-brand-blue" />
-          <h1 className="text-lg font-semibold text-foreground">Empresas — Novo cadastro</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
+        <div className="flex min-w-0 items-center gap-2">
+          <Building2 className="h-5 w-5 shrink-0 text-brand-blue" />
+          <h1 className="min-w-0 text-lg font-semibold text-foreground">Empresas — Novo cadastro</h1>
+
         </div>
         {!assistantOpen && (
           <Button
