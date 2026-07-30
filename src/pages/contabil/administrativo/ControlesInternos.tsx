@@ -513,8 +513,15 @@ function Usuarios() {
                   );
                 })}
                 {!lista.length && (
-                  <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Nenhum usuário nesta visão.</TableCell></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                      {carregando ? "Carregando contas de acesso…"
+                        : erro ? erro
+                          : "Nenhum usuário nesta visão. Use “Novo usuário” para criar um acesso real."}
+                    </TableCell>
+                  </TableRow>
                 )}
+
               </TableBody>
             </Table>
           </div>
