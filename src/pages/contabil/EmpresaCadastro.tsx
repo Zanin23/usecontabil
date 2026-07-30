@@ -584,10 +584,11 @@ export default function EmpresaCadastro() {
 
   return (
     <div className="space-y-4 -mx-2">
-      <div className="flex items-center justify-between pb-1">
-        <div className="flex items-center gap-2">
-          <Building2 className="h-5 w-5 text-brand-blue" />
-          <h1 className="text-lg font-semibold text-foreground">Empresas — Novo cadastro</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
+        <div className="flex min-w-0 items-center gap-2">
+          <Building2 className="h-5 w-5 shrink-0 text-brand-blue" />
+          <h1 className="min-w-0 text-lg font-semibold text-foreground">Empresas — Novo cadastro</h1>
+
         </div>
         {!assistantOpen && (
           <Button
@@ -626,8 +627,9 @@ export default function EmpresaCadastro() {
                 <SocietarioSection onTip={tipFocus} form={form} set={set} />
               )}
 
-              <div className="flex items-center justify-between pt-2">
-                <div className="flex gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <div className="flex flex-wrap gap-2">
+
                   <Button
                     className="rounded-full bg-brand-blue text-white hover:bg-brand-blue/90 px-6"
                     onClick={handleSalvar}
@@ -643,7 +645,7 @@ export default function EmpresaCadastro() {
                     Limpar
                   </Button>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex flex-wrap items-center gap-1">
                   {SECTION_TABS.map((t) => {
                     const Icon = t.icon;
                     const active = section === t.key;

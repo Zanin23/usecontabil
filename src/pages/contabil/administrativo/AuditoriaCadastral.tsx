@@ -42,7 +42,7 @@ export default function AuditoriaCadastral() {
             Motor de validação sobre os dados sincronizados. {READ_ONLY_MSG}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Badge className="rounded-full border-0 bg-muted text-muted-foreground">
             <Lock className="mr-1 h-3 w-3" /> Somente leitura
           </Badge>
@@ -70,7 +70,7 @@ export default function AuditoriaCadastral() {
             <div className="space-y-2 pt-2">
               {resumo.map((c) => (
                 <div key={c.nome} className="flex items-center justify-between text-sm">
-                  <span className="flex items-center gap-2">
+                  <span className="flex flex-wrap items-center gap-2">
                     <span className="h-2 w-2 rounded-full" style={{ background: CORES_CRIT[c.nome as Criticidade] }} />
                     {c.nome}
                   </span>

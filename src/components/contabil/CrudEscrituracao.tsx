@@ -172,7 +172,7 @@ export default function CrudEscrituracao({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {gerar ? (
             <Button variant="outline" className="rounded-full" onClick={executarGeracao}>
               <RefreshCw className="h-4 w-4 mr-2" /> {gerar.label}
@@ -238,7 +238,7 @@ export default function CrudEscrituracao({
                 Nada escriturado nesta competência.
                 {gerar ? " Gere a partir dos dados já lançados ou inclua manualmente." : " Inclua o primeiro registro."}
               </p>
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex flex-wrap items-center justify-center gap-2">
                 {gerar ? (
                   <Button variant="outline" className="rounded-full" onClick={executarGeracao}>
                     <RefreshCw className="h-4 w-4 mr-2" /> {gerar.label}

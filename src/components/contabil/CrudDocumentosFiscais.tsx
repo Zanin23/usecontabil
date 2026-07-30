@@ -187,7 +187,7 @@ export default function CrudDocumentosFiscais({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {exemplo ? (
             <Button variant="outline" className="rounded-full" onClick={importarExemplo}>
               <FileUp className="h-4 w-4 mr-2" /> {labelImportar ?? "Importar XML"}
@@ -254,7 +254,7 @@ export default function CrudDocumentosFiscais({
               <p className="text-sm text-muted-foreground">
                 Nenhum documento nesta competência. Importe um lote ou lance manualmente.
               </p>
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex flex-wrap items-center justify-center gap-2">
                 {exemplo ? (
                   <Button variant="outline" className="rounded-full" onClick={importarExemplo}>
                     <Download className="h-4 w-4 mr-2" /> {labelImportar ?? "Importar XML"}
