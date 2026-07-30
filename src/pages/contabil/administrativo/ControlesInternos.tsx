@@ -14,11 +14,12 @@ import { toast } from "sonner";
 import AssistenteCampos, { type CampoAjuda } from "@/components/contabil/AssistenteCampos";
 import {
   ACOES, AREAS, CONTROLES_EVENT, CRITERIOS_RATEIO, PERFIS, PERMISSOES_PADRAO,
-  alternarCentro, alternarPolitica, alternarUsuario, areasLiberadas, avaliarAlcada, brl,
-  conflitosSegregacao, dataBR, dataHoraBR, equalizarRateio, excecoesDoPerfil, excluirCentro,
+  alternarCentro, alternarPolitica, alternarUsuario, areasLiberadas, atualizarUsuario, avaliarAlcada, brl,
+  conflitosSegregacao, convidarUsuario, dataBR, dataHoraBR, equalizarRateio, excecoesDoPerfil, excluirCentro,
   excluirParametro, excluirPolitica, excluirUsuario, faixaLabel, inconsistenciasAlcadas,
-  listarCentros, listarLog, listarParametros, listarPoliticas, listarUsuarios, resumoLog,
-  resumoUsuarios, salvarCentro, salvarParametro, salvarPolitica, salvarUsuario, simularRateio,
+  listarCentros, listarLog, listarParametros, listarPoliticas, listarUsuarios, redefinirSenhaUsuario,
+  resumoLog, resumoUsuarios, salvarCentro, salvarParametro, salvarPolitica, simularRateio, sincronizarUsuarios,
+
   totalRateio,
   type AcaoPermissao, type Area, type CentroCusto, type Parametro, type Perfil, type Politica,
   type Usuario,
