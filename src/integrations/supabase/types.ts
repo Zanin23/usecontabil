@@ -341,6 +341,57 @@ export type Database = {
         }
         Relationships: []
       }
+      usuarios: {
+        Row: {
+          ativo: boolean
+          auth_user_id: string | null
+          cargo: string
+          criado_em: string
+          duplo_fator: boolean
+          email: string
+          id: string
+          nome: string
+          observacao: string | null
+          perfil: string
+          permissoes: Json
+          situacao: string
+          ultimo_acesso: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          auth_user_id?: string | null
+          cargo?: string
+          criado_em?: string
+          duplo_fator?: boolean
+          email: string
+          id?: string
+          nome?: string
+          observacao?: string | null
+          perfil?: string
+          permissoes?: Json
+          situacao?: string
+          ultimo_acesso?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          auth_user_id?: string | null
+          cargo?: string
+          criado_em?: string
+          duplo_fator?: boolean
+          email?: string
+          id?: string
+          nome?: string
+          observacao?: string | null
+          perfil?: string
+          permissoes?: Json
+          situacao?: string
+          ultimo_acesso?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
