@@ -119,7 +119,7 @@ export function gerarNotificacoes(empresaId: string | null, competencia: string)
   /* ---- Obrigações acessórias ---- */
   for (const def of CATALOGO) {
     const estado = getObrEstado(def.slug, empresaId, competencia);
-    if (estado.status === "Transmitida" || estado.status === "Retificada") continue;
+    if (estado.status === "Transmitida") continue;
     const dias = diasRestantes(def.slug, competencia);
     if (dias < 0) {
       out.push({
