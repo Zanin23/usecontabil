@@ -391,7 +391,12 @@ export function calcularBem(b: Bem, competencia: string): BemCalculado {
 }
 
 const menor = (a: string, b: string) => (a < b ? a : b);
-const encerradoAntes = (meses: number, vida: number) => meses >= vida;
+const mesAnterior = (comp: string) => {
+  const [a, m] = comp.split("-").map(Number);
+  const d = new Date(a, m - 2, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+};
+
 
 function addMesesISO(iso: string, n: number) {
   const d = new Date(iso + "T00:00:00");
