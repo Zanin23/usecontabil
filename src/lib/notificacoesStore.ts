@@ -66,12 +66,14 @@ export function limparLeituras() {
   gravarEstado({ lidas: [] });
 }
 
-const CATEGORIA_ATIVA: Record<NotifCategoria, keyof Preferencias> = {
+/** Categorias derivadas do sistema respeitam as preferências. Avisos manuais não. */
+const CATEGORIA_ATIVA: Record<Exclude<NotifCategoria, "manual">, keyof Preferencias> = {
   vencimentos: "notifVencimentos",
   fechamento: "notifFechamento",
   inconsistencias: "notifInconsistencias",
   resumo: "notifResumoDiario",
 };
+
 
 /** Gera a lista de notificações a partir do estado atual do sistema. */
 export function gerarNotificacoes(empresaId: string | null, competencia: string): Notificacao[] {
