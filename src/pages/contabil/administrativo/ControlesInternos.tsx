@@ -1544,7 +1544,9 @@ const AJUDA_TELA: Record<string, CampoAjuda[]> = {
   "centros-custo": CAMPOS_CC,
   parametros: CAMPOS_PAR,
   politicas: CAMPOS_POL,
+  avisos: CAMPOS_AVISO,
 };
+
 
 export default function ControlesInternos() {
   const { modulo } = useParams();
