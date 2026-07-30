@@ -204,8 +204,18 @@ function DialogUsuario({ usuario, onClose, onSenha }: {
           </div>
           <div className="md:col-span-6">
             <Label>E-mail corporativo</Label>
-            <Input className="mt-1.5" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nome@grupo.com.br" />
+            <Input
+              className="mt-1.5"
+              value={email}
+              disabled={!!base}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="nome@grupo.com.br"
+            />
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              {base ? "E-mail de login não pode ser alterado." : "Será criada uma conta de acesso real com este e-mail."}
+            </p>
           </div>
+
           <div className="md:col-span-6">
             <Label>Cargo</Label>
             <Input className="mt-1.5" value={cargo} onChange={(e) => setCargo(e.target.value)} placeholder="Analista fiscal" />
