@@ -90,6 +90,8 @@ const AdmDashboard = lazy(() => import("./pages/contabil/administrativo/Dashboar
 const AdmAuditoria = lazy(() => import("./pages/contabil/administrativo/AuditoriaCadastral"));
 const AdmContasCaixa = lazy(() => import("./pages/contabil/administrativo/ContasCaixa"));
 const AdmContratos = lazy(() => import("./pages/contabil/administrativo/ContratosDocumentos"));
+const AdmPatrimonio = lazy(() => import("./pages/contabil/administrativo/Patrimonio"));
+
 const FinConciliacao = lazy(() => import("./pages/contabil/financeiro/operacional/ConciliacaoBancaria"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
