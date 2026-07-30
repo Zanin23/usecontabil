@@ -121,7 +121,12 @@ const CAMPOS_USR: CampoAjuda[] = [
   { key: "ativo", label: "Situação", ajuda: "Usuário inativo perde acesso, mas permanece na trilha de auditoria para rastreabilidade." },
 ];
 
-function DialogUsuario({ usuario, onClose }: { usuario: Usuario | "novo"; onClose: () => void }) {
+function DialogUsuario({ usuario, onClose, onSenha }: {
+  usuario: Usuario | "novo";
+  onClose: () => void;
+  onSenha: (nome: string, email: string, senha: string) => void;
+}) {
+
   const base = usuario === "novo" ? null : usuario;
   const [nome, setNome] = useState(base?.nome || "");
   const [email, setEmail] = useState(base?.email || "");
