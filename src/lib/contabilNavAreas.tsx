@@ -441,6 +441,13 @@ export const administrativo: Category[] = [
         { patrimonio: "PT-0177", bem: "Empilhadeira Hyster", taxa: "10%", mes: brl(883.3), residual: brl(96_233.3) },
         { patrimonio: "PT-0203", bem: "Servidor Dell R650", taxa: "20%", mes: brl(808.3), residual: brl(43_650) },
       ]),
+      mod("movimentacoes", "Movimentações", History, "Transferências, benfeitorias e baixas com apuração de resultado.", [
+        col("data", "Data", { mono: true }), col("patrimonio", "Nº patrimônio", { mono: true }), col("tipo", "Tipo"), col("descricao", "Descrição"), num("valor", "Valor"),
+      ], [
+        { data: "24/06/2026", patrimonio: "PT-0188", tipo: "Baixa", descricao: "Venda — NF-e 10 4471", valor: brl(96_000) },
+        { data: "09/05/2026", patrimonio: "PT-0142", tipo: "Benfeitoria", descricao: "Retrofit do painel de comando", valor: brl(18_000) },
+        { data: "18/04/2026", patrimonio: "PT-0177", tipo: "Transferência", descricao: "Galpão 1 → Expedição", valor: brl(0) },
+      ]),
       mod("inventario-bens", "Inventário de bens", PackageSearch, "Conferência física x contábil dos bens.", [
         col("patrimonio", "Nº patrimônio", { mono: true }), col("bem", "Bem"), col("local", "Localização"), col("conferido", "Última conferência", { mono: true }), col("situacao", "Situação", { align: "center" }),
       ], [
@@ -448,6 +455,7 @@ export const administrativo: Category[] = [
         { patrimonio: "PT-0177", bem: "Empilhadeira Hyster", local: "Expedição", conferido: "18/06/2026", situacao: "Localizado" },
         { patrimonio: "PT-0203", bem: "Servidor Dell R650", local: "Sala TI", conferido: "—", situacao: "Não conferido" },
       ]),
+
     ],
   },
   {
