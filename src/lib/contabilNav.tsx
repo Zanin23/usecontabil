@@ -738,7 +738,27 @@ const financeiro: Category[] = [
     ],
 
   },
+  {
+    slug: "demonstracoes",
+    title: "Demonstrações",
+    modules: [
+      {
+        slug: "dre",
+        title: "DRE",
+        icon: TrendingUp,
+        desc: "Demonstração do resultado da competência, com análise vertical, horizontal e ajustes de encerramento.",
+        columns: [
+          { key: "conta", label: "Conta" },
+          { key: "valor", label: "Competência", align: "right", mono: true },
+          { key: "av", label: "AV %", align: "right", mono: true },
+        ],
+        rows: [],
+      },
+    ],
+
+  },
 ];
+
 
 // helper for "tabela por faixas" pattern used in financeiro/tabelas
 function tabelasFaixas(
