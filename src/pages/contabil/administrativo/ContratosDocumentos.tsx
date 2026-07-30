@@ -917,6 +917,45 @@ function DialogDocumento({ registro, competencia, onClose }: { registro: Documen
             <Label className="text-xs">Tags</Label>
             <Input value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="conciliação, fechamento" />
           </div>
+          <div className="col-span-12 space-y-1.5">
+            <Label className="text-xs">Arquivo</Label>
+            <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => { e.preventDefault(); selecionarArquivo(e.dataTransfer.files?.[0]); }}
+              className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-dashed border-brand-orange/40 bg-brand-orange/5 p-4"
+            >
+              {arquivo ? (
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 text-sm">
+                    <FileText className="h-4 w-4 shrink-0 text-brand-orange" />
+                    <span className="truncate">{arquivo.nome}</span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">{arquivo.kb} KB · {arquivo.tipo || "arquivo"}</p>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Arraste o arquivo aqui ou selecione (PDF, XML, imagem, planilha — até 20 MB).
+                </p>
+              )}
+              <div className="flex items-center gap-2">
+                {arquivo ? (
+                  <Button size="sm" variant="ghost" className="rounded-full text-destructive" onClick={() => setArquivo(null)}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                ) : null}
+                <Button size="sm" variant="outline" className="rounded-full" onClick={() => inputArquivo.current?.click()}>
+                  <Plus className="mr-2 h-3.5 w-3.5" />{arquivo ? "Trocar arquivo" : "Anexar arquivo"}
+                </Button>
+              </div>
+              <input
+                ref={inputArquivo}
+                type="file"
+                className="hidden"
+                accept=".pdf,.xml,.png,.jpg,.jpeg,.csv,.xls,.xlsx,.doc,.docx,.txt,.zip"
+                onChange={(e) => { selecionarArquivo(e.target.files?.[0]); e.target.value = ""; }}
+              />
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-end gap-2 pt-2">
