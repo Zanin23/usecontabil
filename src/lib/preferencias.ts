@@ -62,7 +62,8 @@ export function aplicarPreferencias(p: Preferencias = atual) {
   const raiz = document.documentElement;
   const acento = ACENTOS.find((a) => a.id === p.acento) ?? ACENTOS[0];
   // Redireciona o token de acento da marca para a cor escolhida (sempre um token existente).
-  raiz.style.setProperty("--brand-orange", `var(${acento.varName === "--brand-orange" ? "--brand-orange-base" : acento.varName})`);
+  if (acento.id === "orange") raiz.style.removeProperty("--brand-orange");
+  else raiz.style.setProperty("--brand-orange", `var(${acento.varName})`);
   raiz.dataset.densidade = p.densidade;
   raiz.dataset.ambiente = p.ambiente;
 }
