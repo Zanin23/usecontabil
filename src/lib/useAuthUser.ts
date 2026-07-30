@@ -13,10 +13,14 @@ export function useAuthUser() {
       setUser(session?.user ?? null);
       setLoading(false);
     });
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        setUser(data.session?.user ?? null);
+      })
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
+
     return () => sub.subscription.unsubscribe();
   }, []);
 
