@@ -11,11 +11,13 @@ import { CATALOGO, diasRestantes, getObrEstado, vencimentoBR, OBRIGACOES_EVENT }
 import { agendaConsolidada, CONTRATOS_EVENT } from "@/lib/contratosStore";
 import { pendenciasCadastro, getFechamento, GESTAO_EVENT } from "@/lib/gestaoStore";
 import { preferencias, type Preferencias } from "@/lib/preferencias";
+import { avisosVigentes, AVISOS_EVENT } from "@/lib/avisosStore";
 
 export const NOTIFICACOES_EVENT = "usecontabil:notificacoes-changed";
 
 export type NotifNivel = "critico" | "atencao" | "info";
-export type NotifCategoria = "vencimentos" | "fechamento" | "inconsistencias" | "resumo";
+export type NotifCategoria = "vencimentos" | "fechamento" | "inconsistencias" | "resumo" | "manual";
+
 
 export type Notificacao = {
   id: string;
