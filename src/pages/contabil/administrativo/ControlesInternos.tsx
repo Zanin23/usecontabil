@@ -110,6 +110,12 @@ function acao(fn: () => void, msg: string) {
   catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível concluir."); }
 }
 
+async function acaoAsync(fn: () => Promise<unknown>, msg: string) {
+  try { await fn(); toast.success(msg); }
+  catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível concluir."); }
+}
+
+
 /* ========================= usuários e permissões ========================= */
 
 const CAMPOS_USR: CampoAjuda[] = [
