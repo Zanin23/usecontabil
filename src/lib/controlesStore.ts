@@ -257,44 +257,134 @@ export function excecoesDoPerfil(u: Usuario) {
 export const areasLiberadas = (u: Usuario) =>
   u.permissoes.filter((p) => p.acoes.length).map((p) => p.area);
 
-export function salvarUsuario(dados: Omit<Usuario, "id" | "criadoEm" | "ultimoAcesso"> & { id?: string; ultimoAcesso?: string }, autor = "Controladoria") {
-  const lista = listarUsuarios();
-  if (!areasLiberadas(dados as Usuario).length) throw new Error("Libere ao menos uma área para o usuário.");
-  if (dados.id) {
-    const idx = lista.findIndex((u) => u.id === dados.id);
-    if (idx < 0) throw new Error("Usuário não encontrado.");
-    const atualizado: Usuario = { ...lista[idx], ...dados, id: dados.id };
-    lista[idx] = atualizado;
-    gravar(KEY_USR, lista);
-    registrarLog({ usuario: autor, categoria: "Usuários", acao: "Alterou usuário", registro: atualizado.nome, criticidade: "Relevante", detalhe: `Perfil ${atualizado.perfil} · áreas: ${areasLiberadas(atualizado).join(", ")}` });
-    return atualizado;
-  }
-  const novo: Usuario = {
-    ...(dados as Omit<Usuario, "id" | "criadoEm">),
-    id: uid("usr"),
-    criadoEm: hojeISO(),
-    ultimoAcesso: "",
+/* ------------------------ cadastro real (backend) ------------------------ */
+
+type LinhaUsuario = {
+  id: string;
+  auth_user_id: string | null;
+  nome: string;
+  email: string;
+  perfil: string;
+  cargo: string;
+  permissoes: unknown;
+  duplo_fator: boolean;
+  ativo: boolean;
+  ultimo_acesso: string | null;
+  observacao: string | null;
+  criado_em: string;
+};
+
+let CACHE_USR: Usuario[] = [];
+let USR_CARREGADO = false;
+
+export const usuariosCarregados = () => USR_CARREGADO;
+
+function mapear(l: LinhaUsuario): Usuario {
+  const perfil = (PERFIS as readonly string[]).includes(l.perfil) ? (l.perfil as Perfil) : "Consulta";
+  const permissoes = Array.isArray(l.permissoes) ? (l.permissoes as Permissao[]) : [];
+  return {
+    id: l.id,
+    nome: l.nome || l.email,
+    email: l.email,
+    perfil,
+    cargo: l.cargo || "",
+    permissoes: permissoes.length ? permissoes : PERMISSOES_PADRAO[perfil],
+    duploFator: !!l.duplo_fator,
+    ativo: !!l.ativo,
+    ultimoAcesso: l.ultimo_acesso || "",
+    criadoEm: (l.criado_em || "").slice(0, 10),
+    observacao: l.observacao || undefined,
+    contaDeAcesso: !!l.auth_user_id,
   };
-  gravar(KEY_USR, [novo, ...lista]);
-  registrarLog({ usuario: autor, categoria: "Usuários", acao: "Cadastrou usuário", registro: novo.nome, criticidade: "Relevante", detalhe: `Perfil ${novo.perfil}` });
-  return novo;
 }
 
-export function alternarUsuario(id: string, autor = "Controladoria") {
-  const lista = listarUsuarios();
-  const u = lista.find((x) => x.id === id);
-  if (!u) return;
-  u.ativo = !u.ativo;
-  gravar(KEY_USR, lista);
-  registrarLog({ usuario: autor, categoria: "Usuários", acao: u.ativo ? "Reativou acesso" : "Inativou acesso", registro: u.nome, criticidade: "Crítico" });
+const emitir = () => window.dispatchEvent(new CustomEvent(CONTROLES_EVENT));
+
+async function chamar<T>(body: Record<string, unknown>): Promise<T> {
+  const { data, error } = await supabase.functions.invoke("admin-usuarios", { body });
+  if (error) {
+    const detalhe = (data as { error?: string } | null)?.error;
+    throw new Error(detalhe || "Não foi possível concluir a operação de usuários.");
+  }
+  if (data && typeof data === "object" && "error" in (data as object)) {
+    throw new Error(String((data as { error: string }).error));
+  }
+  return data as T;
 }
 
-export function excluirUsuario(id: string, autor = "Controladoria") {
-  const lista = listarUsuarios();
-  const u = lista.find((x) => x.id === id);
-  gravar(KEY_USR, lista.filter((x) => x.id !== id));
-  if (u) registrarLog({ usuario: autor, categoria: "Usuários", acao: "Excluiu usuário", registro: u.nome, criticidade: "Crítico" });
+/** Traz as contas reais de acesso e o cadastro salvo no backend. */
+export async function sincronizarUsuarios() {
+  const resp = await chamar<{ usuarios: LinhaUsuario[]; admin: boolean }>({ action: "sync" });
+  CACHE_USR = (resp.usuarios || []).map(mapear);
+  USR_CARREGADO = true;
+  emitir();
+  return { usuarios: CACHE_USR, admin: resp.admin };
 }
+
+/** Cria a conta de acesso de verdade e devolve a senha provisória. */
+export async function convidarUsuario(dados: {
+  nome: string; email: string; cargo: string; perfil: Perfil;
+  permissoes: Permissao[]; duploFator: boolean; ativo: boolean; observacao?: string;
+}) {
+  if (!dados.nome.trim()) throw new Error("Informe o nome do usuário.");
+  if (!dados.permissoes.filter((p) => p.acoes.length).length) throw new Error("Libere ao menos uma área para o usuário.");
+  const resp = await chamar<{ usuario: LinhaUsuario; senhaTemporaria: string }>({ action: "convidar", ...dados });
+  registrarLog({
+    usuario: "Controladoria", categoria: "Usuários", acao: "Cadastrou usuário",
+    registro: dados.nome, criticidade: "Relevante",
+    detalhe: `Conta de acesso criada · perfil ${dados.perfil}`,
+  });
+  await sincronizarUsuarios();
+  return resp.senhaTemporaria;
+}
+
+export async function atualizarUsuario(id: string, dados: {
+  nome: string; cargo: string; perfil: Perfil; permissoes: Permissao[];
+  duploFator: boolean; ativo: boolean; observacao?: string;
+}) {
+  if (!dados.permissoes.filter((p) => p.acoes.length).length) throw new Error("Libere ao menos uma área para o usuário.");
+  const { error } = await supabase.from("usuarios").update({
+    nome: dados.nome,
+    cargo: dados.cargo,
+    perfil: dados.perfil,
+    permissoes: dados.permissoes as unknown as never,
+    duplo_fator: dados.duploFator,
+    ativo: dados.ativo,
+    observacao: dados.observacao || null,
+  }).eq("id", id);
+  if (error) throw new Error("Sem permissão para alterar usuários (apenas administradores).");
+  registrarLog({
+    usuario: "Controladoria", categoria: "Usuários", acao: "Alterou usuário",
+    registro: dados.nome, criticidade: "Relevante",
+    detalhe: `Perfil ${dados.perfil} · áreas: ${dados.permissoes.filter((p) => p.acoes.length).map((p) => p.area).join(", ")}`,
+  });
+  await sincronizarUsuarios();
+}
+
+export async function alternarUsuario(id: string, autor = "Controladoria") {
+  const u = CACHE_USR.find((x) => x.id === id);
+  const resp = await chamar<{ ativo: boolean }>({ action: "bloquear", id });
+  registrarLog({
+    usuario: autor, categoria: "Usuários", acao: resp.ativo ? "Reativou acesso" : "Bloqueou acesso",
+    registro: u?.nome || id, criticidade: "Crítico",
+  });
+  await sincronizarUsuarios();
+}
+
+export async function excluirUsuario(id: string, autor = "Controladoria") {
+  const u = CACHE_USR.find((x) => x.id === id);
+  await chamar({ action: "excluir", id });
+  registrarLog({ usuario: autor, categoria: "Usuários", acao: "Excluiu usuário", registro: u?.nome || id, criticidade: "Crítico" });
+  await sincronizarUsuarios();
+}
+
+export async function redefinirSenhaUsuario(id: string, autor = "Controladoria") {
+  const u = CACHE_USR.find((x) => x.id === id);
+  const resp = await chamar<{ senhaTemporaria: string }>({ action: "redefinir-senha", id });
+  registrarLog({ usuario: autor, categoria: "Usuários", acao: "Redefiniu senha de acesso", registro: u?.nome || id, criticidade: "Crítico" });
+  return resp.senhaTemporaria;
+}
+
 
 export function resumoUsuarios() {
   const lista = listarUsuarios();
