@@ -95,7 +95,9 @@ const AdmSuprimentos = lazy(() => import("./pages/contabil/administrativo/Suprim
 const AdmControles = lazy(() => import("./pages/contabil/administrativo/ControlesInternos"));
 
 const FinConciliacao = lazy(() => import("./pages/contabil/financeiro/operacional/ConciliacaoBancaria"));
+const FinDre = lazy(() => import("./pages/contabil/financeiro/demonstracoes/Dre"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+
 
 
 
