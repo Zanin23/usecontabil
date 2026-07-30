@@ -1,8 +1,9 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
-  AlertTriangle, ChevronRight, Cog, Download, History, Lock, Power, Scale, Search,
+  AlertTriangle, ChevronRight, Cog, Download, History, KeyRound, Lock, Power, Scale, Search,
   ShieldCheck, Split, Trash2, Users2, Pencil, Plus, Calculator,
+
 } from "lucide-react";
 import {
   Badge, Button, Card, CardContent, Dialog, DialogContent, DialogHeader, DialogTitle,
@@ -14,12 +15,13 @@ import { toast } from "sonner";
 import AssistenteCampos, { type CampoAjuda } from "@/components/contabil/AssistenteCampos";
 import {
   ACOES, AREAS, CONTROLES_EVENT, CRITERIOS_RATEIO, PERFIS, PERMISSOES_PADRAO,
-  alternarCentro, alternarPolitica, alternarUsuario, areasLiberadas, avaliarAlcada, brl,
-  conflitosSegregacao, dataBR, dataHoraBR, equalizarRateio, excecoesDoPerfil, excluirCentro,
+  alternarCentro, alternarPolitica, alternarUsuario, areasLiberadas, atualizarUsuario, avaliarAlcada, brl,
+  conflitosSegregacao, convidarUsuario, dataBR, dataHoraBR, equalizarRateio, excecoesDoPerfil, excluirCentro,
   excluirParametro, excluirPolitica, excluirUsuario, faixaLabel, inconsistenciasAlcadas,
-  listarCentros, listarLog, listarParametros, listarPoliticas, listarUsuarios, resumoLog,
-  resumoUsuarios, salvarCentro, salvarParametro, salvarPolitica, salvarUsuario, simularRateio,
-  totalRateio,
+  listarCentros, listarLog, listarParametros, listarPoliticas, listarUsuarios, redefinirSenhaUsuario,
+  resumoLog, resumoUsuarios, salvarCentro, salvarParametro, salvarPolitica, simularRateio, sincronizarUsuarios,
+
+  totalRateio, usuariosCarregados,
   type AcaoPermissao, type Area, type CentroCusto, type Parametro, type Perfil, type Politica,
   type Usuario,
 } from "@/lib/controlesStore";
@@ -109,6 +111,12 @@ function acao(fn: () => void, msg: string) {
   catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível concluir."); }
 }
 
+async function acaoAsync(fn: () => Promise<unknown>, msg: string) {
+  try { await fn(); toast.success(msg); }
+  catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível concluir."); }
+}
+
+
 /* ========================= usuários e permissões ========================= */
 
 const CAMPOS_USR: CampoAjuda[] = [
@@ -120,7 +128,12 @@ const CAMPOS_USR: CampoAjuda[] = [
   { key: "ativo", label: "Situação", ajuda: "Usuário inativo perde acesso, mas permanece na trilha de auditoria para rastreabilidade." },
 ];
 
-function DialogUsuario({ usuario, onClose }: { usuario: Usuario | "novo"; onClose: () => void }) {
+function DialogUsuario({ usuario, onClose, onSenha }: {
+  usuario: Usuario | "novo";
+  onClose: () => void;
+  onSenha: (nome: string, email: string, senha: string) => void;
+}) {
+
   const base = usuario === "novo" ? null : usuario;
   const [nome, setNome] = useState(base?.nome || "");
   const [email, setEmail] = useState(base?.email || "");
@@ -154,19 +167,33 @@ function DialogUsuario({ usuario, onClose }: { usuario: Usuario | "novo"; onClos
   const conflitos = AREAS.filter((a) =>
     permissoes[a].includes("aprovar") && permissoes[a].some((x) => x === "incluir" || x === "editar" || x === "excluir"));
 
-  const salvar = () => {
+  const [salvando, setSalvando] = useState(false);
+
+  const salvar = async () => {
+    const permissoesLista = AREAS.filter((a) => permissoes[a].length).map((a) => ({ area: a, acoes: permissoes[a] }));
+    setSalvando(true);
     try {
-      salvarUsuario({
-        id: base?.id, nome: nome.trim(), email: email.trim(), cargo: cargo.trim(), perfil, duploFator, ativo,
-        observacao: observacao.trim() || undefined,
-        permissoes: AREAS.filter((a) => permissoes[a].length).map((a) => ({ area: a, acoes: permissoes[a] })),
-      });
-      toast.success(base ? "Usuário atualizado." : "Usuário cadastrado.");
+      if (base) {
+        await atualizarUsuario(base.id, {
+          nome: nome.trim(), cargo: cargo.trim(), perfil, duploFator, ativo,
+          observacao: observacao.trim() || undefined, permissoes: permissoesLista,
+        });
+        toast.success("Usuário atualizado.");
+      } else {
+        const senha = await convidarUsuario({
+          nome: nome.trim(), email: email.trim(), cargo: cargo.trim(), perfil, duploFator, ativo,
+          observacao: observacao.trim() || undefined, permissoes: permissoesLista,
+        });
+        onSenha(nome.trim(), email.trim(), senha);
+      }
       onClose();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Não foi possível salvar.");
+    } finally {
+      setSalvando(false);
     }
   };
+
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
@@ -184,8 +211,18 @@ function DialogUsuario({ usuario, onClose }: { usuario: Usuario | "novo"; onClos
           </div>
           <div className="md:col-span-6">
             <Label>E-mail corporativo</Label>
-            <Input className="mt-1.5" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nome@grupo.com.br" />
+            <Input
+              className="mt-1.5"
+              value={email}
+              disabled={!!base}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="nome@grupo.com.br"
+            />
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              {base ? "E-mail de login não pode ser alterado." : "Será criada uma conta de acesso real com este e-mail."}
+            </p>
           </div>
+
           <div className="md:col-span-6">
             <Label>Cargo</Label>
             <Input className="mt-1.5" value={cargo} onChange={(e) => setCargo(e.target.value)} placeholder="Analista fiscal" />
@@ -251,7 +288,49 @@ function DialogUsuario({ usuario, onClose }: { usuario: Usuario | "novo"; onClos
 
         <div className="mt-2 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar usuário</Button>
+          <Button disabled={salvando} className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>
+            {salvando ? "Salvando…" : base ? "Salvar usuário" : "Criar acesso"}
+          </Button>
+        </div>
+
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DialogSenha({ dados, onClose }: {
+  dados: { nome: string; email: string; senha: string };
+  onClose: () => void;
+}) {
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="font-display text-2xl">Acesso criado</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground">
+          A conta de <strong className="text-foreground">{dados.nome}</strong> já existe de verdade e pode entrar no sistema.
+          Repasse a senha provisória abaixo — ela só aparece uma vez e deve ser trocada no primeiro acesso.
+        </p>
+        <div className="space-y-2 rounded-2xl border border-border/70 p-4">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">E-mail de login</div>
+            <div className="font-mono text-sm">{dados.email}</div>
+          </div>
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">Senha provisória</div>
+            <div className="font-mono text-lg text-brand-orange">{dados.senha}</div>
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            className="rounded-full"
+            onClick={() => { navigator.clipboard?.writeText(`${dados.email} · ${dados.senha}`); toast.success("Credenciais copiadas."); }}
+          >
+            Copiar
+          </Button>
+          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={onClose}>Concluir</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -259,15 +338,27 @@ function DialogUsuario({ usuario, onClose }: { usuario: Usuario | "novo"; onClos
 }
 
 function Usuarios() {
-  useRefresh();
+  const tick = useRefresh();
   const [busca, setBusca] = useState("");
   const [filtro, setFiltro] = useState("todos");
   const [edicao, setEdicao] = useState<Usuario | "novo" | null>(null);
   const [aberto, setAberto] = useState<string | null>(null);
+  const [carregando, setCarregando] = useState(!usuariosCarregados());
+  const [erro, setErro] = useState("");
+  const [credencial, setCredencial] = useState<{ nome: string; email: string; senha: string } | null>(null);
+
+  useEffect(() => {
+    let vivo = true;
+    sincronizarUsuarios()
+      .catch((e) => { if (vivo) setErro(e instanceof Error ? e.message : "Falha ao carregar usuários."); })
+      .finally(() => { if (vivo) setCarregando(false); });
+    return () => { vivo = false; };
+  }, []);
 
   const lista = useMemo(() => {
     const t = busca.trim().toLowerCase();
     return listarUsuarios().filter((u) => {
+
       if (filtro === "ativos" && !u.ativo) return false;
       if (filtro === "inativos" && u.ativo) return false;
       if (filtro === "conflito" && !conflitosSegregacao(u).length) return false;
@@ -275,7 +366,7 @@ function Usuarios() {
       if (!t) return true;
       return [u.nome, u.email, u.perfil, u.cargo].join(" ").toLowerCase().includes(t);
     });
-  }, [busca, filtro]);
+  }, [busca, filtro, tick]);
 
   const r = resumoUsuarios();
   const porPerfil = PERFIS.map((p) => ({ perfil: p, qtd: listarUsuarios().filter((u) => u.perfil === p && u.ativo).length })).filter((x) => x.qtd);
@@ -359,13 +450,29 @@ function Usuarios() {
                         </TableCell>
                         <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                           <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" onClick={() => acao(() => alternarUsuario(u.id), u.ativo ? "Acesso inativado." : "Acesso reativado.")}>
+                            <Button size="icon" variant="ghost" title={u.ativo ? "Bloquear acesso" : "Reativar acesso"} onClick={() => acaoAsync(() => alternarUsuario(u.id), u.ativo ? "Acesso bloqueado." : "Acesso reativado.")}>
                               <Power className={`h-4 w-4 ${u.ativo ? "text-brand-orange" : "text-muted-foreground"}`} />
                             </Button>
-                            <Button size="icon" variant="ghost" onClick={() => setEdicao(u)}><Pencil className="h-4 w-4" /></Button>
-                            <Button size="icon" variant="ghost" onClick={() => acao(() => excluirUsuario(u.id), "Usuário excluído.")}>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              title="Gerar nova senha provisória"
+                              onClick={async () => {
+                                try {
+                                  const senha = await redefinirSenhaUsuario(u.id);
+                                  setCredencial({ nome: u.nome, email: u.email, senha });
+                                } catch (e) {
+                                  toast.error(e instanceof Error ? e.message : "Não foi possível redefinir a senha.");
+                                }
+                              }}
+                            >
+                              <KeyRound className="h-4 w-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" title="Editar" onClick={() => setEdicao(u)}><Pencil className="h-4 w-4" /></Button>
+                            <Button size="icon" variant="ghost" title="Excluir conta" onClick={() => acaoAsync(() => excluirUsuario(u.id), "Usuário excluído.")}>
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
+
                           </div>
                         </TableCell>
                       </TableRow>
@@ -406,15 +513,30 @@ function Usuarios() {
                   );
                 })}
                 {!lista.length && (
-                  <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Nenhum usuário nesta visão.</TableCell></TableRow>
+                  <TableRow>
+                    <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                      {carregando ? "Carregando contas de acesso…"
+                        : erro ? erro
+                          : "Nenhum usuário nesta visão. Use “Novo usuário” para criar um acesso real."}
+                    </TableCell>
+                  </TableRow>
                 )}
+
               </TableBody>
             </Table>
           </div>
         </CardContent>
       </Card>
 
-      {edicao && <DialogUsuario usuario={edicao} onClose={() => setEdicao(null)} />}
+      {edicao && (
+        <DialogUsuario
+          usuario={edicao}
+          onClose={() => setEdicao(null)}
+          onSenha={(nome, email, senha) => setCredencial({ nome, email, senha })}
+        />
+      )}
+      {credencial && <DialogSenha dados={credencial} onClose={() => setCredencial(null)} />}
+
     </div>
   );
 }
