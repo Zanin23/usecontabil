@@ -291,16 +291,67 @@ function DialogUsuario({ usuario, onClose, onSenha }: {
   );
 }
 
+function DialogSenha({ dados, onClose }: {
+  dados: { nome: string; email: string; senha: string };
+  onClose: () => void;
+}) {
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="font-display text-2xl">Acesso criado</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground">
+          A conta de <strong className="text-foreground">{dados.nome}</strong> já existe de verdade e pode entrar no sistema.
+          Repasse a senha provisória abaixo — ela só aparece uma vez e deve ser trocada no primeiro acesso.
+        </p>
+        <div className="space-y-2 rounded-2xl border border-border/70 p-4">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">E-mail de login</div>
+            <div className="font-mono text-sm">{dados.email}</div>
+          </div>
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">Senha provisória</div>
+            <div className="font-mono text-lg text-brand-orange">{dados.senha}</div>
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            className="rounded-full"
+            onClick={() => { navigator.clipboard?.writeText(`${dados.email} · ${dados.senha}`); toast.success("Credenciais copiadas."); }}
+          >
+            Copiar
+          </Button>
+          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={onClose}>Concluir</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function Usuarios() {
-  useRefresh();
+  const tick = useRefresh();
   const [busca, setBusca] = useState("");
   const [filtro, setFiltro] = useState("todos");
   const [edicao, setEdicao] = useState<Usuario | "novo" | null>(null);
   const [aberto, setAberto] = useState<string | null>(null);
+  const [carregando, setCarregando] = useState(!usuariosCarregados());
+  const [erro, setErro] = useState("");
+  const [credencial, setCredencial] = useState<{ nome: string; email: string; senha: string } | null>(null);
+
+  useEffect(() => {
+    let vivo = true;
+    sincronizarUsuarios()
+      .catch((e) => { if (vivo) setErro(e instanceof Error ? e.message : "Falha ao carregar usuários."); })
+      .finally(() => { if (vivo) setCarregando(false); });
+    return () => { vivo = false; };
+  }, []);
 
   const lista = useMemo(() => {
     const t = busca.trim().toLowerCase();
     return listarUsuarios().filter((u) => {
+
       if (filtro === "ativos" && !u.ativo) return false;
       if (filtro === "inativos" && u.ativo) return false;
       if (filtro === "conflito" && !conflitosSegregacao(u).length) return false;
