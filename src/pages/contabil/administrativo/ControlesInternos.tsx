@@ -366,7 +366,7 @@ function Usuarios() {
       if (!t) return true;
       return [u.nome, u.email, u.perfil, u.cargo].join(" ").toLowerCase().includes(t);
     });
-  }, [busca, filtro]);
+  }, [busca, filtro, tick]);
 
   const r = resumoUsuarios();
   const porPerfil = PERFIS.map((p) => ({ perfil: p, qtd: listarUsuarios().filter((u) => u.perfil === p && u.ativo).length })).filter((x) => x.qtd);
