@@ -200,6 +200,8 @@ const App = () => (
 
           <Route path="/administrativo/financeiro-operacional/:modulo" element={<AdmContasCaixa />} />
           <Route path="/administrativo/contratos/:modulo" element={<AdmContratos />} />
+          <Route path="/administrativo/patrimonio/:modulo" element={<AdmPatrimonio />} />
+
 
           <Route path="/administrativo/cadastros" element={<AdmHub />} />
           <Route path="/administrativo/cadastros/:dominio" element={<AdmDominio />} />
