@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   AlertTriangle, CalendarClock, CheckCircle2, ChevronRight, Download, FileText, FolderArchive,
@@ -814,6 +814,10 @@ function DialogDocumento({ registro, competencia, onClose }: { registro: Documen
   const atual = novo ? null : registro;
   const { empresa } = useEmpresaAtual();
   const contratos = useMemo(() => contratosCalculados(empresa?.id), [empresa]);
+  const inputArquivo = useRef<HTMLInputElement>(null);
+  const [arquivo, setArquivo] = useState<{ nome: string; tipo: string; kb: number } | null>(
+    atual?.arquivoNome ? { nome: atual.arquivoNome, tipo: atual.arquivoTipo || "", kb: atual.tamanhoKb } : null,
+  );
   const [form, setForm] = useState({
     nome: atual?.nome || "",
     tipo: atual?.tipo || "Contábil",
@@ -826,6 +830,14 @@ function DialogDocumento({ registro, competencia, onClose }: { registro: Documen
   });
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  const selecionarArquivo = (file?: File | null) => {
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) return toast.error("Arquivo maior que 20 MB.");
+    setArquivo({ nome: file.name, tipo: file.type || "arquivo", kb: Math.max(1, Math.round(file.size / 1024)) });
+    setForm((f) => ({ ...f, nome: f.nome || file.name.replace(/\.[^.]+$/, "") }));
+    toast.success("Arquivo anexado.");
+  };
+
   const salvar = () => {
     try {
       salvarDocumento({
@@ -834,6 +846,8 @@ function DialogDocumento({ registro, competencia, onClose }: { registro: Documen
         emissao: form.emissao, validade: form.validade || undefined,
         responsavel: form.responsavel, contratoId: form.contratoId || undefined,
         tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+        arquivoNome: arquivo?.nome, arquivoTipo: arquivo?.tipo,
+        tamanhoKb: arquivo?.kb,
       });
       toast.success(novo ? "Documento anexado ao cofre." : "Documento atualizado.");
       onClose();
@@ -902,6 +916,45 @@ function DialogDocumento({ registro, competencia, onClose }: { registro: Documen
           <div className="col-span-12 space-y-1.5 sm:col-span-6">
             <Label className="text-xs">Tags</Label>
             <Input value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="conciliação, fechamento" />
+          </div>
+          <div className="col-span-12 space-y-1.5">
+            <Label className="text-xs">Arquivo</Label>
+            <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => { e.preventDefault(); selecionarArquivo(e.dataTransfer.files?.[0]); }}
+              className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-dashed border-brand-orange/40 bg-brand-orange/5 p-4"
+            >
+              {arquivo ? (
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 text-sm">
+                    <FileText className="h-4 w-4 shrink-0 text-brand-orange" />
+                    <span className="truncate">{arquivo.nome}</span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">{arquivo.kb} KB · {arquivo.tipo || "arquivo"}</p>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Arraste o arquivo aqui ou selecione (PDF, XML, imagem, planilha — até 20 MB).
+                </p>
+              )}
+              <div className="flex items-center gap-2">
+                {arquivo ? (
+                  <Button size="sm" variant="ghost" className="rounded-full text-destructive" onClick={() => setArquivo(null)}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                ) : null}
+                <Button size="sm" variant="outline" className="rounded-full" onClick={() => inputArquivo.current?.click()}>
+                  <Plus className="mr-2 h-3.5 w-3.5" />{arquivo ? "Trocar arquivo" : "Anexar arquivo"}
+                </Button>
+              </div>
+              <input
+                ref={inputArquivo}
+                type="file"
+                className="hidden"
+                accept=".pdf,.xml,.png,.jpg,.jpeg,.csv,.xls,.xlsx,.doc,.docx,.txt,.zip"
+                onChange={(e) => { selecionarArquivo(e.target.files?.[0]); e.target.value = ""; }}
+              />
+            </div>
           </div>
         </div>
 

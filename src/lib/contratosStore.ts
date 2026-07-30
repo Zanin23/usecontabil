@@ -158,6 +158,9 @@ export type Documento = {
   tamanhoKb: number;
   tags: string[];
   criadoEm: string;
+  /** nome do arquivo anexado (upload local, apenas metadados). */
+  arquivoNome?: string;
+  arquivoTipo?: string;
 };
 
 export type Certificado = {
@@ -533,6 +536,8 @@ export function salvarDocumento(dados: Partial<Documento> & { nome: string }) {
     tamanhoKb: dados.tamanhoKb ?? existente?.tamanhoKb ?? 240,
     tags: dados.tags || existente?.tags || [],
     criadoEm: existente?.criadoEm || hojeISO(),
+    arquivoNome: dados.arquivoNome ?? existente?.arquivoNome,
+    arquivoTipo: dados.arquivoTipo ?? existente?.arquivoTipo,
   };
   gravar(KEY_DOCUMENTOS, existente ? lista.map((d) => (d.id === registro.id ? registro : d)) : [registro, ...lista]);
   return registro;
