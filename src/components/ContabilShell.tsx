@@ -404,27 +404,8 @@ export default function ContabilShell() {
               </kbd>
             </button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-md h-9"
-              onClick={() => definirSom(!som)}
-              aria-label={som ? "Desativar sons" : "Ativar sons"}
-              title={som ? "Sons ativados" : "Sons desativados"}
-            >
-              {som ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-            </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-md h-9"
-              onClick={alternar}
-              aria-label={tema === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
-              title={tema === "dark" ? "Modo claro" : "Modo escuro"}
-            >
-              {tema === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+
 
 
             <Button
