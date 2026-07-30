@@ -20,7 +20,7 @@ import {
   listarCentros, listarLog, listarParametros, listarPoliticas, listarUsuarios, redefinirSenhaUsuario,
   resumoLog, resumoUsuarios, salvarCentro, salvarParametro, salvarPolitica, simularRateio, sincronizarUsuarios,
 
-  totalRateio,
+  totalRateio, usuariosCarregados,
   type AcaoPermissao, type Area, type CentroCusto, type Parametro, type Perfil, type Politica,
   type Usuario,
 } from "@/lib/controlesStore";
