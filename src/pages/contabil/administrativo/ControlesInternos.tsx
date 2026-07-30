@@ -1288,7 +1288,238 @@ function Politicas() {
   );
 }
 
+/* ========================== avisos / notificações ======================== */
+
+const CAMPOS_AVISO: CampoAjuda[] = [
+  { key: "titulo", label: "Título", ajuda: "Texto curto exibido no sino de notificações. Vá direto ao ponto: 'Fechamento antecipado de julho'." },
+  { key: "mensagem", label: "Mensagem", ajuda: "Detalhe o que a equipe precisa fazer, com prazo e responsável quando houver." },
+  { key: "nivel", label: "Nível", ajuda: "Crítico: exige ação imediata. Atenção: prazo próximo. Informativo: comunicado geral." },
+  { key: "empresa", label: "Empresa", ajuda: "Deixe em 'Todas' para um comunicado geral ou selecione uma empresa para direcionar o aviso." },
+  { key: "vigencia", label: "Vigência", ajuda: "O aviso só aparece no sino entre o início e o fim. Sem data-fim, permanece até ser desativado." },
+  { key: "destino", label: "Tela de destino", ajuda: "Ao clicar na notificação, o usuário é levado para esta tela." },
+];
+
+function DialogAviso({ aviso, onClose }: { aviso: Aviso | "novo"; onClose: () => void }) {
+  const novo = aviso === "novo";
+  const base = novo ? null : (aviso as Aviso);
+  const { empresas } = useEmpresaAtual();
+
+  const [titulo, setTitulo] = useState(base?.titulo ?? "");
+  const [mensagem, setMensagem] = useState(base?.mensagem ?? "");
+  const [nivel, setNivel] = useState<AvisoNivel>(base?.nivel ?? "atencao");
+  const [empresaId, setEmpresaId] = useState<string>(base?.empresaId ?? "todas");
+  const [inicio, setInicio] = useState(base?.inicio ?? hojeISOAviso());
+  const [fim, setFim] = useState(base?.fim ?? "");
+  const [destino, setDestino] = useState(base?.destino ?? "/dashboard");
+  const [ativo, setAtivo] = useState(base?.ativo ?? true);
+
+  const salvar = () => {
+    acao(() => {
+      salvarAviso({
+        id: base?.id,
+        criadoEm: base?.criadoEm,
+        titulo,
+        mensagem,
+        nivel,
+        destino,
+        empresaId: empresaId === "todas" ? null : empresaId,
+        inicio,
+        fim,
+        ativo,
+        criadoPor: base?.criadoPor ?? "Controladoria",
+      });
+      onClose();
+    }, novo ? "Aviso publicado." : "Aviso atualizado.");
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{novo ? "Novo aviso" : "Editar aviso"}</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <Label>Título</Label>
+            <Input value={titulo} onChange={(e) => setTitulo(e.target.value)} placeholder="Ex.: Antecipação do fechamento de julho" />
+          </div>
+          <div className="md:col-span-2">
+            <Label>Mensagem</Label>
+            <Textarea rows={3} value={mensagem} onChange={(e) => setMensagem(e.target.value)} placeholder="Descreva a orientação, o prazo e o responsável." />
+          </div>
+          <div>
+            <Label>Nível</Label>
+            <Select value={nivel} onValueChange={(v) => setNivel(v as AvisoNivel)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {NIVEIS_AVISO.map((n) => <SelectItem key={n.valor} value={n.valor}>{n.rotulo}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Empresa</Label>
+            <Select value={empresaId} onValueChange={setEmpresaId}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todas">Todas as empresas</SelectItem>
+                {empresas.map((e) => <SelectItem key={e.id} value={e.id}>{e.razao || e.cnpj}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Início da vigência</Label>
+            <Input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} />
+          </div>
+          <div>
+            <Label>Fim da vigência (opcional)</Label>
+            <Input type="date" value={fim} onChange={(e) => setFim(e.target.value)} />
+          </div>
+          <div className="md:col-span-2">
+            <Label>Tela de destino</Label>
+            <Select value={destino} onValueChange={setDestino}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {DESTINOS_AVISO.map((d) => <SelectItem key={d.valor} value={d.valor}>{d.rotulo}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between rounded-2xl border border-border/70 p-3 md:col-span-2">
+            <div>
+              <div className="text-sm font-medium">Aviso ativo</div>
+              <div className="text-[11px] text-muted-foreground">Desative para tirar do sino sem excluir o histórico.</div>
+            </div>
+            <Switch checked={ativo} onCheckedChange={setAtivo} />
+          </div>
+        </div>
+        <div className="flex flex-wrap justify-end gap-2 pt-2">
+          <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
+          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>
+            {novo ? "Publicar aviso" : "Salvar"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function Avisos() {
+  const { itens } = useAvisos();
+  const { empresas } = useEmpresaAtual();
+  const [busca, setBusca] = useState("");
+  const [edicao, setEdicao] = useState<Aviso | "novo" | null>(null);
+
+  const nomeEmpresa = (id: string | null) =>
+    id === null ? "Todas as empresas" : empresas.find((e) => e.id === id)?.razao || "Empresa removida";
+
+  const filtrados = useMemo(() => {
+    const t = busca.trim().toLowerCase();
+    if (!t) return itens;
+    return itens.filter((a) => `${a.titulo} ${a.mensagem}`.toLowerCase().includes(t));
+  }, [itens, busca]);
+
+  const ativos = itens.filter((a) => situacaoAviso(a) === "Ativo");
+  const programados = itens.filter((a) => situacaoAviso(a) === "Programado");
+  const criticos = ativos.filter((a) => a.nivel === "critico");
+
+  const TOM: Record<string, string> = {
+    Ativo: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+    Programado: "bg-brand-orange/15 text-brand-orange",
+    Encerrado: "bg-muted text-muted-foreground",
+    Inativo: "bg-muted text-muted-foreground",
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <Kpi label="Avisos cadastrados" valor={String(itens.length)} />
+        <Kpi label="No sino agora" valor={String(ativos.length)} tom="ok" hint="Dentro da vigência e ativos" />
+        <Kpi label="Programados" valor={String(programados.length)} tom="destaque" hint="Entram no sino na data de início" />
+        <Kpi label="Críticos ativos" valor={String(criticos.length)} tom={criticos.length ? "alerta" : undefined} />
+      </div>
+
+      <Card className="rounded-3xl shadow-card">
+        <CardContent className="space-y-4 p-5">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative min-w-[200px] flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input className="pl-9" placeholder="Buscar por título ou mensagem" value={busca} onChange={(e) => setBusca(e.target.value)} />
+            </div>
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => exportarCSV("avisos-manuais", filtrados.map((a) => ({
+                Titulo: a.titulo, Nivel: a.nivel, Empresa: nomeEmpresa(a.empresaId),
+                Inicio: dataBRAviso(a.inicio), Fim: a.fim ? dataBRAviso(a.fim) : "—", Situacao: situacaoAviso(a),
+              })))}
+            >
+              <Download className="h-4 w-4" /> Exportar
+            </Button>
+            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
+              <Plus className="h-4 w-4" /> Novo aviso
+            </Button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Aviso</TableHead>
+                  <TableHead>Nível</TableHead>
+                  <TableHead>Empresa</TableHead>
+                  <TableHead>Vigência</TableHead>
+                  <TableHead className="text-center">Situação</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtrados.map((a) => {
+                  const sit = situacaoAviso(a);
+                  return (
+                    <TableRow key={a.id}>
+                      <TableCell className="max-w-[320px]">
+                        <div className="font-medium">{a.titulo}</div>
+                        <div className="line-clamp-2 text-[11px] text-muted-foreground">{a.mensagem}</div>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {NIVEIS_AVISO.find((n) => n.valor === a.nivel)?.rotulo}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{nomeEmpresa(a.empresaId)}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {dataBRAviso(a.inicio)} → {a.fim ? dataBRAviso(a.fim) : "sem fim"}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge className={`rounded-full ${TOM[sit]}`}>{sit}</Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button size="icon" variant="ghost" title={a.ativo ? "Desativar" : "Reativar"} onClick={() => acao(() => alternarAviso(a.id), a.ativo ? "Aviso desativado." : "Aviso reativado.")}>
+                            <Power className={`h-4 w-4 ${a.ativo ? "text-brand-orange" : "text-muted-foreground"}`} />
+                          </Button>
+                          <Button size="icon" variant="ghost" onClick={() => setEdicao(a)}><Pencil className="h-4 w-4" /></Button>
+                          <Button size="icon" variant="ghost" onClick={() => acao(() => excluirAviso(a.id), "Aviso excluído.")}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+                {!filtrados.length && (
+                  <TableRow><TableCell colSpan={6} className="py-10 text-center text-muted-foreground">Nenhum aviso publicado ainda.</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {edicao && <DialogAviso aviso={edicao} onClose={() => setEdicao(null)} />}
+    </div>
+  );
+}
+
 /* ================================= página ================================ */
+
 
 const AJUDA_TELA: Record<string, CampoAjuda[]> = {
   usuarios: CAMPOS_USR,
