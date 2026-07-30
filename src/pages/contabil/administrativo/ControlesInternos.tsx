@@ -155,19 +155,33 @@ function DialogUsuario({ usuario, onClose }: { usuario: Usuario | "novo"; onClos
   const conflitos = AREAS.filter((a) =>
     permissoes[a].includes("aprovar") && permissoes[a].some((x) => x === "incluir" || x === "editar" || x === "excluir"));
 
-  const salvar = () => {
+  const [salvando, setSalvando] = useState(false);
+
+  const salvar = async () => {
+    const permissoesLista = AREAS.filter((a) => permissoes[a].length).map((a) => ({ area: a, acoes: permissoes[a] }));
+    setSalvando(true);
     try {
-      salvarUsuario({
-        id: base?.id, nome: nome.trim(), email: email.trim(), cargo: cargo.trim(), perfil, duploFator, ativo,
-        observacao: observacao.trim() || undefined,
-        permissoes: AREAS.filter((a) => permissoes[a].length).map((a) => ({ area: a, acoes: permissoes[a] })),
-      });
-      toast.success(base ? "Usuário atualizado." : "Usuário cadastrado.");
+      if (base) {
+        await atualizarUsuario(base.id, {
+          nome: nome.trim(), cargo: cargo.trim(), perfil, duploFator, ativo,
+          observacao: observacao.trim() || undefined, permissoes: permissoesLista,
+        });
+        toast.success("Usuário atualizado.");
+      } else {
+        const senha = await convidarUsuario({
+          nome: nome.trim(), email: email.trim(), cargo: cargo.trim(), perfil, duploFator, ativo,
+          observacao: observacao.trim() || undefined, permissoes: permissoesLista,
+        });
+        onSenha(nome.trim(), email.trim(), senha);
+      }
       onClose();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Não foi possível salvar.");
+    } finally {
+      setSalvando(false);
     }
   };
+
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
