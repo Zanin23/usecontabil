@@ -255,6 +255,8 @@ export function useNotificacoes(empresaId: string | null, competencia: string) {
       GESTAO_EVENT,
       NOTIFICACOES_EVENT,
       AVISOS_EVENT,
+      "usecontabil:preferencias-changed",
+
 
     ];
     eventos.forEach((e) => window.addEventListener(e, recarregar));
