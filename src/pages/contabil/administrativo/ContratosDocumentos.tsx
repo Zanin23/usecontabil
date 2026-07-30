@@ -814,6 +814,10 @@ function DialogDocumento({ registro, competencia, onClose }: { registro: Documen
   const atual = novo ? null : registro;
   const { empresa } = useEmpresaAtual();
   const contratos = useMemo(() => contratosCalculados(empresa?.id), [empresa]);
+  const inputArquivo = useRef<HTMLInputElement>(null);
+  const [arquivo, setArquivo] = useState<{ nome: string; tipo: string; kb: number } | null>(
+    atual?.arquivoNome ? { nome: atual.arquivoNome, tipo: atual.arquivoTipo || "", kb: atual.tamanhoKb } : null,
+  );
   const [form, setForm] = useState({
     nome: atual?.nome || "",
     tipo: atual?.tipo || "Contábil",
@@ -826,6 +830,14 @@ function DialogDocumento({ registro, competencia, onClose }: { registro: Documen
   });
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  const selecionarArquivo = (file?: File | null) => {
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) return toast.error("Arquivo maior que 20 MB.");
+    setArquivo({ nome: file.name, tipo: file.type || "arquivo", kb: Math.max(1, Math.round(file.size / 1024)) });
+    setForm((f) => ({ ...f, nome: f.nome || file.name.replace(/\.[^.]+$/, "") }));
+    toast.success("Arquivo anexado.");
+  };
+
   const salvar = () => {
     try {
       salvarDocumento({
@@ -834,6 +846,8 @@ function DialogDocumento({ registro, competencia, onClose }: { registro: Documen
         emissao: form.emissao, validade: form.validade || undefined,
         responsavel: form.responsavel, contratoId: form.contratoId || undefined,
         tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+        arquivoNome: arquivo?.nome, arquivoTipo: arquivo?.tipo,
+        tamanhoKb: arquivo?.kb,
       });
       toast.success(novo ? "Documento anexado ao cofre." : "Documento atualizado.");
       onClose();
