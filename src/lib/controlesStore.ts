@@ -23,7 +23,10 @@
 //  R9  A trilha de auditoria é somente leitura na interface.
 // ============================================================================
 
+import { supabase } from "@/integrations/supabase/client";
+
 export const CONTROLES_EVENT = "usecontabil:controles-changed";
+
 
 const KEY_USR = "usecontabil.adm.controles.usuarios.v1";
 const KEY_LOG = "usecontabil.adm.controles.log.v1";
