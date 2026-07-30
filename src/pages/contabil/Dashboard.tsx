@@ -42,7 +42,58 @@ const C = {
   card: "var(--card)",
 };
 
-const PIE_COLORS = [C.orange, C.blue, C.purple, C.pink];
+/**
+ * Paleta acessível para daltonismo: além de matizes distintos, cada fatia
+ * varia em luminosidade e recebe uma textura própria, de modo que o gráfico
+ * continua legível em deuteranopia, protanopia e em impressão preto e branco.
+ */
+const PIE_SERIES = [
+  { cor: C.blue, textura: "solido" },
+  { cor: C.orange, textura: "diagonal" },
+  { cor: "var(--foreground)", textura: "pontos" },
+  { cor: C.muted, textura: "grade" },
+] as const;
+
+function TexturaFatia({ id, cor, textura }: { id: string; cor: string; textura: string }) {
+  if (textura === "solido") {
+    return (
+      <pattern id={id} patternUnits="userSpaceOnUse" width="8" height="8">
+        <rect width="8" height="8" fill={cor} />
+      </pattern>
+    );
+  }
+  return (
+    <pattern id={id} patternUnits="userSpaceOnUse" width="8" height="8">
+      <rect width="8" height="8" fill={cor} />
+      {textura === "diagonal" && (
+        <path d="M-2 2 L2 -2 M0 8 L8 0 M6 10 L10 6" stroke="var(--card)" strokeWidth="2.2" />
+      )}
+      {textura === "pontos" && (
+        <>
+          <circle cx="2" cy="2" r="1.5" fill="var(--card)" />
+          <circle cx="6" cy="6" r="1.5" fill="var(--card)" />
+        </>
+      )}
+      {textura === "grade" && (
+        <path d="M0 4 H8 M4 0 V8" stroke="var(--card)" strokeWidth="1.6" />
+      )}
+    </pattern>
+  );
+}
+
+function SwatchFatia({ cor, textura }: { cor: string; textura: string }) {
+  const id = `sw-${textura}`;
+  return (
+    <svg className="h-3 w-3 shrink-0 rounded-sm" viewBox="0 0 8 8" aria-hidden>
+      <defs>
+        <TexturaFatia id={id} cor={cor} textura={textura} />
+      </defs>
+      <rect width="8" height="8" fill={`url(#${id})`} />
+      <rect width="8" height="8" fill="none" stroke="var(--border)" strokeWidth="0.8" />
+    </svg>
+  );
+}
+
 
 const compact = (v: number) =>
   "R$ " + (v / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 0 }) + "k";
@@ -200,9 +251,14 @@ export default function Dashboard() {
             <div className="h-48 mt-3">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={COMPOSICAO_DESPESA} dataKey="valor" nameKey="nome" innerRadius={52} outerRadius={78} paddingAngle={3} stroke={C.card}>
+                  <defs>
+                    {PIE_SERIES.map((s, i) => (
+                      <TexturaFatia key={i} id={`fatia-${i}`} cor={s.cor} textura={s.textura} />
+                    ))}
+                  </defs>
+                  <Pie data={COMPOSICAO_DESPESA} dataKey="valor" nameKey="nome" innerRadius={52} outerRadius={78} paddingAngle={3} stroke={C.card} strokeWidth={2}>
                     {COMPOSICAO_DESPESA.map((_, i) => (
-                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                      <Cell key={i} fill={`url(#fatia-${i % PIE_SERIES.length})`} />
                     ))}
                   </Pie>
                   <Tooltip content={<ChartTip />} />
@@ -210,14 +266,20 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
             <div className="space-y-1.5 mt-3">
-              {COMPOSICAO_DESPESA.map((d, i) => (
-                <div key={d.nome} className="flex items-center gap-2 text-xs">
-                  <span className="h-2 w-2 rounded-full" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
-                  <span className="text-muted-foreground">{d.nome}</span>
-                  <span className="ml-auto font-mono">{Math.round((d.valor / totalDespesa) * 100)}%</span>
-                </div>
-              ))}
+              {COMPOSICAO_DESPESA.map((d, i) => {
+                const s = PIE_SERIES[i % PIE_SERIES.length];
+                return (
+                  <div key={d.nome} className="flex items-center gap-2 text-xs">
+                    <SwatchFatia cor={s.cor} textura={s.textura} />
+                    <span className="text-foreground">{d.nome}</span>
+                    <span className="ml-auto font-mono text-foreground">
+                      {Math.round((d.valor / totalDespesa) * 100)}%
+                    </span>
+                  </div>
+                );
+              })}
             </div>
+
           </CardContent>
         </Card>
 
