@@ -281,8 +281,11 @@ function DialogUsuario({ usuario, onClose, onSenha }: {
 
         <div className="mt-2 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar usuário</Button>
+          <Button disabled={salvando} className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>
+            {salvando ? "Salvando…" : base ? "Salvar usuário" : "Criar acesso"}
+          </Button>
         </div>
+
       </DialogContent>
     </Dialog>
   );
