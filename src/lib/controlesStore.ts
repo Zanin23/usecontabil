@@ -195,7 +195,7 @@ const LOG_SEED: LogEntrada[] = [
 
 /* =============================== leitura ================================= */
 
-export const listarUsuarios = () => ler<Usuario>(KEY_USR, USUARIOS_SEED);
+export const listarUsuarios = () => CACHE_USR;
 export const listarLog = () =>
   ler<LogEntrada>(KEY_LOG, LOG_SEED).slice().sort((a, b) => b.data.localeCompare(a.data));
 export const listarCentros = () => ler<CentroCusto>(KEY_CC, CENTROS_SEED);
