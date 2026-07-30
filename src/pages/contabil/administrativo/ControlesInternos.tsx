@@ -449,13 +449,29 @@ function Usuarios() {
                         </TableCell>
                         <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                           <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" onClick={() => acao(() => alternarUsuario(u.id), u.ativo ? "Acesso inativado." : "Acesso reativado.")}>
+                            <Button size="icon" variant="ghost" title={u.ativo ? "Bloquear acesso" : "Reativar acesso"} onClick={() => acaoAsync(() => alternarUsuario(u.id), u.ativo ? "Acesso bloqueado." : "Acesso reativado.")}>
                               <Power className={`h-4 w-4 ${u.ativo ? "text-brand-orange" : "text-muted-foreground"}`} />
                             </Button>
-                            <Button size="icon" variant="ghost" onClick={() => setEdicao(u)}><Pencil className="h-4 w-4" /></Button>
-                            <Button size="icon" variant="ghost" onClick={() => acao(() => excluirUsuario(u.id), "Usuário excluído.")}>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              title="Gerar nova senha provisória"
+                              onClick={async () => {
+                                try {
+                                  const senha = await redefinirSenhaUsuario(u.id);
+                                  setCredencial({ nome: u.nome, email: u.email, senha });
+                                } catch (e) {
+                                  toast.error(e instanceof Error ? e.message : "Não foi possível redefinir a senha.");
+                                }
+                              }}
+                            >
+                              <KeyRound className="h-4 w-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" title="Editar" onClick={() => setEdicao(u)}><Pencil className="h-4 w-4" /></Button>
+                            <Button size="icon" variant="ghost" title="Excluir conta" onClick={() => acaoAsync(() => excluirUsuario(u.id), "Usuário excluído.")}>
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
+
                           </div>
                         </TableCell>
                       </TableRow>
