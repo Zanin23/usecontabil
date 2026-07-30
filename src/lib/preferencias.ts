@@ -81,7 +81,11 @@ export function definirPreferencias(patch: Partial<Preferencias>) {
   }
   aplicarPreferencias(atual);
   ouvintes.forEach((f) => f(atual));
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("usecontabil:preferencias-changed"));
+  }
 }
+
 
 export function redefinirPreferencias() {
   definirPreferencias(PADRAO);

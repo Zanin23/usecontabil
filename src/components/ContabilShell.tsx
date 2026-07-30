@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
-  LayoutDashboard, Search, Command, Building2, CalendarRange, Bell,
+  LayoutDashboard, Search, Command, Building2, CalendarRange,
   Settings2, Users2, Wallet, ChevronRight, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut,
   SlidersHorizontal,
 } from "lucide-react";
+import NotificacoesPainel from "@/components/contabil/NotificacoesPainel";
+
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
 import { useTema } from "@/lib/tema";
@@ -412,10 +414,8 @@ export default function ContabilShell() {
               <SlidersHorizontal className="h-4 w-4" />
             </Button>
 
-            <Button variant="outline" size="sm" className="rounded-md h-9 relative">
-              <Bell className="h-4 w-4" />
-              <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive" />
-            </Button>
+            <NotificacoesPainel />
+
 
             <Button
               variant="outline"
