@@ -158,6 +158,9 @@ export type Documento = {
   tamanhoKb: number;
   tags: string[];
   criadoEm: string;
+  /** nome do arquivo anexado (upload local, apenas metadados). */
+  arquivoNome?: string;
+  arquivoTipo?: string;
 };
 
 export type Certificado = {
