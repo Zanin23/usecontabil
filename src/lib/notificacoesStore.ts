@@ -222,11 +222,25 @@ export function gerarNotificacoes(empresaId: string | null, competencia: string)
     });
   }
 
+  /* ---- Avisos manuais publicados pela controladoria ---- */
+  for (const a of avisosVigentes(empresaId, hoje)) {
+    out.push({
+      id: `aviso-${a.id}`,
+      categoria: "manual",
+      nivel: a.nivel,
+      titulo: a.titulo,
+      detalhe: a.mensagem,
+      quando: a.inicio,
+      destino: a.destino,
+    });
+  }
+
   const ordem: Record<NotifNivel, number> = { critico: 0, atencao: 1, info: 2 };
   return out
-    .filter((n) => prefs[CATEGORIA_ATIVA[n.categoria]])
+    .filter((n) => n.categoria === "manual" || prefs[CATEGORIA_ATIVA[n.categoria]])
     .sort((a, b) => ordem[a.nivel] - ordem[b.nivel] || a.quando.localeCompare(b.quando));
 }
+
 
 /** Hook reativo com as notificações e o estado de leitura. */
 export function useNotificacoes(empresaId: string | null, competencia: string) {
