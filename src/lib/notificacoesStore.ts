@@ -35,11 +35,12 @@ type Estado = { lidas: string[]; limpasAte?: string };
 
 function lerEstado(): Estado {
   try {
-    return JSON.parse(localStorage.getItem(KEY) ?? "{}") as Estado;
+    return JSON.parse(localStorage.getItem(KEY) ?? '{"lidas":[]}') as Estado;
   } catch {
-    return {};
+    return { lidas: [] };
   }
 }
+
 
 function gravarEstado(e: Estado) {
   localStorage.setItem(KEY, JSON.stringify(e));
