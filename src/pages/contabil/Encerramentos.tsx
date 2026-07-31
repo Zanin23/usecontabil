@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { ChevronRight, Lock, LockOpen } from "lucide-react";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
-import { execKey, pendenciasCadastro, reabrirPeriodo, useGestao } from "@/lib/gestaoStore";
+import { execKey, modelosDoRegime, normalizarRegime, pendenciasCadastro, reabrirPeriodo, useGestao } from "@/lib/gestaoStore";
 
 export default function Encerramentos() {
   const { empresa, empresas } = useEmpresaAtual();
@@ -16,7 +16,7 @@ export default function Encerramentos() {
   const { modelos, execucoes, fechamentos } = useGestao();
 
   const empresaId = empresa?.id ?? "";
-  const ativos = modelos.filter((m) => m.ativa);
+  const ativos = modelosDoRegime(modelos, empresa ? normalizarRegime(empresa.regime) : null);
 
   const linhas = useMemo(
     () =>
