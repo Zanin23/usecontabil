@@ -23,6 +23,32 @@ export const FASES: { slug: FaseSlug; title: string; desc: string; ordem: number
 
 export const PERIODICIDADES = ["Mensal", "Trimestral", "Anual", "Eventual"];
 
+/** Regimes tributários atendidos pelas tarefas do fechamento. */
+export type RegimeTributario =
+  | "Simples Nacional"
+  | "MEI"
+  | "Lucro Presumido"
+  | "Lucro Real"
+  | "Outro";
+
+export const REGIMES_TAREFA: RegimeTributario[] = [
+  "Simples Nacional",
+  "MEI",
+  "Lucro Presumido",
+  "Lucro Real",
+  "Outro",
+];
+
+/** Normaliza o texto livre do cadastro da empresa em um regime conhecido. */
+export function normalizarRegime(valor?: string | null): RegimeTributario {
+  const r = (valor ?? "").toLowerCase();
+  if (r.includes("mei") || r.includes("simei") || r.includes("microempreendedor")) return "MEI";
+  if (r.includes("simples")) return "Simples Nacional";
+  if (r.includes("presumido")) return "Lucro Presumido";
+  if (r.includes("real")) return "Lucro Real";
+  return "Outro";
+}
+
 export type TarefaModelo = {
   id: string;
   titulo: string;
@@ -32,7 +58,23 @@ export type TarefaModelo = {
   diaPrazo: number;
   obrigatoria: boolean;
   ativa: boolean;
+  /** Vazio/ausente = vale para todos os regimes. */
+  regimes?: RegimeTributario[];
+  detalhe?: string;
+  destino?: string;
 };
+
+/** A tarefa se aplica ao regime informado? */
+export function aplicaAoRegime(m: TarefaModelo, regime: RegimeTributario | null) {
+  if (!m.regimes || m.regimes.length === 0) return true;
+  if (!regime) return false;
+  return m.regimes.includes(regime);
+}
+
+/** Tarefas ativas válidas para o regime da empresa selecionada. */
+export function modelosDoRegime(modelos: TarefaModelo[], regime: RegimeTributario | null) {
+  return modelos.filter((m) => m.ativa && aplicaAoRegime(m, regime));
+}
 
 export type TarefaStatus = "Pendente" | "Em andamento" | "Concluída" | "Não se aplica";
 
