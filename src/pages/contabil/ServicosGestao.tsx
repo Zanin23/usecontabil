@@ -6,14 +6,14 @@ import {
 } from "@/design-system/mj-design-system-db98fa";
 import { toast } from "sonner";
 import {
-  AlertTriangle, CheckCircle2, ChevronRight, ClipboardList, Circle, Lock, LockOpen, RotateCcw,
+  AlertTriangle, CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Circle, Lock, LockOpen, RotateCcw,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import {
-  FASES, TarefaStatus, execKey, fecharPeriodo, pendenciasCadastro, pendenciasEscrituracao, reabrirPeriodo,
-  resetExecucoes, resumoFases, setExecucao, useGestao,
+  FASES, TarefaStatus, execKey, fecharPeriodo, modelosDoRegime, normalizarRegime, pendenciasCadastro,
+  pendenciasEscrituracao, reabrirPeriodo, resetExecucoes, resumoFases, setExecucao, useGestao,
 } from "@/lib/gestaoStore";
 import { pendenciasObrigacoes } from "@/lib/obrigacoesStore";
 
