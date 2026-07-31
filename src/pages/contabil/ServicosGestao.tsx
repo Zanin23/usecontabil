@@ -1,19 +1,21 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Badge, Button, Card, CardContent, Input, Progress, Select, SelectContent, SelectItem,
   SelectTrigger, SelectValue, Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/design-system/mj-design-system-db98fa";
 import { toast } from "sonner";
 import {
-  AlertTriangle, CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Circle, Lock, LockOpen, RotateCcw,
+  AlertTriangle, ArrowUpRight, CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Circle,
+  Lock, LockOpen, RotateCcw,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import {
-  FASES, TarefaStatus, execKey, fecharPeriodo, modelosDoRegime, normalizarRegime, pendenciasCadastro,
-  pendenciasEscrituracao, reabrirPeriodo, resetExecucoes, resumoFases, setExecucao, useGestao,
+  FASES, TarefaStatus, destinoTarefa, execKey, fecharPeriodo, modelosDoRegime, normalizarRegime,
+  pendenciasCadastro, pendenciasEscrituracao, reabrirPeriodo, resetExecucoes, resumoFases,
+  setExecucao, useGestao,
 } from "@/lib/gestaoStore";
 import { pendenciasObrigacoes } from "@/lib/obrigacoesStore";
 
