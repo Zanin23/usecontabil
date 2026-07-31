@@ -446,7 +446,16 @@ export default function ServicosGestao() {
               return (
                 <TableRow key={m.id}>
                   <TableCell className="font-mono text-xs">{m.id}</TableCell>
-                  <TableCell>{m.titulo}</TableCell>
+                  <TableCell>
+                    <Link
+                      to={destinoTarefa(m)}
+                      className="inline-flex items-center gap-1 hover:text-brand-orange hover:underline"
+                      title="Abrir a tela responsável por esta tarefa"
+                    >
+                      {m.titulo}
+                      <ArrowUpRight className="h-3.5 w-3.5 text-brand-orange" />
+                    </Link>
+                  </TableCell>
                   <TableCell className="text-muted-foreground">
                     {FASES.find((f) => f.slug === m.fase)?.title}
                   </TableCell>
