@@ -7,18 +7,19 @@ import {
 import { ChevronRight, Workflow } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
-import { FASES, execKey, resumoFases, useGestao } from "@/lib/gestaoStore";
+import { FASES, execKey, normalizarRegime, resumoFases, useGestao } from "@/lib/gestaoStore";
 
 export default function FasesProcessos() {
   const { empresa } = useEmpresaAtual();
   const { competencia } = useCompetencia();
   const { modelos, execucoes, fechamentos } = useGestao();
   const empresaId = empresa?.id ?? "";
+  const regime = empresa ? normalizarRegime(empresa.regime) : null;
   const fechado = fechamentos.some((f) => f.key === `${empresaId}|${competencia}`);
 
   const fases = useMemo(
-    () => resumoFases(modelos, execucoes, empresaId, competencia),
-    [modelos, execucoes, empresaId, competencia],
+    () => resumoFases(modelos, execucoes, empresaId, competencia, regime),
+    [modelos, execucoes, empresaId, competencia, regime],
   );
 
   const faseAtual = fases.find((f) => f.progresso < 100) ?? fases[fases.length - 1];
