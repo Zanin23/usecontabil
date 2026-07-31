@@ -245,15 +245,22 @@ export default function ServicosGestao() {
                         )}
                         {f.tarefas.map((m) => {
                           const st = statusOf(m.id);
+                          const destino = destinoTarefa(m);
                           return (
                             <div
                               key={m.id}
                               className="flex flex-col gap-3 rounded-xl border border-border/70 p-3 md:flex-row md:items-center md:justify-between"
                             >
-                              <div className="min-w-0">
+                              <button
+                                type="button"
+                                onClick={() => navigate(destino)}
+                                title="Abrir a tela responsável por esta tarefa"
+                                className="min-w-0 flex-1 text-left rounded-lg transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring p-1"
+                              >
                                 <div className="flex flex-wrap items-center gap-2">
                                   <span className="font-mono text-[11px] text-muted-foreground">{m.id}</span>
                                   <span className="text-sm">{m.titulo}</span>
+                                  <ArrowUpRight className="h-3.5 w-3.5 text-brand-orange" />
                                   {m.obrigatoria && (
                                     <Badge variant="outline" className="rounded-full text-[10px]">Obrigatória</Badge>
                                   )}
@@ -267,15 +274,10 @@ export default function ServicosGestao() {
                                   <p className="text-xs text-muted-foreground mt-1">{m.detalhe}</p>
                                 )}
                                 <p className="text-xs text-muted-foreground mt-1">
-                                  {m.responsavel} · {m.periodicidade} · prazo dia {m.diaPrazo}
-                                  {m.destino ? " · " : ""}
-                                  {m.destino && (
-                                    <Link to={m.destino} className="text-brand-orange hover:underline">
-                                      abrir tela
-                                    </Link>
-                                  )}
+                                  {m.responsavel} · {m.periodicidade} · prazo dia {m.diaPrazo} ·{" "}
+                                  <span className="text-brand-orange">abrir tela responsável</span>
                                 </p>
-                              </div>
+                              </button>
                               <Select value={st} onValueChange={(v) => handleStatus(m.id, v as TarefaStatus)}>
                                 <SelectTrigger className={`h-9 w-full md:w-[180px] rounded-full ${statusClass(st)}`}>
                                   <SelectValue />
