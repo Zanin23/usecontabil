@@ -74,7 +74,7 @@ export default function FasesProcessos() {
       <div className="grid gap-4 md:grid-cols-2">
         {FASES.map((f) => {
           const resumo = fases.find((r) => r.slug === f.slug)!;
-          const tarefas = modelos.filter((m) => m.ativa && m.fase === f.slug);
+          const tarefas = resumo.tarefas;
           return (
             <Card key={f.slug} className="rounded-2xl border-border/70">
               <CardContent className="p-5 space-y-3">
