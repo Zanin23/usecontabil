@@ -362,9 +362,10 @@ export function resumoFases(
   execucoes: TarefaExec[],
   empresaId: string | null,
   competencia: string,
+  regime: RegimeTributario | null = null,
 ): FaseResumo[] {
   return FASES.map((f) => {
-    const list = modelos.filter((m) => m.ativa && m.fase === f.slug);
+    const list = modelos.filter((m) => m.ativa && m.fase === f.slug && aplicaAoRegime(m, regime));
     const relevantes = list.filter((m) => {
       const st = execucoes.find((e) => e.key === execKey(empresaId ?? "", competencia, m.id))?.status;
       return st !== "Não se aplica";
@@ -381,6 +382,7 @@ export function resumoFases(
       concluidas,
       pendentes: total - concluidas,
       progresso: total === 0 ? 100 : Math.round((concluidas / total) * 100),
+      tarefas: list,
     };
   });
 }
