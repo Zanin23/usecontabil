@@ -32,6 +32,7 @@ const statusClass = (s: TarefaStatus) =>
 
 export default function ServicosGestao() {
   const { empresa } = useEmpresaAtual();
+  const navigate = useNavigate();
   const { competencia } = useCompetencia();
   const { modelos, execucoes, fechamentos } = useGestao();
   const [faseFiltro, setFaseFiltro] = useState<string>("todas");
