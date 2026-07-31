@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Badge, Button, Card, CardContent, Dialog, DialogContent, DialogFooter, DialogHeader,
@@ -231,9 +231,8 @@ export default function Encerramentos() {
             </TableHeader>
             <TableBody>
               {linhas.map((l) => (
-                <>
+                <Fragment key={l.competencia}>
                   <TableRow
-                    key={l.competencia}
                     className={l.competencia === competencia ? "bg-muted/40" : ""}
                   >
                     <TableCell>
@@ -311,7 +310,7 @@ export default function Encerramentos() {
                   </TableRow>
 
                   {expandida === l.competencia && (
-                    <TableRow key={`${l.competencia}-detalhe`}>
+                    <TableRow>
                       <TableCell colSpan={8} className="bg-muted/30">
                         <div className="grid gap-4 p-2 lg:grid-cols-2">
                           <div className="space-y-2">
@@ -365,7 +364,7 @@ export default function Encerramentos() {
                       </TableCell>
                     </TableRow>
                   )}
-                </>
+                </Fragment>
               ))}
             </TableBody>
           </Table>
