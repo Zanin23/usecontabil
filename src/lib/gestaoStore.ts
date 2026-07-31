@@ -98,18 +98,18 @@ export type Fechamento = {
 };
 
 const SEED_MODELOS: TarefaModelo[] = [
-  { id: "TRF-001", titulo: "Conferir cadastro e parâmetros da empresa", fase: "cadastros", periodicidade: "Mensal", responsavel: "Contabilidade interna", diaPrazo: 3, obrigatoria: true, ativa: true },
-  { id: "TRF-002", titulo: "Revisar unidades e centros de custo ativos", fase: "cadastros", periodicidade: "Mensal", responsavel: "Contabilidade interna", diaPrazo: 3, obrigatoria: true, ativa: true },
-  { id: "TRF-003", titulo: "Importar documentos fiscais de entrada", fase: "escrituracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 8, obrigatoria: true, ativa: true },
-  { id: "TRF-004", titulo: "Importar documentos fiscais de saída", fase: "escrituracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 8, obrigatoria: true, ativa: true },
-  { id: "TRF-005", titulo: "Lançar despesas e provisões do período", fase: "escrituracao", periodicidade: "Mensal", responsavel: "Contabilidade interna", diaPrazo: 10, obrigatoria: true, ativa: true },
-  { id: "TRF-006", titulo: "Conciliação bancária das contas ativas", fase: "conciliacao", periodicidade: "Mensal", responsavel: "Tesouraria", diaPrazo: 12, obrigatoria: true, ativa: true },
-  { id: "TRF-007", titulo: "Conciliar contas a pagar e a receber", fase: "conciliacao", periodicidade: "Mensal", responsavel: "Tesouraria", diaPrazo: 14, obrigatoria: true, ativa: true },
-  { id: "TRF-008", titulo: "Conferir saldo de estoques", fase: "conciliacao", periodicidade: "Mensal", responsavel: "Controladoria", diaPrazo: 14, obrigatoria: false, ativa: true },
-  { id: "TRF-009", titulo: "Apurar tributos do período", fase: "apuracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 18, obrigatoria: true, ativa: true },
-  { id: "TRF-010", titulo: "Revisar ajustes de apuração", fase: "apuracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 18, obrigatoria: false, ativa: true },
-  { id: "TRF-011", titulo: "Revisar DRE e balancete", fase: "encerramento", periodicidade: "Mensal", responsavel: "Controladoria", diaPrazo: 20, obrigatoria: true, ativa: true },
-  { id: "TRF-012", titulo: "Arquivar relatórios do fechamento", fase: "encerramento", periodicidade: "Mensal", responsavel: "Controladoria", diaPrazo: 22, obrigatoria: true, ativa: true },
+  { id: "TRF-001", titulo: "Conferir cadastro e parâmetros da empresa", fase: "cadastros", periodicidade: "Mensal", responsavel: "Contabilidade interna", diaPrazo: 3, obrigatoria: true, ativa: true, destino: "/preparativos/cadastros/empresas" },
+  { id: "TRF-002", titulo: "Revisar unidades e centros de custo ativos", fase: "cadastros", periodicidade: "Mensal", responsavel: "Contabilidade interna", diaPrazo: 3, obrigatoria: true, ativa: true, destino: "/preparativos/cadastros/filiais" },
+  { id: "TRF-003", titulo: "Importar documentos fiscais de entrada", fase: "escrituracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 8, obrigatoria: true, ativa: true, destino: "/fiscal/documentos/entradas" },
+  { id: "TRF-004", titulo: "Importar documentos fiscais de saída", fase: "escrituracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 8, obrigatoria: true, ativa: true, destino: "/fiscal/documentos/saidas" },
+  { id: "TRF-005", titulo: "Lançar despesas e provisões do período", fase: "escrituracao", periodicidade: "Mensal", responsavel: "Contabilidade interna", diaPrazo: 10, obrigatoria: true, ativa: true, destino: "/financeiro/movimentos/demais-documentos" },
+  { id: "TRF-006", titulo: "Conciliação bancária das contas ativas", fase: "conciliacao", periodicidade: "Mensal", responsavel: "Tesouraria", diaPrazo: 12, obrigatoria: true, ativa: true, destino: "/financeiro/operacional/conciliacao-bancaria" },
+  { id: "TRF-007", titulo: "Conciliar contas a pagar e a receber", fase: "conciliacao", periodicidade: "Mensal", responsavel: "Tesouraria", diaPrazo: 14, obrigatoria: true, ativa: true, destino: "/administrativo/cadastros/contas-caixas" },
+  { id: "TRF-008", titulo: "Conferir saldo de estoques", fase: "conciliacao", periodicidade: "Mensal", responsavel: "Controladoria", diaPrazo: 14, obrigatoria: false, ativa: true, destino: "/fiscal/escrituracao/inventario" },
+  { id: "TRF-009", titulo: "Apurar tributos do período", fase: "apuracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 18, obrigatoria: true, ativa: true, destino: "/fiscal/apuracoes" },
+  { id: "TRF-010", titulo: "Revisar ajustes de apuração", fase: "apuracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 18, obrigatoria: false, ativa: true, destino: "/financeiro/tabelas/ajuste-apuracao" },
+  { id: "TRF-011", titulo: "Revisar DRE e balancete", fase: "encerramento", periodicidade: "Mensal", responsavel: "Controladoria", diaPrazo: 20, obrigatoria: true, ativa: true, destino: "/financeiro/demonstracoes/dre" },
+  { id: "TRF-012", titulo: "Arquivar relatórios do fechamento", fase: "encerramento", periodicidade: "Mensal", responsavel: "Controladoria", diaPrazo: 22, obrigatoria: true, ativa: true, destino: "/financeiro/movimentos/conclusao-fiscal" },
 
   // ---- Simples Nacional ----
   { id: "SN-001", titulo: "Confirmar opção pelo Simples Nacional e anexos aplicáveis", fase: "cadastros", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 3, obrigatoria: true, ativa: true, regimes: ["Simples Nacional"], detalhe: "Verifique a opção vigente, os CNAEs permitidos e os anexos (I a V) de cada atividade.", destino: "/preparativos/cadastros/classe-atividades" },
