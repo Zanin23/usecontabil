@@ -23,6 +23,32 @@ export const FASES: { slug: FaseSlug; title: string; desc: string; ordem: number
 
 export const PERIODICIDADES = ["Mensal", "Trimestral", "Anual", "Eventual"];
 
+/** Regimes tributários atendidos pelas tarefas do fechamento. */
+export type RegimeTributario =
+  | "Simples Nacional"
+  | "MEI"
+  | "Lucro Presumido"
+  | "Lucro Real"
+  | "Outro";
+
+export const REGIMES_TAREFA: RegimeTributario[] = [
+  "Simples Nacional",
+  "MEI",
+  "Lucro Presumido",
+  "Lucro Real",
+  "Outro",
+];
+
+/** Normaliza o texto livre do cadastro da empresa em um regime conhecido. */
+export function normalizarRegime(valor?: string | null): RegimeTributario {
+  const r = (valor ?? "").toLowerCase();
+  if (r.includes("mei") || r.includes("simei") || r.includes("microempreendedor")) return "MEI";
+  if (r.includes("simples")) return "Simples Nacional";
+  if (r.includes("presumido")) return "Lucro Presumido";
+  if (r.includes("real")) return "Lucro Real";
+  return "Outro";
+}
+
 export type TarefaModelo = {
   id: string;
   titulo: string;
@@ -32,7 +58,23 @@ export type TarefaModelo = {
   diaPrazo: number;
   obrigatoria: boolean;
   ativa: boolean;
+  /** Vazio/ausente = vale para todos os regimes. */
+  regimes?: RegimeTributario[];
+  detalhe?: string;
+  destino?: string;
 };
+
+/** A tarefa se aplica ao regime informado? */
+export function aplicaAoRegime(m: TarefaModelo, regime: RegimeTributario | null) {
+  if (!m.regimes || m.regimes.length === 0) return true;
+  if (!regime) return false;
+  return m.regimes.includes(regime);
+}
+
+/** Tarefas ativas válidas para o regime da empresa selecionada. */
+export function modelosDoRegime(modelos: TarefaModelo[], regime: RegimeTributario | null) {
+  return modelos.filter((m) => m.ativa && aplicaAoRegime(m, regime));
+}
 
 export type TarefaStatus = "Pendente" | "Em andamento" | "Concluída" | "Não se aplica";
 
@@ -68,6 +110,29 @@ const SEED_MODELOS: TarefaModelo[] = [
   { id: "TRF-010", titulo: "Revisar ajustes de apuração", fase: "apuracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 18, obrigatoria: false, ativa: true },
   { id: "TRF-011", titulo: "Revisar DRE e balancete", fase: "encerramento", periodicidade: "Mensal", responsavel: "Controladoria", diaPrazo: 20, obrigatoria: true, ativa: true },
   { id: "TRF-012", titulo: "Arquivar relatórios do fechamento", fase: "encerramento", periodicidade: "Mensal", responsavel: "Controladoria", diaPrazo: 22, obrigatoria: true, ativa: true },
+
+  // ---- Simples Nacional ----
+  { id: "SN-001", titulo: "Confirmar opção pelo Simples Nacional e anexos aplicáveis", fase: "cadastros", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 3, obrigatoria: true, ativa: true, regimes: ["Simples Nacional"], detalhe: "Verifique a opção vigente, os CNAEs permitidos e os anexos (I a V) de cada atividade.", destino: "/preparativos/cadastros/classe-atividades" },
+  { id: "SN-002", titulo: "Conferir CSOSN e CRT 1 nos documentos emitidos", fase: "cadastros", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 5, obrigatoria: true, ativa: true, regimes: ["Simples Nacional"], detalhe: "Optantes usam CSOSN (101, 102, 500...) e CRT 1 — CST de regime normal gera rejeição.", destino: "/fiscal/auditoria/classificacao" },
+  { id: "SN-003", titulo: "Segregar receitas por anexo, atividade e mercado", fase: "escrituracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 8, obrigatoria: true, ativa: true, regimes: ["Simples Nacional"], detalhe: "Separe comércio, indústria e serviços, além de receitas com ST, monofásicas, imunes e exportação.", destino: "/financeiro/movimentos/faturamento" },
+  { id: "SN-004", titulo: "Conferir retenções de ISS e INSS sobre serviços", fase: "escrituracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 10, obrigatoria: true, ativa: true, regimes: ["Simples Nacional"], detalhe: "Serviços com retenção reduzem o valor do DAS na parcela correspondente ao ISS.", destino: "/fiscal/apuracoes/retencoes" },
+  { id: "SN-005", titulo: "Atualizar RBT12 e verificar sublimite estadual", fase: "apuracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 15, obrigatoria: true, ativa: true, regimes: ["Simples Nacional"], detalhe: "A receita bruta dos 12 meses anteriores define a faixa; ultrapassar o sublimite joga ICMS/ISS para fora do DAS.", destino: "/fiscal/apuracoes/simples-nacional" },
+  { id: "SN-006", titulo: "Apurar o DAS no cálculo do PGDAS-D", fase: "apuracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 17, obrigatoria: true, ativa: true, regimes: ["Simples Nacional"], detalhe: "Aplique alíquota efetiva por anexo e confira a repartição dos tributos.", destino: "/fiscal/apuracoes/simples-nacional" },
+  { id: "SN-007", titulo: "Apurar ICMS-ST, DIFAL e antecipação fora do DAS", fase: "apuracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 17, obrigatoria: false, ativa: true, regimes: ["Simples Nacional"], detalhe: "Substituição tributária, DIFAL de compras interestaduais e antecipação são recolhidos em guia própria.", destino: "/financeiro/tributacao/difal" },
+  { id: "SN-008", titulo: "Transmitir a declaração PGDAS-D da competência", fase: "apuracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 20, obrigatoria: true, ativa: true, regimes: ["Simples Nacional"], detalhe: "Transmissão até o dia 20 do mês seguinte, mesmo sem movimento.", destino: "/fiscal/obrigacoes/agenda" },
+  { id: "SN-009", titulo: "Emitir e conferir a guia do DAS", fase: "apuracao", periodicidade: "Mensal", responsavel: "Fiscal", diaPrazo: 20, obrigatoria: true, ativa: true, regimes: ["Simples Nacional"], detalhe: "Confira valor, competência e código de barras antes do pagamento.", destino: "/fiscal/guias/darf" },
+  { id: "SN-010", titulo: "Monitorar excesso de receita e desenquadramento", fase: "encerramento", periodicidade: "Mensal", responsavel: "Controladoria", diaPrazo: 22, obrigatoria: false, ativa: true, regimes: ["Simples Nacional"], detalhe: "Acompanhe o limite anual de R$ 4,8 milhões e o excesso de 20% que antecipa o desenquadramento.", destino: "/financeiro/tributacao/dashboard-executivo" },
+  { id: "SN-011", titulo: "Entregar a DEFIS do exercício anterior", fase: "encerramento", periodicidade: "Anual", responsavel: "Fiscal", diaPrazo: 31, obrigatoria: false, ativa: true, regimes: ["Simples Nacional"], detalhe: "Declaração de Informações Socioeconômicas e Fiscais — entrega até 31 de março.", destino: "/financeiro/tributacao/defis" },
+
+  // ---- MEI / SIMEI ----
+  { id: "MEI-001", titulo: "Conferir enquadramento no SIMEI e ocupações permitidas", fase: "cadastros", periodicidade: "Mensal", responsavel: "Contabilidade interna", diaPrazo: 3, obrigatoria: true, ativa: true, regimes: ["MEI"], detalhe: "Valide o CCMEI, as ocupações permitidas e a existência de uma única empresa por titular.", destino: "/preparativos/cadastros/empresas" },
+  { id: "MEI-002", titulo: "Registrar o relatório mensal de receitas brutas", fase: "escrituracao", periodicidade: "Mensal", responsavel: "Contabilidade interna", diaPrazo: 10, obrigatoria: true, ativa: true, regimes: ["MEI"], detalhe: "Relatório obrigatório até o dia 20 do mês seguinte, com receitas com e sem nota fiscal.", destino: "/financeiro/movimentos/faturamento" },
+  { id: "MEI-003", titulo: "Separar receitas de comércio, indústria e serviços", fase: "escrituracao", periodicidade: "Mensal", responsavel: "Contabilidade interna", diaPrazo: 10, obrigatoria: true, ativa: true, regimes: ["MEI"], detalhe: "A separação define a composição do DAS-SIMEI (ICMS e/ou ISS).", destino: "/financeiro/movimentos/servicos" },
+  { id: "MEI-004", titulo: "Arquivar notas fiscais emitidas e de compras", fase: "escrituracao", periodicidade: "Mensal", responsavel: "Contabilidade interna", diaPrazo: 12, obrigatoria: false, ativa: true, regimes: ["MEI"], detalhe: "Guarde as notas de entrada e as notas emitidas para PJ como comprovação da receita.", destino: "/fiscal/documentos/entradas" },
+  { id: "MEI-005", titulo: "Gerar o DAS-SIMEI de valor fixo", fase: "apuracao", periodicidade: "Mensal", responsavel: "Contabilidade interna", diaPrazo: 18, obrigatoria: true, ativa: true, regimes: ["MEI"], detalhe: "Valor fixo mensal: INSS sobre o salário mínimo mais ICMS e/ou ISS conforme a atividade.", destino: "/financeiro/tabelas/simei" },
+  { id: "MEI-006", titulo: "Confirmar o pagamento do DAS até o dia 20", fase: "apuracao", periodicidade: "Mensal", responsavel: "Tesouraria", diaPrazo: 20, obrigatoria: true, ativa: true, regimes: ["MEI"], detalhe: "Atraso gera multa e juros e afeta a contagem da carência do INSS.", destino: "/fiscal/guias/calendario" },
+  { id: "MEI-007", titulo: "Acompanhar o limite anual de receita do MEI", fase: "encerramento", periodicidade: "Mensal", responsavel: "Controladoria", diaPrazo: 22, obrigatoria: true, ativa: true, regimes: ["MEI"], detalhe: "Limite anual de R$ 81 mil (proporcional no ano de abertura); excesso acima de 20% desenquadra retroativamente.", destino: "/financeiro/tabelas/simei" },
+  { id: "MEI-008", titulo: "Entregar a DASN-SIMEI do ano anterior", fase: "encerramento", periodicidade: "Anual", responsavel: "Contabilidade interna", diaPrazo: 31, obrigatoria: false, ativa: true, regimes: ["MEI"], detalhe: "Declaração anual simplificada, entregue até 31 de maio, com a receita bruta total do ano.", destino: "/fiscal/obrigacoes/agenda" },
 ];
 
 function notify() {
@@ -91,7 +156,16 @@ export function loadModelos(): TarefaModelo[] {
     return [...SEED_MODELOS];
   }
   try {
-    return JSON.parse(raw) as TarefaModelo[];
+    const stored = JSON.parse(raw) as TarefaModelo[];
+    // Modelos novos do sistema (ex.: tarefas por regime) entram sem apagar
+    // as personalizações já feitas pelo usuário.
+    const faltantes = SEED_MODELOS.filter((s) => !stored.some((m) => m.id === s.id));
+    if (faltantes.length) {
+      const merged = [...stored, ...faltantes];
+      localStorage.setItem(KEY_MODELOS, JSON.stringify(merged));
+      return merged;
+    }
+    return stored;
   } catch {
     return [...SEED_MODELOS];
   }
@@ -281,6 +355,8 @@ export type FaseResumo = {
   concluidas: number;
   pendentes: number;
   progresso: number;
+  /** Tarefas ativas da fase já filtradas pelo regime da empresa. */
+  tarefas: TarefaModelo[];
 };
 
 export function resumoFases(
@@ -288,9 +364,10 @@ export function resumoFases(
   execucoes: TarefaExec[],
   empresaId: string | null,
   competencia: string,
+  regime: RegimeTributario | null = null,
 ): FaseResumo[] {
   return FASES.map((f) => {
-    const list = modelos.filter((m) => m.ativa && m.fase === f.slug);
+    const list = modelos.filter((m) => m.ativa && m.fase === f.slug && aplicaAoRegime(m, regime));
     const relevantes = list.filter((m) => {
       const st = execucoes.find((e) => e.key === execKey(empresaId ?? "", competencia, m.id))?.status;
       return st !== "Não se aplica";
@@ -307,6 +384,7 @@ export function resumoFases(
       concluidas,
       pendentes: total - concluidas,
       progresso: total === 0 ? 100 : Math.round((concluidas / total) * 100),
+      tarefas: list,
     };
   });
 }

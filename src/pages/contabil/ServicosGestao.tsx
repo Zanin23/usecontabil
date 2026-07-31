@@ -6,14 +6,14 @@ import {
 } from "@/design-system/mj-design-system-db98fa";
 import { toast } from "sonner";
 import {
-  AlertTriangle, CheckCircle2, ChevronRight, ClipboardList, Circle, Lock, LockOpen, RotateCcw,
+  AlertTriangle, CheckCircle2, ChevronDown, ChevronRight, ClipboardList, Circle, Lock, LockOpen, RotateCcw,
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import {
-  FASES, TarefaStatus, execKey, fecharPeriodo, pendenciasCadastro, pendenciasEscrituracao, reabrirPeriodo,
-  resetExecucoes, resumoFases, setExecucao, useGestao,
+  FASES, TarefaStatus, execKey, fecharPeriodo, modelosDoRegime, normalizarRegime, pendenciasCadastro,
+  pendenciasEscrituracao, reabrirPeriodo, resetExecucoes, resumoFases, setExecucao, useGestao,
 } from "@/lib/gestaoStore";
 import { pendenciasObrigacoes } from "@/lib/obrigacoesStore";
 
@@ -34,9 +34,11 @@ export default function ServicosGestao() {
   const { modelos, execucoes, fechamentos } = useGestao();
   const [faseFiltro, setFaseFiltro] = useState<string>("todas");
   const [obsFechamento, setObsFechamento] = useState("");
+  const [faseAberta, setFaseAberta] = useState<string | null>(null);
 
   const empresaId = empresa?.id ?? "";
   const fechado = fechamentos.find((f) => f.key === `${empresaId}|${competencia}`);
+  const regime = empresa ? normalizarRegime(empresa.regime) : null;
 
   const pendCadastro = useMemo(() => pendenciasCadastro(empresa?.id ?? null), [empresa, execucoes]);
   const pendEscrituracao = useMemo(
@@ -54,13 +56,13 @@ export default function ServicosGestao() {
     ...pendObrigacoes.filter((p) => !p.resolvida),
   ].filter((p) => p.critica);
 
-  const ativos = modelos.filter((m) => m.ativa);
+  const ativos = useMemo(() => modelosDoRegime(modelos, regime), [modelos, regime]);
   const statusOf = (modeloId: string): TarefaStatus =>
     execucoes.find((e) => e.key === execKey(empresaId, competencia, modeloId))?.status ?? "Pendente";
 
   const fases = useMemo(
-    () => resumoFases(modelos, execucoes, empresaId, competencia),
-    [modelos, execucoes, empresaId, competencia],
+    () => resumoFases(modelos, execucoes, empresaId, competencia, regime),
+    [modelos, execucoes, empresaId, competencia, regime],
   );
 
   const relevantes = ativos.filter((m) => statusOf(m.id) !== "Não se aplica");
@@ -186,30 +188,110 @@ export default function ServicosGestao() {
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="rounded-2xl border-border/70 lg:col-span-2">
           <CardContent className="p-5 space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-2xl">Passos do fechamento</h2>
-              <Badge variant="outline" className="rounded-full">{FASES.length} fases</Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="rounded-full">
+                  {regime ? `Regime: ${regime}` : "Sem empresa selecionada"}
+                </Badge>
+                <Badge variant="outline" className="rounded-full">{FASES.length} fases</Badge>
+              </div>
             </div>
+            <p className="text-xs text-muted-foreground">
+              Clique em um passo para ver e atualizar as tarefas ligadas a ele. A lista muda conforme o
+              regime tributário da empresa selecionada.
+            </p>
             <div className="space-y-3">
-              {fases.map((f) => (
-                <div key={f.slug} className="rounded-2xl border border-border/70 p-4">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <div className="text-sm font-medium">{f.title}</div>
-                      <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <div className={`font-mono text-sm ${f.progresso === 100 ? "text-success" : "text-brand-orange"}`}>
-                        {f.progresso}%
+              {fases.map((f) => {
+                const aberta = faseAberta === f.slug;
+                return (
+                  <div key={f.slug} className="rounded-2xl border border-border/70">
+                    <button
+                      type="button"
+                      onClick={() => setFaseAberta(aberta ? null : f.slug)}
+                      aria-expanded={aberta}
+                      className="w-full text-left p-4"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-start gap-2 min-w-0">
+                          {aberta ? (
+                            <ChevronDown className="h-4 w-4 mt-0.5 shrink-0 text-brand-orange" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
+                          )}
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium">{f.title}</div>
+                            <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className={`font-mono text-sm ${f.progresso === 100 ? "text-success" : "text-brand-orange"}`}>
+                            {f.progresso}%
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {f.concluidas}/{f.total} tarefas
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        {f.concluidas}/{f.total} tarefas
+                      <Progress value={f.progresso} className="mt-3 h-1.5" />
+                    </button>
+
+                    {aberta && (
+                      <div className="border-t border-border/70 p-4 space-y-3">
+                        {f.tarefas.length === 0 && (
+                          <p className="text-sm text-muted-foreground">
+                            Nenhuma tarefa desta fase se aplica ao regime atual.
+                          </p>
+                        )}
+                        {f.tarefas.map((m) => {
+                          const st = statusOf(m.id);
+                          return (
+                            <div
+                              key={m.id}
+                              className="flex flex-col gap-3 rounded-xl border border-border/70 p-3 md:flex-row md:items-center md:justify-between"
+                            >
+                              <div className="min-w-0">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className="font-mono text-[11px] text-muted-foreground">{m.id}</span>
+                                  <span className="text-sm">{m.titulo}</span>
+                                  {m.obrigatoria && (
+                                    <Badge variant="outline" className="rounded-full text-[10px]">Obrigatória</Badge>
+                                  )}
+                                  {m.regimes?.length ? (
+                                    <Badge variant="secondary" className="rounded-full text-[10px]">
+                                      {m.regimes.join(" · ")}
+                                    </Badge>
+                                  ) : null}
+                                </div>
+                                {m.detalhe && (
+                                  <p className="text-xs text-muted-foreground mt-1">{m.detalhe}</p>
+                                )}
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {m.responsavel} · {m.periodicidade} · prazo dia {m.diaPrazo}
+                                  {m.destino ? " · " : ""}
+                                  {m.destino && (
+                                    <Link to={m.destino} className="text-brand-orange hover:underline">
+                                      abrir tela
+                                    </Link>
+                                  )}
+                                </p>
+                              </div>
+                              <Select value={st} onValueChange={(v) => handleStatus(m.id, v as TarefaStatus)}>
+                                <SelectTrigger className={`h-9 w-full md:w-[180px] rounded-full ${statusClass(st)}`}>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          );
+                        })}
                       </div>
-                    </div>
+                    )}
                   </div>
-                  <Progress value={f.progresso} className="mt-3 h-1.5" />
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
