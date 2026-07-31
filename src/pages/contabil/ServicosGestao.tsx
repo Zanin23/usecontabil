@@ -34,9 +34,11 @@ export default function ServicosGestao() {
   const { modelos, execucoes, fechamentos } = useGestao();
   const [faseFiltro, setFaseFiltro] = useState<string>("todas");
   const [obsFechamento, setObsFechamento] = useState("");
+  const [faseAberta, setFaseAberta] = useState<string | null>(null);
 
   const empresaId = empresa?.id ?? "";
   const fechado = fechamentos.find((f) => f.key === `${empresaId}|${competencia}`);
+  const regime = empresa ? normalizarRegime(empresa.regime) : null;
 
   const pendCadastro = useMemo(() => pendenciasCadastro(empresa?.id ?? null), [empresa, execucoes]);
   const pendEscrituracao = useMemo(
@@ -54,13 +56,13 @@ export default function ServicosGestao() {
     ...pendObrigacoes.filter((p) => !p.resolvida),
   ].filter((p) => p.critica);
 
-  const ativos = modelos.filter((m) => m.ativa);
+  const ativos = useMemo(() => modelosDoRegime(modelos, regime), [modelos, regime]);
   const statusOf = (modeloId: string): TarefaStatus =>
     execucoes.find((e) => e.key === execKey(empresaId, competencia, modeloId))?.status ?? "Pendente";
 
   const fases = useMemo(
-    () => resumoFases(modelos, execucoes, empresaId, competencia),
-    [modelos, execucoes, empresaId, competencia],
+    () => resumoFases(modelos, execucoes, empresaId, competencia, regime),
+    [modelos, execucoes, empresaId, competencia, regime],
   );
 
   const relevantes = ativos.filter((m) => statusOf(m.id) !== "Não se aplica");
