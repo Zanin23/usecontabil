@@ -156,7 +156,16 @@ export function loadModelos(): TarefaModelo[] {
     return [...SEED_MODELOS];
   }
   try {
-    return JSON.parse(raw) as TarefaModelo[];
+    const stored = JSON.parse(raw) as TarefaModelo[];
+    // Modelos novos do sistema (ex.: tarefas por regime) entram sem apagar
+    // as personalizações já feitas pelo usuário.
+    const faltantes = SEED_MODELOS.filter((s) => !stored.some((m) => m.id === s.id));
+    if (faltantes.length) {
+      const merged = [...stored, ...faltantes];
+      localStorage.setItem(KEY_MODELOS, JSON.stringify(merged));
+      return merged;
+    }
+    return stored;
   } catch {
     return [...SEED_MODELOS];
   }
