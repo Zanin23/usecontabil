@@ -355,6 +355,8 @@ export type FaseResumo = {
   concluidas: number;
   pendentes: number;
   progresso: number;
+  /** Tarefas ativas da fase já filtradas pelo regime da empresa. */
+  tarefas: TarefaModelo[];
 };
 
 export function resumoFases(
