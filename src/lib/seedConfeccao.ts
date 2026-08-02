@@ -9,6 +9,7 @@ import { COMPETENCIAS } from "@/lib/competencia";
 import { saveRegistro, loadRegistros, type Colecao, type Registro } from "@/lib/empresaDadosStore";
 import {
   empresaDB, novoId, processarDocumento, registrarAuditoria,
+  salvarDocumento, salvarParceiro, salvarProduto,
   type DocStatus, type DocumentoFiscal, type Parceiro, type Produto, type UF,
 } from "@/lib/tributarioStore";
 
@@ -228,11 +229,9 @@ export function popularBaseConfeccao(empresaId: string) {
     const prods = produtos();
     const pars = parceiros();
     const docs = documentos(empresaId).map((d) => processarDocumento(d, empresaId));
-    // grava tudo de uma vez reaproveitando a API pública do store
-    const { salvarProduto, salvarParceiro, salvarDocumento } = require("@/lib/tributarioStore");
-    prods.forEach((p: Produto) => salvarProduto(empresaId, p));
-    pars.forEach((p: Parceiro) => salvarParceiro(empresaId, p));
-    docs.forEach((d: DocumentoFiscal) => salvarDocumento(empresaId, d, "Documento importado (base inicial)"));
+    prods.forEach((p) => salvarProduto(empresaId, p));
+    pars.forEach((p) => salvarParceiro(empresaId, p));
+    docs.forEach((d) => salvarDocumento(empresaId, d, "Documento importado (base inicial)"));
     registrarAuditoria(empresaId, {
       competencia: COMPETENCIAS[COMPETENCIAS.length - 1],
       origem: "Base inicial",
