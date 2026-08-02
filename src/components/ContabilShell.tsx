@@ -9,6 +9,7 @@ import {
 import NotificacoesPainel from "@/components/contabil/NotificacoesPainel";
 
 import { useEmpresaAtual } from "@/lib/empresaAtual";
+import { popularBaseConfeccaoUmaVez } from "@/lib/seedConfeccao";
 import { AREAS } from "@/lib/contabilNav";
 import { useTema } from "@/lib/tema";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,6 +27,10 @@ export default function ContabilShell() {
   useTema();
   const { prefs } = usePreferencias();
   const [configAberta, setConfigAberta] = useState(false);
+
+  useEffect(() => {
+    popularBaseConfeccaoUmaVez(empresaId);
+  }, [empresaId]);
 
 
 
