@@ -248,6 +248,25 @@ function blocos(usuario: string): Bloco[] {
   return b;
 }
 
+/** Quebra rótulos longos (rotas) nas barras, evitando corte no meio da palavra. */
+function quebrarRotulo(doc: jsPDF, texto: string, largura: number): string[] {
+  const partes = texto.split("/").filter(Boolean).map((x, i, a) => `/${x}${i === a.length - 1 ? "" : ""}`);
+  if (!partes.length) return doc.splitTextToSize(texto, largura);
+  const linhas: string[] = [];
+  let atual = "";
+  for (const parte of partes) {
+    const teste = atual + parte;
+    if (atual && doc.getTextWidth(teste) > largura) {
+      linhas.push(atual);
+      atual = parte;
+    } else {
+      atual = teste;
+    }
+  }
+  if (atual) linhas.push(atual);
+  return linhas;
+}
+
 /* ================================ PDF ==================================== */
 
 export function gerarDocumentacaoPdf(usuario: string) {
@@ -324,7 +343,7 @@ export function gerarDocumentacaoPdf(usuario: string) {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9.5);
       doc.setTextColor(...texto);
-      const rotulo = doc.splitTextToSize(bloco.texto, 150);
+      const rotulo = quebrarRotulo(doc, bloco.texto, 150);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(...suave);
       const valor = doc.splitTextToSize(bloco.valor, largura - 160);
