@@ -15,7 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/design-system/mj-design-system-db98fa";
-import { Check, Monitor, Moon, Palette, Sun, Volume2, VolumeX } from "lucide-react";
+import { Check, FileDown, Monitor, Moon, Palette, ShieldCheck, Sun, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { useTema } from "@/lib/tema";
 import {
@@ -28,6 +28,8 @@ import {
   volumeSom,
 } from "@/lib/uiSound";
 import { ACENTOS, AMBIENTES, usePreferencias, type Acento } from "@/lib/preferencias";
+import { supabase } from "@/integrations/supabase/client";
+import { gerarDocumentacaoPdf } from "@/lib/documentacaoSistema";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void; usuario: string; perfil: string };
 
@@ -46,6 +48,22 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
   const [som, setSom] = useState(somAtivo);
   const [digitacao, setDigitacao] = useState(somDigitacaoAtivo);
   const [volume, setVolume] = useState(volumeSom);
+  const [admin, setAdmin] = useState(false);
+  const [gerando, setGerando] = useState(false);
+
+  useEffect(() => {
+    let ativo = true;
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      const id = data.user?.id;
+      if (!id) return;
+      const { data: papeis } = await supabase.from("user_roles").select("role").eq("user_id", id);
+      if (ativo) setAdmin(!!papeis?.some((p) => p.role === "admin"));
+    })();
+    return () => {
+      ativo = false;
+    };
+  }, [open]);
 
   useEffect(() => assinarSom(setSom) as unknown as () => void, []);
 
@@ -69,6 +87,9 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
             <TabsTrigger value="sons" className="rounded-full">Sons</TabsTrigger>
             <TabsTrigger value="notificacoes" className="rounded-full">Notificações</TabsTrigger>
             <TabsTrigger value="ambiente" className="rounded-full">Ambiente</TabsTrigger>
+            {admin && (
+              <TabsTrigger value="documentacao" className="rounded-full">Documentação</TabsTrigger>
+            )}
           </TabsList>
 
           {/* Aparência */}
@@ -230,6 +251,47 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
               O ambiente é apenas visual e interno — nenhuma transmissão é feita a órgãos oficiais.
             </p>
           </TabsContent>
+          {/* Documentação — exclusivo do administrador */}
+          {admin && (
+            <TabsContent value="documentacao" className="space-y-3 pt-4">
+              <div className="rounded-2xl border border-border bg-card px-4 py-3 space-y-2">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <ShieldCheck className="h-4 w-4 text-brand-orange" /> Acesso restrito ao administrador
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Gera um PDF com o caminho completo do sistema: propósito, arquitetura, mapa de todas as
+                  áreas, categorias e módulos, telas dedicadas por rota, regras de cada motor fiscal,
+                  análises disponíveis, roteiro de uso ponta a ponta, segurança e limitações assumidas.
+                </p>
+              </div>
+              <div className={linha}>
+                <div>
+                  <div className="text-sm font-medium">Documentação completa do sistema</div>
+                  <div className="text-xs text-muted-foreground">
+                    Arquivo PDF gerado neste navegador, com data e conta de emissão.
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+                  disabled={gerando}
+                  onClick={() => {
+                    setGerando(true);
+                    try {
+                      const nome = gerarDocumentacaoPdf(usuario);
+                      toast.success(`PDF gerado: ${nome}`);
+                    } catch {
+                      toast.error("Não foi possível gerar a documentação.");
+                    } finally {
+                      setGerando(false);
+                    }
+                  }}
+                >
+                  <FileDown className="h-4 w-4 mr-1.5" /> {gerando ? "Gerando…" : "Exportar PDF"}
+                </Button>
+              </div>
+            </TabsContent>
+          )}
         </Tabs>
 
         <div className="flex items-center justify-between gap-3 pt-2">
