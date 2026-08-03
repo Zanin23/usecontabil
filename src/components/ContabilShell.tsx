@@ -424,10 +424,7 @@ export default function ContabilShell() {
                 <Command className="h-3 w-3" />K
               </kbd>
             </button>
-
-
-
-
+            <AjudaTela />
 
             <Button
               variant="outline"
@@ -439,6 +436,7 @@ export default function ContabilShell() {
             >
               <SlidersHorizontal className="h-4 w-4" />
             </Button>
+
 
             <NotificacoesPainel />
 
