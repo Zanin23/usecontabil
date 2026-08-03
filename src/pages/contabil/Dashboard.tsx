@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { formatCompetencia, useCompetencia } from "@/lib/competencia";
+import { useEmpresaAtual } from "@/lib/empresaAtual";
 import {
   Card, CardContent, Badge, Button, Progress,
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -127,6 +131,9 @@ function Sparkline({ data, color }: { data: number[]; color: string }) {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const { competencia } = useCompetencia();
+  const { empresa } = useEmpresaAtual();
   const [openKpi, setOpenKpi] = useState<string | null>(null);
   const totalDespesa = COMPOSICAO_DESPESA.reduce((s, d) => s + d.valor, 0);
   const totalTributos = SERIE_TRIBUTOS.reduce((s, t) => s + t.valor, 0);
@@ -142,13 +149,29 @@ export default function Dashboard() {
           <h1 className="font-display text-3xl md:text-4xl mt-2">
             Visão geral <span className="text-brand-orange">contábil</span>
           </h1>
-          <p className="text-sm text-muted-foreground mt-1.5">Competência 07/2026 — Metalúrgica Andrade S.A.</p>
+          <p className="text-sm text-muted-foreground mt-1.5">
+            Competência {formatCompetencia(competencia)} — {empresa ? empresa.razao : "nenhuma empresa selecionada"}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" className="rounded-md h-9">
-            <RefreshCw className="h-4 w-4 mr-1.5" /> Sincronizar ERP
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-md h-9"
+            onClick={() => {
+              window.dispatchEvent(new Event("focus"));
+              toast.success("Dados recarregados", {
+                description: `Competência ${formatCompetencia(competencia)}`,
+              });
+            }}
+          >
+            <RefreshCw className="h-4 w-4 mr-1.5" /> Atualizar dados
           </Button>
-          <Button size="sm" className="rounded-md h-9 bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground">
+          <Button
+            size="sm"
+            className="rounded-md h-9 bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground"
+            onClick={() => navigate("/preparativos/servicos/gestao")}
+          >
             <PlayCircle className="h-4 w-4 mr-1.5" /> Iniciar fechamento
           </Button>
         </div>
@@ -337,7 +360,7 @@ export default function Dashboard() {
             <div className="px-6 py-4 border-b border-border flex items-center justify-between gap-6">
               <div className="min-w-0">
                 <h2 className="font-display text-2xl">Status de fechamento por módulo</h2>
-                <p className="text-xs text-muted-foreground mt-1">Competência 07/2026 · responsáveis atribuídos automaticamente</p>
+                <p className="text-xs text-muted-foreground mt-1">Competência {formatCompetencia(competencia)} · responsáveis atribuídos automaticamente</p>
               </div>
               <div className="w-40 shrink-0">
                 <div className="flex items-center justify-between text-xs mb-1.5">

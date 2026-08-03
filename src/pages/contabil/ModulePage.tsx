@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Badge, Button, Card, CardContent, Input,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/design-system/mj-design-system-db98fa";
 import { toast } from "sonner";
-import { ChevronRight, Download, Filter, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { ChevronRight, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { findModule } from "@/lib/contabilNav";
 import { EMPRESAS_EVENT, loadEmpresas, removeEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
+import ExportarMenu from "@/components/contabil/ExportarMenu";
+import { formatCompetencia, useCompetencia } from "@/lib/competencia";
+import { useEmpresaAtual } from "@/lib/empresaAtual";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
@@ -29,6 +33,10 @@ export default function ModulePage() {
   const navigate = useNavigate();
   const { area, category, module } = findModule(areaSlug, categoria, modulo);
   const [savedEmpresas, setSavedEmpresas] = useState<EmpresaRecord[]>([]);
+  const [busca, setBusca] = useState("");
+  const [statusFiltro, setStatusFiltro] = useState("todos");
+  const { competencia } = useCompetencia();
+  const { empresa } = useEmpresaAtual();
 
   const isEmpresas = module?.slug === "empresas" && category?.slug === "cadastros";
 
@@ -89,6 +97,20 @@ export default function ModulePage() {
 
   const Icon = module.icon;
 
+  const todasLinhas: any[] = [...extraRows, ...module.rows];
+  const statusKey = module.columns.find((c) =>
+    ["status", "situacao", "resultado", "abonada"].includes(c.key),
+  )?.key;
+  const opcoesStatus = statusKey
+    ? Array.from(new Set(todasLinhas.map((r) => String(r[statusKey] ?? "")).filter(Boolean)))
+    : [];
+  const termo = busca.trim().toLowerCase();
+  const visiveis = todasLinhas.filter((r) => {
+    const okBusca = !termo || Object.values(r).join(" ").toLowerCase().includes(termo);
+    const okStatus = statusFiltro === "todos" || !statusKey || String(r[statusKey]) === statusFiltro;
+    return okBusca && okStatus;
+  });
+
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
@@ -117,13 +139,13 @@ export default function ModulePage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            className="rounded-full"
-            onClick={() => toast.success("Exportação simulada iniciada")}
-          >
-            <Download className="h-4 w-4 mr-2" /> Exportar
-          </Button>
+          <ExportarMenu
+            nome={module.title}
+            colunas={module.columns.map((c) => ({ key: c.key, label: c.label }))}
+            linhas={visiveis.map((r: any) =>
+              Object.fromEntries(module.columns.map((c) => [c.key, String(r[c.key] ?? "")])),
+            )}
+          />
           {module.slug === "empresas" || module.slug === "dados-empresa" ? (
             <Button
               asChild
@@ -134,15 +156,7 @@ export default function ModulePage() {
                 {module.primaryAction ?? "Novo registro"}
               </Link>
             </Button>
-          ) : (
-            <Button
-              className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
-              onClick={() => toast.success(`${module.primaryAction ?? "Novo registro"} — protótipo visual`)}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              {module.primaryAction ?? "Novo registro"}
-            </Button>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -154,20 +168,32 @@ export default function ModulePage() {
             <Input
               placeholder={`Buscar em ${module.title.toLowerCase()}…`}
               className="pl-9 rounded-full bg-card"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
             />
           </div>
-          <Button variant="outline" className="rounded-full">
-            <Filter className="h-4 w-4 mr-2" /> Filtros
-          </Button>
-          <Badge variant="outline" className="rounded-full">Competência 10/2024</Badge>
-          <Badge variant="outline" className="rounded-full">Metalúrgica Andrade S.A.</Badge>
+          {opcoesStatus.length > 0 && (
+            <Select value={statusFiltro} onValueChange={setStatusFiltro}>
+              <SelectTrigger className="w-52 rounded-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todas as situações</SelectItem>
+                {opcoesStatus.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          )}
+          <Badge variant="outline" className="rounded-full">
+            Competência {formatCompetencia(competencia)}
+          </Badge>
+          <Badge variant="outline" className="rounded-full">
+            {empresa ? empresa.razao : "Nenhuma empresa selecionada"}
+          </Badge>
         </CardContent>
       </Card>
 
       {/* Table */}
       <Card className="rounded-2xl border-border/70 overflow-hidden">
         <div className="px-4 py-3 border-b border-border flex items-center justify-between text-xs text-muted-foreground">
-          <span>{module.rows.length + extraRows.length} registros exibidos</span>
+          <span>{visiveis.length} de {todasLinhas.length} registros exibidos</span>
           <span className="font-mono uppercase tracking-widest">Ambiente HOMOLOGAÇÃO</span>
         </div>
         <Table>
@@ -185,7 +211,7 @@ export default function ModulePage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {[...extraRows, ...module.rows].map((row: any, ri) => {
+            {visiveis.map((row: any, ri) => {
               const empresaId = row.__empresaId as string | undefined;
               return (
                 <TableRow

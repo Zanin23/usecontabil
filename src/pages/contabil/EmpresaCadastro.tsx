@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { saveEmpresa, getEmpresa, findEmpresaPorCnpj, sincronizarEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
+import { saveEmpresa, getEmpresa, loadEmpresas, findEmpresaPorCnpj, sincronizarEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
 import { formatAtividade, loadAtividades, useAtividades } from "@/lib/atividadesStore";
 
 import {
@@ -252,21 +252,38 @@ function InlineDivider({ children }: { children: React.ReactNode }) {
 
 /* -------------------------------- panels -------------------------------- */
 
-function LeftPanel({ form }: { form: FormState }) {
+function LeftPanel({
+  form,
+  posicao,
+  total,
+  irPara,
+}: {
+  form: FormState;
+  posicao: number;
+  total: number;
+  irPara: (indice: number) => void;
+}) {
   const displayName = form.razao || form.fantasia || "— nova empresa —";
   const cnpjMasked = form.cnpj || "—";
+  const semLista = total === 0;
   return (
     <Card className="rounded-2xl border-border/70">
       <CardContent className="p-4 space-y-4">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronsLeft className="h-4 w-4" /></Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronLeft className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Primeiro registro"
+              disabled={semLista || posicao <= 0} onClick={() => irPara(0)}><ChevronsLeft className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Registro anterior"
+              disabled={semLista || posicao <= 0} onClick={() => irPara(posicao - 1)}><ChevronLeft className="h-4 w-4" /></Button>
           </div>
-          <span className="font-mono">Novo Registro</span>
+          <span className="font-mono">
+            {posicao >= 0 ? `Registro ${posicao + 1} de ${total}` : "Novo Registro"}
+          </span>
           <div className="flex items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronRight className="h-4 w-4" /></Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronsRight className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Próximo registro"
+              disabled={semLista || posicao >= total - 1} onClick={() => irPara(posicao + 1)}><ChevronRight className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Último registro"
+              disabled={semLista || posicao >= total - 1} onClick={() => irPara(total - 1)}><ChevronsRight className="h-4 w-4" /></Button>
           </div>
         </div>
 
@@ -425,7 +442,7 @@ function TributacaoCard({ kind }: { kind: TribKind }) {
           <Icon className={`h-4 w-4 ${s.accent}`} />
           <span className="text-sm font-medium text-foreground">{s.label}</span>
         </div>
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-brand-blue"><Plus className="h-4 w-4" /></Button>
+        
       </div>
       <div className="px-4 py-6 text-center text-xs text-muted-foreground">
         Nenhum registro. Adicione após salvar o cadastro base.
@@ -449,7 +466,15 @@ export default function EmpresaCadastro() {
   const [loadingCep, setLoadingCep] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  const listaEmpresas = loadEmpresas();
+  const posicao = recordId ? listaEmpresas.findIndex((e) => e.id === recordId) : -1;
+  const irPara = (indice: number) => {
+    const alvo = listaEmpresas[indice];
+    if (alvo) navigate(`/preparativos/cadastros/empresas/${alvo.id}`);
+  };
+
   const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));
+
 
   useEffect(() => {
     let cancelado = false;
@@ -603,7 +628,7 @@ export default function EmpresaCadastro() {
 
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-3 space-y-4">
-          <LeftPanel form={form} />
+          <LeftPanel form={form} posicao={posicao} total={listaEmpresas.length} irPara={irPara} />
         </div>
 
         <div className="col-span-6">
@@ -886,8 +911,8 @@ function SenhasSection({ onTip }: { onTip: (k: string) => void }) {
       </SectionCard>
 
       <div className="flex justify-center">
-        <Button variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">
-          Certificado Digital
+        <Button asChild variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">
+          <Link to="/preparativos/empresa/certificados">Certificado Digital</Link>
         </Button>
       </div>
     </>
@@ -910,8 +935,12 @@ function FiscalSection() {
         </div>
       </SectionCard>
       <div className="flex justify-center gap-3">
-        <Button variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">Emissor Cupom Fiscal</Button>
-        <Button variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">Complementos Diversos</Button>
+        <Button asChild variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">
+          <Link to="/fiscal/documentos/cupons">Emissor Cupom Fiscal</Link>
+        </Button>
+        <Button asChild variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">
+          <Link to="/preparativos/empresa/parametros">Complementos Diversos</Link>
+        </Button>
       </div>
     </>
   );
