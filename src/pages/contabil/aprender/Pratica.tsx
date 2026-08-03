@@ -7,8 +7,9 @@ import {
   TabsList, TabsTrigger,
 } from "@/design-system/mj-design-system-db98fa";
 import {
-  FCP_SUGERIDO, LABS, UFS_LAB, simularDifal, simularSimples,
-  type EntradaDifal, type EntradaSimples, type Passo,
+  FCP_SUGERIDO, LABS, UFS_LAB, simularDifal, simularPisCofins, simularRetencoes, simularSimples,
+  type EntradaDifal, type EntradaPisCofins, type EntradaRetencoes, type EntradaSimples, type LabId,
+  type Passo,
 } from "@/lib/aprendizado/labs";
 import { usePratica } from "@/lib/praticaStore";
 
@@ -25,6 +26,30 @@ const PADRAO_DIFAL: EntradaDifal = {
   valor: 10_000,
   origemProduto: "0",
   fcp: FCP_SUGERIDO,
+};
+
+const PADRAO_PIS: EntradaPisCofins = {
+  regime: "cumulativo",
+  receita: 250_000,
+  receitaExportacao: 0,
+  receitaST: 20_000,
+  comprasComCredito: 90_000,
+  energiaAlugueis: 12_000,
+};
+
+const PADRAO_RETENCOES: EntradaRetencoes = {
+  valorServico: 15_000,
+  cessaoMaoObra: false,
+  optanteSimples: false,
+  issRetido: true,
+  aliqIss: 3,
+};
+
+const ROTULOS: Record<LabId, string> = {
+  simples: "Simples Nacional",
+  "icms-difal": "ICMS / DIFAL",
+  "pis-cofins": "PIS / COFINS",
+  retencoes: "Retenções",
 };
 
 function Resultado({ passos, formula }: { passos: Passo[]; formula: string }) {
@@ -69,10 +94,13 @@ function CampoNumero({
 export default function PraticaAprendizado() {
   const [params, setParams] = useSearchParams();
   const { praticaAtiva, setPraticaAtiva } = usePratica();
-  const labInicial = params.get("lab") === "icms-difal" ? "icms-difal" : "simples";
+  const labParam = params.get("lab") as LabId | null;
+  const labInicial: LabId = LABS.some((l) => l.id === labParam) ? (labParam as LabId) : "simples";
   const [aba, setAba] = useState(labInicial);
   const [simples, setSimples] = useState(PADRAO_SIMPLES);
   const [difal, setDifal] = useState(PADRAO_DIFAL);
+  const [pis, setPis] = useState(PADRAO_PIS);
+  const [ret, setRet] = useState(PADRAO_RETENCOES);
 
   useEffect(() => {
     if (!praticaAtiva) setPraticaAtiva(true);
@@ -81,9 +109,11 @@ export default function PraticaAprendizado() {
 
   const resSimples = useMemo(() => simularSimples(simples), [simples]);
   const resDifal = useMemo(() => simularDifal(difal), [difal]);
+  const resPis = useMemo(() => simularPisCofins(pis), [pis]);
+  const resRet = useMemo(() => simularRetencoes(ret), [ret]);
 
   const trocarAba = (v: string) => {
-    setAba(v);
+    setAba(v as LabId);
     setParams({ lab: v }, { replace: true });
   };
 
@@ -126,10 +156,10 @@ export default function PraticaAprendizado() {
       </div>
 
       <Tabs value={aba} onValueChange={trocarAba}>
-        <TabsList className="rounded-full">
+        <TabsList className="rounded-full flex-wrap h-auto">
           {LABS.map((l) => (
             <TabsTrigger key={l.id} value={l.id} className="rounded-full">
-              {l.id === "simples" ? "Simples Nacional" : "ICMS / DIFAL"}
+              {ROTULOS[l.id]}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -280,6 +310,151 @@ export default function PraticaAprendizado() {
               </CardHeader>
               <CardContent>
                 <Resultado passos={resDifal.passos} formula={resDifal.formula} />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="pis-cofins" className="mt-4">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card className="rounded-3xl shadow-card">
+              <CardHeader>
+                <CardTitle className="font-display text-xl">{LABS[2].titulo}</CardTitle>
+                <CardDescription>{LABS[2].descricao}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Regime de apuração</Label>
+                  <Select
+                    value={pis.regime}
+                    onValueChange={(v) => setPis({ ...pis, regime: v as EntradaPisCofins["regime"] })}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cumulativo">Cumulativo — Lucro Presumido</SelectItem>
+                      <SelectItem value="naoCumulativo">Não cumulativo — Lucro Real</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <CampoNumero
+                  label="Receita bruta do mês"
+                  value={pis.receita}
+                  onChange={(v) => setPis({ ...pis, receita: v })}
+                />
+                <CampoNumero
+                  label="Receita de exportação (isenta)"
+                  value={pis.receitaExportacao}
+                  onChange={(v) => setPis({ ...pis, receitaExportacao: v })}
+                />
+                <CampoNumero
+                  label="Receita monofásica / substituição tributária"
+                  value={pis.receitaST}
+                  onChange={(v) => setPis({ ...pis, receitaST: v })}
+                />
+                <CampoNumero
+                  label="Compras de insumos com direito a crédito"
+                  value={pis.comprasComCredito}
+                  onChange={(v) => setPis({ ...pis, comprasComCredito: v })}
+                />
+                <CampoNumero
+                  label="Energia elétrica e aluguéis de PJ"
+                  value={pis.energiaAlugueis}
+                  onChange={(v) => setPis({ ...pis, energiaAlugueis: v })}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full gap-2"
+                  onClick={() => setPis(PADRAO_PIS)}
+                >
+                  <RotateCcw className="h-4 w-4" /> Restaurar cenário
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-3xl shadow-elevated">
+              <CardHeader>
+                <CardDescription>Memória de cálculo</CardDescription>
+                <CardTitle className="font-display text-2xl">{rs(resPis.total)}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Resultado passos={resPis.passos} formula={resPis.formula} />
+                <div className="rounded-2xl border border-border p-4 text-sm">
+                  <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">
+                    Comparativo entre regimes sobre a mesma base
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Cumulativo (3,65%)</span>
+                    <span>{rs(resPis.comparativo.cumulativo)}</span>
+                  </div>
+                  <div className="mt-1 flex items-center justify-between">
+                    <span className="text-muted-foreground">Não cumulativo (9,25% − créditos)</span>
+                    <span>{rs(resPis.comparativo.naoCumulativo)}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="retencoes" className="mt-4">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card className="rounded-3xl shadow-card">
+              <CardHeader>
+                <CardTitle className="font-display text-xl">{LABS[3].titulo}</CardTitle>
+                <CardDescription>{LABS[3].descricao}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <CampoNumero
+                  label="Valor do serviço tomado"
+                  value={ret.valorServico}
+                  onChange={(v) => setRet({ ...ret, valorServico: v })}
+                />
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border px-4 py-3">
+                  <Label className="text-sm">Prestador optante pelo Simples Nacional</Label>
+                  <Switch
+                    checked={ret.optanteSimples}
+                    onCheckedChange={(v) => setRet({ ...ret, optanteSimples: v })}
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border px-4 py-3">
+                  <Label className="text-sm">Cessão de mão de obra (INSS 11%)</Label>
+                  <Switch
+                    checked={ret.cessaoMaoObra}
+                    onCheckedChange={(v) => setRet({ ...ret, cessaoMaoObra: v })}
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-border px-4 py-3">
+                  <Label className="text-sm">ISS retido pelo tomador</Label>
+                  <Switch
+                    checked={ret.issRetido}
+                    onCheckedChange={(v) => setRet({ ...ret, issRetido: v })}
+                  />
+                </div>
+                <CampoNumero
+                  label="Alíquota de ISS do município"
+                  value={ret.aliqIss}
+                  sufixo="%"
+                  onChange={(v) => setRet({ ...ret, aliqIss: v })}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full gap-2"
+                  onClick={() => setRet(PADRAO_RETENCOES)}
+                >
+                  <RotateCcw className="h-4 w-4" /> Restaurar cenário
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-3xl shadow-elevated">
+              <CardHeader>
+                <CardDescription>Total retido</CardDescription>
+                <CardTitle className="font-display text-2xl">{rs(resRet.total)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Resultado passos={resRet.passos} formula={resRet.formula} />
               </CardContent>
             </Card>
           </div>
