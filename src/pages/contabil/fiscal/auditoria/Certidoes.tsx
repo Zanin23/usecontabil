@@ -125,18 +125,33 @@ export default function AuditoriaCertidoes() {
                       {x.pendencias || "—"}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="rounded-full"
-                        onClick={() => {
-                          if (!empresa) return;
-                          consultarCertidao(empresa.id, x.id);
-                          toast.success("Certidão reconsultada.");
-                        }}
-                      >
-                        Consultar
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-full"
+                          onClick={() => {
+                            if (!empresa) return;
+                            consultarCertidao(empresa.id, x.id);
+                            toast.success("Certidão reconsultada.");
+                          }}
+                        >
+                          Consultar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="rounded-full"
+                          aria-label={`Remover certidão ${x.certidao}`}
+                          onClick={() => {
+                            if (!empresa) return toast.error("Selecione uma empresa.");
+                            removerCertidao(empresa.id, x.id);
+                            toast.success("Certidão removida do monitoramento.");
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
