@@ -30,6 +30,8 @@ export default function ContabilShell() {
   useTema();
   const { prefs } = usePreferencias();
   const [configAberta, setConfigAberta] = useState(false);
+  const { praticaAtiva: emPratica, setPraticaAtiva } = usePratica();
+
 
   useEffect(() => {
     popularBaseConfeccaoUmaVez(empresaId);
