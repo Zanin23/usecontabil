@@ -360,7 +360,7 @@ export default function Dashboard() {
             <div className="px-6 py-4 border-b border-border flex items-center justify-between gap-6">
               <div className="min-w-0">
                 <h2 className="font-display text-2xl">Status de fechamento por módulo</h2>
-                <p className="text-xs text-muted-foreground mt-1">Competência 07/2026 · responsáveis atribuídos automaticamente</p>
+                <p className="text-xs text-muted-foreground mt-1">Competência {formatCompetencia(competencia)} · responsáveis atribuídos automaticamente</p>
               </div>
               <div className="w-40 shrink-0">
                 <div className="flex items-center justify-between text-xs mb-1.5">
