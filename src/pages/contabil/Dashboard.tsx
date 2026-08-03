@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { formatCompetencia, useCompetencia } from "@/lib/competencia";
+import { useEmpresaAtual } from "@/lib/empresaAtual";
 import {
   Card, CardContent, Badge, Button, Progress,
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -127,6 +131,9 @@ function Sparkline({ data, color }: { data: number[]; color: string }) {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const { competencia } = useCompetencia();
+  const { empresa } = useEmpresaAtual();
   const [openKpi, setOpenKpi] = useState<string | null>(null);
   const totalDespesa = COMPOSICAO_DESPESA.reduce((s, d) => s + d.valor, 0);
   const totalTributos = SERIE_TRIBUTOS.reduce((s, t) => s + t.valor, 0);
