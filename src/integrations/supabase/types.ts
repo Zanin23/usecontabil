@@ -125,6 +125,27 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_progress: {
+        Row: {
+          licao_slug: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          licao_slug: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          licao_slug?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
