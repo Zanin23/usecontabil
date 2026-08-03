@@ -252,21 +252,38 @@ function InlineDivider({ children }: { children: React.ReactNode }) {
 
 /* -------------------------------- panels -------------------------------- */
 
-function LeftPanel({ form }: { form: FormState }) {
+function LeftPanel({
+  form,
+  posicao,
+  total,
+  irPara,
+}: {
+  form: FormState;
+  posicao: number;
+  total: number;
+  irPara: (indice: number) => void;
+}) {
   const displayName = form.razao || form.fantasia || "— nova empresa —";
   const cnpjMasked = form.cnpj || "—";
+  const semLista = total === 0;
   return (
     <Card className="rounded-2xl border-border/70">
       <CardContent className="p-4 space-y-4">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronsLeft className="h-4 w-4" /></Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronLeft className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Primeiro registro"
+              disabled={semLista || posicao <= 0} onClick={() => irPara(0)}><ChevronsLeft className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Registro anterior"
+              disabled={semLista || posicao <= 0} onClick={() => irPara(posicao - 1)}><ChevronLeft className="h-4 w-4" /></Button>
           </div>
-          <span className="font-mono">Novo Registro</span>
+          <span className="font-mono">
+            {posicao >= 0 ? `Registro ${posicao + 1} de ${total}` : "Novo Registro"}
+          </span>
           <div className="flex items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronRight className="h-4 w-4" /></Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7"><ChevronsRight className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Próximo registro"
+              disabled={semLista || posicao >= total - 1} onClick={() => irPara(posicao + 1)}><ChevronRight className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Último registro"
+              disabled={semLista || posicao >= total - 1} onClick={() => irPara(total - 1)}><ChevronsRight className="h-4 w-4" /></Button>
           </div>
         </div>
 
