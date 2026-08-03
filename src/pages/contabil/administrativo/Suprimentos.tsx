@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Ban, CheckCircle2, ChevronRight, ClipboardList, Download, Gavel, PackageCheck, Pencil, Plus,
@@ -20,7 +20,7 @@ import {
   hojeISO, julgarCotacao, listarCotacoes, listarPedidos, listarRequisicoes, marcarEmTransito,
   novoItem, novoNumeroRequisicao, pedidosPorFornecedor, percentualRecebido, recebidoPedido,
   registrarRecebimento, reprovarRequisicao, resumoCotacoes, resumoPedidos, resumoRequisicoes,
-  salvarProposta, salvarRequisicao, somarDias, totalPedido, totalRequisicao,
+  salvarPedido, salvarProposta, salvarRequisicao, somarDias, totalPedido, totalRequisicao,
   type Cotacao, type CriterioJulgamento, type ItemRequisicao, type Pedido, type Prioridade,
   type Proposta, type Requisicao,
 } from "@/lib/comprasStore";
@@ -982,6 +982,7 @@ function Pedidos() {
   const [status, setStatus] = useState("todos");
   const [aberto, setAberto] = useState<string | null>(null);
   const [receber, setReceber] = useState<Pedido | null>(null);
+  const novaPrevisao = useRef<Record<string, string>>({});
 
   const todos = listarPedidos();
   const lista = useMemo(() => todos.filter((p) => {
