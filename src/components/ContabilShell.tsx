@@ -458,9 +458,33 @@ export default function ContabilShell() {
           </div>
         </header>
 
+        {emPratica && (
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-brand-orange/40 bg-brand-orange/10 px-4 py-2 text-xs lg:px-8">
+            <span className="flex items-center gap-2">
+              <FlaskConical className="h-3.5 w-3.5 text-brand-orange" />
+              <strong>Modo prática ativo</strong> — laboratórios de estudo com dados fictícios; nada
+              é gravado na competência real.
+            </span>
+            <div className="flex items-center gap-2">
+              <NavLink to="/aprender/pratica" className="underline underline-offset-2">
+                Abrir laboratórios
+              </NavLink>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full h-7"
+                onClick={() => setPraticaAtiva(false)}
+              >
+                Sair do modo prática
+              </Button>
+            </div>
+          </div>
+        )}
+
         <main className="px-4 lg:px-8 py-6 lg:py-8">
           <Outlet />
         </main>
+
       </div>
 
       <BuscaTelas open={buscaAberta} onOpenChange={setBuscaAberta} />
