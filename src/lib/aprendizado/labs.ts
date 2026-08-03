@@ -7,7 +7,7 @@
 import { ANEXO_I, ANEXO_III, ANEXO_V, faixaDe } from "@/lib/apuracaoStore";
 import { ALIQ_INTERNA, FCP_PADRAO, UFS, aliquotaInterestadual, type UF } from "@/lib/tributarioStore";
 
-export type LabId = "simples" | "icms-difal";
+export type LabId = "simples" | "icms-difal" | "pis-cofins" | "retencoes";
 
 export type Passo = { label: string; valor: string; destaque?: boolean };
 
@@ -129,3 +129,121 @@ export function simularDifal(e: EntradaDifal) {
 }
 
 export const FCP_SUGERIDO = FCP_PADRAO;
+
+/* --------------------------- Lab PIS/COFINS ---------------------------- */
+
+/** Alíquotas dos regimes — mesmas usadas pelo motor apurarPisCofins. */
+export const ALIQ_PIS = { cumulativo: 0.0065, naoCumulativo: 0.0165 };
+export const ALIQ_COFINS = { cumulativo: 0.03, naoCumulativo: 0.076 };
+
+export type EntradaPisCofins = {
+  regime: "cumulativo" | "naoCumulativo";
+  receita: number;
+  receitaExportacao: number;
+  receitaST: number;
+  comprasComCredito: number;
+  energiaAlugueis: number;
+};
+
+export function simularPisCofins(e: EntradaPisCofins) {
+  const naoCum = e.regime === "naoCumulativo";
+  const aliqPis = naoCum ? ALIQ_PIS.naoCumulativo : ALIQ_PIS.cumulativo;
+  const aliqCofins = naoCum ? ALIQ_COFINS.naoCumulativo : ALIQ_COFINS.cumulativo;
+
+  const exclusoes = e.receitaExportacao + e.receitaST;
+  const base = Math.max(0, e.receita - exclusoes);
+  const pisDeb = base * aliqPis;
+  const cofinsDeb = base * aliqCofins;
+
+  const baseCredito = naoCum ? e.comprasComCredito + e.energiaAlugueis : 0;
+  const pisCred = baseCredito * aliqPis;
+  const cofinsCred = baseCredito * aliqCofins;
+
+  const pisPagar = Math.max(0, pisDeb - pisCred);
+  const cofinsPagar = Math.max(0, cofinsDeb - cofinsCred);
+
+  const passos: Passo[] = [
+    { label: "Regime", valor: naoCum ? "Não cumulativo (Lucro Real)" : "Cumulativo (Lucro Presumido)", destaque: true },
+    { label: "Receita bruta do mês", valor: rs(e.receita) },
+    { label: "(−) Exportação (isenta)", valor: rs(e.receitaExportacao) },
+    { label: "(−) Receita com substituição tributária/monofásica", valor: rs(e.receitaST) },
+    { label: "Base de cálculo", valor: rs(base), destaque: true },
+    { label: `PIS débito (${pc(aliqPis * 100)})`, valor: rs(pisDeb) },
+    { label: `COFINS débito (${pc(aliqCofins * 100)})`, valor: rs(cofinsDeb) },
+    {
+      label: "Base de créditos (insumos, energia, aluguéis)",
+      valor: naoCum ? rs(baseCredito) : "Não há crédito no cumulativo",
+    },
+    { label: "PIS crédito", valor: rs(pisCred) },
+    { label: "COFINS crédito", valor: rs(cofinsCred) },
+    { label: "PIS a recolher (DARF " + (naoCum ? "6912" : "8109") + ")", valor: rs(pisPagar), destaque: true },
+    { label: "COFINS a recolher (DARF " + (naoCum ? "5856" : "2172") + ")", valor: rs(cofinsPagar), destaque: true },
+    { label: "Total a recolher", valor: rs(pisPagar + cofinsPagar), destaque: true },
+  ];
+
+  return {
+    passos,
+    total: pisPagar + cofinsPagar,
+    formula:
+      "Base = receita − exclusões; A pagar = Base × alíquota − créditos (créditos só no não cumulativo)",
+    comparativo: {
+      cumulativo: base * (ALIQ_PIS.cumulativo + ALIQ_COFINS.cumulativo),
+      naoCumulativo: Math.max(
+        0,
+        base * (ALIQ_PIS.naoCumulativo + ALIQ_COFINS.naoCumulativo) -
+          (e.comprasComCredito + e.energiaAlugueis) *
+            (ALIQ_PIS.naoCumulativo + ALIQ_COFINS.naoCumulativo),
+      ),
+    },
+  };
+}
+
+/* ---------------------------- Lab Retenções ---------------------------- */
+
+/** Alíquotas de retenção — mesmas usadas pelo motor apurarRetencoes. */
+export const ALIQ_RETENCAO = { irrf: 0.015, csrf: 0.0465, inss: 0.11 };
+/** Dispensa de retenção de IRRF para valor igual ou inferior a R$ 10,00 (Lei 9.430/1996, art. 67). */
+export const LIMITE_DISPENSA_IRRF = 10;
+/** Dispensa da CSRF quando o valor retido no pagamento for igual ou inferior a R$ 10,00. */
+export const LIMITE_DISPENSA_CSRF = 10;
+
+export type EntradaRetencoes = {
+  valorServico: number;
+  cessaoMaoObra: boolean;
+  optanteSimples: boolean;
+  issRetido: boolean;
+  aliqIss: number;
+};
+
+export function simularRetencoes(e: EntradaRetencoes) {
+  const v = e.valorServico;
+  const irrfBruto = e.optanteSimples ? 0 : v * ALIQ_RETENCAO.irrf;
+  const csrfBruto = e.optanteSimples ? 0 : v * ALIQ_RETENCAO.csrf;
+  const irrf = irrfBruto <= LIMITE_DISPENSA_IRRF ? 0 : irrfBruto;
+  const csrf = csrfBruto <= LIMITE_DISPENSA_CSRF ? 0 : csrfBruto;
+  const inss = e.cessaoMaoObra ? v * ALIQ_RETENCAO.inss : 0;
+  const iss = e.issRetido ? (v * e.aliqIss) / 100 : 0;
+  const total = irrf + csrf + inss + iss;
+
+  const passos: Passo[] = [
+    { label: "Valor do serviço tomado", valor: rs(v) },
+    { label: "Prestador optante pelo Simples Nacional", valor: e.optanteSimples ? "Sim — dispensa IRRF e CSRF" : "Não" },
+    { label: `IRRF (${pc(ALIQ_RETENCAO.irrf * 100)})`, valor: rs(irrf) },
+    { label: `CSRF — PIS/COFINS/CSLL (${pc(ALIQ_RETENCAO.csrf * 100)})`, valor: rs(csrf) },
+    {
+      label: `INSS (${pc(ALIQ_RETENCAO.inss * 100)}) — só com cessão de mão de obra`,
+      valor: rs(inss),
+    },
+    { label: `ISS retido (${pc(e.aliqIss)})`, valor: rs(iss) },
+    { label: "Total retido", valor: rs(total), destaque: true },
+    { label: "Líquido a pagar ao prestador", valor: rs(v - total), destaque: true },
+  ];
+
+  return {
+    passos,
+    total,
+    liquido: v - total,
+    formula:
+      "Retido = IRRF 1,5% + CSRF 4,65% + INSS 11% (cessão de mão de obra) + ISS municipal; dispensa quando o valor retido ≤ R$ 10,00",
+  };
+}
