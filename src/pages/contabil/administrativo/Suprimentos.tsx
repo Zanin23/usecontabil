@@ -1138,6 +1138,32 @@ function Pedidos() {
                                 <div><span className="text-muted-foreground">Frete</span><div>{brl(p.frete || 0)} · {p.tipoFrete}</div></div>
                                 <div><span className="text-muted-foreground">Centro de custo</span><div>{p.centroCusto}</div></div>
                                 <div><span className="text-muted-foreground">Conta contábil</span><div>{p.contaContabil || "—"}</div></div>
+                                {p.status !== "Cancelado" && p.status !== "Recebido" && (
+                                  <div>
+                                    <span className="text-muted-foreground">Reagendar entrega</span>
+                                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                                      <Input
+                                        type="date"
+                                        className="h-9 w-auto rounded-full"
+                                        defaultValue={p.previsao}
+                                        onChange={(e) => (novaPrevisao.current[p.id] = e.target.value)}
+                                      />
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="rounded-full"
+                                        onClick={() =>
+                                          acao(
+                                            () => salvarPedido({ ...p, previsao: novaPrevisao.current[p.id] || p.previsao }),
+                                            "Previsão de entrega atualizada.",
+                                          )
+                                        }
+                                      >
+                                        Salvar previsão
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
                                 {p.status !== "Cancelado" && p.itens.every((i) => i.recebido === 0) && (
                                   <Button size="sm" variant="outline" className="rounded-full" onClick={() => acao(() => cancelarPedido(p.id), "Pedido cancelado.")}>
                                     <Ban className="mr-1 h-3.5 w-3.5" />Cancelar pedido
