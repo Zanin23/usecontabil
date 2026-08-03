@@ -12,7 +12,7 @@ import { usePratica } from "@/lib/praticaStore";
 
 
 import { useEmpresaAtual } from "@/lib/empresaAtual";
-import { popularBaseConfeccaoUmaVez } from "@/lib/seedConfeccao";
+import { limparBaseLocalUmaVez } from "@/lib/resetBase";
 import { AREAS } from "@/lib/contabilNav";
 import { useTema } from "@/lib/tema";
 import { supabase } from "@/integrations/supabase/client";
