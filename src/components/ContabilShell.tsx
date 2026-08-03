@@ -34,8 +34,8 @@ export default function ContabilShell() {
 
 
   useEffect(() => {
-    popularBaseConfeccaoUmaVez(empresaId);
-  }, [empresaId]);
+    limparBaseLocalUmaVez();
+  }, []);
 
 
 
