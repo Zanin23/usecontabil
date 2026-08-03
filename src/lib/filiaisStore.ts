@@ -54,10 +54,6 @@ export function loadFiliais(): FilialRecord[] {
   }
 }
 
-export function getFilial(id: string) {
-  return loadFiliais().find((f) => f.id === id);
-}
-
 export function saveFilial(rec: FilialRecord) {
   const list = loadFiliais();
   const idx = list.findIndex((f) => f.id === rec.id);

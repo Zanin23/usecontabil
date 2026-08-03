@@ -17,6 +17,7 @@ import {
   destinoTarefa, execKey, fecharPeriodo, modelosDoRegime, normalizarRegime,
   pendenciasCadastro, reabrirPeriodo, resumoFases, useGestao,
 } from "@/lib/gestaoStore";
+import { pendenciasGuias } from "@/lib/guiasStore";
 
 export default function Encerramentos() {
   const { empresa, empresas } = useEmpresaAtual();
@@ -66,6 +67,10 @@ export default function Encerramentos() {
     ? [
         ...pend.map((p) => ({ texto: `Cadastro: ${p.titulo}`, destino: p.destino })),
         ...alvo.obrigatoriasPendentes.map((m) => ({ texto: `Tarefa obrigatória: ${m.titulo}`, destino: destinoTarefa(m) })),
+        ...pendenciasGuias(empresaId || null, alvo.competencia).map((t) => ({
+          texto: `Guias: ${t}`,
+          destino: "/fiscal/guias",
+        })),
       ]
     : [];
 

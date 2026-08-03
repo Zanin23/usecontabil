@@ -1704,10 +1704,6 @@ export function concluirTransmissao(obr: ObrSlug, empresaId: string, competencia
   return { protocolo, recibo };
 }
 
-export function registrarEtapa(obr: ObrSlug, empresaId: string, competencia: string, etapa: number, detalhe: string) {
-  setObrEstado(obr, empresaId, competencia, { etapa }, { acao: `Etapa: ${ETAPAS[etapa] ?? etapa}`, detalhe });
-}
-
 /* ============================ monitoramento ============================= */
 
 export type LinhaMonitor = {
