@@ -7,6 +7,9 @@ import {
   SlidersHorizontal, GraduationCap, HelpCircle, FlaskConical,
 } from "lucide-react";
 import NotificacoesPainel from "@/components/contabil/NotificacoesPainel";
+import AjudaTela from "@/components/contabil/AjudaTela";
+import { usePratica } from "@/lib/praticaStore";
+
 
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { popularBaseConfeccaoUmaVez } from "@/lib/seedConfeccao";
