@@ -24,6 +24,18 @@ export const LABS: { id: LabId; titulo: string; descricao: string }[] = [
     descricao:
       "Escolha origem, destino e origem do produto para ver a alíquota interestadual, a interna do destino, o DIFAL e o FCP.",
   },
+  {
+    id: "pis-cofins",
+    titulo: "PIS/COFINS — cumulativo × não cumulativo",
+    descricao:
+      "Compare os dois regimes: veja as exclusões da base, os débitos, os créditos permitidos e o saldo a recolher.",
+  },
+  {
+    id: "retencoes",
+    titulo: "Retenções na fonte sobre serviços",
+    descricao:
+      "Simule IRRF, CSRF, INSS e ISS retidos de um serviço tomado, com as regras de dispensa e o líquido ao prestador.",
+  },
 ];
 
 const rs = (n: number) =>
