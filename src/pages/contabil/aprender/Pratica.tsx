@@ -113,7 +113,7 @@ export default function PraticaAprendizado() {
   const resRet = useMemo(() => simularRetencoes(ret), [ret]);
 
   const trocarAba = (v: string) => {
-    setAba(v);
+    setAba(v as LabId);
     setParams({ lab: v }, { replace: true });
   };
 
