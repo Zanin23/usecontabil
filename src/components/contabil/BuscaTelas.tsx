@@ -4,8 +4,14 @@ import {
   Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
   Dialog, DialogContent, DialogTitle,
 } from "@/design-system/mj-design-system-db98fa";
-import { LayoutDashboard, Building2, CornerDownLeft, type LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard, Building2, CornerDownLeft, GraduationCap, BookOpen, Library,
+  FlaskConical, type LucideIcon,
+} from "lucide-react";
 import { AREAS } from "@/lib/contabilNav";
+import { GLOSSARIO } from "@/lib/aprendizado/glossario";
+import { LICOES } from "@/lib/aprendizado/conteudo";
+
 
 export type TelaBusca = {
   path: string;
