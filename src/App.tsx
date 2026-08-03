@@ -119,7 +119,12 @@ const App = () => (
         <Route element={<RequireAuth><ContabilShell /></RequireAuth>}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/:area" element={<AreaPage />} />
+          <Route path="/aprender" element={<AprenderCentral />} />
+          <Route path="/aprender/glossario" element={<AprenderGlossario />} />
+          <Route path="/aprender/pratica" element={<AprenderPratica />} />
+          <Route path="/aprender/trilha/:slug" element={<AprenderTrilha />} />
+          <Route path="/aprender/licao/:slug" element={<AprenderLicao />} />
+
           <Route path="/:area/:categoria" element={<CategoryPage />} />
           <Route path="/preparativos/empresa/dados-empresa/novo" element={<EmpresaCadastro />} />
           <Route path="/preparativos/cadastros/empresas/novo" element={<EmpresaCadastro />} />
