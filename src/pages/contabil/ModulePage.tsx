@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Badge, Button, Card, CardContent, Input,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/design-system/mj-design-system-db98fa";
 import { toast } from "sonner";
-import { ChevronRight, Download, Filter, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { ChevronRight, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { findModule } from "@/lib/contabilNav";
 import { EMPRESAS_EVENT, loadEmpresas, removeEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
+import ExportarMenu from "@/components/contabil/ExportarMenu";
+import { formatCompetencia, useCompetencia } from "@/lib/competencia";
+import { useEmpresaAtual } from "@/lib/empresaAtual";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
