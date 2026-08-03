@@ -4,8 +4,14 @@ import {
   Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
   Dialog, DialogContent, DialogTitle,
 } from "@/design-system/mj-design-system-db98fa";
-import { LayoutDashboard, Building2, CornerDownLeft, type LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard, Building2, CornerDownLeft, GraduationCap, BookOpen, Library,
+  FlaskConical, type LucideIcon,
+} from "lucide-react";
 import { AREAS } from "@/lib/contabilNav";
+import { GLOSSARIO } from "@/lib/aprendizado/glossario";
+import { LICOES } from "@/lib/aprendizado/conteudo";
+
 
 export type TelaBusca = {
   path: string;
@@ -70,9 +76,59 @@ export function useTelas(): TelaBusca[] {
         }
       }
     }
+    lista.push(
+      {
+        path: "/aprender",
+        titulo: "Central de Aprendizado",
+        grupo: "Aprender",
+        desc: "Trilhas, glossário e modo prática",
+        icon: GraduationCap,
+        termos: "aprender aprendizado central trilhas estudo treinamento ajuda",
+      },
+      {
+        path: "/aprender/glossario",
+        titulo: "Glossário técnico",
+        grupo: "Aprender",
+        desc: `${GLOSSARIO.length} termos contábeis e fiscais`,
+        icon: Library,
+        termos: "glossario termos siglas dicionario conceitos",
+      },
+      {
+        path: "/aprender/pratica",
+        titulo: "Modo prática (sandbox)",
+        grupo: "Aprender",
+        desc: "Rodar os motores com dados fictícios",
+        icon: FlaskConical,
+        termos: "pratica sandbox laboratorio simulacao teste estudo",
+      },
+    );
+
+    for (const licao of LICOES) {
+      lista.push({
+        path: `/aprender/licao/${licao.slug}`,
+        titulo: licao.titulo,
+        grupo: "Aprender › Lições",
+        desc: licao.resumo,
+        icon: BookOpen,
+        termos: `licao aprender ${licao.titulo} ${licao.resumo} ${licao.termos.join(" ")}`,
+      });
+    }
+
+    for (const termo of GLOSSARIO) {
+      lista.push({
+        path: `/aprender/glossario?termo=${termo.slug}`,
+        titulo: termo.termo,
+        grupo: "Aprender › Glossário",
+        desc: termo.resumo,
+        icon: Library,
+        termos: `glossario ${termo.termo} ${termo.siglaDe ?? ""} ${termo.resumo}`,
+      });
+    }
+
     return lista;
   }, []);
 }
+
 
 export default function BuscaTelas({
   open,

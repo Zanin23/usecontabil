@@ -4,9 +4,12 @@ import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange,
   Settings2, Users2, Wallet, ChevronRight, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut,
-  SlidersHorizontal,
+  SlidersHorizontal, GraduationCap, HelpCircle, FlaskConical,
 } from "lucide-react";
 import NotificacoesPainel from "@/components/contabil/NotificacoesPainel";
+import AjudaTela from "@/components/contabil/AjudaTela";
+import { usePratica } from "@/lib/praticaStore";
+
 
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { popularBaseConfeccaoUmaVez } from "@/lib/seedConfeccao";
@@ -27,6 +30,8 @@ export default function ContabilShell() {
   useTema();
   const { prefs } = usePreferencias();
   const [configAberta, setConfigAberta] = useState(false);
+  const { praticaAtiva: emPratica, setPraticaAtiva } = usePratica();
+
 
   useEffect(() => {
     popularBaseConfeccaoUmaVez(empresaId);
@@ -243,7 +248,28 @@ export default function ContabilShell() {
               </div>
             );
           })}
+
+          <NavLink
+            to="/aprender"
+            title="Central de Aprendizado"
+            className={({ isActive }) =>
+              `flex items-center gap-3 rounded-lg py-2 text-sm border transition ${
+                recolhida ? "justify-center px-0" : "px-3"
+              } ${
+                isActive
+                  ? "bg-brand-orange/15 text-foreground border-brand-orange/30"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground border-transparent"
+              }`
+            }
+          >
+            {!recolhida && (
+              <span className="text-[10px] font-mono text-muted-foreground/70 w-5">06</span>
+            )}
+            <GraduationCap className="h-4 w-4 shrink-0" />
+            {!recolhida && <span>Aprender</span>}
+          </NavLink>
         </nav>
+
 
         <div className={`py-4 border-t border-border space-y-2 text-xs ${recolhida ? "px-2" : "px-4"}`}>
           <button
@@ -403,10 +429,7 @@ export default function ContabilShell() {
                 <Command className="h-3 w-3" />K
               </kbd>
             </button>
-
-
-
-
+            <AjudaTela />
 
             <Button
               variant="outline"
@@ -418,6 +441,7 @@ export default function ContabilShell() {
             >
               <SlidersHorizontal className="h-4 w-4" />
             </Button>
+
 
             <NotificacoesPainel />
 
@@ -436,9 +460,33 @@ export default function ContabilShell() {
           </div>
         </header>
 
+        {emPratica && (
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-brand-orange/40 bg-brand-orange/10 px-4 py-2 text-xs lg:px-8">
+            <span className="flex items-center gap-2">
+              <FlaskConical className="h-3.5 w-3.5 text-brand-orange" />
+              <strong>Modo prática ativo</strong> — laboratórios de estudo com dados fictícios; nada
+              é gravado na competência real.
+            </span>
+            <div className="flex items-center gap-2">
+              <NavLink to="/aprender/pratica" className="underline underline-offset-2">
+                Abrir laboratórios
+              </NavLink>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full h-7"
+                onClick={() => setPraticaAtiva(false)}
+              >
+                Sair do modo prática
+              </Button>
+            </div>
+          </div>
+        )}
+
         <main className="px-4 lg:px-8 py-6 lg:py-8">
           <Outlet />
         </main>
+
       </div>
 
       <BuscaTelas open={buscaAberta} onOpenChange={setBuscaAberta} />

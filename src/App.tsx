@@ -96,7 +96,13 @@ const AdmControles = lazy(() => import("./pages/contabil/administrativo/Controle
 
 const FinConciliacao = lazy(() => import("./pages/contabil/financeiro/operacional/ConciliacaoBancaria"));
 const FinDre = lazy(() => import("./pages/contabil/financeiro/demonstracoes/Dre"));
+const AprenderCentral = lazy(() => import("./pages/contabil/aprender/Central"));
+const AprenderTrilha = lazy(() => import("./pages/contabil/aprender/Trilha"));
+const AprenderLicao = lazy(() => import("./pages/contabil/aprender/Licao"));
+const AprenderGlossario = lazy(() => import("./pages/contabil/aprender/Glossario"));
+const AprenderPratica = lazy(() => import("./pages/contabil/aprender/Pratica"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+
 
 
 
@@ -113,8 +119,15 @@ const App = () => (
         <Route element={<RequireAuth><ContabilShell /></RequireAuth>}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/aprender" element={<AprenderCentral />} />
+          <Route path="/aprender/glossario" element={<AprenderGlossario />} />
+          <Route path="/aprender/pratica" element={<AprenderPratica />} />
+          <Route path="/aprender/trilha/:slug" element={<AprenderTrilha />} />
+          <Route path="/aprender/licao/:slug" element={<AprenderLicao />} />
+
           <Route path="/:area" element={<AreaPage />} />
           <Route path="/:area/:categoria" element={<CategoryPage />} />
+
           <Route path="/preparativos/empresa/dados-empresa/novo" element={<EmpresaCadastro />} />
           <Route path="/preparativos/cadastros/empresas/novo" element={<EmpresaCadastro />} />
           <Route path="/preparativos/cadastros/filiais" element={<Filiais />} />
