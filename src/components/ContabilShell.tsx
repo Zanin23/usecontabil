@@ -4,7 +4,7 @@ import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange,
   Settings2, Users2, Wallet, ChevronRight, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut,
-  SlidersHorizontal,
+  SlidersHorizontal, GraduationCap, HelpCircle, FlaskConical,
 } from "lucide-react";
 import NotificacoesPainel from "@/components/contabil/NotificacoesPainel";
 
