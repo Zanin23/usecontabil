@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BadgeCheck, RefreshCw, Search } from "lucide-react";
+import { BadgeCheck, RefreshCw, Search, Trash2 } from "lucide-react";
 import {
   Badge, Button, Card, CardContent, Input, Table, TableBody, TableCell,
   TableHead, TableHeader, TableRow, Textarea,
@@ -9,7 +9,7 @@ import { useEmpresaAtual } from "@/lib/empresaAtual";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import {
   CATEGORIAS, certidoes as lerCertidoes, consultarCertidao, diasParaVencer,
-  resumoCertidoes, salvarCertidao, useCertidoes, type Certidao,
+  removerCertidao, resumoCertidoes, salvarCertidao, useCertidoes, type Certidao,
 } from "@/lib/auditoriaStore";
 
 const TOM: Record<Certidao["situacao"], string> = {
