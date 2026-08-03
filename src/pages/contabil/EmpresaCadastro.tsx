@@ -628,7 +628,7 @@ export default function EmpresaCadastro() {
 
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-3 space-y-4">
-          <LeftPanel form={form} />
+          <LeftPanel form={form} posicao={posicao} total={listaEmpresas.length} irPara={irPara} />
         </div>
 
         <div className="col-span-6">
