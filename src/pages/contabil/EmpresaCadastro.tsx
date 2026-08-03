@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { saveEmpresa, getEmpresa, findEmpresaPorCnpj, sincronizarEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
+import { saveEmpresa, getEmpresa, loadEmpresas, findEmpresaPorCnpj, sincronizarEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
 import { formatAtividade, loadAtividades, useAtividades } from "@/lib/atividadesStore";
 
 import {
@@ -466,7 +466,15 @@ export default function EmpresaCadastro() {
   const [loadingCep, setLoadingCep] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  const listaEmpresas = loadEmpresas();
+  const posicao = recordId ? listaEmpresas.findIndex((e) => e.id === recordId) : -1;
+  const irPara = (indice: number) => {
+    const alvo = listaEmpresas[indice];
+    if (alvo) navigate(`/preparativos/cadastros/empresas/${alvo.id}`);
+  };
+
   const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));
+
 
   useEffect(() => {
     let cancelado = false;
