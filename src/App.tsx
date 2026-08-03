@@ -96,7 +96,13 @@ const AdmControles = lazy(() => import("./pages/contabil/administrativo/Controle
 
 const FinConciliacao = lazy(() => import("./pages/contabil/financeiro/operacional/ConciliacaoBancaria"));
 const FinDre = lazy(() => import("./pages/contabil/financeiro/demonstracoes/Dre"));
+const AprenderCentral = lazy(() => import("./pages/contabil/aprender/Central"));
+const AprenderTrilha = lazy(() => import("./pages/contabil/aprender/Trilha"));
+const AprenderLicao = lazy(() => import("./pages/contabil/aprender/Licao"));
+const AprenderGlossario = lazy(() => import("./pages/contabil/aprender/Glossario"));
+const AprenderPratica = lazy(() => import("./pages/contabil/aprender/Pratica"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+
 
 
 
