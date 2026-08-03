@@ -17,6 +17,7 @@ import {
   destinoTarefa, execKey, fecharPeriodo, modelosDoRegime, normalizarRegime,
   pendenciasCadastro, reabrirPeriodo, resumoFases, useGestao,
 } from "@/lib/gestaoStore";
+import { pendenciasGuias } from "@/lib/guiasStore";
 
 export default function Encerramentos() {
   const { empresa, empresas } = useEmpresaAtual();

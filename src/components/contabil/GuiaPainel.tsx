@@ -3,13 +3,13 @@ import {
   Banknote, Copy, QrCode, Barcode, FileClock, ShieldCheck, ArrowUpRight,
 } from "lucide-react";
 import {
-  Badge, Button, Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle,
+  Badge, Button, Input, Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle,
   Separator, Tabs, TabsContent, TabsList, TabsTrigger,
 } from "@/design-system/mj-design-system-db98fa";
 import { toast } from "sonner";
 import {
   brl, dataBR, registrarPagamento, estornarPagamento, conciliarPagamento,
-  emitirGuia, reemitirGuia, cancelarGuia, compensarGuia, hojeISO,
+  emitirGuia, reemitirGuia, cancelarGuia, compensarGuia, hojeISO, definirResponsavel,
   type Guia,
 } from "@/lib/guiasStore";
 
@@ -40,6 +40,7 @@ export default function GuiaPainel({
   onClose: () => void;
 }) {
   const [aba, setAba] = useState("dados");
+  const [resp, setResp] = useState("");
   const copiar = (texto: string, o: string) => {
     navigator.clipboard?.writeText(texto);
     toast.success(`${o} copiado`);
@@ -165,6 +166,27 @@ export default function GuiaPainel({
               <Separator className="my-2" />
               <Linha label="Situação" valor={guia.status} />
               <Linha label="Responsável" valor={guia.responsavel} />
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <Input
+                  className="h-9 min-w-0 flex-1 rounded-full"
+                  placeholder="Alterar responsável pela guia"
+                  value={resp}
+                  onChange={(e) => setResp(e.target.value)}
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-full"
+                  onClick={() => {
+                    if (!resp.trim()) return toast.error("Informe o novo responsável.");
+                    definirResponsavel(guia, resp.trim());
+                    setResp("");
+                    toast.success("Responsável atualizado.");
+                  }}
+                >
+                  Salvar
+                </Button>
+              </div>
               <Linha label="Origem da apuração" valor={guia.origem} />
             </div>
           </TabsContent>
