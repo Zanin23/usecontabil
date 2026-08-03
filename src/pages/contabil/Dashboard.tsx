@@ -149,13 +149,29 @@ export default function Dashboard() {
           <h1 className="font-display text-3xl md:text-4xl mt-2">
             Visão geral <span className="text-brand-orange">contábil</span>
           </h1>
-          <p className="text-sm text-muted-foreground mt-1.5">Competência 07/2026 — Metalúrgica Andrade S.A.</p>
+          <p className="text-sm text-muted-foreground mt-1.5">
+            Competência {formatCompetencia(competencia)} — {empresa ? empresa.razao : "nenhuma empresa selecionada"}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" className="rounded-md h-9">
-            <RefreshCw className="h-4 w-4 mr-1.5" /> Sincronizar ERP
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-md h-9"
+            onClick={() => {
+              window.dispatchEvent(new Event("focus"));
+              toast.success("Dados recarregados", {
+                description: `Competência ${formatCompetencia(competencia)}`,
+              });
+            }}
+          >
+            <RefreshCw className="h-4 w-4 mr-1.5" /> Atualizar dados
           </Button>
-          <Button size="sm" className="rounded-md h-9 bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground">
+          <Button
+            size="sm"
+            className="rounded-md h-9 bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground"
+            onClick={() => navigate("/preparativos/servicos/gestao")}
+          >
             <PlayCircle className="h-4 w-4 mr-1.5" /> Iniciar fechamento
           </Button>
         </div>
