@@ -442,7 +442,7 @@ function TributacaoCard({ kind }: { kind: TribKind }) {
           <Icon className={`h-4 w-4 ${s.accent}`} />
           <span className="text-sm font-medium text-foreground">{s.label}</span>
         </div>
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-brand-blue"><Plus className="h-4 w-4" /></Button>
+        
       </div>
       <div className="px-4 py-6 text-center text-xs text-muted-foreground">
         Nenhum registro. Adicione após salvar o cadastro base.
@@ -911,8 +911,8 @@ function SenhasSection({ onTip }: { onTip: (k: string) => void }) {
       </SectionCard>
 
       <div className="flex justify-center">
-        <Button variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">
-          Certificado Digital
+        <Button asChild variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">
+          <Link to="/preparativos/empresa/certificados">Certificado Digital</Link>
         </Button>
       </div>
     </>
@@ -935,8 +935,12 @@ function FiscalSection() {
         </div>
       </SectionCard>
       <div className="flex justify-center gap-3">
-        <Button variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">Emissor Cupom Fiscal</Button>
-        <Button variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">Complementos Diversos</Button>
+        <Button asChild variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">
+          <Link to="/fiscal/documentos/cupons">Emissor Cupom Fiscal</Link>
+        </Button>
+        <Button asChild variant="outline" className="rounded-full border-brand-blue/40 text-brand-blue">
+          <Link to="/preparativos/empresa/parametros">Complementos Diversos</Link>
+        </Button>
       </div>
     </>
   );
