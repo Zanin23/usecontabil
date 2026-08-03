@@ -243,7 +243,28 @@ export default function ContabilShell() {
               </div>
             );
           })}
+
+          <NavLink
+            to="/aprender"
+            title="Central de Aprendizado"
+            className={({ isActive }) =>
+              `flex items-center gap-3 rounded-lg py-2 text-sm border transition ${
+                recolhida ? "justify-center px-0" : "px-3"
+              } ${
+                isActive
+                  ? "bg-brand-orange/15 text-foreground border-brand-orange/30"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground border-transparent"
+              }`
+            }
+          >
+            {!recolhida && (
+              <span className="text-[10px] font-mono text-muted-foreground/70 w-5">06</span>
+            )}
+            <GraduationCap className="h-4 w-4 shrink-0" />
+            {!recolhida && <span>Aprender</span>}
+          </NavLink>
         </nav>
+
 
         <div className={`py-4 border-t border-border space-y-2 text-xs ${recolhida ? "px-2" : "px-4"}`}>
           <button
