@@ -239,16 +239,19 @@ function SectionCard({
 }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-2xl border border-border/70 bg-card/40 overflow-hidden">
+    <div className="rounded-xl border border-border/70 bg-card overflow-hidden shadow-sm">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-2.5 border-b border-border/70 bg-card/70"
+        className={`w-full flex items-center justify-between px-4 py-3 transition-colors ${open ? "bg-muted/30 border-b border-border/50" : "hover:bg-muted/20"}`}
       >
-        <span className="text-sm font-semibold text-foreground tracking-tight">{title}</span>
-        <ChevronDown className={`h-4 w-4 text-muted-foreground transition ${open ? "" : "-rotate-90"}`} />
+        <div className="flex items-center gap-2">
+          <div className={`h-1.5 w-1.5 rounded-full ${open ? "bg-brand-blue" : "bg-muted-foreground/30"}`} />
+          <span className="text-xs font-bold text-foreground uppercase tracking-widest">{title}</span>
+        </div>
+        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${open ? "" : "-rotate-90"}`} />
       </button>
-      {open && <div className="p-5">{children}</div>}
+      {open && <div className="p-5 bg-card/50">{children}</div>}
     </div>
   );
 }
