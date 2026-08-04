@@ -66,6 +66,7 @@ const SLIDES: Slide[] = [
       "Auditoria fiscal preventiva 24/7",
       "Camada de aprendizado integrada"
     ],
+    previewType: "icon",
   },
   {
     id: "dashboard",
@@ -80,6 +81,15 @@ const SLIDES: Slide[] = [
       "Alertas de bloqueio de fechamento",
       "Gráficos acessíveis e interativos"
     ],
+    previewType: "chart",
+    previewData: [
+      { mes: "Jan", receita: 450000, despesa: 320000 },
+      { mes: "Fev", receita: 520000, despesa: 340000 },
+      { mes: "Mar", receita: 480000, despesa: 310000 },
+      { mes: "Abr", receita: 610000, despesa: 380000 },
+      { mes: "Mai", receita: 590000, despesa: 360000 },
+      { mes: "Jun", receita: 720000, despesa: 410000 },
+    ]
   },
   {
     id: "fiscal",
@@ -94,6 +104,12 @@ const SLIDES: Slide[] = [
       "Gestão de Obrigações Acessórias (SPED)",
       "Calendário fiscal dinâmico por empresa"
     ],
+    previewType: "table",
+    previewData: [
+      { tributo: "ICMS Próprio", base: 461750, apagar: 29465, status: "Apurado" },
+      { tributo: "PIS/COFINS", base: 461750, apagar: 18684, status: "Apurado" },
+      { tributo: "ISS Municipal", base: 128500, apagar: 6425, status: "Conferência" },
+    ]
   },
   {
     id: "audit",
@@ -108,6 +124,12 @@ const SLIDES: Slide[] = [
       "Identificação de créditos extemporâneos",
       "Gestão de certidões e prazos críticos"
     ],
+    previewType: "table",
+    previewData: [
+      { ref: "NF-e 10267", erro: "XML sem escrituração", impacto: "Crédito perdido", nivel: "Crítico" },
+      { ref: "NF-e 10281", erro: "Alíquota divergente", impacto: "ICMS a maior", nivel: "Alerta" },
+      { ref: "CT-e 3308", erro: "CFOP incompatível", impacto: "Reclassificação", nivel: "Informativo" },
+    ]
   },
   {
     id: "admin",
@@ -122,6 +144,12 @@ const SLIDES: Slide[] = [
       "Ciclo de compras e suprimentos",
       "Gestão de alçadas e permissões"
     ],
+    previewType: "kpis",
+    previewData: [
+      { label: "Contratos Ativos", valor: "142", sub: "+5 este mês" },
+      { label: "Patrimônio Total", valor: brl(1450200), sub: "86 bens" },
+      { label: "Pedidos Compra", valor: "28", sub: "12 pendentes" },
+    ]
   },
   {
     id: "learning",
@@ -136,6 +164,7 @@ const SLIDES: Slide[] = [
       "Trilhas de conhecimento por área",
       "Glossário técnico integrado ao Ctrl+K"
     ],
+    previewType: "icon",
   },
   {
     id: "tech",
@@ -150,8 +179,10 @@ const SLIDES: Slide[] = [
       "Busca inteligente de funcionalidades",
       "Geração de documentação automática"
     ],
+    previewType: "icon",
   }
 ];
+
 
 export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => void }) {
   const [current, setCurrent] = useState(0);
