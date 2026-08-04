@@ -3,10 +3,12 @@ import { Link, useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import {
   GraduationCap, BookOpen, Info, Loader2, Send, Sparkles, X, CheckCircle2, FlaskConical,
+  BrainCircuit,
 } from "lucide-react";
 import {
   Badge, Button, Input, Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
 } from "@/design-system/mj-design-system-db98fa";
+import { usePratica } from "@/lib/praticaStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AVISO_SIMULACAO, licaoDaRota } from "@/lib/aprendizado/conteudo";
@@ -31,6 +33,7 @@ export default function AjudaTela() {
   const { pathname } = useLocation();
   const licao = useMemo(() => licaoDaRota(pathname), [pathname]);
   const [aberto, setAberto] = useState(false);
+  const { praticaAtiva } = usePratica();
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [pergunta, setPergunta] = useState("");
   const [carregando, setCarregando] = useState(false);
@@ -65,9 +68,10 @@ export default function AjudaTela() {
         body: {
           messages: novas,
           contexto: {
-            modo: "aprendizado",
-            instrucao:
-              "Responda em tom didático, explicando o PORQUÊ e o COMO FUNCIONA, não apenas onde clicar. Use exemplos numéricos curtos quando ajudar.",
+            modo: praticaAtiva ? "pratica" : "aprendizado",
+            instrucao: praticaAtiva
+              ? "Você é um Tutor Contábil em Modo Prática. O usuário está usando o sistema real como laboratório. Explique cada campo, sugira valores de teste e explique o impacto contábil/fiscal de cada ação nesta tela específica."
+              : "Responda em tom didático, explicando o PORQUÊ e o COMO FUNCIONA, não apenas onde clicar. Use exemplos numéricos curtos quando ajudar.",
             tela: pathname,
             licao: {
               titulo: licao.titulo,
@@ -99,15 +103,21 @@ export default function AjudaTela() {
   return (
     <>
       <Button
-        variant="outline"
+        variant={praticaAtiva ? "default" : "outline"}
         size="sm"
-        className="rounded-md h-9 gap-2"
+        className={`rounded-md h-9 gap-2 ${
+          praticaAtiva 
+            ? "bg-brand-orange text-primary-foreground hover:bg-brand-orange/90 shadow-glow animate-pulse-soft" 
+            : ""
+        }`}
         onClick={() => setAberto(true)}
-        title="Entender esta tela"
-        aria-label="Entender esta tela"
+        title={praticaAtiva ? "Tutor de Aprendizado Prático" : "Entender esta tela"}
+        aria-label={praticaAtiva ? "Tutor de Aprendizado Prático" : "Entender esta tela"}
       >
-        <GraduationCap className="h-4 w-4" />
-        <span className="hidden 2xl:inline">Entender esta tela</span>
+        {praticaAtiva ? <BrainCircuit className="h-4 w-4" /> : <GraduationCap className="h-4 w-4" />}
+        <span className="hidden 2xl:inline">
+          {praticaAtiva ? "Tutor Prático" : "Entender esta tela"}
+        </span>
       </Button>
 
       <Sheet open={aberto} onOpenChange={setAberto}>
@@ -121,8 +131,15 @@ export default function AjudaTela() {
                 {licao.area}
               </Badge>
             </div>
-            <SheetTitle className="font-display text-2xl">{licao.titulo}</SheetTitle>
-            <SheetDescription>{licao.resumo}</SheetDescription>
+            <SheetTitle className="font-display text-2xl flex items-center gap-2">
+              {praticaAtiva && <BrainCircuit className="h-5 w-5 text-brand-orange" />}
+              {praticaAtiva ? `Tutor Prático: ${licao.titulo}` : licao.titulo}
+            </SheetTitle>
+            <SheetDescription>
+              {praticaAtiva 
+                ? "Você está em Modo Prática. Use o sistema para aprender fazendo, com ajuda da IA em tempo real." 
+                : licao.resumo}
+            </SheetDescription>
           </SheetHeader>
 
           <div className="mt-6 space-y-6 text-sm">
@@ -202,11 +219,17 @@ export default function AjudaTela() {
 
             <section className="rounded-2xl border border-border bg-card p-4">
               <h3 className="flex items-center gap-2 font-display text-lg">
-                <Sparkles className="h-4 w-4 text-brand-orange" />
-                Perguntar à IA
+                {praticaAtiva ? (
+                  <BrainCircuit className="h-4 w-4 text-brand-orange" />
+                ) : (
+                  <Sparkles className="h-4 w-4 text-brand-orange" />
+                )}
+                {praticaAtiva ? "Tutor Contábil (IA)" : "Perguntar à IA"}
               </h3>
               <p className="mt-1 text-xs text-muted-foreground">
-                Pergunte o porquê, não só o onde clicar.
+                {praticaAtiva 
+                  ? "Em modo prática, a IA explica como cada dado que você digitar afeta a contabilidade real."
+                  : "Pergunte o porquê, não só o onde clicar."}
               </p>
 
               <div className="mt-3 flex flex-wrap gap-2">

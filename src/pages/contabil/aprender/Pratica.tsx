@@ -12,7 +12,7 @@ import {
   type EntradaDifal, type EntradaPisCofins, type EntradaRetencoes, type EntradaSimples, type LabId,
   type Passo,
 } from "@/lib/aprendizado/labs";
-import { usePratica } from "@/lib/praticaStore";
+import { usePratica, setPraticaAtiva } from "@/lib/praticaStore";
 
 const PADRAO_SIMPLES: EntradaSimples = {
   rbt12: 1_200_000,
@@ -94,7 +94,7 @@ function CampoNumero({
 
 export default function PraticaAprendizado() {
   const [params, setParams] = useSearchParams();
-  const { praticaAtiva, setPraticaAtiva } = usePratica();
+  const { praticaAtiva } = usePratica();
   const labParam = params.get("lab") as LabId | null;
   const labInicial: LabId = LABS.some((l) => l.id === labParam) ? (labParam as LabId) : "simples";
   const [aba, setAba] = useState(labInicial);

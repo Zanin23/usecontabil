@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import NotificacoesPainel from "@/components/contabil/NotificacoesPainel";
 import AjudaTela from "@/components/contabil/AjudaTela";
-import { usePratica } from "@/lib/praticaStore";
+import { usePratica, setPraticaAtiva } from "@/lib/praticaStore";
 
 
 import { useEmpresaAtual } from "@/lib/empresaAtual";
@@ -30,7 +30,7 @@ export default function ContabilShell() {
   useTema();
   const { prefs } = usePreferencias();
   const [configAberta, setConfigAberta] = useState(false);
-  const { praticaAtiva: emPratica, setPraticaAtiva } = usePratica();
+  const { praticaAtiva: emPratica } = usePratica();
 
 
   useEffect(() => {
@@ -127,7 +127,9 @@ export default function ContabilShell() {
       <aside
         className={`fixed inset-y-0 left-0 z-50 border-r border-border bg-card lg:bg-card/60 backdrop-blur flex flex-col transition-[width,transform] duration-200 ${
           recolhida ? "lg:w-16" : "lg:w-64"
-        } w-64 ${menuAberto ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+        } w-64 ${menuAberto ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 ${
+          emPratica ? "ring-2 ring-inset ring-brand-orange/40" : ""
+        }`}
       >
         <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-brand z-10" />
         <div className={`h-14 flex items-center border-b border-border ${recolhida ? "px-3" : "px-5"}`}>
@@ -268,6 +270,29 @@ export default function ContabilShell() {
             <GraduationCap className="h-4 w-4 shrink-0" />
             {!recolhida && <span>Aprender</span>}
           </NavLink>
+
+          <div className={`pt-2 ${recolhida ? "px-1" : "px-3"}`}>
+            <button
+              onClick={() => setPraticaAtiva(!emPratica)}
+              className={`w-full flex items-center gap-3 rounded-lg py-2 text-xs border transition ${
+                recolhida ? "justify-center px-0" : "px-3"
+              } ${
+                emPratica
+                  ? "bg-brand-orange text-primary-foreground border-brand-orange shadow-glow"
+                  : "bg-card text-muted-foreground border-border hover:border-brand-orange/50"
+              }`}
+            >
+              <FlaskConical className={`h-4 w-4 shrink-0 ${emPratica ? "animate-pulse" : ""}`} />
+              {!recolhida && (
+                <div className="text-left leading-tight">
+                  <div className="font-medium">Modo Prática</div>
+                  <div className={`text-[9px] ${emPratica ? "text-primary-foreground/80" : "text-muted-foreground/70"}`}>
+                    {emPratica ? "Ativado" : "Desativado"}
+                  </div>
+                </div>
+              )}
+            </button>
+          </div>
         </nav>
 
 
