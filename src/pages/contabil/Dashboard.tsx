@@ -15,8 +15,9 @@ import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line,
   Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
-import { brl, empresaDB, useTributario, type DocumentoFiscal } from "@/lib/tributarioStore";
+import { brl, empresaDB, useTributario, type DocumentoFiscal, processarDocumento } from "@/lib/tributarioStore";
 import { usePratica } from "@/lib/praticaStore";
+import { useDocsFiscais, valorBR } from "@/lib/fiscalStore";
 
 const toneMap = {
   success: "text-success",
@@ -136,7 +137,64 @@ export default function Dashboard() {
   const [openKpi, setOpenKpi] = useState<string | null>(null);
   const { praticaAtiva: emPratica } = usePratica();
 
-  const documentos = useTributario(() => empresaDB(empresaId).documentos, [empresaId]);
+  const docsTributario = useTributario(() => empresaDB(empresaId).documentos, [empresaId]);
+  const docsSaida = useDocsFiscais("saidas", empresaId, competencia);
+  const docsEntrada = useDocsFiscais("entradas", empresaId, competencia);
+  const docsServTomados = useDocsFiscais("servicos-tomados", empresaId, competencia);
+  const docsServPrestados = useDocsFiscais("servicos-prestados", empresaId, competencia);
+
+  const documentos = useMemo(() => {
+    // 1. Pegar documentos do motor tributário (que já estão processados)
+    // 2. Tentar encontrar equivalentes nos documentos operacionais (FiscalStore)
+    // 3. Se houver documentos operacionais novos que não estão no TributárioStore, processá-los on-the-fly
+    
+    // NOTA: Para este projeto, o Dashboard lê do TributarioStore. 
+    // Se o usuário lançou em "Fiscal > Documentos", esses dados precisam chegar aqui.
+    // Vamos unificar os documentos dos dois stores.
+    
+    const docsFiscaisStore: DocumentoFiscal[] = [];
+    
+    const converter = (d: any, grupo: any, tipo: any): DocumentoFiscal => {
+      const valor = valorBR(d.valor || d.valorTotal);
+      return processarDocumento({
+        id: d.id,
+        empresaId: d.empresaId,
+        competencia: d.competencia,
+        grupo: grupo,
+        tipo: tipo,
+        numero: d.numero || "",
+        serie: d.serie || "",
+        emissao: d.data?.split('/').reverse().join('-') || d.emissao || "",
+        participante: d.participante || "",
+        participanteDoc: d.cnpj || d.participanteDoc || "",
+        ufOrigem: "SP", // Fallback
+        ufDestino: "SP",
+        contribuinte: true,
+        consumidorFinal: false,
+        regime: empresa?.regime || "Lucro Presumido",
+        itens: [{ id: "it-1", descricao: d.tipo || "Item", tipo: "produto", quantidade: 1, unitario: valor }],
+        valorProdutos: valor,
+        valorTotal: valor,
+        status: (d.status === "Autorizada" || d.status === "Autorizado") ? "Autorizado" : "Rascunho",
+        tributos: { icms: valorBR(d.icms), pis: 0, cofins: 0, ipi: 0, iss: 0, irrf: 0, inss: 0, csll: 0, retencoes: 0, icmsSt: 0, difal: 0, fcp: 0, total: valorBR(d.icms) },
+        memoria: [],
+        regrasAplicadas: [],
+        alertas: [],
+        eventos: []
+      }, empresaId);
+    };
+
+    docsSaida.forEach(d => docsFiscaisStore.push(converter(d, "faturamento", "NF-e")));
+    docsEntrada.forEach(d => docsFiscaisStore.push(converter(d, "demais", "Nota de entrada")));
+    docsServTomados.forEach(d => docsFiscaisStore.push(converter(d, "servicos", "NFS-e")));
+    docsServPrestados.forEach(d => docsFiscaisStore.push(converter(d, "servicos", "NFS-e")));
+
+    // Unificar removendo duplicatas por ID
+    const idsOperacionais = new Set(docsFiscaisStore.map(d => d.id));
+    const docsTributarioFiltrados = docsTributario.filter(d => !idsOperacionais.has(d.id));
+
+    return [...docsTributarioFiltrados, ...docsFiscaisStore];
+  }, [docsTributario, docsSaida, docsEntrada, docsServTomados, docsServPrestados, empresaId, empresa?.regime]);
 
   const d = useMemo(() => {
     const doMes = documentos.filter((x) => x.competencia === competencia && valido(x));
