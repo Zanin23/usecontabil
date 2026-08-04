@@ -695,34 +695,63 @@ export default function EmpresaCadastro() {
 
   return (
     <div className="space-y-4 -mx-2">
-      <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
-        <div className="flex min-w-0 items-center gap-2">
-          <Building2 className="h-5 w-5 shrink-0 text-brand-blue" />
-          <h1 className="min-w-0 text-lg font-semibold text-foreground">Empresas — Novo cadastro</h1>
-
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border/50">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-brand-blue/10 border border-brand-blue/20 grid place-items-center shrink-0">
+            <Building2 className="h-5 w-5 text-brand-blue" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-xl font-display font-bold text-foreground truncate">
+              {recordId ? "Editar Empresa" : "Novo Cadastro de Empresa"}
+            </h1>
+            <p className="text-xs text-muted-foreground">Cadastre os dados básicos, fiscais e societários da unidade</p>
+          </div>
         </div>
-        {!assistantOpen && (
+        
+        <div className="flex items-center gap-2">
+          {!assistantOpen && (
+            <Button
+              variant="outline" size="sm"
+              className="rounded-full border-brand-blue/40 text-brand-blue hover:bg-brand-blue/5 h-9"
+              onClick={() => setAssistantOpen(true)}
+            >
+              <Sparkles className="h-3.5 w-3.5 mr-2 animate-pulse" /> Assistente de IA
+            </Button>
+          )}
           <Button
-            variant="outline" size="sm"
-            className="rounded-full border-brand-blue/40 text-brand-blue"
-            onClick={() => setAssistantOpen(true)}
+            variant="ghost" size="sm"
+            className="rounded-full h-9 text-muted-foreground hover:text-foreground"
+            asChild
           >
-            <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Abrir assistente
+            <Link to="/preparativos/cadastros/empresas">
+              <ArrowLeft className="h-4 w-4 mr-2" /> Voltar
+            </Link>
           </Button>
-        )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-3 space-y-4">
+      <div className="grid grid-cols-12 gap-5 pt-2">
+        <div className="col-span-12 lg:col-span-3 space-y-4">
           <LeftPanel form={form} posicao={posicao} total={listaEmpresas.length} irPara={irPara} />
         </div>
 
-        <div className="col-span-6">
-          <Card className="rounded-2xl border-border/70">
-            <CardContent className="p-4 space-y-4">
-              <h2 className="text-center text-base font-semibold text-foreground">
-                {SECTION_TITLES[section]}
-              </h2>
+        <div className="col-span-12 lg:col-span-6">
+          <Card className="rounded-2xl border-border/70 shadow-sm overflow-hidden">
+            <div className="bg-muted/30 border-b border-border/70 px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {SECTION_TABS.find(t => t.key === section)?.icon && (
+                  (() => {
+                    const Icon = SECTION_TABS.find(t => t.key === section)?.icon;
+                    return <Icon className="h-4 w-4 text-brand-blue" />;
+                  })()
+                )}
+                <h2 className="text-sm font-bold text-foreground">
+                  {SECTION_TITLES[section]}
+                </h2>
+              </div>
+              <Badge variant="outline" className="text-[10px] font-mono">STEP {SECTION_TABS.findIndex(t => t.key === section) + 1}/4</Badge>
+            </div>
+            <CardContent className="p-6 space-y-6">
 
               {section === "dados" && (
                 <DadosSection
