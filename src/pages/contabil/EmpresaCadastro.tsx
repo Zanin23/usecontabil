@@ -7,14 +7,14 @@ import { formatAtividade, loadAtividades, useAtividades } from "@/lib/atividades
 import {
   Button, Card, CardContent, Input, Label, Separator,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-  Tabs, TabsList, TabsTrigger,
+  Tabs, TabsList, TabsTrigger, Badge, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/design-system/mj-design-system-db98fa";
 import {
   ArrowLeft, Building2, ChevronDown, ChevronLeft, ChevronRight,
   ChevronsLeft, ChevronsRight, Search, Plus, FileText, Trash2, Check,
   Landmark, KeyRound, Users2, DollarSign, FileSignature,
   Users, MessageSquare, HelpCircle, CircleAlert, Sparkles, Loader2,
-  Lightbulb, ExternalLink, Wand2, X, GripVertical,
+  Lightbulb, ExternalLink, Wand2, X, GripVertical, Info, History, MapPin, Phone, Mail,
 } from "lucide-react";
 
 type SectionKey = "dados" | "senhas" | "fiscal" | "societario";
@@ -193,7 +193,7 @@ async function fetchCep(cep: string) {
 
 // Uniform sizing/appearance for every input, select-trigger and textarea in this form.
 const INPUT_CLASS =
-  "h-10 rounded-lg bg-background/60 border-border/70 text-sm text-foreground placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-brand-blue/60 focus-visible:border-brand-blue/60";
+  "h-10 rounded-lg bg-background border-border/60 text-sm text-foreground placeholder:text-muted-foreground/40 focus-visible:ring-1 focus-visible:ring-brand-blue/60 focus-visible:border-brand-blue/60 transition-all hover:border-brand-blue/40";
 
 function Field({
   label, required, children, className = "", tipKey, onFocusTip, hint,
@@ -204,18 +204,32 @@ function Field({
 }) {
   return (
     <div
-      className={`space-y-1 ${className}`}
+      className={`space-y-1.5 ${className}`}
       onFocus={() => tipKey && onFocusTip?.(tipKey)}
     >
-      <Label className="text-xs font-medium text-foreground/80 flex items-center gap-1 leading-none">
-        <span className="truncate">{label}</span>
-        {required && <span className="text-destructive">*</span>}
+      <div className="flex items-center justify-between">
+        <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
+          {label}
+          {required && <span className="text-destructive font-bold">*</span>}
+        </Label>
         {tipKey && TIPS[tipKey] && (
-          <HelpCircle className="h-3 w-3 text-brand-blue/70 shrink-0" />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-3 w-3 text-brand-blue/50 cursor-help hover:text-brand-blue transition-colors" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[200px] text-[10px]">{TIPS[tipKey].title}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
-      </Label>
-      {children}
-      {hint && <p className="text-[11px] text-muted-foreground leading-tight">{hint}</p>}
+      </div>
+      <div className="relative group">
+        {children}
+        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity">
+          <div className="h-1.5 w-1.5 rounded-full bg-brand-blue" />
+        </div>
+      </div>
+      {hint && <p className="text-[10px] text-muted-foreground/80 leading-tight italic px-1">{hint}</p>}
     </div>
   );
 }
@@ -225,26 +239,29 @@ function SectionCard({
 }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-2xl border border-border/70 bg-card/40 overflow-hidden">
+    <div className="rounded-xl border border-border/70 bg-card overflow-hidden shadow-sm">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-2.5 border-b border-border/70 bg-card/70"
+        className={`w-full flex items-center justify-between px-4 py-3 transition-colors ${open ? "bg-muted/30 border-b border-border/50" : "hover:bg-muted/20"}`}
       >
-        <span className="text-sm font-semibold text-foreground tracking-tight">{title}</span>
-        <ChevronDown className={`h-4 w-4 text-muted-foreground transition ${open ? "" : "-rotate-90"}`} />
+        <div className="flex items-center gap-2">
+          <div className={`h-1.5 w-1.5 rounded-full ${open ? "bg-brand-blue" : "bg-muted-foreground/30"}`} />
+          <span className="text-xs font-bold text-foreground uppercase tracking-widest">{title}</span>
+        </div>
+        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${open ? "" : "-rotate-90"}`} />
       </button>
-      {open && <div className="p-5">{children}</div>}
+      {open && <div className="p-5 bg-card/50">{children}</div>}
     </div>
   );
 }
 
 function InlineDivider({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 mt-6 mb-4">
-      <div className="flex-1 h-px bg-border/70" />
-      <span className="text-[11px] uppercase tracking-[0.22em] text-brand-blue font-semibold">{children}</span>
-      <div className="flex-1 h-px bg-border/70" />
+    <div className="flex items-center gap-4 mt-8 mb-6">
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-border/70" />
+      <span className="text-[10px] uppercase tracking-[0.3em] text-brand-blue font-bold opacity-80">{children}</span>
+      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-border/70" />
     </div>
   );
 }
@@ -267,61 +284,147 @@ function LeftPanel({
   const cnpjMasked = form.cnpj || "—";
   const semLista = total === 0;
   return (
-    <Card className="rounded-2xl border-border/70">
-      <CardContent className="p-4 space-y-4">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Primeiro registro"
-              disabled={semLista || posicao <= 0} onClick={() => irPara(0)}><ChevronsLeft className="h-4 w-4" /></Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Registro anterior"
-              disabled={semLista || posicao <= 0} onClick={() => irPara(posicao - 1)}><ChevronLeft className="h-4 w-4" /></Button>
+    <Card className="rounded-2xl border-border/70 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      <div className="bg-brand-blue/5 border-b border-border/70 p-4">
+        <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
+          <div className="flex items-center gap-1">
+            <History className="h-3 w-3" />
+            Navegação
           </div>
-          <span className="font-mono">
-            {posicao >= 0 ? `Registro ${posicao + 1} de ${total}` : "Novo Registro"}
-          </span>
-          <div className="flex items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Próximo registro"
-              disabled={semLista || posicao >= total - 1} onClick={() => irPara(posicao + 1)}><ChevronRight className="h-4 w-4" /></Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Último registro"
-              disabled={semLista || posicao >= total - 1} onClick={() => irPara(total - 1)}><ChevronsRight className="h-4 w-4" /></Button>
+          <Badge variant="outline" className="h-5 px-1.5 font-mono text-[10px] border-border/60">
+            {posicao >= 0 ? `${posicao + 1} / ${total}` : "NOVO"}
+          </Badge>
+        </div>
+        
+        <div className="flex items-center justify-between gap-1">
+          <div className="flex items-center gap-1">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg bg-background"
+                    disabled={semLista || posicao <= 0} onClick={() => irPara(0)}><ChevronsLeft className="h-4 w-4" /></Button>
+                </TooltipTrigger>
+                <TooltipContent>Primeiro</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg bg-background"
+                    disabled={semLista || posicao <= 0} onClick={() => irPara(posicao - 1)}><ChevronLeft className="h-4 w-4" /></Button>
+                </TooltipTrigger>
+                <TooltipContent>Anterior</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg bg-background"
+                    disabled={semLista || posicao >= total - 1} onClick={() => irPara(posicao + 1)}><ChevronRight className="h-4 w-4" /></Button>
+                </TooltipTrigger>
+                <TooltipContent>Próximo</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg bg-background"
+                    disabled={semLista || posicao >= total - 1} onClick={() => irPara(total - 1)}><ChevronsRight className="h-4 w-4" /></Button>
+                </TooltipTrigger>
+                <TooltipContent>Último</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
+      </div>
+
+      <CardContent className="p-4 space-y-5">
+        <div className="flex flex-col items-center text-center space-y-3">
+          <div className="relative">
+            <div className="h-20 w-20 rounded-2xl bg-brand-blue/10 border-2 border-brand-blue/20 grid place-items-center">
+              <Building2 className="h-10 w-10 text-brand-blue/70" />
+            </div>
+            {posicao === -1 && (
+              <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-brand-blue border-2 border-card grid place-items-center">
+                <Plus className="h-3 w-3 text-white" />
+              </div>
+            )}
+          </div>
+          
+          <div className="space-y-1 w-full">
+            <div className="font-display text-lg font-semibold text-foreground leading-tight line-clamp-2" title={displayName}>
+              {displayName}
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Badge variant="secondary" className="font-mono text-[10px] tracking-tighter py-0">
+                {cnpjMasked}
+              </Badge>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-start justify-between">
-          <span className="h-8 w-8" />
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+              <div className="h-px flex-1 bg-border/50" />
+              Resumo Operacional
+              <div className="h-px flex-1 bg-border/50" />
+            </div>
+            
+            <div className="grid gap-3">
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 h-6 w-6 rounded bg-muted/50 grid place-items-center shrink-0">
+                  <Phone className="h-3 w-3 text-muted-foreground" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] text-muted-foreground leading-none mb-0.5">Telefone</div>
+                  <div className="text-xs font-medium truncate">{form.contatoTel || "—"}</div>
+                </div>
+              </div>
 
-          <div className="h-16 w-16 rounded-full bg-muted grid place-items-center border border-border">
-            <Building2 className="h-7 w-7 text-muted-foreground" />
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 h-6 w-6 rounded bg-muted/50 grid place-items-center shrink-0">
+                  <FileText className="h-3 w-3 text-muted-foreground" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] text-muted-foreground leading-none mb-0.5">Atividade Principal</div>
+                  <div className="text-xs font-medium line-clamp-2 leading-snug" title={form.cnaeDesc}>
+                    {form.cnaeDesc || "—"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 h-6 w-6 rounded bg-muted/50 grid place-items-center shrink-0">
+                  <MapPin className="h-3 w-3 text-muted-foreground" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] text-muted-foreground leading-none mb-0.5">Localização</div>
+                  <div className="text-xs font-medium truncate">
+                    {form.municipio ? `${form.municipio} - ${form.uf}` : "—"}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <span className="h-2.5 w-2.5 rounded-full bg-warn mt-2" title="Rascunho" />
+
+          <div className="pt-2">
+            <div className={`rounded-xl p-3 text-xs flex items-center justify-between ${posicao === -1 ? 'bg-warn/10 text-warn border border-warn/20' : 'bg-success/10 text-success border border-success/20'}`}>
+              <div className="flex items-center gap-2">
+                <div className={`h-2 w-2 rounded-full ${posicao === -1 ? 'bg-warn animate-pulse' : 'bg-success'}`} />
+                <span className="font-semibold">{posicao === -1 ? 'Rascunho' : 'Cadastrado'}</span>
+              </div>
+              <span className="text-[10px] opacity-70">
+                {form.aberturaRF ? `Início: ${form.aberturaRF}` : ""}
+              </span>
+            </div>
+          </div>
         </div>
-
-        <div className="text-center space-y-2">
-          <div className="font-semibold text-foreground leading-tight truncate" title={displayName}>
-            {displayName}
-          </div>
-          <div className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
-            <Building2 className="h-3.5 w-3.5" /> Código: <span className="text-brand-blue">—</span>
-          </div>
-          <div className="text-xs text-muted-foreground">
-            Cnpj : <span className="text-brand-blue">{cnpjMasked}</span>
-          </div>
-        </div>
-
-        <Separator />
-
-        <dl className="space-y-2.5 text-xs">
-          <div><dt className="text-muted-foreground">Telefone</dt>
-            <dd className="text-foreground font-medium">{form.contatoTel || "—"}</dd></div>
-          <div><dt className="text-muted-foreground">Cnae - Descrição</dt>
-            <dd className="text-foreground font-medium truncate" title={form.cnaeDesc}>{form.cnaeDesc || "—"}</dd></div>
-          <div><dt className="text-muted-foreground">Abertura - Receita Federal</dt>
-            <dd className="text-foreground font-medium">{form.aberturaRF || "—"}</dd></div>
-          <div><dt className="text-muted-foreground">Início contrato</dt>
-            <dd className="text-foreground font-medium">{form.inicioContrato || "—"}</dd></div>
-          <div><dt className="text-muted-foreground">Tipo cadastro</dt>
-            <dd className="text-warn font-medium">Rascunho</dd></div>
-        </dl>
       </CardContent>
     </Card>
   );
@@ -609,34 +712,63 @@ export default function EmpresaCadastro() {
 
   return (
     <div className="space-y-4 -mx-2">
-      <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
-        <div className="flex min-w-0 items-center gap-2">
-          <Building2 className="h-5 w-5 shrink-0 text-brand-blue" />
-          <h1 className="min-w-0 text-lg font-semibold text-foreground">Empresas — Novo cadastro</h1>
-
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border/50">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-brand-blue/10 border border-brand-blue/20 grid place-items-center shrink-0">
+            <Building2 className="h-5 w-5 text-brand-blue" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-xl font-display font-bold text-foreground truncate">
+              {recordId ? "Editar Empresa" : "Novo Cadastro de Empresa"}
+            </h1>
+            <p className="text-xs text-muted-foreground">Cadastre os dados básicos, fiscais e societários da unidade</p>
+          </div>
         </div>
-        {!assistantOpen && (
+        
+        <div className="flex items-center gap-2">
+          {!assistantOpen && (
+            <Button
+              variant="outline" size="sm"
+              className="rounded-full border-brand-blue/40 text-brand-blue hover:bg-brand-blue/5 h-9"
+              onClick={() => setAssistantOpen(true)}
+            >
+              <Sparkles className="h-3.5 w-3.5 mr-2 animate-pulse" /> Assistente de IA
+            </Button>
+          )}
           <Button
-            variant="outline" size="sm"
-            className="rounded-full border-brand-blue/40 text-brand-blue"
-            onClick={() => setAssistantOpen(true)}
+            variant="ghost" size="sm"
+            className="rounded-full h-9 text-muted-foreground hover:text-foreground"
+            asChild
           >
-            <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Abrir assistente
+            <Link to="/preparativos/cadastros/empresas">
+              <ArrowLeft className="h-4 w-4 mr-2" /> Voltar
+            </Link>
           </Button>
-        )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-3 space-y-4">
+      <div className="grid grid-cols-12 gap-5 pt-2">
+        <div className="col-span-12 lg:col-span-3 space-y-4">
           <LeftPanel form={form} posicao={posicao} total={listaEmpresas.length} irPara={irPara} />
         </div>
 
-        <div className="col-span-6">
-          <Card className="rounded-2xl border-border/70">
-            <CardContent className="p-4 space-y-4">
-              <h2 className="text-center text-base font-semibold text-foreground">
-                {SECTION_TITLES[section]}
-              </h2>
+        <div className="col-span-12 lg:col-span-6">
+          <Card className="rounded-2xl border-border/70 shadow-sm overflow-hidden">
+            <div className="bg-muted/30 border-b border-border/70 px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {SECTION_TABS.find(t => t.key === section)?.icon && (
+                  (() => {
+                    const Icon = SECTION_TABS.find(t => t.key === section)?.icon;
+                    return <Icon className="h-4 w-4 text-brand-blue" />;
+                  })()
+                )}
+                <h2 className="text-sm font-bold text-foreground">
+                  {SECTION_TITLES[section]}
+                </h2>
+              </div>
+              <Badge variant="outline" className="text-[10px] font-mono">STEP {SECTION_TABS.findIndex(t => t.key === section) + 1}/4</Badge>
+            </div>
+            <CardContent className="p-6 space-y-6">
 
               {section === "dados" && (
                 <DadosSection
@@ -652,40 +784,54 @@ export default function EmpresaCadastro() {
                 <SocietarioSection onTip={tipFocus} form={form} set={set} />
               )}
 
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                <div className="flex flex-wrap gap-2">
-
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-border/70">
+                <div className="flex items-center gap-2">
                   <Button
-                    className="rounded-full bg-brand-blue text-white hover:bg-brand-blue/90 px-6"
+                    className="rounded-full bg-brand-blue text-white hover:bg-brand-blue/90 px-8 h-10 font-bold shadow-glow"
                     onClick={handleSalvar}
                     disabled={saving}
                   >
-                    {saving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Salvando…</> : "Salvar"}
+                    {saving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Salvando…</> : "Salvar Cadastro"}
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="rounded-full"
-                    onClick={() => { setForm(EMPTY_FORM); toast("Formulário limpo"); }}
-                  >
-                    Limpar
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="rounded-full h-10 w-10 text-muted-foreground border-border/70"
+                          onClick={() => { setForm(EMPTY_FORM); toast("Formulário limpo"); }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Limpar formulário</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
-                <div className="flex flex-wrap items-center gap-1">
+
+                <div className="flex items-center p-1 bg-muted/50 rounded-full border border-border/50">
                   {SECTION_TABS.map((t) => {
                     const Icon = t.icon;
                     const active = section === t.key;
                     return (
-                      <button
-                        key={t.key}
-                        onClick={() => setSection(t.key)}
-                        title={t.label}
-                        className={`h-9 w-9 grid place-items-center rounded-full transition ${
-                          active ? "bg-brand-blue/15 text-brand-blue"
-                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                        }`}
-                      >
-                        <Icon className="h-4 w-4" />
-                      </button>
+                      <TooltipProvider key={t.key}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setSection(t.key)}
+                              className={`h-8 px-3 flex items-center gap-2 rounded-full transition-all ${
+                                active ? "bg-card text-brand-blue shadow-sm border border-border/40"
+                                  : "text-muted-foreground hover:text-foreground"
+                              }`}
+                            >
+                              <Icon className="h-3.5 w-3.5" />
+                              {active && <span className="text-[10px] font-bold uppercase tracking-wider">{t.label.split(' ')[0]}</span>}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>{t.label}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     );
                   })}
                 </div>
@@ -730,10 +876,13 @@ function DadosSection({
   const btn = "h-10 rounded-lg shrink-0 border-brand-blue/40 text-brand-blue hover:bg-brand-blue/10";
   return (
     <>
-      <div className="rounded-xl border border-brand-blue/25 bg-brand-blue/5 p-3 flex items-start gap-3">
-        <Wand2 className="h-4 w-4 text-brand-blue shrink-0 mt-0.5" />
-        <div className="text-xs text-foreground/90">
-          <span className="font-medium">Preenchimento automático:</span> informe o CNPJ e clique em <b>Buscar CNPJ</b> para trazer razão social, endereço, CNAE, telefone e abertura direto da Receita Federal.
+      <div className="rounded-xl border border-brand-blue/20 bg-brand-blue/5 p-4 flex items-start gap-4 shadow-sm">
+        <div className="h-8 w-8 rounded-full bg-brand-blue/10 flex items-center justify-center shrink-0">
+          <Wand2 className="h-4 w-4 text-brand-blue" />
+        </div>
+        <div className="text-xs text-foreground/80 leading-relaxed">
+          <span className="font-bold text-brand-blue uppercase tracking-tighter mr-1.5">Dica de Produtividade:</span>
+          Informe apenas o CNPJ e clique em <b>Buscar CNPJ</b>. O sistema preencherá automaticamente razão social, endereço, CNAE e dados de abertura via API da Receita Federal.
         </div>
       </div>
 
@@ -1004,25 +1153,30 @@ function SocietarioSection({
             </Select>
           </Field>
           <Field label="Classe de Atividade" className="col-span-9">
-            <div className="flex items-center gap-2">
-              <Select
-                value={form.classeAtividadeId}
-                onValueChange={(v) => set({ classeAtividadeId: v })}
-              >
-                <SelectTrigger className={INPUT_CLASS}>
-                  <SelectValue placeholder="Selecione a classe cadastrada…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {atividades
-                    .filter((a) => a.status === "Ativa")
-                    .map((a) => (
-                      <SelectItem key={a.id} value={a.id}>{formatAtividade(a)}</SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-              <Button asChild variant="outline" size="sm" className="rounded-full shrink-0">
-                <Link to="/preparativos/cadastros/classe-atividades">Gerenciar</Link>
-              </Button>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Select
+                  value={form.classeAtividadeId}
+                  onValueChange={(v) => set({ classeAtividadeId: v })}
+                >
+                  <SelectTrigger className={INPUT_CLASS}>
+                    <SelectValue placeholder="Selecione a classe cadastrada…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {atividades
+                      .filter((a) => a.status === "Ativa")
+                      .map((a) => (
+                        <SelectItem key={a.id} value={a.id}>{formatAtividade(a)}</SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                <Button asChild variant="outline" size="sm" className="rounded-full shrink-0 border-brand-blue/30 text-brand-blue hover:bg-brand-blue/5">
+                  <Link to="/preparativos/cadastros/classe-atividades">
+                    <Plus className="h-3.5 w-3.5 mr-1" /> Novo
+                  </Link>
+                </Button>
+              </div>
+              <p className="text-[10px] text-muted-foreground/70 italic ml-1">Vincule esta empresa a uma classe de atividade para automação fiscal</p>
             </div>
           </Field>
 
