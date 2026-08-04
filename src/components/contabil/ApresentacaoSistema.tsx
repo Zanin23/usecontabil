@@ -285,23 +285,112 @@ export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => voi
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="relative aspect-square lg:aspect-auto lg:h-[500px] flex items-center justify-center"
+              className="relative w-full aspect-[4/3] lg:aspect-auto lg:h-[520px] flex items-center justify-center"
             >
               <div className="absolute inset-0 bg-gradient-brand opacity-10 blur-[100px] rounded-full" />
-              <Card className="relative z-10 w-full h-full max-h-[440px] rounded-3xl border-border/40 shadow-elevated bg-card/80 backdrop-blur-md overflow-hidden flex flex-col items-center justify-center p-12 text-center group border-2 border-brand-orange/20">
+              <Card className="relative z-10 w-full h-full rounded-3xl border-border/40 shadow-elevated bg-card/90 backdrop-blur-md overflow-hidden flex flex-col border-2 border-brand-orange/20">
                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-brand" />
-                <slide.icon className="h-24 w-24 text-brand-orange mb-8 group-hover:scale-110 transition-transform duration-500" />
-                <h3 className="font-display text-3xl mb-4">{slide.highlight}</h3>
-                <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                  Clique no botão de pré-visualização para ver este módulo em funcionamento real dentro do sistema.
-                </p>
-                <div className="mt-8 flex gap-3">
-                   <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
-                   <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
-                   <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
-                </div>
+                
+                {slide.previewType === "chart" && (
+                  <div className="flex-1 p-6 flex flex-col">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="text-sm font-semibold flex items-center gap-2">
+                        <LayoutDashboard className="h-4 w-4 text-brand-orange" />
+                        Visão de Performance
+                      </div>
+                      <Badge variant="outline" className="text-[10px] uppercase">Mensal</Badge>
+                    </div>
+                    <div className="flex-1 min-h-0">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={slide.previewData}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
+                          <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
+                          <YAxis hide />
+                          <Tooltip 
+                            cursor={{ fill: "var(--brand-orange)", opacity: 0.05 }}
+                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                          />
+                          <Bar dataKey="receita" fill="var(--brand-orange)" radius={[4, 4, 0, 0]} barSize={20} />
+                          <Bar dataKey="despesa" fill="var(--brand-blue)" radius={[4, 4, 0, 0]} barSize={20} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                )}
+
+                {slide.previewType === "table" && (
+                  <div className="flex-1 flex flex-col">
+                    <div className="p-4 border-b border-border bg-muted/30 flex items-center justify-between">
+                      <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Listagem de Amostra</div>
+                      <div className="flex gap-1">
+                        <div className="h-2 w-2 rounded-full bg-destructive/40" />
+                        <div className="h-2 w-2 rounded-full bg-warn/40" />
+                        <div className="h-2 w-2 rounded-full bg-success/40" />
+                      </div>
+                    </div>
+                    <div className="flex-1 overflow-auto">
+                      <UITable>
+                        <TableHeader>
+                          <TableRow className="hover:bg-transparent border-border">
+                            {Object.keys(slide.previewData[0]).map(key => (
+                              <TableHead key={key} className="text-[10px] uppercase h-8">{key}</TableHead>
+                            ))}
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {slide.previewData.map((row: any, i: number) => (
+                            <TableRow key={i} className="border-border/50">
+                              {Object.entries(row).map(([key, val]: any, j) => (
+                                <TableCell key={j} className={cn(
+                                  "text-[11px] py-2",
+                                  key === 'apagar' || key === 'base' ? "font-mono" : ""
+                                )}>
+                                  {key === 'apagar' || key === 'base' ? brl(val) : String(val)}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </UITable>
+                    </div>
+                  </div>
+                )}
+
+                {slide.previewType === "kpis" && (
+                  <div className="flex-1 p-8 grid grid-cols-1 gap-6 content-center">
+                    {slide.previewData.map((kpi: any, i: number) => (
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4 + i * 0.1 }}
+                        className="p-4 rounded-2xl bg-muted/40 border border-border flex flex-col"
+                      >
+                        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{kpi.label}</span>
+                        <span className="text-2xl font-display text-brand-orange mt-1">{kpi.valor}</span>
+                        <span className="text-[10px] text-success font-medium mt-1">{kpi.sub}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+
+                {slide.previewType === "icon" && (
+                  <div className="flex-1 flex flex-col items-center justify-center p-12 text-center group">
+                    <slide.icon className="h-24 w-24 text-brand-orange mb-8 group-hover:scale-110 transition-transform duration-500" />
+                    <h3 className="font-display text-3xl mb-4">{slide.highlight}</h3>
+                    <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                      Clique no botão de pré-visualização para ver este módulo em funcionamento real dentro do sistema.
+                    </p>
+                    <div className="mt-8 flex gap-3">
+                      <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
+                      <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
+                      <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
+                    </div>
+                  </div>
+                )}
               </Card>
             </motion.div>
+
           </motion.div>
         </AnimatePresence>
       </main>
