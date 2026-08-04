@@ -66,7 +66,7 @@ const read = <T,>(key: string): T[] => {
     return [];
   }
 };
-const write = <T,>(key: string, v: T[]) => {
+export const write = <T,>(key: string, v: T[]) => {
   localStorage.setItem(key, JSON.stringify(v));
   window.dispatchEvent(new Event(CONTAS_EVENT));
 };
