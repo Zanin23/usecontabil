@@ -13,6 +13,7 @@ import {
   type Passo,
 } from "@/lib/aprendizado/labs";
 import { usePratica, setPraticaAtiva } from "@/lib/praticaStore";
+import { toast } from "sonner";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO, CENARIOS_PRATICA } from "@/lib/aprendizado/seedPratica";
 
 const PADRAO_SIMPLES: EntradaSimples = {
@@ -95,7 +96,7 @@ function CampoNumero({
 
 export default function PraticaAprendizado() {
   const [params, setParams] = useSearchParams();
-  const { praticaAtiva } = usePratica();
+  const { praticaAtiva, produtos, parceiros, cenarios } = usePratica();
   const labParam = params.get("lab") as LabId | null;
   const labInicial: LabId = LABS.some((l) => l.id === labParam) ? (labParam as LabId) : "simples";
   const [aba, setAba] = useState(labInicial);
@@ -140,11 +141,12 @@ export default function PraticaAprendizado() {
           
           <div className="flex items-center gap-2">
             <Select onValueChange={(v) => {
-              const c = CENARIOS_PRATICA.find(s => s.id === v);
+              const c = cenarios.find(s => s.id === v);
               if (!c) return;
               if (c.id === 'cenario-simples') {
                 setAba('simples');
                 setSimples(c.dados);
+                toast.success("Cenário de Simples Nacional carregado!");
               } else if (c.id === 'cenario-difal') {
                 setAba('icms-difal');
                 setDifal({
@@ -154,6 +156,7 @@ export default function PraticaAprendizado() {
                   origemProduto: "0",
                   fcp: c.fcp
                 });
+                toast.success("Cenário de DIFAL carregado!");
               }
             }}>
               <SelectTrigger className="w-[240px] rounded-full">
@@ -161,7 +164,7 @@ export default function PraticaAprendizado() {
                 <SelectValue placeholder="Carregar cenário real" />
               </SelectTrigger>
               <SelectContent>
-                {CENARIOS_PRATICA.map(c => (
+                {cenarios.map(c => (
                   <SelectItem key={c.id} value={c.id}>{c.titulo}</SelectItem>
                 ))}
               </SelectContent>
@@ -170,8 +173,7 @@ export default function PraticaAprendizado() {
         </div>
         <p className="max-w-3xl text-muted-foreground">
           Os laboratórios chamam as mesmas tabelas e funções dos motores de apuração do sistema, mas
-          com valores fictícios digitados por você. Nada aqui grava na competência nem altera dados
-          das empresas.
+          com valores fictícios. Você pode digitar os seus próprios dados ou <strong>carregar cenários reais</strong> preparados para treinamento.
         </p>
       </header>
 
@@ -569,7 +571,7 @@ export default function PraticaAprendizado() {
         </TabsContent>
       </Tabs>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 mt-8">
         <Card className="rounded-3xl border-dashed">
           <CardHeader>
             <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -579,9 +581,9 @@ export default function PraticaAprendizado() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {PRODUTOS_TREINAMENTO.map(p => (
+              {produtos.map(p => (
                 <div key={p.id} className="flex items-center justify-between p-2 rounded-xl bg-muted/50 text-xs">
-                  <span className="font-medium">{p.descricao}</span>
+                  <span className="font-medium text-brand-orange">{p.descricao}</span>
                   <span className="text-muted-foreground">{p.ncm} • R$ {p.precoPadrao.toFixed(2)}</span>
                 </div>
               ))}
@@ -598,9 +600,9 @@ export default function PraticaAprendizado() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {PARCEIROS_TREINAMENTO.map(p => (
+              {parceiros.map(p => (
                 <div key={p.id} className="flex items-center justify-between p-2 rounded-xl bg-muted/50 text-xs">
-                  <span className="font-medium">{p.nome}</span>
+                  <span className="font-medium text-brand-orange">{p.nome}</span>
                   <span className="text-muted-foreground">{p.uf} • {p.regime}</span>
                 </div>
               ))}
