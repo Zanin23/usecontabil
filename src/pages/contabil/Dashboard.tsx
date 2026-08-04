@@ -313,17 +313,35 @@ export default function Dashboard() {
             <h2 className="font-display text-2xl mt-4">
               {semEmpresa ? "Nenhuma empresa cadastrada" : "Sem movimento nesta competência"}
             </h2>
-            <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">
-              {semEmpresa
-                ? "A base está zerada. Cadastre a primeira empresa do grupo para que os indicadores, apurações e obrigações passem a ser calculados."
-                : "Nenhum documento fiscal foi escriturado para esta empresa na competência selecionada. Lance os documentos para que o painel seja calculado."}
-            </p>
-            <Button
-              className="rounded-md mt-6 bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground"
-              onClick={() => navigate(semEmpresa ? "/preparativos/empresa/cadastro" : "/fiscal/documentos/notas-saida")}
-            >
-              {semEmpresa ? "Cadastrar empresa" : "Lançar documentos"}
-            </Button>
+            <div className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto space-y-2">
+              <p>
+                {semEmpresa
+                  ? "A base está zerada. Cadastre a primeira empresa do grupo para que os indicadores, apurações e obrigações passem a ser calculados."
+                  : "Nenhum documento fiscal foi escriturado para esta empresa na competência selecionada. Lance os documentos para que o painel seja calculado."}
+              </p>
+              {!semEmpresa && emPratica && (
+                <p className="text-brand-orange font-medium">
+                  💡 No modo prática, você pode carregar cenários de treinamento na tela de Laboratórios para ver o sistema em funcionamento.
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
+              <Button
+                className="rounded-md bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground"
+                onClick={() => navigate(semEmpresa ? "/preparativos/empresa/cadastro" : "/fiscal/documentos/notas-saida")}
+              >
+                {semEmpresa ? "Cadastrar empresa" : "Lançar documentos"}
+              </Button>
+              {!semEmpresa && emPratica && (
+                <Button
+                  variant="outline"
+                  className="rounded-md border-brand-orange text-brand-orange hover:bg-brand-orange/10"
+                  onClick={() => navigate("/aprender/pratica")}
+                >
+                  Ir para Laboratórios
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
