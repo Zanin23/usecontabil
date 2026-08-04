@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { FlaskConical, RotateCcw, ShieldAlert } from "lucide-react";
+import { FlaskConical, RotateCcw, ShieldAlert, Sparkles } from "lucide-react";
 import {
   Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch, Tabs, TabsContent,
   TabsList, TabsTrigger,
 } from "@/design-system/mj-design-system-db98fa";
+import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import {
   FCP_SUGERIDO, LABS, UFS_LAB, simularDifal, simularPisCofins, simularRetencoes, simularSimples,
   type EntradaDifal, type EntradaPisCofins, type EntradaRetencoes, type EntradaSimples, type LabId,
@@ -200,6 +201,24 @@ export default function PraticaAprendizado() {
                 >
                   <RotateCcw className="h-4 w-4" /> Restaurar cenário
                 </Button>
+                <div className="pt-4 border-t border-border/40">
+                  <AssistenteCampos
+                    modo="aprendizado"
+                    titulo="Laboratório Simples Nacional"
+                    campos={[
+                      { key: "rbt12", label: "RBT12", ajuda: "Receita bruta acumulada nos 12 meses anteriores ao período de apuração. Define a faixa de enquadramento na tabela do Simples." },
+                      { key: "folha12", label: "Folha 12 meses", ajuda: "Somatório da folha de pagamento e encargos dos últimos 12 meses. Essencial para o cálculo do Fator R." },
+                      { key: "receitaComercio", label: "Receita Comércio", ajuda: "Vendas de mercadorias no mês. Tributadas pelo Anexo I." },
+                      { key: "receitaServicos", label: "Receita Serviços", ajuda: "Prestação de serviços no mês. Tributadas pelo Anexo III ou V, dependendo do Fator R." },
+                    ]}
+                    draft={{
+                      rbt12: simples.rbt12.toString(),
+                      folha12: simples.folha12.toString(),
+                      receitaComercio: simples.receitaComercio.toString(),
+                      receitaServicos: simples.receitaServicos.toString()
+                    }}
+                  />
+                </div>
               </CardContent>
             </Card>
 
@@ -300,6 +319,25 @@ export default function PraticaAprendizado() {
                 >
                   <RotateCcw className="h-4 w-4" /> Restaurar cenário
                 </Button>
+                <div className="pt-4 border-t border-border/40">
+                  <AssistenteCampos
+                    modo="aprendizado"
+                    titulo="Laboratório ICMS / DIFAL"
+                    campos={[
+                      { key: "origem", label: "UF Origem", ajuda: "Estado de onde a mercadoria está saindo." },
+                      { key: "destino", label: "UF Destino", ajuda: "Estado para onde a mercadoria está sendo enviada." },
+                      { key: "valor", label: "Valor da operação", ajuda: "Preço total dos produtos na nota fiscal." },
+                      { key: "origemProduto", label: "Origem do Produto (CST)", ajuda: "Define se o produto é Nacional ou Importado. Produtos importados têm alíquota interestadual fixa de 4%." },
+                      { key: "fcp", label: "FCP", ajuda: "Fundo de Combate à Pobreza. Adicional de ICMS destinado a fundos sociais no estado de destino." },
+                    ]}
+                    draft={{
+                      origem: difal.origem,
+                      destino: difal.destino,
+                      valor: difal.valor.toString(),
+                      fcp: difal.fcp.toString()
+                    }}
+                  />
+                </div>
               </CardContent>
             </Card>
 
@@ -369,6 +407,24 @@ export default function PraticaAprendizado() {
                 >
                   <RotateCcw className="h-4 w-4" /> Restaurar cenário
                 </Button>
+                <div className="pt-4 border-t border-border/40">
+                  <AssistenteCampos
+                    modo="aprendizado"
+                    titulo="Laboratório PIS/COFINS"
+                    campos={[
+                      { key: "regime", label: "Regime", ajuda: "Cumulativo (geralmente Lucro Presumido, alíquotas menores sem crédito) ou Não Cumulativo (geralmente Lucro Real, alíquotas maiores com direito a crédito)." },
+                      { key: "receita", label: "Receita Bruta", ajuda: "Faturamento total do mês sujeito à contribuição." },
+                      { key: "receitaExportacao", label: "Exportação", ajuda: "Receitas de exportação são imunes/isentas de PIS/COFINS." },
+                      { key: "receitaST", label: "Monofásico/ST", ajuda: "Produtos onde o imposto já foi recolhido anteriormente na cadeia (bebidas, autopeças, combustíveis, etc)." },
+                      { key: "comprasComCredito", label: "Compras com Crédito", ajuda: "No regime não cumulativo, você pode descontar créditos sobre insumos adquiridos." },
+                    ]}
+                    draft={{
+                      regime: pis.regime,
+                      receita: pis.receita.toString(),
+                      compras: pis.comprasComCredito.toString()
+                    }}
+                  />
+                </div>
               </CardContent>
             </Card>
 
@@ -410,6 +466,25 @@ export default function PraticaAprendizado() {
                   value={ret.valorServico}
                   onChange={(v) => setRet({ ...ret, valorServico: v })}
                 />
+                
+                <div className="py-4">
+                  <AssistenteCampos
+                    modo="aprendizado"
+                    titulo="Laboratório de Retenções"
+                    campos={[
+                      { key: "valorServico", label: "Valor do Serviço", ajuda: "Valor bruto da nota fiscal de serviço." },
+                      { key: "optanteSimples", label: "Prestador Simples", ajuda: "Empresas do Simples Nacional não sofrem retenção de IRRF e CSRF na maioria dos serviços." },
+                      { key: "cessaoMaoObra", label: "Cessão de Mão de Obra", ajuda: "Caracteriza a retenção de 11% de INSS." },
+                      { key: "aliqIss", label: "Alíquota ISS", ajuda: "Percentual do imposto municipal que deve ser retido conforme a legislação da prefeitura do destino." },
+                    ]}
+                    draft={{
+                      valor: ret.valorServico.toString(),
+                      simples: ret.optanteSimples ? "Sim" : "Não",
+                      maoObra: ret.cessaoMaoObra ? "Sim" : "Não"
+                    }}
+                  />
+                </div>
+
                 <div className="flex items-center justify-between gap-3 rounded-2xl border border-border px-4 py-3">
                   <Label className="text-sm">Prestador optante pelo Simples Nacional</Label>
                   <Switch
