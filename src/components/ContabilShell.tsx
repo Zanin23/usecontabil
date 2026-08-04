@@ -340,11 +340,16 @@ export default function ContabilShell() {
                 </span>
               </div>
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <span className="shrink-0">Perfil</span>
-                <span className="text-foreground truncate max-w-[60%]" title={usuarioPerfil}>
-                  {usuarioPerfil}
-                </span>
+                <span className="shrink-0">Apresentação</span>
+                <button
+                  type="button"
+                  onClick={() => setApresentacaoAberta(true)}
+                  className="text-brand-orange hover:underline font-medium"
+                >
+                  Abrir Slides
+                </button>
               </div>
+
             </>
           )}
 
