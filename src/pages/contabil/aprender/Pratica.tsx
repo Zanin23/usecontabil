@@ -13,6 +13,7 @@ import {
   type Passo,
 } from "@/lib/aprendizado/labs";
 import { usePratica, setPraticaAtiva } from "@/lib/praticaStore";
+import { toast } from "sonner";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO, CENARIOS_PRATICA } from "@/lib/aprendizado/seedPratica";
 
 const PADRAO_SIMPLES: EntradaSimples = {
@@ -145,6 +146,7 @@ export default function PraticaAprendizado() {
               if (c.id === 'cenario-simples') {
                 setAba('simples');
                 setSimples(c.dados);
+                toast.success("Cenário de Simples Nacional carregado!");
               } else if (c.id === 'cenario-difal') {
                 setAba('icms-difal');
                 setDifal({
@@ -154,6 +156,7 @@ export default function PraticaAprendizado() {
                   origemProduto: "0",
                   fcp: c.fcp
                 });
+                toast.success("Cenário de DIFAL carregado!");
               }
             }}>
               <SelectTrigger className="w-[240px] rounded-full">
