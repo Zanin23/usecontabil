@@ -16,6 +16,7 @@ import {
   Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { brl, empresaDB, useTributario, type DocumentoFiscal } from "@/lib/tributarioStore";
+import { usePratica } from "@/lib/praticaStore";
 
 const toneMap = {
   success: "text-success",
