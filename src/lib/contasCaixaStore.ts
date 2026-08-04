@@ -17,7 +17,7 @@
 // ============================================================================
 
 export const CONTAS_EVENT = "usecontabil:contas-caixa-changed";
-const KEY_BAIXAS = "usecontabil.contas.baixas.v1";
+export const KEY_BAIXAS = "usecontabil.contas.baixas.v1";
 const KEY_ACOES = "usecontabil.contas.acoes.v1";
 const KEY_MOVS = "usecontabil.contas.movimentos.v1";
 

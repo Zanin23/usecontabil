@@ -3,7 +3,7 @@
  * Popula os stores tributário, fiscal, financeiro e outros com dados fictícios
  * para que o dashboard e relatórios mostrem informações coerentes.
  */
-import { saveEmpresa, novoId, registrarAuditoria } from "@/lib/tributarioStore";
+import { saveEmpresa, novoId, registrarAuditoria, empresaDB } from "@/lib/tributarioStore";
 import { saveDocs, novoDocId, moedaBR, chaveFicticia } from "@/lib/fiscalStore";
 import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS } from "@/lib/contasCaixaStore";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO } from "./seedPratica";
