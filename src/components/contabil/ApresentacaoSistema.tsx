@@ -47,7 +47,10 @@ interface Slide {
   points: string[];
   image?: string;
   area?: string;
+  previewType?: "chart" | "table" | "kpis" | "icon";
+  previewData?: any;
 }
+
 
 const SLIDES: Slide[] = [
   {
