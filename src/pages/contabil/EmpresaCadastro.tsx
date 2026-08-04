@@ -876,10 +876,13 @@ function DadosSection({
   const btn = "h-10 rounded-lg shrink-0 border-brand-blue/40 text-brand-blue hover:bg-brand-blue/10";
   return (
     <>
-      <div className="rounded-xl border border-brand-blue/25 bg-brand-blue/5 p-3 flex items-start gap-3">
-        <Wand2 className="h-4 w-4 text-brand-blue shrink-0 mt-0.5" />
-        <div className="text-xs text-foreground/90">
-          <span className="font-medium">Preenchimento automático:</span> informe o CNPJ e clique em <b>Buscar CNPJ</b> para trazer razão social, endereço, CNAE, telefone e abertura direto da Receita Federal.
+      <div className="rounded-xl border border-brand-blue/20 bg-brand-blue/5 p-4 flex items-start gap-4 shadow-sm">
+        <div className="h-8 w-8 rounded-full bg-brand-blue/10 flex items-center justify-center shrink-0">
+          <Wand2 className="h-4 w-4 text-brand-blue" />
+        </div>
+        <div className="text-xs text-foreground/80 leading-relaxed">
+          <span className="font-bold text-brand-blue uppercase tracking-tighter mr-1.5">Dica de Produtividade:</span>
+          Informe apenas o CNPJ e clique em <b>Buscar CNPJ</b>. O sistema preencherá automaticamente razão social, endereço, CNAE e dados de abertura via API da Receita Federal.
         </div>
       </div>
 
