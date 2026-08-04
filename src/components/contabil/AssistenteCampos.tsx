@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { HelpCircle, Loader2, Send, Sparkles, X } from "lucide-react";
+import { HelpCircle, Loader2, Send, Sparkles, X, BrainCircuit } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Button, Input } from "@/design-system/mj-design-system-db98fa";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,11 +17,18 @@ export type CampoAjuda = {
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-const SUGESTOES = [
+const SUGESTOES_PADRAO = [
   "Explique cada campo deste formulário",
   "Quais campos são obrigatórios e por quê?",
   "Onde encontro essas informações?",
   "Dê um exemplo preenchido",
+];
+
+const SUGESTOES_APRENDIZADO = [
+  "Explique o conceito por trás deste cálculo",
+  "O que acontece se eu mudar esses valores?",
+  "Qual a base legal dessa regra?",
+  "Dê um exemplo prático de aplicação",
 ];
 
 /**
@@ -33,13 +40,15 @@ export default function AssistenteCampos({
   campos,
   draft,
   contextoExtra,
+  modo = "ajuda",
 }: {
   titulo: string;
   campos: CampoAjuda[];
   draft?: Record<string, string>;
   contextoExtra?: Record<string, unknown>;
+  modo?: "ajuda" | "aprendizado";
 }) {
-  const [aberto, setAberto] = useState(false);
+  const [aberto, setAberto] = useState(modo === "aprendizado");
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -64,9 +73,10 @@ export default function AssistenteCampos({
 
     const contexto = {
       tela: titulo,
-      modo: "ajuda_de_preenchimento_de_formulario",
-      instrucao:
-        "Explique de forma objetiva o significado de cada campo, o formato esperado e onde a informação costuma ser encontrada (documentos, portais, sistemas internos). Seja direto e use listas curtas.",
+      modo: modo === "aprendizado" ? "professor_contabil_pratico" : "ajuda_de_preenchimento_de_formulario",
+      instrucao: modo === "aprendizado" 
+        ? "Você é um mentor contábil ajudando um aluno em um laboratório prático. Explique os fundamentos por trás dos campos e como eles afetam o resultado do cálculo. Use uma linguagem didática e técnica ao mesmo tempo."
+        : "Explique de forma objetiva o significado de cada campo, o formato esperado e onde a informação costuma ser encontrada (documentos, portais, sistemas internos). Seja direto e use listas curtas.",
       campos: campos.map((c) => ({
         campo: c.label,
         obrigatorio: !!c.required,
@@ -140,6 +150,8 @@ export default function AssistenteCampos({
     }
   };
 
+  const sugestoes = modo === "aprendizado" ? SUGESTOES_APRENDIZADO : SUGESTOES_PADRAO;
+
   if (!aberto) {
     return (
       <Button
@@ -149,7 +161,7 @@ export default function AssistenteCampos({
         onClick={() => setAberto(true)}
       >
         <Sparkles className="h-4 w-4 mr-2" />
-        IA ajudante — o que significa cada campo?
+        {modo === "aprendizado" ? "Tutor de IA — me ajude com este cálculo" : "IA ajudante — o que significa cada campo?"}
       </Button>
     );
   }
@@ -158,8 +170,14 @@ export default function AssistenteCampos({
     <div className="rounded-2xl border border-brand-orange/30 bg-muted/40 overflow-hidden">
       <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-border">
         <div className="flex items-center gap-2 min-w-0">
-          <HelpCircle className="h-4 w-4 text-brand-orange shrink-0" />
-          <span className="text-sm font-medium truncate">IA ajudante · {titulo}</span>
+          {modo === "aprendizado" ? (
+            <BrainCircuit className="h-4 w-4 text-brand-orange shrink-0" />
+          ) : (
+            <HelpCircle className="h-4 w-4 text-brand-orange shrink-0" />
+          )}
+          <span className="text-sm font-medium truncate">
+            {modo === "aprendizado" ? "Tutor de IA" : "IA ajudante"} · {titulo}
+          </span>
         </div>
         <Button
           type="button"
@@ -177,11 +195,12 @@ export default function AssistenteCampos({
         {messages.length === 0 && (
           <div className="space-y-2">
             <p className="text-xs text-muted-foreground">
-              Pergunte o que preencher em cada campo, o formato esperado e onde encontrar a
-              informação.
+              {modo === "aprendizado" 
+                ? "Dúvida sobre o cálculo? Pergunte como as variáveis se conectam ou peça uma explicação sobre o conceito fiscal."
+                : "Pergunte o que preencher em cada campo, o formato esperado e onde encontrar a informação."}
             </p>
             <div className="flex flex-wrap gap-2">
-              {SUGESTOES.map((s) => (
+              {sugestoes.map((s) => (
                 <button
                   key={s}
                   type="button"
