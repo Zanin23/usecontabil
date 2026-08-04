@@ -16,10 +16,16 @@
 //  R9  Toda liquidação é auditável (usuário, data/hora, conta e encargos).
 // ============================================================================
 
+import { getStorageSuffix } from "./praticaStore";
+
 export const CONTAS_EVENT = "usecontabil:contas-caixa-changed";
-export const KEY_BAIXAS = "usecontabil.contas.baixas.v1";
-const KEY_ACOES = "usecontabil.contas.acoes.v1";
-const KEY_MOVS = "usecontabil.contas.movimentos.v1";
+export const KEY_BAIXAS_BASE = "usecontabil.contas.baixas.v1";
+export const KEY_BAIXAS = KEY_BAIXAS_BASE + getStorageSuffix();
+const KEY_ACOES_BASE = "usecontabil.contas.acoes.v1";
+const KEY_MOVS_BASE = "usecontabil.contas.movimentos.v1";
+
+const getAcoesKey = () => KEY_ACOES_BASE + getStorageSuffix();
+const getMovsKey = () => KEY_MOVS_BASE + getStorageSuffix();
 
 /* ============================== utils ==================================== */
 
@@ -239,8 +245,8 @@ export function faixaAging(diasAtraso: number) {
 export const FAIXAS = ["A vencer", "1 a 15 dias", "16 a 30 dias", "31 a 60 dias", "61 a 90 dias", "Acima de 90 dias"];
 
 export const baixas = () => read<Baixa>(KEY_BAIXAS);
-export const acoes = () => read<AcaoCobranca>(KEY_ACOES);
-export const movimentosManuais = () => read<MovimentoCaixa>(KEY_MOVS);
+export const acoes = () => read<AcaoCobranca>(getAcoesKey());
+export const movimentosManuais = () => read<MovimentoCaixa>(getMovsKey());
 
 export function calcular(t: Titulo, ref = hojeISO(), todas = baixas()): TituloCalculado {
   const minhas = todas.filter((b) => b.tituloId === t.id);
@@ -348,7 +354,7 @@ export function estornarBaixa(id: string) {
 
 export function registrarAcao(a: Omit<AcaoCobranca, "id" | "usuario">) {
   const nova: AcaoCobranca = { ...a, id: `ac-${Date.now()}`, usuario: "Usuário atual" };
-  write(KEY_ACOES, [...acoes(), nova]);
+  write(getAcoesKey(), [...acoes(), nova]);
   return nova;
 }
 
@@ -356,12 +362,12 @@ export function lancarMovimento(m: Omit<MovimentoCaixa, "id" | "origem">) {
   if (m.valor <= 0) throw new Error("Informe um valor maior que zero.");
   if (!m.historico.trim()) throw new Error("Informe o histórico do movimento.");
   const novo: MovimentoCaixa = { ...m, id: `mv-${Date.now()}`, origem: "Lançamento manual" };
-  write(KEY_MOVS, [...movimentosManuais(), novo]);
+  write(getMovsKey(), [...movimentosManuais(), novo]);
   return novo;
 }
 
 export function excluirMovimento(id: string) {
-  write(KEY_MOVS, movimentosManuais().filter((m) => m.id !== id));
+  write(getMovsKey(), movimentosManuais().filter((m) => m.id !== id));
 }
 
 /* ============================ tesouraria ================================= */
