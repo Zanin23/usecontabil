@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Receipt,
   FileText,
+  Landmark,
 } from "lucide-react";
 import {
   Button,
@@ -92,23 +93,43 @@ const SLIDES: Slide[] = [
     ]
   },
   {
-    id: "fiscal",
-    title: "Módulo",
-    highlight: "Fiscal & Tributário",
-    subtitle: "Conformidade absoluta e automação",
-    icon: Table,
-    description: "Escrituração automática, apuração de impostos federais, estaduais e municipais com motor de regras inteligente.",
+    id: "docs_fiscais",
+    title: "Documentos",
+    highlight: "Fiscais",
+    subtitle: "Gestão de Entradas e Saídas",
+    icon: Receipt,
+    description: "Visualização completa de notas fiscais de entrada, saída e serviços com integração direta aos órgãos reguladores.",
     points: [
-      "Escrituração automática de NF-e e CT-e",
-      "Apuração ICMS, IPI, PIS/COFINS e ISS",
-      "Gestão de Obrigações Acessórias (SPED)",
-      "Calendário fiscal dinâmico por empresa"
+      "Importação automática de XML",
+      "Gestão de NF-e, NFS-e e CT-e",
+      "Filtros por participante e status",
+      "Validação de chaves de acesso"
     ],
     previewType: "table",
     previewData: [
-      { tributo: "ICMS Próprio", base: 461750, apagar: 29465, status: "Apurado" },
-      { tributo: "PIS/COFINS", base: 461750, apagar: 18684, status: "Apurado" },
-      { tributo: "ISS Municipal", base: 128500, apagar: 6425, status: "Conferência" },
+      { documento: "NF-e 10240", data: "28/07/2026", participante: "Metalúrgica Andrade S.A.", tipo: "Compra", valor: 1400, status: "Escriturado" },
+      { documento: "NF-e 10247", data: "27/07/2026", participante: "Panificadora Real Ltda.", tipo: "Devolução", valor: 2637.4, status: "Escriturado" },
+      { documento: "NF-e 10254", data: "26/07/2026", participante: "TechCore Sistemas ME", tipo: "Venda", valor: 3874.8, status: "Pendente" },
+    ]
+  },
+  {
+    id: "fiscal_apuracao",
+    title: "Apurações",
+    highlight: "Fiscais",
+    subtitle: "Conformidade absoluta e automação",
+    icon: Table,
+    description: "Motor de cálculo inteligente para apuração de impostos federais, estaduais e municipais em tempo real.",
+    points: [
+      "Apuração ICMS, IPI, PIS/COFINS",
+      "Diferencial de Alíquota (DIFAL)",
+      "Substituição Tributária (ST)",
+      "Simulações de regime tributário"
+    ],
+    previewType: "table",
+    previewData: [
+      { tributo: "ICMS Próprio", base: 461750, debito: 74178, credito: 44713, apagar: 29465, status: "Apurado" },
+      { tributo: "PIS/COFINS", base: 461750, debito: 42711, credito: 24027, apagar: 18684, status: "Apurado" },
+      { tributo: "ISS Municipal", base: 128500, debito: 6425, credito: 0, apagar: 6425, status: "Conferência" },
     ]
   },
   {
@@ -127,28 +148,48 @@ const SLIDES: Slide[] = [
     previewType: "table",
     previewData: [
       { ref: "NF-e 10267", erro: "XML sem escrituração", impacto: "Crédito perdido", nivel: "Crítico" },
-      { ref: "NF-e 10281", erro: "Alíquota divergente", impacto: "ICMS a maior", nivel: "Alerta" },
+      { ref: "NF-e 10281", erro: "Valor divergente", impacto: "ICMS a maior", nivel: "Alerta" },
       { ref: "CT-e 3308", erro: "CFOP incompatível", impacto: "Reclassificação", nivel: "Informativo" },
     ]
   },
   {
-    id: "admin",
-    title: "Módulo",
-    highlight: "Administrativo",
-    subtitle: "Controle operacional e financeiro",
+    id: "admin_patrimonio",
+    title: "Gestão de",
+    highlight: "Patrimônio",
+    subtitle: "Controle de Ativos Imobilizados",
     icon: Building2,
-    description: "Gestão completa de contratos, patrimônio, suprimentos e controles internos integrados à contabilidade.",
+    description: "Controle completo de bens, calculando depreciação automaticamente e gerindo movimentações e inventário.",
     points: [
-      "Controle de contratos e vigências",
-      "Gestão de bens e depreciação automática",
-      "Ciclo de compras e suprimentos",
-      "Gestão de alçadas e permissões"
+      "Depreciação linear automática",
+      "Controle por centro de custo",
+      "Histórico de movimentações",
+      "Inventário com etiquetas/QR Code"
+    ],
+    previewType: "table",
+    previewData: [
+      { bem: "Torno CNC Romi", aquisicao: "12/03/2025", valor: 145000, depreciacao: 2416.67, status: "Ativo" },
+      { bem: "Servidor Dell PowerEdge", aquisicao: "05/01/2026", valor: 32000, depreciacao: 533.33, status: "Ativo" },
+      { bem: "Frota - Veículo Logística", aquisicao: "20/02/2026", valor: 89000, depreciacao: 1483.33, status: "Em manutenção" },
+    ]
+  },
+  {
+    id: "admin_financeiro",
+    title: "Módulo",
+    highlight: "Financeiro",
+    subtitle: "Controle operacional e financeiro",
+    icon: Landmark,
+    description: "Gestão completa de contratos, suprimentos e fluxos de caixa integrados à contabilidade.",
+    points: [
+      "Contas a Pagar e Receber",
+      "Fluxo de Caixa Realizado vs Orçado",
+      "Gestão de Contratos e Vigências",
+      "Conciliação Bancária Automatizada"
     ],
     previewType: "kpis",
     previewData: [
-      { label: "Contratos Ativos", valor: "142", sub: "+5 este mês" },
-      { label: "Patrimônio Total", valor: brl(1450200), sub: "86 bens" },
-      { label: "Pedidos Compra", valor: "28", sub: "12 pendentes" },
+      { label: "Saldo em Contas", valor: brl(842500.25), sub: "+2.4% este mês" },
+      { label: "Contratos Ativos", valor: "142", sub: "5 vencendo em 30 dias" },
+      { label: "Pedidos de Compra", valor: "28", sub: "12 aguardando aprovação" },
     ]
   },
   {
