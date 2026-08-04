@@ -204,18 +204,32 @@ function Field({
 }) {
   return (
     <div
-      className={`space-y-1 ${className}`}
+      className={`space-y-1.5 ${className}`}
       onFocus={() => tipKey && onFocusTip?.(tipKey)}
     >
-      <Label className="text-xs font-medium text-foreground/80 flex items-center gap-1 leading-none">
-        <span className="truncate">{label}</span>
-        {required && <span className="text-destructive">*</span>}
+      <div className="flex items-center justify-between">
+        <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 leading-none">
+          {label}
+          {required && <span className="text-destructive font-bold">*</span>}
+        </Label>
         {tipKey && TIPS[tipKey] && (
-          <HelpCircle className="h-3 w-3 text-brand-blue/70 shrink-0" />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-3 w-3 text-brand-blue/50 cursor-help hover:text-brand-blue transition-colors" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[200px] text-[10px]">{TIPS[tipKey].title}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
-      </Label>
-      {children}
-      {hint && <p className="text-[11px] text-muted-foreground leading-tight">{hint}</p>}
+      </div>
+      <div className="relative group">
+        {children}
+        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity">
+          <div className="h-1.5 w-1.5 rounded-full bg-brand-blue" />
+        </div>
+      </div>
+      {hint && <p className="text-[10px] text-muted-foreground/80 leading-tight italic px-1">{hint}</p>}
     </div>
   );
 }
