@@ -13,15 +13,29 @@ import {
   Building2,
   Table,
   ArrowRight,
+  TrendingUp,
+  Receipt,
+  FileText,
 } from "lucide-react";
 import {
   Button,
   Card,
   CardContent,
   Badge,
+  Table as UITable,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/design-system/mj-design-system-db98fa";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+
+const brl = (v: number) =>
+  "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 
 interface Slide {
   id: string;
