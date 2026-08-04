@@ -11,7 +11,7 @@ const EVENTO = "usecontabil:pratica-changed";
 
 let ativo = typeof window !== "undefined" && localStorage.getItem(CHAVE) === "1";
 
-export function praticaAtiva() {
+export function isPraticaAtiva() {
   return ativo;
 }
 

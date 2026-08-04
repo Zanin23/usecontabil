@@ -7,6 +7,7 @@ import {
 import {
   Badge, Button, Input, Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
 } from "@/design-system/mj-design-system-db98fa";
+import { usePratica } from "@/lib/praticaStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AVISO_SIMULACAO, licaoDaRota } from "@/lib/aprendizado/conteudo";
@@ -31,6 +32,7 @@ export default function AjudaTela() {
   const { pathname } = useLocation();
   const licao = useMemo(() => licaoDaRota(pathname), [pathname]);
   const [aberto, setAberto] = useState(false);
+  const { praticaAtiva } = usePratica();
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [pergunta, setPergunta] = useState("");
   const [carregando, setCarregando] = useState(false);
@@ -65,9 +67,10 @@ export default function AjudaTela() {
         body: {
           messages: novas,
           contexto: {
-            modo: "aprendizado",
-            instrucao:
-              "Responda em tom didático, explicando o PORQUÊ e o COMO FUNCIONA, não apenas onde clicar. Use exemplos numéricos curtos quando ajudar.",
+            modo: praticaAtiva ? "pratica" : "aprendizado",
+            instrucao: praticaAtiva
+              ? "Você é um Tutor Contábil em Modo Prática. O usuário está usando o sistema real como laboratório. Explique cada campo, sugira valores de teste e explique o impacto contábil/fiscal de cada ação nesta tela específica."
+              : "Responda em tom didático, explicando o PORQUÊ e o COMO FUNCIONA, não apenas onde clicar. Use exemplos numéricos curtos quando ajudar.",
             tela: pathname,
             licao: {
               titulo: licao.titulo,
