@@ -17,7 +17,7 @@
 // ============================================================================
 
 export const CONTAS_EVENT = "usecontabil:contas-caixa-changed";
-const KEY_BAIXAS = "usecontabil.contas.baixas.v1";
+export const KEY_BAIXAS = "usecontabil.contas.baixas.v1";
 const KEY_ACOES = "usecontabil.contas.acoes.v1";
 const KEY_MOVS = "usecontabil.contas.movimentos.v1";
 
@@ -66,7 +66,7 @@ const read = <T,>(key: string): T[] => {
     return [];
   }
 };
-const write = <T,>(key: string, v: T[]) => {
+export const write = <T,>(key: string, v: T[]) => {
   localStorage.setItem(key, JSON.stringify(v));
   window.dispatchEvent(new Event(CONTAS_EVENT));
 };
