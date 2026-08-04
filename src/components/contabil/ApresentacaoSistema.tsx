@@ -33,6 +33,7 @@ import {
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import dashboardImg from "@/assets/image-21.png.asset.json";
 
 const brl = (v: number) =>
   "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -48,7 +49,7 @@ interface Slide {
   points: string[];
   image?: string;
   area?: string;
-  previewType?: "chart" | "table" | "kpis" | "icon";
+  previewType?: "chart" | "table" | "kpis" | "icon" | "image";
   previewData?: any;
 }
 
@@ -82,7 +83,8 @@ const SLIDES: Slide[] = [
       "Alertas de bloqueio de fechamento",
       "Gráficos acessíveis e interativos"
     ],
-    previewType: "chart",
+    previewType: "image",
+    image: dashboardImg.url,
     previewData: [
       { mes: "Jan", receita: 450000, despesa: 320000 },
       { mes: "Fev", receita: 520000, despesa: 340000 },
@@ -332,6 +334,17 @@ export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => voi
               <Card className="relative z-10 w-full h-full rounded-3xl border-border/40 shadow-elevated bg-card/90 backdrop-blur-md overflow-hidden flex flex-col border-2 border-brand-orange/20">
                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-brand" />
                 
+                {slide.previewType === "image" && (
+                  <div className="flex-1 relative overflow-hidden flex items-center justify-center p-0">
+                    <img 
+                      src={slide.image} 
+                      alt={slide.title}
+                      className="w-full h-full object-cover object-top"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                  </div>
+                )}
+
                 {slide.previewType === "chart" && (
                   <div className="flex-1 p-6 flex flex-col">
                     <div className="flex items-center justify-between mb-6">
