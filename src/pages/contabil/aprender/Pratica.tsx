@@ -95,7 +95,7 @@ function CampoNumero({
 
 export default function PraticaAprendizado() {
   const [params, setParams] = useSearchParams();
-  const { praticaAtiva } = usePratica();
+  const { praticaAtiva, produtos, parceiros, cenarios } = usePratica();
   const labParam = params.get("lab") as LabId | null;
   const labInicial: LabId = LABS.some((l) => l.id === labParam) ? (labParam as LabId) : "simples";
   const [aba, setAba] = useState(labInicial);
@@ -140,7 +140,7 @@ export default function PraticaAprendizado() {
           
           <div className="flex items-center gap-2">
             <Select onValueChange={(v) => {
-              const c = CENARIOS_PRATICA.find(s => s.id === v);
+              const c = cenarios.find(s => s.id === v);
               if (!c) return;
               if (c.id === 'cenario-simples') {
                 setAba('simples');
@@ -161,7 +161,7 @@ export default function PraticaAprendizado() {
                 <SelectValue placeholder="Carregar cenário real" />
               </SelectTrigger>
               <SelectContent>
-                {CENARIOS_PRATICA.map(c => (
+                {cenarios.map(c => (
                   <SelectItem key={c.id} value={c.id}>{c.titulo}</SelectItem>
                 ))}
               </SelectContent>
@@ -579,7 +579,7 @@ export default function PraticaAprendizado() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {PRODUTOS_TREINAMENTO.map(p => (
+              {produtos.map(p => (
                 <div key={p.id} className="flex items-center justify-between p-2 rounded-xl bg-muted/50 text-xs">
                   <span className="font-medium">{p.descricao}</span>
                   <span className="text-muted-foreground">{p.ncm} • R$ {p.precoPadrao.toFixed(2)}</span>
@@ -598,7 +598,7 @@ export default function PraticaAprendizado() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {PARCEIROS_TREINAMENTO.map(p => (
+              {parceiros.map(p => (
                 <div key={p.id} className="flex items-center justify-between p-2 rounded-xl bg-muted/50 text-xs">
                   <span className="font-medium">{p.nome}</span>
                   <span className="text-muted-foreground">{p.uf} • {p.regime}</span>
