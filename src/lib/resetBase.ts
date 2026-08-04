@@ -10,6 +10,7 @@ const PRESERVAR = [
   "usecontabil.som.digitacao",
   "usecontabil.preferencias",
   "uc:sidebar",
+  "uc:pratica:ativo",
 ];
 
 export function limparBaseLocalUmaVez() {
@@ -19,6 +20,7 @@ export function limparBaseLocalUmaVez() {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (k && k.startsWith("usecontabil.") && !PRESERVAR.includes(k)) chaves.push(k);
+      if (k && k.startsWith("uc:") && !PRESERVAR.includes(k)) chaves.push(k);
     }
     chaves.forEach((k) => localStorage.removeItem(k));
     localStorage.setItem(FLAG, new Date().toISOString());

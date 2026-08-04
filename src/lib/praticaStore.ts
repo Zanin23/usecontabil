@@ -1,16 +1,15 @@
 /**
  * Modo prática (sandbox de estudo).
- * Guarda apenas a flag e os cenários fictícios, em chave própria do localStorage.
- * NUNCA escreve nas chaves dos stores de produção — os laboratórios apenas leem
- * as funções de cálculo já existentes nos motores de domínio.
+ * Guarda a flag e mantém os dados isolados da produção.
  */
 import { useEffect, useState } from "react";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO, CENARIOS_PRATICA } from "./aprendizado/seedPratica";
 
-const CHAVE = "uc:pratica:ativo";
+const CHAVE_ATIVO = "uc:pratica:ativo";
 const EVENTO = "usecontabil:pratica-changed";
 
-let ativo = typeof window !== "undefined" && localStorage.getItem(CHAVE) === "1";
+// Flags globais reativas
+let ativo = typeof window !== "undefined" && localStorage.getItem(CHAVE_ATIVO) === "1";
 
 export function isPraticaAtiva() {
   return ativo;
@@ -18,25 +17,24 @@ export function isPraticaAtiva() {
 
 export function setPraticaAtiva(v: boolean) {
   ativo = v;
-  localStorage.setItem(CHAVE, v ? "1" : "0");
-  
-  // Ao ativar o modo prática, podemos garantir que os dados de semente estão disponíveis
-  // mas sem poluir o store de produção. O modo prática é consumido por componentes
-  // como AjudaTela e Pratica que usam esses dados de semente.
-  
+  localStorage.setItem(CHAVE_ATIVO, v ? "1" : "0");
   window.dispatchEvent(new CustomEvent(EVENTO));
 }
 
+/**
+ * Hook para componentes que precisam reagir à mudança de modo.
+ */
 export function usePratica() {
   const [valor, setValor] = useState(ativo);
+
   useEffect(() => {
     const atualizar = () => setValor(ativo);
     window.addEventListener(EVENTO, atualizar);
     return () => window.removeEventListener(EVENTO, atualizar);
   }, []);
 
-  return { 
-    praticaAtiva: valor, 
+  return {
+    praticaAtiva: valor,
     setPraticaAtiva,
     produtos: PRODUTOS_TREINAMENTO,
     parceiros: PARCEIROS_TREINAMENTO,
@@ -44,3 +42,10 @@ export function usePratica() {
   };
 }
 
+/**
+ * Retorna o sufixo da chave de armazenamento baseado no modo atual.
+ * Isso garante que dados salvos no modo prática não sobrescrevam a produção.
+ */
+export function getStorageSuffix() {
+  return ativo ? ".pratica" : "";
+}

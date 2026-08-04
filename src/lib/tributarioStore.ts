@@ -13,8 +13,10 @@
  */
 
 import { useEffect, useState } from "react";
+import { getStorageSuffix } from "./praticaStore";
 
-const KEY = "usecontabil.tributario.v1";
+const KEY_BASE = "usecontabil.tributario.v1";
+const getStoreKey = () => KEY_BASE + getStorageSuffix();
 export const TRIBUTARIO_EVENT = "usecontabil:tributario-changed";
 
 /* ------------------------------------------------------------------ */
@@ -251,7 +253,7 @@ function notify() {
 
 function loadDB(): DB {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(getStoreKey());
     return raw ? (JSON.parse(raw) as DB) : {};
   } catch {
     return {};
@@ -259,7 +261,7 @@ function loadDB(): DB {
 }
 
 function persist(db: DB) {
-  localStorage.setItem(KEY, JSON.stringify(db));
+  localStorage.setItem(getStoreKey(), JSON.stringify(db));
   notify();
 }
 

@@ -1,8 +1,10 @@
 // localStorage-backed store for the "Fiscal › Documentos fiscais" screens.
 // Documents are scoped by empresa (selected company) and competência (YYYY-MM).
 import { useEffect, useState } from "react";
+import { getStorageSuffix } from "./praticaStore";
 
-const KEY = "usecontabil.fiscal.docs.v1";
+const KEY_BASE = "usecontabil.fiscal.docs.v1";
+const getStoreKey = () => KEY_BASE + getStorageSuffix();
 
 export const FISCAL_EVENT = "usecontabil:fiscal-changed";
 
@@ -29,7 +31,7 @@ function notify() {
 
 export function loadDB(): DB {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(getStoreKey());
     return raw ? (JSON.parse(raw) as DB) : {};
   } catch {
     return {};
@@ -37,7 +39,7 @@ export function loadDB(): DB {
 }
 
 function persist(db: DB) {
-  localStorage.setItem(KEY, JSON.stringify(db));
+  localStorage.setItem(getStoreKey(), JSON.stringify(db));
   notify();
 }
 
