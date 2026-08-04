@@ -1153,25 +1153,30 @@ function SocietarioSection({
             </Select>
           </Field>
           <Field label="Classe de Atividade" className="col-span-9">
-            <div className="flex items-center gap-2">
-              <Select
-                value={form.classeAtividadeId}
-                onValueChange={(v) => set({ classeAtividadeId: v })}
-              >
-                <SelectTrigger className={INPUT_CLASS}>
-                  <SelectValue placeholder="Selecione a classe cadastrada…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {atividades
-                    .filter((a) => a.status === "Ativa")
-                    .map((a) => (
-                      <SelectItem key={a.id} value={a.id}>{formatAtividade(a)}</SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-              <Button asChild variant="outline" size="sm" className="rounded-full shrink-0">
-                <Link to="/preparativos/cadastros/classe-atividades">Gerenciar</Link>
-              </Button>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Select
+                  value={form.classeAtividadeId}
+                  onValueChange={(v) => set({ classeAtividadeId: v })}
+                >
+                  <SelectTrigger className={INPUT_CLASS}>
+                    <SelectValue placeholder="Selecione a classe cadastrada…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {atividades
+                      .filter((a) => a.status === "Ativa")
+                      .map((a) => (
+                        <SelectItem key={a.id} value={a.id}>{formatAtividade(a)}</SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                <Button asChild variant="outline" size="sm" className="rounded-full shrink-0 border-brand-blue/30 text-brand-blue hover:bg-brand-blue/5">
+                  <Link to="/preparativos/cadastros/classe-atividades">
+                    <Plus className="h-3.5 w-3.5 mr-1" /> Novo
+                  </Link>
+                </Button>
+              </div>
+              <p className="text-[10px] text-muted-foreground/70 italic ml-1">Vincule esta empresa a uma classe de atividade para automação fiscal</p>
             </div>
           </Field>
 
