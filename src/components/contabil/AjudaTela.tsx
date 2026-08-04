@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import {
   GraduationCap, BookOpen, Info, Loader2, Send, Sparkles, X, CheckCircle2, FlaskConical,
+  BrainCircuit,
 } from "lucide-react";
 import {
   Badge, Button, Input, Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
