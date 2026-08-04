@@ -173,8 +173,7 @@ export default function PraticaAprendizado() {
         </div>
         <p className="max-w-3xl text-muted-foreground">
           Os laboratórios chamam as mesmas tabelas e funções dos motores de apuração do sistema, mas
-          com valores fictícios digitados por você. Nada aqui grava na competência nem altera dados
-          das empresas.
+          com valores fictícios. Você pode digitar os seus próprios dados ou <strong>carregar cenários reais</strong> preparados para treinamento.
         </p>
       </header>
 
@@ -572,7 +571,7 @@ export default function PraticaAprendizado() {
         </TabsContent>
       </Tabs>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 mt-8">
         <Card className="rounded-3xl border-dashed">
           <CardHeader>
             <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -584,7 +583,7 @@ export default function PraticaAprendizado() {
             <div className="space-y-2">
               {produtos.map(p => (
                 <div key={p.id} className="flex items-center justify-between p-2 rounded-xl bg-muted/50 text-xs">
-                  <span className="font-medium">{p.descricao}</span>
+                  <span className="font-medium text-brand-orange">{p.descricao}</span>
                   <span className="text-muted-foreground">{p.ncm} • R$ {p.precoPadrao.toFixed(2)}</span>
                 </div>
               ))}
@@ -603,7 +602,7 @@ export default function PraticaAprendizado() {
             <div className="space-y-2">
               {parceiros.map(p => (
                 <div key={p.id} className="flex items-center justify-between p-2 rounded-xl bg-muted/50 text-xs">
-                  <span className="font-medium">{p.nome}</span>
+                  <span className="font-medium text-brand-orange">{p.nome}</span>
                   <span className="text-muted-foreground">{p.uf} • {p.regime}</span>
                 </div>
               ))}
