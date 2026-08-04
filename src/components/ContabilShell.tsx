@@ -21,8 +21,10 @@ import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competenc
 import BuscaTelas from "@/components/contabil/BuscaTelas";
 import ConfiguracoesConta from "@/components/contabil/ConfiguracoesConta";
 import { AMBIENTES, usePreferencias } from "@/lib/preferencias";
+import ApresentacaoSistema from "@/components/contabil/ApresentacaoSistema";
 
 const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
+
 
 export default function ContabilShell() {
   const { competencia, setCompetencia } = useCompetencia();
