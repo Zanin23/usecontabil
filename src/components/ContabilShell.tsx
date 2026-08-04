@@ -319,8 +319,30 @@ export default function ContabilShell() {
             )}
           </button>
 
+          <div className="pt-2">
+            {recolhida ? (
+              <button
+                type="button"
+                onClick={() => setApresentacaoAberta(true)}
+                title="Ver apresentação do sistema"
+                className="w-full flex items-center justify-center h-10 rounded-lg text-brand-orange hover:bg-brand-orange/10 transition"
+              >
+                <MonitorPlay className="h-5 w-5" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setApresentacaoAberta(true)}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-brand-orange text-white shadow-lg shadow-brand-orange/20 hover:bg-brand-orange/90 transition group"
+              >
+                <MonitorPlay className="h-4 w-4 shrink-0 group-hover:scale-110 transition-transform" />
+                <span className="font-medium text-sm">Apresentação</span>
+              </button>
+            )}
+          </div>
+
           {!recolhida && (
-            <>
+            <div className="space-y-2.5 pt-2">
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span className="shrink-0">Ambiente</span>
                 <button
@@ -339,21 +361,10 @@ export default function ContabilShell() {
                   {usuarioNome}
                 </span>
               </div>
-              <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <span className="shrink-0">Apresentação</span>
-                <button
-                  type="button"
-                  onClick={() => setApresentacaoAberta(true)}
-                  className="text-brand-orange hover:underline font-medium"
-                >
-                  Abrir Slides
-                </button>
-              </div>
-
-            </>
+            </div>
           )}
-
         </div>
+
       </aside>
 
       {/* Main */}
