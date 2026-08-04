@@ -33,7 +33,7 @@ import {
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import dashboardImg from "@/assets/image-21.png.asset.json";
+import dashboardImg from "@/assets/dashboard-full.png.asset.json";
 
 const brl = (v: number) =>
   "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -335,13 +335,13 @@ export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => voi
                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-brand" />
                 
                 {slide.previewType === "image" && (
-                  <div className="flex-1 relative overflow-hidden flex items-center justify-center p-0">
+                  <div className="flex-1 relative overflow-hidden flex items-center justify-center p-0 h-full bg-muted/20">
                     <img 
                       src={slide.image} 
                       alt={slide.title}
-                      className="w-full h-full object-cover object-top"
+                      className="w-full h-full object-contain object-top"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
                   </div>
                 )}
 
