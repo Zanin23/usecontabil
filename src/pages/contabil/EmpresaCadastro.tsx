@@ -267,61 +267,147 @@ function LeftPanel({
   const cnpjMasked = form.cnpj || "—";
   const semLista = total === 0;
   return (
-    <Card className="rounded-2xl border-border/70">
-      <CardContent className="p-4 space-y-4">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Primeiro registro"
-              disabled={semLista || posicao <= 0} onClick={() => irPara(0)}><ChevronsLeft className="h-4 w-4" /></Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Registro anterior"
-              disabled={semLista || posicao <= 0} onClick={() => irPara(posicao - 1)}><ChevronLeft className="h-4 w-4" /></Button>
+    <Card className="rounded-2xl border-border/70 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      <div className="bg-brand-blue/5 border-b border-border/70 p-4">
+        <div className="flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
+          <div className="flex items-center gap-1">
+            <History className="h-3 w-3" />
+            Navegação
           </div>
-          <span className="font-mono">
-            {posicao >= 0 ? `Registro ${posicao + 1} de ${total}` : "Novo Registro"}
-          </span>
-          <div className="flex items-center gap-0.5">
-            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Próximo registro"
-              disabled={semLista || posicao >= total - 1} onClick={() => irPara(posicao + 1)}><ChevronRight className="h-4 w-4" /></Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Último registro"
-              disabled={semLista || posicao >= total - 1} onClick={() => irPara(total - 1)}><ChevronsRight className="h-4 w-4" /></Button>
+          <Badge variant="outline" className="h-5 px-1.5 font-mono text-[10px] border-border/60">
+            {posicao >= 0 ? `${posicao + 1} / ${total}` : "NOVO"}
+          </Badge>
+        </div>
+        
+        <div className="flex items-center justify-between gap-1">
+          <div className="flex items-center gap-1">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg bg-background"
+                    disabled={semLista || posicao <= 0} onClick={() => irPara(0)}><ChevronsLeft className="h-4 w-4" /></Button>
+                </TooltipTrigger>
+                <TooltipContent>Primeiro</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg bg-background"
+                    disabled={semLista || posicao <= 0} onClick={() => irPara(posicao - 1)}><ChevronLeft className="h-4 w-4" /></Button>
+                </TooltipTrigger>
+                <TooltipContent>Anterior</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg bg-background"
+                    disabled={semLista || posicao >= total - 1} onClick={() => irPara(posicao + 1)}><ChevronRight className="h-4 w-4" /></Button>
+                </TooltipTrigger>
+                <TooltipContent>Próximo</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg bg-background"
+                    disabled={semLista || posicao >= total - 1} onClick={() => irPara(total - 1)}><ChevronsRight className="h-4 w-4" /></Button>
+                </TooltipTrigger>
+                <TooltipContent>Último</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
+      </div>
+
+      <CardContent className="p-4 space-y-5">
+        <div className="flex flex-col items-center text-center space-y-3">
+          <div className="relative">
+            <div className="h-20 w-20 rounded-2xl bg-brand-blue/10 border-2 border-brand-blue/20 grid place-items-center">
+              <Building2 className="h-10 w-10 text-brand-blue/70" />
+            </div>
+            {posicao === -1 && (
+              <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-brand-blue border-2 border-card grid place-items-center">
+                <Plus className="h-3 w-3 text-white" />
+              </div>
+            )}
+          </div>
+          
+          <div className="space-y-1 w-full">
+            <div className="font-display text-lg font-semibold text-foreground leading-tight line-clamp-2" title={displayName}>
+              {displayName}
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Badge variant="secondary" className="font-mono text-[10px] tracking-tighter py-0">
+                {cnpjMasked}
+              </Badge>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-start justify-between">
-          <span className="h-8 w-8" />
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+              <div className="h-px flex-1 bg-border/50" />
+              Resumo Operacional
+              <div className="h-px flex-1 bg-border/50" />
+            </div>
+            
+            <div className="grid gap-3">
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 h-6 w-6 rounded bg-muted/50 grid place-items-center shrink-0">
+                  <Phone className="h-3 w-3 text-muted-foreground" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] text-muted-foreground leading-none mb-0.5">Telefone</div>
+                  <div className="text-xs font-medium truncate">{form.contatoTel || "—"}</div>
+                </div>
+              </div>
 
-          <div className="h-16 w-16 rounded-full bg-muted grid place-items-center border border-border">
-            <Building2 className="h-7 w-7 text-muted-foreground" />
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 h-6 w-6 rounded bg-muted/50 grid place-items-center shrink-0">
+                  <FileText className="h-3 w-3 text-muted-foreground" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] text-muted-foreground leading-none mb-0.5">Atividade Principal</div>
+                  <div className="text-xs font-medium line-clamp-2 leading-snug" title={form.cnaeDesc}>
+                    {form.cnaeDesc || "—"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 h-6 w-6 rounded bg-muted/50 grid place-items-center shrink-0">
+                  <MapPin className="h-3 w-3 text-muted-foreground" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] text-muted-foreground leading-none mb-0.5">Localização</div>
+                  <div className="text-xs font-medium truncate">
+                    {form.municipio ? `${form.municipio} - ${form.uf}` : "—"}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <span className="h-2.5 w-2.5 rounded-full bg-warn mt-2" title="Rascunho" />
+
+          <div className="pt-2">
+            <div className={`rounded-xl p-3 text-xs flex items-center justify-between ${posicao === -1 ? 'bg-warn/10 text-warn border border-warn/20' : 'bg-success/10 text-success border border-success/20'}`}>
+              <div className="flex items-center gap-2">
+                <div className={`h-2 w-2 rounded-full ${posicao === -1 ? 'bg-warn animate-pulse' : 'bg-success'}`} />
+                <span className="font-semibold">{posicao === -1 ? 'Rascunho' : 'Cadastrado'}</span>
+              </div>
+              <span className="text-[10px] opacity-70">
+                {form.aberturaRF ? `Início: ${form.aberturaRF}` : ""}
+              </span>
+            </div>
+          </div>
         </div>
-
-        <div className="text-center space-y-2">
-          <div className="font-semibold text-foreground leading-tight truncate" title={displayName}>
-            {displayName}
-          </div>
-          <div className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
-            <Building2 className="h-3.5 w-3.5" /> Código: <span className="text-brand-blue">—</span>
-          </div>
-          <div className="text-xs text-muted-foreground">
-            Cnpj : <span className="text-brand-blue">{cnpjMasked}</span>
-          </div>
-        </div>
-
-        <Separator />
-
-        <dl className="space-y-2.5 text-xs">
-          <div><dt className="text-muted-foreground">Telefone</dt>
-            <dd className="text-foreground font-medium">{form.contatoTel || "—"}</dd></div>
-          <div><dt className="text-muted-foreground">Cnae - Descrição</dt>
-            <dd className="text-foreground font-medium truncate" title={form.cnaeDesc}>{form.cnaeDesc || "—"}</dd></div>
-          <div><dt className="text-muted-foreground">Abertura - Receita Federal</dt>
-            <dd className="text-foreground font-medium">{form.aberturaRF || "—"}</dd></div>
-          <div><dt className="text-muted-foreground">Início contrato</dt>
-            <dd className="text-foreground font-medium">{form.inicioContrato || "—"}</dd></div>
-          <div><dt className="text-muted-foreground">Tipo cadastro</dt>
-            <dd className="text-warn font-medium">Rascunho</dd></div>
-        </dl>
       </CardContent>
     </Card>
   );
