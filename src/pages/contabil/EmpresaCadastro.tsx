@@ -7,14 +7,14 @@ import { formatAtividade, loadAtividades, useAtividades } from "@/lib/atividades
 import {
   Button, Card, CardContent, Input, Label, Separator,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-  Tabs, TabsList, TabsTrigger,
+  Tabs, TabsList, TabsTrigger, Badge, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/design-system/mj-design-system-db98fa";
 import {
   ArrowLeft, Building2, ChevronDown, ChevronLeft, ChevronRight,
   ChevronsLeft, ChevronsRight, Search, Plus, FileText, Trash2, Check,
   Landmark, KeyRound, Users2, DollarSign, FileSignature,
   Users, MessageSquare, HelpCircle, CircleAlert, Sparkles, Loader2,
-  Lightbulb, ExternalLink, Wand2, X, GripVertical,
+  Lightbulb, ExternalLink, Wand2, X, GripVertical, Info, History, MapPin, Phone, Mail,
 } from "lucide-react";
 
 type SectionKey = "dados" | "senhas" | "fiscal" | "societario";
