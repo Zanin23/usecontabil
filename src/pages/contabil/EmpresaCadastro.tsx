@@ -193,7 +193,7 @@ async function fetchCep(cep: string) {
 
 // Uniform sizing/appearance for every input, select-trigger and textarea in this form.
 const INPUT_CLASS =
-  "h-10 rounded-lg bg-background/60 border-border/70 text-sm text-foreground placeholder:text-muted-foreground/60 focus-visible:ring-1 focus-visible:ring-brand-blue/60 focus-visible:border-brand-blue/60";
+  "h-10 rounded-lg bg-background border-border/60 text-sm text-foreground placeholder:text-muted-foreground/40 focus-visible:ring-1 focus-visible:ring-brand-blue/60 focus-visible:border-brand-blue/60 transition-all hover:border-brand-blue/40";
 
 function Field({
   label, required, children, className = "", tipKey, onFocusTip, hint,
