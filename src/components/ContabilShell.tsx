@@ -21,8 +21,10 @@ import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competenc
 import BuscaTelas from "@/components/contabil/BuscaTelas";
 import ConfiguracoesConta from "@/components/contabil/ConfiguracoesConta";
 import { AMBIENTES, usePreferencias } from "@/lib/preferencias";
+import ApresentacaoSistema from "@/components/contabil/ApresentacaoSistema";
 
 const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
+
 
 export default function ContabilShell() {
   const { competencia, setCompetencia } = useCompetencia();
@@ -31,6 +33,8 @@ export default function ContabilShell() {
   const { prefs } = usePreferencias();
   const [configAberta, setConfigAberta] = useState(false);
   const { praticaAtiva: emPratica } = usePratica();
+  const [apresentacaoAberta, setApresentacaoAberta] = useState(false);
+
 
 
   useEffect(() => {
@@ -336,11 +340,16 @@ export default function ContabilShell() {
                 </span>
               </div>
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <span className="shrink-0">Perfil</span>
-                <span className="text-foreground truncate max-w-[60%]" title={usuarioPerfil}>
-                  {usuarioPerfil}
-                </span>
+                <span className="shrink-0">Apresentação</span>
+                <button
+                  type="button"
+                  onClick={() => setApresentacaoAberta(true)}
+                  className="text-brand-orange hover:underline font-medium"
+                >
+                  Abrir Slides
+                </button>
               </div>
+
             </>
           )}
 
@@ -508,7 +517,12 @@ export default function ContabilShell() {
           </div>
         )}
 
+        {apresentacaoAberta && (
+          <ApresentacaoSistema onFinish={() => setApresentacaoAberta(false)} />
+        )}
+
         <main className="px-4 lg:px-8 py-6 lg:py-8">
+
           <Outlet />
         </main>
 
