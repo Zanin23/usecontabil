@@ -33,6 +33,8 @@ export default function ContabilShell() {
   const { prefs } = usePreferencias();
   const [configAberta, setConfigAberta] = useState(false);
   const { praticaAtiva: emPratica } = usePratica();
+  const [apresentacaoAberta, setApresentacaoAberta] = useState(false);
+
 
 
   useEffect(() => {
