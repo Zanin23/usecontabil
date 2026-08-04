@@ -474,7 +474,19 @@ export default function ContabilShell() {
                 <Command className="h-3 w-3" />K
               </kbd>
             </button>
-            <AjudaTela />
+             <Button
+               variant="outline"
+               size="sm"
+               className="rounded-md h-9 gap-2 text-brand-orange border-brand-orange/20 hover:bg-brand-orange/5"
+               onClick={() => setApresentacaoAberta(true)}
+               title="Ver apresentação do sistema"
+             >
+               <MonitorPlay className="h-4 w-4" />
+               <span className="hidden sm:inline">Apresentação</span>
+             </Button>
+
+             <AjudaTela />
+
 
             <Button
               variant="outline"
