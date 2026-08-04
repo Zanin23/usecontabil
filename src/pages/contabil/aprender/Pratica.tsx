@@ -13,6 +13,7 @@ import {
   type Passo,
 } from "@/lib/aprendizado/labs";
 import { usePratica, setPraticaAtiva } from "@/lib/praticaStore";
+import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO, CENARIOS_PRATICA } from "@/lib/aprendizado/seedPratica";
 
 const PADRAO_SIMPLES: EntradaSimples = {
   rbt12: 1_200_000,
@@ -127,13 +128,45 @@ export default function PraticaAprendizado() {
         <Link to="/aprender" className="text-xs text-muted-foreground hover:text-foreground">
           ← Central de Aprendizado
         </Link>
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-display text-4xl">
-            Modo <span className="text-brand-orange">prática.</span>
-          </h1>
-          <Badge className="rounded-full bg-brand-orange text-primary-foreground">
-            <FlaskConical className="mr-1 h-3 w-3" /> Sandbox
-          </Badge>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="font-display text-4xl">
+              Modo <span className="text-brand-orange">prática.</span>
+            </h1>
+            <Badge className="rounded-full bg-brand-orange text-primary-foreground">
+              <FlaskConical className="mr-1 h-3 w-3" /> Sandbox
+            </Badge>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Select onValueChange={(v) => {
+              const c = CENARIOS_PRATICA.find(s => s.id === v);
+              if (!c) return;
+              if (c.id === 'cenario-simples') {
+                setAba('simples');
+                setSimples(c.dados);
+              } else if (c.id === 'cenario-difal') {
+                setAba('icms-difal');
+                setDifal({
+                  origem: c.origem as any,
+                  destino: c.destino as any,
+                  valor: c.valor,
+                  origemProduto: "0",
+                  fcp: c.fcp
+                });
+              }
+            }}>
+              <SelectTrigger className="w-[240px] rounded-full">
+                <Sparkles className="mr-2 h-4 w-4 text-brand-orange" />
+                <SelectValue placeholder="Carregar cenário real" />
+              </SelectTrigger>
+              <SelectContent>
+                {CENARIOS_PRATICA.map(c => (
+                  <SelectItem key={c.id} value={c.id}>{c.titulo}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <p className="max-w-3xl text-muted-foreground">
           Os laboratórios chamam as mesmas tabelas e funções dos motores de apuração do sistema, mas
@@ -535,6 +568,46 @@ export default function PraticaAprendizado() {
           </div>
         </TabsContent>
       </Tabs>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="rounded-3xl border-dashed">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-brand-orange" />
+              Produtos para Treinamento
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {PRODUTOS_TREINAMENTO.map(p => (
+                <div key={p.id} className="flex items-center justify-between p-2 rounded-xl bg-muted/50 text-xs">
+                  <span className="font-medium">{p.descricao}</span>
+                  <span className="text-muted-foreground">{p.ncm} • R$ {p.precoPadrao.toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-dashed">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-brand-orange" />
+              Parceiros para Treinamento
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {PARCEIROS_TREINAMENTO.map(p => (
+                <div key={p.id} className="flex items-center justify-between p-2 rounded-xl bg-muted/50 text-xs">
+                  <span className="font-medium">{p.nome}</span>
+                  <span className="text-muted-foreground">{p.uf} • {p.regime}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
