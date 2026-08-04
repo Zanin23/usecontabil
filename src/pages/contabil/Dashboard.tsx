@@ -330,7 +330,7 @@ export default function Dashboard() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
               <Button
                 className="rounded-md bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground"
-                onClick={() => navigate(semEmpresa ? "/preparativos/empresa/cadastro" : "/fiscal/documentos/notas-saida")}
+                onClick={() => navigate(semEmpresa ? "/preparativos/cadastros/empresas/novo" : "/fiscal/documentos/saidas")}
               >
                 {semEmpresa ? "Cadastrar empresa" : "Lançar documentos"}
               </Button>
