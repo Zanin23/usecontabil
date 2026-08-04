@@ -133,6 +133,7 @@ export default function Dashboard() {
   const { empresa, empresas } = useEmpresaAtual();
   const empresaId = empresa?.id ?? "";
   const [openKpi, setOpenKpi] = useState<string | null>(null);
+  const { praticaAtiva: emPratica } = usePratica();
 
   const documentos = useTributario(() => empresaDB(empresaId).documentos, [empresaId]);
 
