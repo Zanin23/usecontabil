@@ -269,7 +269,7 @@ export function empresaDB(empresaId?: string | null): EmpresaDB {
   return { ...vazio(), ...(db[empresaId] ?? {}) };
 }
 
-function saveEmpresa(empresaId: string, patch: Partial<EmpresaDB>) {
+export function saveEmpresa(empresaId: string, patch: Partial<EmpresaDB>) {
   const db = loadDB();
   db[empresaId] = { ...vazio(), ...(db[empresaId] ?? {}), ...patch };
   persist(db);

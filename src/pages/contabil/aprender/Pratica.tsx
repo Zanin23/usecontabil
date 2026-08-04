@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { FlaskConical, RotateCcw, ShieldAlert, Sparkles } from "lucide-react";
+import { FlaskConical, RotateCcw, ShieldAlert, Sparkles, Database } from "lucide-react";
 import {
   Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch, Tabs, TabsContent,
@@ -15,6 +15,9 @@ import {
 import { usePratica, setPraticaAtiva } from "@/lib/praticaStore";
 import { toast } from "sonner";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO, CENARIOS_PRATICA } from "@/lib/aprendizado/seedPratica";
+import { popularDadosPratica } from "@/lib/aprendizado/geradorDados";
+import { useEmpresaAtual } from "@/lib/empresaAtual";
+import { useCompetencia } from "@/lib/competencia";
 
 const PADRAO_SIMPLES: EntradaSimples = {
   rbt12: 1_200_000,
@@ -97,6 +100,8 @@ function CampoNumero({
 export default function PraticaAprendizado() {
   const [params, setParams] = useSearchParams();
   const { praticaAtiva, produtos, parceiros, cenarios } = usePratica();
+  const { empresaId } = useEmpresaAtual();
+  const { competencia } = useCompetencia();
   const labParam = params.get("lab") as LabId | null;
   const labInicial: LabId = LABS.some((l) => l.id === labParam) ? (labParam as LabId) : "simples";
   const [aba, setAba] = useState(labInicial);
@@ -169,6 +174,22 @@ export default function PraticaAprendizado() {
                 ))}
               </SelectContent>
             </Select>
+            <Button 
+              className="rounded-full bg-brand-orange hover:bg-brand-orange/90 gap-2"
+              onClick={() => {
+                if (!empresaId) {
+                  toast.error("Selecione ou cadastre uma empresa primeiro.");
+                  return;
+                }
+                popularDadosPratica(empresaId, competencia);
+                toast.success("Dados fictícios gerados com sucesso!", {
+                  description: "Produtos, parceiros e documentos foram adicionados à competência atual."
+                });
+              }}
+            >
+              <Database className="h-4 w-4 text-primary-foreground" />
+              Popular base
+            </Button>
           </div>
         </div>
         <p className="max-w-3xl text-muted-foreground">
