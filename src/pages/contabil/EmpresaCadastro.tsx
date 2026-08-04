@@ -258,10 +258,10 @@ function SectionCard({
 
 function InlineDivider({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 mt-6 mb-4">
-      <div className="flex-1 h-px bg-border/70" />
-      <span className="text-[11px] uppercase tracking-[0.22em] text-brand-blue font-semibold">{children}</span>
-      <div className="flex-1 h-px bg-border/70" />
+    <div className="flex items-center gap-4 mt-8 mb-6">
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-border/70" />
+      <span className="text-[10px] uppercase tracking-[0.3em] text-brand-blue font-bold opacity-80">{children}</span>
+      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-border/70" />
     </div>
   );
 }
