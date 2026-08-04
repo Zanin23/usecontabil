@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Receipt,
   FileText,
+  Landmark,
 } from "lucide-react";
 import {
   Button,
