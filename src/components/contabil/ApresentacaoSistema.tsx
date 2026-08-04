@@ -13,15 +13,29 @@ import {
   Building2,
   Table,
   ArrowRight,
+  TrendingUp,
+  Receipt,
+  FileText,
 } from "lucide-react";
 import {
   Button,
   Card,
   CardContent,
   Badge,
+  Table as UITable,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/design-system/mj-design-system-db98fa";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+
+const brl = (v: number) =>
+  "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 
 interface Slide {
   id: string;
@@ -33,7 +47,10 @@ interface Slide {
   points: string[];
   image?: string;
   area?: string;
+  previewType?: "chart" | "table" | "kpis" | "icon";
+  previewData?: any;
 }
+
 
 const SLIDES: Slide[] = [
   {
@@ -49,6 +66,7 @@ const SLIDES: Slide[] = [
       "Auditoria fiscal preventiva 24/7",
       "Camada de aprendizado integrada"
     ],
+    previewType: "icon",
   },
   {
     id: "dashboard",
@@ -63,6 +81,15 @@ const SLIDES: Slide[] = [
       "Alertas de bloqueio de fechamento",
       "Gráficos acessíveis e interativos"
     ],
+    previewType: "chart",
+    previewData: [
+      { mes: "Jan", receita: 450000, despesa: 320000 },
+      { mes: "Fev", receita: 520000, despesa: 340000 },
+      { mes: "Mar", receita: 480000, despesa: 310000 },
+      { mes: "Abr", receita: 610000, despesa: 380000 },
+      { mes: "Mai", receita: 590000, despesa: 360000 },
+      { mes: "Jun", receita: 720000, despesa: 410000 },
+    ]
   },
   {
     id: "fiscal",
@@ -77,6 +104,12 @@ const SLIDES: Slide[] = [
       "Gestão de Obrigações Acessórias (SPED)",
       "Calendário fiscal dinâmico por empresa"
     ],
+    previewType: "table",
+    previewData: [
+      { tributo: "ICMS Próprio", base: 461750, apagar: 29465, status: "Apurado" },
+      { tributo: "PIS/COFINS", base: 461750, apagar: 18684, status: "Apurado" },
+      { tributo: "ISS Municipal", base: 128500, apagar: 6425, status: "Conferência" },
+    ]
   },
   {
     id: "audit",
@@ -91,6 +124,12 @@ const SLIDES: Slide[] = [
       "Identificação de créditos extemporâneos",
       "Gestão de certidões e prazos críticos"
     ],
+    previewType: "table",
+    previewData: [
+      { ref: "NF-e 10267", erro: "XML sem escrituração", impacto: "Crédito perdido", nivel: "Crítico" },
+      { ref: "NF-e 10281", erro: "Alíquota divergente", impacto: "ICMS a maior", nivel: "Alerta" },
+      { ref: "CT-e 3308", erro: "CFOP incompatível", impacto: "Reclassificação", nivel: "Informativo" },
+    ]
   },
   {
     id: "admin",
@@ -105,6 +144,12 @@ const SLIDES: Slide[] = [
       "Ciclo de compras e suprimentos",
       "Gestão de alçadas e permissões"
     ],
+    previewType: "kpis",
+    previewData: [
+      { label: "Contratos Ativos", valor: "142", sub: "+5 este mês" },
+      { label: "Patrimônio Total", valor: brl(1450200), sub: "86 bens" },
+      { label: "Pedidos Compra", valor: "28", sub: "12 pendentes" },
+    ]
   },
   {
     id: "learning",
@@ -119,6 +164,7 @@ const SLIDES: Slide[] = [
       "Trilhas de conhecimento por área",
       "Glossário técnico integrado ao Ctrl+K"
     ],
+    previewType: "icon",
   },
   {
     id: "tech",
@@ -133,8 +179,10 @@ const SLIDES: Slide[] = [
       "Busca inteligente de funcionalidades",
       "Geração de documentação automática"
     ],
+    previewType: "icon",
   }
 ];
+
 
 export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => void }) {
   const [current, setCurrent] = useState(0);
@@ -237,23 +285,112 @@ export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => voi
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="relative aspect-square lg:aspect-auto lg:h-[500px] flex items-center justify-center"
+              className="relative w-full aspect-[4/3] lg:aspect-auto lg:h-[520px] flex items-center justify-center"
             >
               <div className="absolute inset-0 bg-gradient-brand opacity-10 blur-[100px] rounded-full" />
-              <Card className="relative z-10 w-full h-full max-h-[440px] rounded-3xl border-border/40 shadow-elevated bg-card/80 backdrop-blur-md overflow-hidden flex flex-col items-center justify-center p-12 text-center group border-2 border-brand-orange/20">
+              <Card className="relative z-10 w-full h-full rounded-3xl border-border/40 shadow-elevated bg-card/90 backdrop-blur-md overflow-hidden flex flex-col border-2 border-brand-orange/20">
                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-brand" />
-                <slide.icon className="h-24 w-24 text-brand-orange mb-8 group-hover:scale-110 transition-transform duration-500" />
-                <h3 className="font-display text-3xl mb-4">{slide.highlight}</h3>
-                <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                  Clique no botão de pré-visualização para ver este módulo em funcionamento real dentro do sistema.
-                </p>
-                <div className="mt-8 flex gap-3">
-                   <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
-                   <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
-                   <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
-                </div>
+                
+                {slide.previewType === "chart" && (
+                  <div className="flex-1 p-6 flex flex-col">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="text-sm font-semibold flex items-center gap-2">
+                        <LayoutDashboard className="h-4 w-4 text-brand-orange" />
+                        Visão de Performance
+                      </div>
+                      <Badge variant="outline" className="text-[10px] uppercase">Mensal</Badge>
+                    </div>
+                    <div className="flex-1 min-h-0">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={slide.previewData}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
+                          <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
+                          <YAxis hide />
+                          <Tooltip 
+                            cursor={{ fill: "var(--brand-orange)", opacity: 0.05 }}
+                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                          />
+                          <Bar dataKey="receita" fill="var(--brand-orange)" radius={[4, 4, 0, 0]} barSize={20} />
+                          <Bar dataKey="despesa" fill="var(--brand-blue)" radius={[4, 4, 0, 0]} barSize={20} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                )}
+
+                {slide.previewType === "table" && (
+                  <div className="flex-1 flex flex-col">
+                    <div className="p-4 border-b border-border bg-muted/30 flex items-center justify-between">
+                      <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Listagem de Amostra</div>
+                      <div className="flex gap-1">
+                        <div className="h-2 w-2 rounded-full bg-destructive/40" />
+                        <div className="h-2 w-2 rounded-full bg-warn/40" />
+                        <div className="h-2 w-2 rounded-full bg-success/40" />
+                      </div>
+                    </div>
+                    <div className="flex-1 overflow-auto">
+                      <UITable>
+                        <TableHeader>
+                          <TableRow className="hover:bg-transparent border-border">
+                            {Object.keys(slide.previewData[0]).map(key => (
+                              <TableHead key={key} className="text-[10px] uppercase h-8">{key}</TableHead>
+                            ))}
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {slide.previewData.map((row: any, i: number) => (
+                            <TableRow key={i} className="border-border/50">
+                              {Object.entries(row).map(([key, val]: any, j) => (
+                                <TableCell key={j} className={cn(
+                                  "text-[11px] py-2",
+                                  key === 'apagar' || key === 'base' ? "font-mono" : ""
+                                )}>
+                                  {key === 'apagar' || key === 'base' ? brl(val) : String(val)}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </UITable>
+                    </div>
+                  </div>
+                )}
+
+                {slide.previewType === "kpis" && (
+                  <div className="flex-1 p-8 grid grid-cols-1 gap-6 content-center">
+                    {slide.previewData.map((kpi: any, i: number) => (
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4 + i * 0.1 }}
+                        className="p-4 rounded-2xl bg-muted/40 border border-border flex flex-col"
+                      >
+                        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{kpi.label}</span>
+                        <span className="text-2xl font-display text-brand-orange mt-1">{kpi.valor}</span>
+                        <span className="text-[10px] text-success font-medium mt-1">{kpi.sub}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+
+                {slide.previewType === "icon" && (
+                  <div className="flex-1 flex flex-col items-center justify-center p-12 text-center group">
+                    <slide.icon className="h-24 w-24 text-brand-orange mb-8 group-hover:scale-110 transition-transform duration-500" />
+                    <h3 className="font-display text-3xl mb-4">{slide.highlight}</h3>
+                    <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                      Clique no botão de pré-visualização para ver este módulo em funcionamento real dentro do sistema.
+                    </p>
+                    <div className="mt-8 flex gap-3">
+                      <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
+                      <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
+                      <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
+                    </div>
+                  </div>
+                )}
               </Card>
             </motion.div>
+
           </motion.div>
         </AnimatePresence>
       </main>
