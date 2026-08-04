@@ -203,6 +203,7 @@ export default function PraticaAprendizado() {
                 </Button>
                 <div className="pt-4 border-t border-border/40">
                   <AssistenteCampos
+                    modo="aprendizado"
                     titulo="Laboratório Simples Nacional"
                     campos={[
                       { key: "rbt12", label: "RBT12", ajuda: "Receita bruta acumulada nos 12 meses anteriores ao período de apuração. Define a faixa de enquadramento na tabela do Simples." },
@@ -320,6 +321,7 @@ export default function PraticaAprendizado() {
                 </Button>
                 <div className="pt-4 border-t border-border/40">
                   <AssistenteCampos
+                    modo="aprendizado"
                     titulo="Laboratório ICMS / DIFAL"
                     campos={[
                       { key: "origem", label: "UF Origem", ajuda: "Estado de onde a mercadoria está saindo." },
@@ -407,6 +409,7 @@ export default function PraticaAprendizado() {
                 </Button>
                 <div className="pt-4 border-t border-border/40">
                   <AssistenteCampos
+                    modo="aprendizado"
                     titulo="Laboratório PIS/COFINS"
                     campos={[
                       { key: "regime", label: "Regime", ajuda: "Cumulativo (geralmente Lucro Presumido, alíquotas menores sem crédito) ou Não Cumulativo (geralmente Lucro Real, alíquotas maiores com direito a crédito)." },
@@ -466,6 +469,7 @@ export default function PraticaAprendizado() {
                 
                 <div className="py-4">
                   <AssistenteCampos
+                    modo="aprendizado"
                     titulo="Laboratório de Retenções"
                     campos={[
                       { key: "valorServico", label: "Valor do Serviço", ajuda: "Valor bruto da nota fiscal de serviço." },
