@@ -517,7 +517,12 @@ export default function ContabilShell() {
           </div>
         )}
 
+        {apresentacaoAberta && (
+          <ApresentacaoSistema onFinish={() => setApresentacaoAberta(false)} />
+        )}
+
         <main className="px-4 lg:px-8 py-6 lg:py-8">
+
           <Outlet />
         </main>
 
