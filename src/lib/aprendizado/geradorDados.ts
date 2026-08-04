@@ -5,7 +5,7 @@
  */
 import { saveEmpresa, novoId, registrarAuditoria, empresaDB } from "@/lib/tributarioStore";
 import { saveDocs, novoDocId, moedaBR, chaveFicticia } from "@/lib/fiscalStore";
-import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS } from "@/lib/contasCaixaStore";
+import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS_BASE } from "@/lib/contasCaixaStore";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO } from "./seedPratica";
 
 export function popularDadosPratica(empresaId: string, competencia: string) {
@@ -128,7 +128,7 @@ export function popularDadosPratica(empresaId: string, competencia: string) {
   });
 
   // 3. Financeiro (Contas a Pagar/Receber)
-  // Limpar baixas da competencia para evitar duplicidade no seed
+  const KEY_BAIXAS = KEY_BAIXAS_BASE + ".pratica";
   const todasBaixas = JSON.parse(localStorage.getItem(KEY_BAIXAS) || "[]");
   const outrasBaixas = todasBaixas.filter((b: any) => !b.id.includes(competencia));
   localStorage.setItem(KEY_BAIXAS, JSON.stringify(outrasBaixas));
