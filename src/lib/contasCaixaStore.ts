@@ -291,7 +291,7 @@ export function resumo(lista: TituloCalculado[]): ResumoCarteira {
   const grupo = (campo: "categoria" | "parceiro") => {
     const m = new Map<string, number>();
     lista.filter((t) => t.saldo > 0).forEach((t) => m.set(t[campo], round((m.get(t[campo]) || 0) + t.saldo)));
-    return [...m.entries()].map(([nome, valor]) => ({ nome, valor })).sort((a, b) => b.valor - a.valor);
+    return Array.from(m.entries()).map(([nome, valor]) => ({ nome, valor })).sort((a, b) => b.valor - a.valor);
   };
   return {
     total: round(lista.reduce((a, t) => a + t.valor, 0)),
@@ -484,7 +484,7 @@ export function inadimplentes(empresaId?: string, competencia?: string, ref = ho
   const hist = acoes();
   const mapa = new Map<string, TituloCalculado[]>();
   lista.forEach((t) => mapa.set(t.parceiro, [...(mapa.get(t.parceiro) || []), t]));
-  return [...mapa.entries()]
+  return Array.from(mapa.entries())
     .map(([parceiro, tits]) => {
       const maiorAtraso = Math.max(...tits.map((t) => t.diasAtraso));
       const faixa = faixaAging(maiorAtraso);
