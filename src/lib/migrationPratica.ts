@@ -42,7 +42,28 @@ export async function migrarBaseRealParaPratica() {
       }
     });
 
-    // 2.1 Remover chaves que podem conter dados "Real" que não foram migrados (ou duplicatas)
+    // 2.1 Limpeza Total das chaves de produção (sem sufixo)
+    const prefixes = ["usecontabil", "uc:"];
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && prefixes.some(p => k.startsWith(p)) && !k.endsWith(".pratica")) {
+        const ignorar = [
+          "usecontabil.tema",
+          "usecontabil.som.ui",
+          "usecontabil.som.volume",
+          "usecontabil.som.digitacao",
+          "usecontabil.preferencias",
+          "usecontabil.reset.base.v1",
+          "uc:sidebar",
+          "uc:pratica:ativo",
+        ];
+        if (!ignorar.includes(k)) {
+          localStorage.removeItem(k);
+        }
+      }
+    }
+
+    // 3. Limpar chaves legadas específicas
     const keysParaLimparTotalmente = [
       "usecontabil.empresas.cache.v1",
       "usecontabil.empresaAtual.v1",
@@ -55,38 +76,28 @@ export async function migrarBaseRealParaPratica() {
       "usecontabil.compras.v1",
       "usecontabil.notificacoes",
       "uc:notificacoes",
-      "uc:ajuda"
+      "uc:ajuda",
+      "usecontabil.empresas.v1",
+      "usecontabil.empresas.backup.v1"
     ];
 
     keysParaLimparTotalmente.forEach(k => {
-      if (localStorage.getItem(k)) {
-        localStorage.removeItem(k);
-      }
-    });
-
-    // 3. Casos especiais que usam prefixos diferentes
-    const extras = ["uc:notificacoes", "uc:ajuda"]; // se existirem
-    extras.forEach(k => {
-       const data = localStorage.getItem(k);
-       if (data && !k.endsWith(".pratica")) {
-         localStorage.setItem(k + ".pratica", data);
-         localStorage.removeItem(k);
-       }
+      localStorage.removeItem(k);
     });
 
     // 4. Limpar empresas na nuvem (Supabase)
-    // Como o usuário pediu para "limpar a base real", vamos remover as empresas cadastradas.
-    // O cache local já foi removido no passo 2 (se estivesse no localStorage).
     const { data: userResp } = await supabase.auth.getUser();
     if (userResp.user) {
-      // Tenta deletar as empresas do usuário na nuvem
       await supabase.from("empresas").delete().eq("user_id", userResp.user.id);
     }
     
     // Limpa o cache reativo das empresas
     limparCacheEmpresas();
 
-    // 5. Ativar o modo prática para que o usuário veja os dados migrados imediatamente
+    // 5. Garantir que a seleção de empresa atual seja resetada
+    localStorage.removeItem("usecontabil.empresaAtual.v1");
+
+    // 6. Ativar o modo prática para que o usuário veja os dados migrados imediatamente
     setPraticaAtiva(true);
 
     return true;
