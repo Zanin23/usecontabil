@@ -164,28 +164,42 @@ export default function CrudDocumentosFiscais({
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(text, "text/xml");
 
-        // Identificadores básicos (NFe)
-        const infNFe = xmlDoc.getElementsByTagName("infNFe")[0];
-        if (!infNFe) throw new Error("XML não reconhecido como NF-e válida.");
+        // Tenta encontrar a tag raiz (nfeProc ou NFe)
+        const nfeNode = xmlDoc.getElementsByTagName("infNFe")[0];
+        if (!nfeNode) {
+          // Fallback para outros tipos de documentos fiscais ou estrutura diferente
+          const rootNode = xmlDoc.documentElement;
+          if (!rootNode || rootNode.nodeName === "parsererror") {
+            throw new Error("Arquivo XML inválido ou mal formatado.");
+          }
+        }
 
         const ide = xmlDoc.getElementsByTagName("ide")[0];
         const emit = xmlDoc.getElementsByTagName("emit")[0];
         const dest = xmlDoc.getElementsByTagName("dest")[0];
-        const totalNode = xmlDoc.getElementsByTagName("total")[0];
-        const prot = xmlDoc.getElementsByTagName("protNFe")[0];
+        const totalNode = xmlDoc.getElementsByTagName("total")[0] || xmlDoc.getElementsByTagName("ICMSTot")[0];
+        const prot = xmlDoc.getElementsByTagName("protNFe")[0] || xmlDoc.getElementsByTagName("infProt")[0];
 
         // Mapeamento de dados
         const isEntrada = slug === "entradas" || slug === "servicos-tomados" || slug === "transporte";
+        
+        // Na NF-e de entrada (compra), o emissor é o fornecedor externo e o destinatário é a nossa empresa.
+        // Na NF-e de saída (venda), o emissor é a nossa empresa e o destinatário é o cliente.
         const partNode = isEntrada ? emit : dest;
 
-        const dataOriginal = ide?.getElementsByTagName("dhEmi")[0]?.textContent || "";
+        const dataOriginal = ide?.getElementsByTagName("dhEmi")[0]?.textContent || ide?.getElementsByTagName("dEmi")[0]?.textContent || "";
         const dataFormatada = dataOriginal 
-          ? `${dataOriginal.substring(8, 10)}/${dataOriginal.substring(5, 7)}/${dataOriginal.substring(0, 4)}` 
+          ? (dataOriginal.includes("-") 
+              ? `${dataOriginal.substring(8, 10)}/${dataOriginal.substring(5, 7)}/${dataOriginal.substring(0, 4)}`
+              : dataOriginal)
           : primeiroDia(competencia);
 
-        const vNF = totalNode?.getElementsByTagName("vNF")[0]?.textContent || "0.00";
-        const vICMS = totalNode?.getElementsByTagName("vICMS")[0]?.textContent || "0.00";
-        const vBC = totalNode?.getElementsByTagName("vBC")[0]?.textContent || "0.00";
+        const vNF = totalNode?.getElementsByTagName("vNF")[0]?.textContent || 
+                    xmlDoc.getElementsByTagName("vNF")[0]?.textContent || "0.00";
+        const vICMS = totalNode?.getElementsByTagName("vICMS")[0]?.textContent || 
+                      xmlDoc.getElementsByTagName("vICMS")[0]?.textContent || "0.00";
+        const vBC = totalNode?.getElementsByTagName("vBC")[0]?.textContent || 
+                    xmlDoc.getElementsByTagName("vBC")[0]?.textContent || "0.00";
 
         const novoDoc: DocFiscal = {
           id: novoDocId(prefixoId),
@@ -193,7 +207,9 @@ export default function CrudDocumentosFiscais({
           competencia: competenciaDaData(dataFormatada) || competencia,
           numero: ide?.getElementsByTagName("nNF")[0]?.textContent || "0",
           serie: ide?.getElementsByTagName("serie")[0]?.textContent || "1",
-          chave: prot?.getElementsByTagName("chNFe")[0]?.textContent || chaveFicticia(),
+          chave: prot?.getElementsByTagName("chNFe")[0]?.textContent || 
+                 xmlDoc.getElementsByTagName("chNFe")[0]?.textContent || 
+                 chaveFicticia(),
           data: dataFormatada,
           participante: partNode?.getElementsByTagName("xNome")[0]?.textContent || "Participante desconhecido",
           cnpj: partNode?.getElementsByTagName("CNPJ")[0]?.textContent || partNode?.getElementsByTagName("CPF")[0]?.textContent || "",
