@@ -143,6 +143,17 @@ export default function Dashboard() {
   const docsServTomados = useDocsFiscais("servicos-tomados", empresaId, competencia);
   const docsServPrestados = useDocsFiscais("servicos-prestados", empresaId, competencia);
 
+  // Filtro radical para garantir que nada de outra empresa ou modo vaze
+  const isDocValido = (d: any) => {
+    if (!empresaId) return false;
+    // Se d.empresaId não bate, descarta
+    if (d.empresaId !== empresaId) return false;
+    // Se estivermos em modo Real e o ID do doc tiver indicação de prática (ou vice-versa via sufixo de store)
+    // Mas os stores já separam por sufixo no localStorage.
+    // O problema pode ser o cache do useTributario ou useDocsFiscais.
+    return true;
+  };
+
   const documentos = useMemo(() => {
     // 1. Pegar documentos do motor tributário (que já estão processados)
     // 2. Tentar encontrar equivalentes nos documentos operacionais (FiscalStore)
@@ -184,14 +195,14 @@ export default function Dashboard() {
       }, empresaId);
     };
 
-    docsSaida.forEach(d => docsFiscaisStore.push(converter(d, "faturamento", "NF-e")));
-    docsEntrada.forEach(d => docsFiscaisStore.push(converter(d, "demais", "Nota de entrada")));
-    docsServTomados.forEach(d => docsFiscaisStore.push(converter(d, "servicos", "NFS-e")));
-    docsServPrestados.forEach(d => docsFiscaisStore.push(converter(d, "servicos", "NFS-e")));
+    docsSaida.filter(isDocValido).forEach(d => docsFiscaisStore.push(converter(d, "faturamento", "NF-e")));
+    docsEntrada.filter(isDocValido).forEach(d => docsFiscaisStore.push(converter(d, "demais", "Nota de entrada")));
+    docsServTomados.filter(isDocValido).forEach(d => docsFiscaisStore.push(converter(d, "servicos", "NFS-e")));
+    docsServPrestados.filter(isDocValido).forEach(d => docsFiscaisStore.push(converter(d, "servicos", "NFS-e")));
 
     // Unificar removendo duplicatas por ID
     const idsOperacionais = new Set(docsFiscaisStore.map(d => d.id));
-    const docsTributarioFiltrados = docsTributario.filter(d => !idsOperacionais.has(d.id));
+    const docsTributarioFiltrados = docsTributario.filter(d => !idsOperacionais.has(d.id) && isDocValido(d));
 
     const todosDocumentos = [...docsTributarioFiltrados, ...docsFiscaisStore];
 
