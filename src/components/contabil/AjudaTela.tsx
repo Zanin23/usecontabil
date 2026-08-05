@@ -121,7 +121,7 @@ export default function AjudaTela() {
       </Button>
 
       <Sheet open={aberto} onOpenChange={setAberto}>
-        <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
+        <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto safe-top">
           <SheetHeader className="text-left">
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="rounded-full text-[10px] uppercase tracking-widest">

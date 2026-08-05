@@ -327,8 +327,8 @@ export default function Dashboard() {
   const semDados = !semEmpresa && d.doMes.length === 0;
 
   const header = (
-    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 md:gap-6">
-      <div>
+    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 lg:gap-6">
+      <div className="flex-1 min-w-0">
         <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Painel de controle</div>
         <h1 className="font-display text-3xl md:text-4xl mt-2">
           Visão geral <span className="text-brand-orange">contábil</span>
@@ -413,7 +413,7 @@ export default function Dashboard() {
       {header}
 
       {/* KPIs expansíveis */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
         {kpis.map((k) => {
           const open = openKpi === k.label;
           return (

@@ -129,9 +129,9 @@ export default function ContabilShell() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 border-r border-border bg-card lg:bg-card/60 backdrop-blur flex flex-col transition-[width,transform] duration-200 ${
-          recolhida ? "lg:w-16" : "lg:w-64"
-        } w-64 ${menuAberto ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 border-r border-border bg-card lg:bg-card/60 backdrop-blur flex flex-col transition-[width,transform] duration-300 ease-in-out ${
+          recolhida ? "lg:w-20" : "lg:w-64"
+        } w-[280px] sm:w-64 ${menuAberto ? "translate-x-0 shadow-2xl" : "-translate-x-full"} lg:translate-x-0 ${
           emPratica ? "ring-2 ring-inset ring-brand-orange/40" : ""
         }`}
       >
@@ -376,10 +376,10 @@ export default function ContabilShell() {
         />
       )}
 
-      <div className={`transition-[padding] duration-200 pl-0 ${recolhida ? "lg:pl-16" : "lg:pl-64"}`}>
+      <div className={`transition-[padding] duration-300 ease-in-out pl-0 ${recolhida ? "lg:pl-20" : "lg:pl-64"}`}>
 
-        <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
-          <div className="px-4 lg:px-8 h-14 flex items-center gap-2 lg:gap-4">
+        <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur safe-top">
+          <div className="px-4 lg:px-8 h-16 lg:h-14 flex items-center gap-2 lg:gap-4">
             <Button
               variant="outline"
               size="sm"
@@ -404,21 +404,20 @@ export default function ContabilShell() {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground min-w-0">
-
-              <span className="font-mono">{breadcrumbHeader.code}</span>
-              <span>/</span>
-              <span className="text-foreground truncate">{breadcrumbHeader.label}</span>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0 overflow-hidden">
+              <span className="font-mono shrink-0">{breadcrumbHeader.code}</span>
+              <span className="shrink-0">/</span>
+              <span className="text-foreground truncate max-w-[80px] sm:max-w-none">{breadcrumbHeader.label}</span>
               {currentCategory && (
                 <>
-                  <span>/</span>
-                  <span className="truncate">{currentCategory.title}</span>
+                  <span className="shrink-0">/</span>
+                  <span className="truncate max-w-[80px] sm:max-w-none">{currentCategory.title}</span>
                 </>
               )}
               {currentModule && (
                 <>
-                  <span>/</span>
-                  <span className="text-foreground truncate">{currentModule.title}</span>
+                  <span className="hidden sm:inline shrink-0">/</span>
+                  <span className="hidden sm:inline text-foreground truncate">{currentModule.title}</span>
                 </>
               )}
             </div>

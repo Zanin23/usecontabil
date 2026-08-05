@@ -124,6 +124,9 @@
   .bg-ink { background-color: var(--ink); }
   .text-ink { color: var(--ink); }
   .bg-cream { background-color: var(--cream); }
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
 }
 
 @keyframes wave-bar {
