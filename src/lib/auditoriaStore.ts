@@ -190,7 +190,11 @@ export function novoAudId(p: string) {
 
 export function registrarLog(acao: string, detalhe: string, usuario = "Usuário atual") {
   const db = loadAud();
-  db.log = [{ id: novoAudId("LOG"), data: new Date().toISOString(), usuario, acao, detalhe }, ...db.log].slice(0, 400);
+  const novoLog = { id: novoAudId("LOG"), data: new Date().toISOString(), usuario, acao, detalhe };
+  db.log = [novoLog, ...db.log].slice(0, 800);
+  
+  // Garantir que logs de sistema sobrevivam à limpeza parcial se for necessário 
+  // (Embora aqui o sufixo de chave mude no modo prática, o log deve persistir onde foi gerado)
   persist(db);
 }
 

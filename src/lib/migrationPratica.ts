@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { setPraticaAtiva } from "./praticaStore";
 import { limparCacheEmpresas } from "./empresasStore";
+import { registrarLog } from "./auditoriaStore";
 
 /**
  * Move todos os dados da "Base Real" (produção) para a "Base de Prática" (sandbox),
@@ -70,10 +71,24 @@ export async function migrarBaseRealParaPratica() {
       await supabase.from("empresas").delete().eq("user_id", userResp.user.id);
     }
     
-    // 5. Limpar caches de memória
+    // 5. Registrar Log de Auditoria
+    const detalheLog = [
+      `Chaves migradas: ${keysParaMigrar.length}`,
+      `Modo: Real -> Prática`,
+      `Empresas reais removidas do cloud: Sim`,
+      `Data: ${new Date().toLocaleString("pt-BR")}`
+    ].join(" | ");
+    
+    registrarLog(
+      "Isolamento de Base", 
+      `Limpeza e migração de dados executada. ${detalheLog}`,
+      "Sistema (Migração Automática)"
+    );
+
+    // 6. Limpar caches de memória
     limparCacheEmpresas();
 
-    // 6. Ativar o modo prática imediatamente
+    // 7. Ativar o modo prática imediatamente
     setPraticaAtiva(true);
 
     return true;
