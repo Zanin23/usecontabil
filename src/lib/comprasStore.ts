@@ -24,9 +24,15 @@
 
 export const COMPRAS_EVENT = "usecontabil:compras-changed";
 
+import { getStoreKey } from "./storeUtils";
+
 const KEY_REQ = "usecontabil.adm.compras.requisicoes.v1";
 const KEY_COT = "usecontabil.adm.compras.cotacoes.v1";
 const KEY_PED = "usecontabil.adm.compras.pedidos.v1";
+
+
+
+
 
 /* ================================ utils ================================== */
 
@@ -53,9 +59,10 @@ const round = (v: number) => Math.round(v * 100) / 100;
 function ler<T>(key: string, fallback: T[]): T[] {
   if (typeof window === "undefined") return fallback;
   try {
-    const raw = window.localStorage.getItem(key);
+    const raw = window.localStorage.getItem(getStoreKey(key));
+
     if (!raw) {
-      window.localStorage.setItem(key, JSON.stringify(fallback));
+      window.localStorage.setItem(getStoreKey(key), JSON.stringify(fallback));
       return fallback;
     }
     const dados = JSON.parse(raw);
@@ -67,7 +74,7 @@ function ler<T>(key: string, fallback: T[]): T[] {
 
 function gravar<T>(key: string, dados: T[]) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(key, JSON.stringify(dados));
+  window.localStorage.setItem(getStoreKey(key), JSON.stringify(dados));
   window.dispatchEvent(new CustomEvent(COMPRAS_EVENT));
 }
 

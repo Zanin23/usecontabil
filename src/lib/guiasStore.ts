@@ -16,10 +16,12 @@ import { linhasDoPeriodo, somar } from "@/lib/escrituracaoStore";
 import { moedaBR } from "@/lib/fiscalStore";
 import { getEmpresa } from "@/lib/empresasStore";
 import { loadFiliais } from "@/lib/filiaisStore";
+import { getStoreKey } from "./storeUtils";
 
 const KEY = "usecontabil.guias.v1";
 export const GUIAS_EVENT = "usecontabil:guias-changed";
 const USUARIO = "M. Andrade";
+
 
 export const brl = (n: number) => `R$ ${moedaBR(n)}`;
 
@@ -187,7 +189,8 @@ function notify() {
 
 function loadDB(): DB {
   try {
-    const raw = JSON.parse(localStorage.getItem(KEY) ?? "{}") as Partial<DB>;
+    const raw = JSON.parse(localStorage.getItem(getStoreKey(KEY)) ?? "{}") as Partial<DB>;
+
     return {
       overrides: raw.overrides ?? {},
       parcelamentos: raw.parcelamentos ?? [],
@@ -200,9 +203,10 @@ function loadDB(): DB {
 }
 
 function saveDB(db: DB) {
-  localStorage.setItem(KEY, JSON.stringify(db));
+  localStorage.setItem(getStoreKey(KEY), JSON.stringify(db));
   notify();
 }
+
 
 export function novoId(prefixo: string) {
   return `${prefixo}-${Math.random().toString(36).slice(2, 9)}`;

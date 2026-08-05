@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { loadEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
 import { loadFiliais } from "@/lib/filiaisStore";
 import { documentosPendentes, linhasDoPeriodo, somar } from "@/lib/escrituracaoStore";
+import { getStoreKey } from "./storeUtils";
 
 const KEY_MODELOS = "usecontabil.tarefaModelos.v1";
 const KEY_EXEC = "usecontabil.tarefaExec.v1";
 const KEY_FECHAMENTO = "usecontabil.fechamentos.v1";
 
 export const GESTAO_EVENT = "usecontabil:gestao-changed";
+
 
 export type FaseSlug = "cadastros" | "escrituracao" | "conciliacao" | "apuracao" | "encerramento";
 
@@ -141,22 +143,25 @@ function notify() {
 
 function read<T>(key: string, fallback: T): T {
   try {
-    const raw = localStorage.getItem(key);
+    const raw = localStorage.getItem(getStoreKey(key));
     return raw ? (JSON.parse(raw) as T) : fallback;
   } catch {
     return fallback;
   }
 }
 
+
 // ---------- Modelos de tarefa ----------
 export function loadModelos(): TarefaModelo[] {
-  const raw = localStorage.getItem(KEY_MODELOS);
+  const finalKey = getStoreKey(KEY_MODELOS);
+  const raw = localStorage.getItem(finalKey);
   if (!raw) {
-    localStorage.setItem(KEY_MODELOS, JSON.stringify(SEED_MODELOS));
+    localStorage.setItem(finalKey, JSON.stringify(SEED_MODELOS));
     return [...SEED_MODELOS];
   }
   try {
     const stored = JSON.parse(raw) as TarefaModelo[];
+
     // Modelos novos do sistema (ex.: tarefas por regime) entram sem apagar
     // as personalizações já feitas pelo usuário.
     const faltantes = SEED_MODELOS.filter((s) => !stored.some((m) => m.id === s.id));
@@ -171,7 +176,7 @@ export function loadModelos(): TarefaModelo[] {
       return patch;
     });
     const merged = [...atualizados, ...faltantes];
-    if (alterado) localStorage.setItem(KEY_MODELOS, JSON.stringify(merged));
+    if (alterado) localStorage.setItem(getStoreKey(KEY_MODELOS), JSON.stringify(merged));
     return merged;
   } catch {
     return [...SEED_MODELOS];
@@ -196,12 +201,12 @@ export function saveModelo(rec: TarefaModelo) {
   const idx = list.findIndex((m) => m.id === rec.id);
   if (idx >= 0) list[idx] = rec;
   else list.push(rec);
-  localStorage.setItem(KEY_MODELOS, JSON.stringify(list));
+  localStorage.setItem(getStoreKey(KEY_MODELOS), JSON.stringify(list));
   notify();
 }
 
 export function removeModelo(id: string) {
-  localStorage.setItem(KEY_MODELOS, JSON.stringify(loadModelos().filter((m) => m.id !== id)));
+  localStorage.setItem(getStoreKey(KEY_MODELOS), JSON.stringify(loadModelos().filter((m) => m.id !== id)));
   notify();
 }
 
@@ -243,7 +248,8 @@ export function setExecucao(
   const next: TarefaExec = { ...base, ...patch, atualizadoEm: new Date().toISOString() };
   if (idx >= 0) list[idx] = next;
   else list.push(next);
-  localStorage.setItem(KEY_EXEC, JSON.stringify(list));
+  localStorage.setItem(getStoreKey(KEY_EXEC), JSON.stringify(list));
+
   notify();
 }
 

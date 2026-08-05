@@ -1,30 +1,32 @@
-// Limpeza única da base local de cadastros (protótipo).
-// Mantém apenas preferências de interface (tema, som, sidebar, ambiente).
+import { migrarBaseRealParaPratica } from "./migrationPratica";
+
 const FLAG = "usecontabil.reset.base.v1";
 
-const PRESERVAR = [
-  FLAG,
-  "usecontabil.tema",
-  "usecontabil.som.ui",
-  "usecontabil.som.volume",
-  "usecontabil.som.digitacao",
-  "usecontabil.preferencias",
-  "uc:sidebar",
-  "uc:pratica:ativo",
-];
-
-export function limparBaseLocalUmaVez() {
-  try {
-    if (localStorage.getItem(FLAG)) return;
-    const chaves: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith("usecontabil.") && !PRESERVAR.includes(k)) chaves.push(k);
-      if (k && k.startsWith("uc:") && !PRESERVAR.includes(k)) chaves.push(k);
-    }
-    chaves.forEach((k) => localStorage.removeItem(k));
-    localStorage.setItem(FLAG, new Date().toISOString());
-  } catch {
-    /* best-effort */
+/**
+ * Função para resetar a base de dados local na primeira execução (ou via comando).
+ * Agora migra os dados reais para o modo prática para evitar perda total de dados
+ * caso o usuário já tenha cadastrado algo importante.
+ */
+export async function limparBaseLocalUmaVez() {
+  if (typeof window === "undefined") return;
+  
+  const resetDone = localStorage.getItem(FLAG);
+  
+  if (!resetDone) {
+    console.log("[ResetBase] Iniciando limpeza da base de dados real...");
+    
+    // Migra o que existe hoje para a sandbox (prática) antes de limpar a real
+    await migrarBaseRealParaPratica();
+    
+    // Marca como feito
+    localStorage.setItem(FLAG, "done");
+    console.log("[ResetBase] Base real limpa. Dados preservados no Modo Prática.");
   }
+}
+
+/**
+ * Força a limpeza imediata da base real movendo para prática.
+ */
+export async function forcarLimpezaBaseReal() {
+  return await migrarBaseRealParaPratica();
 }
