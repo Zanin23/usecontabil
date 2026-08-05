@@ -201,6 +201,10 @@ export default function CrudDocumentosFiscais({
         const vBC = totalNode?.getElementsByTagName("vBC")[0]?.textContent || 
                     xmlDoc.getElementsByTagName("vBC")[0]?.textContent || "0.00";
 
+        // Captura CFOP da primeira tag det/prod se disponível
+        const firstProd = xmlDoc.getElementsByTagName("prod")[0];
+        const cfopXml = firstProd?.getElementsByTagName("CFOP")[0]?.textContent || "";
+
         const novoDoc: DocFiscal = {
           id: novoDocId(prefixoId),
           empresaId: empresa.id,
@@ -216,6 +220,7 @@ export default function CrudDocumentosFiscais({
           valor: moedaBR(Number(vNF)),
           baseIcms: moedaBR(Number(vBC)),
           icms: moedaBR(Number(vICMS)),
+          cfop: cfopXml,
           tipo: ide?.getElementsByTagName("natOp")[0]?.textContent || "Importação XML",
           status: statusOk,
           observacao: "Documento importado via processamento de arquivo XML real.",
