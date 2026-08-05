@@ -187,15 +187,16 @@ export default function PraticaAprendizado() {
                   className="rounded-full gap-2 border-brand-orange text-brand-orange hover:bg-brand-orange/10"
                 >
                   <RotateCcw className="h-4 w-4" />
-                  Limpar Base Real
+                  Isolar dados (Real → Prática)
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent className="rounded-3xl">
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="font-display text-2xl">Limpar base de dados real?</AlertDialogTitle>
+                  <AlertDialogTitle className="font-display text-2xl">Mover dados reais para prática?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Isso irá remover todas as empresas, notas e lançamentos da <strong>Base de Produção</strong>. 
-                    Os dados atuais serão movidos para o <strong>Modo Prática</strong> para que você não os perca.
+                    Isso irá mover todas as empresas, notas e lançamentos da <strong>Base de Produção</strong> para o <strong>Modo Prática</strong> e limpar a base real. 
+                    <br/><br/>
+                    Use isso para garantir que a base de produção esteja vazia para uso oficial, enquanto preserva seus testes na sandbox.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -205,15 +206,17 @@ export default function PraticaAprendizado() {
                     onClick={async () => {
                       const ok = await forcarLimpezaBaseReal();
                       if (ok) {
-                        toast.success("Base real limpa com sucesso!", {
-                          description: "Os dados agora estão disponíveis apenas no Modo Prática."
+                        toast.success("Migração concluída!", {
+                          description: "Os dados agora estão disponíveis apenas no Modo Prática. A base real foi limpa."
                         });
+                        // Recarregar para garantir que o dashboard limpe
+                        setTimeout(() => window.location.reload(), 1000);
                       } else {
                         toast.error("Ocorreu um erro ao limpar a base.");
                       }
                     }}
                   >
-                    Sim, limpar e migrar
+                    Sim, isolar e limpar real
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
