@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { setPraticaAtiva } from "./praticaStore";
-import { limparCacheEmpresas } from "./empresasStore";
+import { limparCacheEmpresas, loadEmpresas } from "./empresasStore";
 import { registrarLog } from "./auditoriaStore";
 
 /**
@@ -94,6 +94,39 @@ export async function migrarBaseRealParaPratica() {
     return true;
   } catch (error) {
     console.error("Erro na migração de base:", error);
+    return false;
+  }
+}
+
+/**
+ * LIMPEZA ABSOLUTA: Remove TUDO da base (Real e Prática) sem migração.
+ * Apenas administradores devem ter acesso visual a esta função.
+ */
+export async function deletarTudoGeral() {
+  try {
+    // 1. Limpar LocalStorage (TUDO que pertence ao sistema)
+    const prefixes = ["usecontabil", "uc:", "sb-"]; 
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && (prefixes.some(p => k.startsWith(p)))) {
+         keys.push(k);
+      }
+    }
+    keys.forEach(k => localStorage.removeItem(k));
+
+    // 2. Limpar Nuvem (Empresas no Supabase)
+    const { data: userResp } = await supabase.auth.getUser();
+    if (userResp.user) {
+      await supabase.from("empresas").delete().eq("user_id", userResp.user.id);
+    }
+
+    // 3. Limpar caches e resetar estado
+    limparCacheEmpresas();
+    
+    return true;
+  } catch (error) {
+    console.error("Erro na limpeza total:", error);
     return false;
   }
 }

@@ -15,7 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/design-system/mj-design-system-db98fa";
-import { Check, FileDown, Monitor, Moon, Palette, ShieldCheck, Sun, Volume2, VolumeX } from "lucide-react";
+import { Check, FileDown, Monitor, Moon, Palette, ShieldCheck, Sun, Volume2, VolumeX, Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useTema } from "@/lib/tema";
 import {
@@ -30,6 +30,18 @@ import {
 import { ACENTOS, AMBIENTES, usePreferencias, type Acento } from "@/lib/preferencias";
 import { supabase } from "@/integrations/supabase/client";
 import { gerarDocumentacaoPdf } from "@/lib/documentacaoSistema";
+import { deletarTudoGeral } from "@/lib/migrationPratica";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle, 
+  AlertDialogTrigger 
+} from "@/design-system/mj-design-system-db98fa";
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void; usuario: string; perfil: string };
 
@@ -50,6 +62,7 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
   const [volume, setVolume] = useState(volumeSom);
   const [admin, setAdmin] = useState(false);
   const [gerando, setGerando] = useState(false);
+  const [limpando, setLimpando] = useState(false);
 
   useEffect(() => {
     let ativo = true;
@@ -289,6 +302,59 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
                 >
                   <FileDown className="h-4 w-4 mr-1.5" /> {gerando ? "Gerando…" : "Exportar PDF"}
                 </Button>
+              </div>
+
+              <div className="rounded-2xl border border-destructive/20 bg-destructive/5 px-4 py-3 space-y-3">
+                <div className="flex items-center gap-2 text-sm font-medium text-destructive">
+                  <AlertTriangle className="h-4 w-4" /> Zona de Perigo
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <div className="text-sm font-medium">Reset total da base</div>
+                    <div className="text-xs text-muted-foreground">
+                      Apaga permanentemente TODOS os dados (Real e Prática), empresas e configurações.
+                    </div>
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="rounded-full gap-2"
+                        disabled={limpando}
+                      >
+                        <Trash2 className="h-4 w-4" /> {limpando ? "Limpando..." : "Deletar tudo"}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="rounded-3xl border-destructive">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="font-display text-2xl text-destructive">Confirmar destruição de dados?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta ação é <strong>irreversível</strong>. Todos os cadastros, notas fiscais, lançamentos financeiros e configurações de preferência serão removidos permanentemente tanto deste navegador quanto da nuvem vinculada à sua conta.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="rounded-full">Cancelar</AlertDialogCancel>
+                        <AlertDialogAction 
+                          className="rounded-full bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                          onClick={async () => {
+                            setLimpando(true);
+                            const ok = await deletarTudoGeral();
+                            if (ok) {
+                              toast.success("Limpeza total concluída.");
+                              setTimeout(() => window.location.reload(), 1500);
+                            } else {
+                              toast.error("Erro ao realizar a limpeza total.");
+                              setLimpando(false);
+                            }
+                          }}
+                        >
+                          Sim, deletar permanentemente
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </div>
             </TabsContent>
           )}
