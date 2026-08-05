@@ -206,10 +206,11 @@ export default function Dashboard() {
 
     const todosDocumentos = [...docsTributarioFiltrados, ...docsFiscaisStore];
 
-    // FILTRO DE SEGURANÇA: No modo real (não prática), ignorar documentos que venham 
-    // de chaves antigas ou mal formatadas que não respeitem o sufixo.
-    // Embora o store use o sufixo, se houver lixo na memória que o useMemo captura, limpamos aqui.
-    return todosDocumentos;
+    // FILTRO DE SEGURANÇA RADICAL: No modo real (não prática), ignorar qualquer 
+    // documento que não pertença EXPLICITAMENTE à empresa selecionada.
+    // Isso evita que o Dashboard "lembre" de dados de empresas que foram excluídas 
+    // ou migradas, mas que o useMemo possa ter retido em algum ciclo de render.
+    return todosDocumentos.filter(d => d.empresaId === empresaId);
   }, [docsTributario, docsSaida, docsEntrada, docsServTomados, docsServPrestados, empresaId, empresa?.regime]);
 
   const d = useMemo(() => {
