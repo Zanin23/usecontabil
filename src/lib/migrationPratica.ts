@@ -42,6 +42,28 @@ export async function migrarBaseRealParaPratica() {
       }
     });
 
+    // 2.1 Remover chaves que podem conter dados "Real" que não foram migrados (ou duplicatas)
+    const keysParaLimparTotalmente = [
+      "usecontabil.empresas.cache.v1",
+      "usecontabil.empresaAtual.v1",
+      "usecontabil.tributario.v1",
+      "usecontabil.fiscal.docs.v1",
+      "usecontabil.atividades.v1",
+      "usecontabil.filiais.v1",
+      "usecontabil.gestao.v1",
+      "usecontabil.guias.v1",
+      "usecontabil.compras.v1",
+      "usecontabil.notificacoes",
+      "uc:notificacoes",
+      "uc:ajuda"
+    ];
+
+    keysParaLimparTotalmente.forEach(k => {
+      if (localStorage.getItem(k)) {
+        localStorage.removeItem(k);
+      }
+    });
+
     // 3. Casos especiais que usam prefixos diferentes
     const extras = ["uc:notificacoes", "uc:ajuda"]; // se existirem
     extras.forEach(k => {
