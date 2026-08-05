@@ -18,6 +18,12 @@ import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO, CENARIOS_PRATICA } from "@
 import { popularDadosPratica } from "@/lib/aprendizado/geradorDados";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { useCompetencia } from "@/lib/competencia";
+import { forcarLimpezaBaseReal } from "@/lib/resetBase";
+import { 
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger 
+} from "@/design-system/mj-design-system-db98fa";
+
 
 const PADRAO_SIMPLES: EntradaSimples = {
   rbt12: 1_200_000,
@@ -174,6 +180,45 @@ export default function PraticaAprendizado() {
                 ))}
               </SelectContent>
             </Select>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="outline"
+                  className="rounded-full gap-2 border-brand-orange text-brand-orange hover:bg-brand-orange/10"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Limpar Base Real
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="rounded-3xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="font-display text-2xl">Limpar base de dados real?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Isso irá remover todas as empresas, notas e lançamentos da <strong>Base de Produção</strong>. 
+                    Os dados atuais serão movidos para o <strong>Modo Prática</strong> para que você não os perca.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="rounded-full">Cancelar</AlertDialogCancel>
+                  <AlertDialogAction 
+                    className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+                    onClick={async () => {
+                      const ok = await forcarLimpezaBaseReal();
+                      if (ok) {
+                        toast.success("Base real limpa com sucesso!", {
+                          description: "Os dados agora estão disponíveis apenas no Modo Prática."
+                        });
+                      } else {
+                        toast.error("Ocorreu um erro ao limpar a base.");
+                      }
+                    }}
+                  >
+                    Sim, limpar e migrar
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <Button 
               className="rounded-full bg-brand-orange hover:bg-brand-orange/90 gap-2"
               onClick={() => {
@@ -190,6 +235,7 @@ export default function PraticaAprendizado() {
               <Database className="h-4 w-4 text-primary-foreground" />
               Popular base
             </Button>
+
           </div>
         </div>
         <p className="max-w-3xl text-muted-foreground">
