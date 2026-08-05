@@ -31,7 +31,7 @@ const KEY_COT = "usecontabil.adm.compras.cotacoes.v1";
 const KEY_PED = "usecontabil.adm.compras.pedidos.v1";
 
 
-const getStoreKey = (base: string) => base + getStorageSuffix();
+
 
 
 /* ================================ utils ================================== */
