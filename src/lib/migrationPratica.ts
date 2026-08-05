@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { setPraticaAtiva } from "./praticaStore";
-import { limparCacheEmpresas } from "./empresasStore";
+import { limparCacheEmpresas, loadEmpresas } from "./empresasStore";
 import { registrarLog } from "./auditoriaStore";
 
 /**
