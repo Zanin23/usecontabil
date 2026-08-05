@@ -155,14 +155,7 @@ export default function Dashboard() {
   };
 
   const documentos = useMemo(() => {
-    // 1. Pegar documentos do motor tributário (que já estão processados)
-    // 2. Tentar encontrar equivalentes nos documentos operacionais (FiscalStore)
-    // 3. Se houver documentos operacionais novos que não estão no TributárioStore, processá-los on-the-fly
-    
-    // NOTA: Para este projeto, o Dashboard lê do TributarioStore. 
-    // Se o usuário lançou em "Fiscal > Documentos", esses dados precisam chegar aqui.
-    // Vamos unificar os documentos dos dois stores.
-    
+    // 1. Unificar documentos dos dois principais stores fiscais
     const docsFiscaisStore: DocumentoFiscal[] = [];
     
     const converter = (d: any, grupo: any, tipo: any): DocumentoFiscal => {
@@ -178,7 +171,7 @@ export default function Dashboard() {
         emissao: d.data?.split('/').reverse().join('-') || d.emissao || "",
         participante: d.participante || "",
         participanteDoc: d.cnpj || d.participanteDoc || "",
-        ufOrigem: "SP", // Fallback
+        ufOrigem: "SP", 
         ufDestino: "SP",
         contribuinte: true,
         consumidorFinal: false,
@@ -200,16 +193,14 @@ export default function Dashboard() {
     docsServTomados.filter(isDocValido).forEach(d => docsFiscaisStore.push(converter(d, "servicos", "NFS-e")));
     docsServPrestados.filter(isDocValido).forEach(d => docsFiscaisStore.push(converter(d, "servicos", "NFS-e")));
 
-    // Unificar removendo duplicatas por ID
     const idsOperacionais = new Set(docsFiscaisStore.map(d => d.id));
     const docsTributarioFiltrados = docsTributario.filter(d => !idsOperacionais.has(d.id) && isDocValido(d));
 
     const todosDocumentos = [...docsTributarioFiltrados, ...docsFiscaisStore];
 
-    // FILTRO DE SEGURANÇA RADICAL: No modo real (não prática), ignorar qualquer 
-    // documento que não pertença EXPLICITAMENTE à empresa selecionada.
-    // Isso evita que o Dashboard "lembre" de dados de empresas que foram excluídas 
-    // ou migradas, mas que o useMemo possa ter retido em algum ciclo de render.
+    // FILTRO DE SEGURANÇA RADICAL: Garante que apenas documentos da empresa atual
+    // e do MODO ATUAL (Prática ou Real) sejam exibidos.
+    // Como os stores já filtram por sufixo no load, aqui fazemos a conferência final.
     return todosDocumentos.filter(d => d.empresaId === empresaId);
   }, [docsTributario, docsSaida, docsEntrada, docsServTomados, docsServPrestados, empresaId, empresa?.regime]);
 

@@ -9,44 +9,13 @@ import { limparCacheEmpresas } from "./empresasStore";
 export async function migrarBaseRealParaPratica() {
   try {
     const keysParaMigrar: string[] = [];
-    const keysParaRemover: string[] = [];
+    const prefixes = ["usecontabil", "uc:"];
 
-    // 1. Identificar todas as chaves do Use Contábil que não são de prática
+    // 1. Identificar todas as chaves "Reais" (sem sufixo .pratica)
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && k.startsWith("usecontabil") && !k.endsWith(".pratica")) {
-        // Ignorar chaves de preferência/sistema que devem ser comuns
-        const ignorar = [
-          "usecontabil.tema",
-          "usecontabil.som.ui",
-          "usecontabil.som.volume",
-          "usecontabil.som.digitacao",
-          "usecontabil.preferencias",
-          "usecontabil.reset.base.v1", // flag de reset
-          "uc:sidebar",
-          "uc:pratica:ativo",
-        ];
-        
-        if (!ignorar.includes(k)) {
-          keysParaMigrar.push(k);
-        }
-      }
-    }
-
-    // 2. Copiar para .pratica e remover original
-    keysParaMigrar.forEach(k => {
-      const data = localStorage.getItem(k);
-      if (data) {
-        localStorage.setItem(k + ".pratica", data);
-        localStorage.removeItem(k);
-      }
-    });
-
-    // 2.1 Limpeza Total das chaves de produção (sem sufixo)
-    const prefixes = ["usecontabil", "uc:"];
-    for (let i = localStorage.length - 1; i >= 0; i--) {
-      const k = localStorage.key(i);
       if (k && prefixes.some(p => k.startsWith(p)) && !k.endsWith(".pratica")) {
+        // Ignorar chaves de preferência de UI que devem permanecer na Real
         const ignorar = [
           "usecontabil.tema",
           "usecontabil.som.ui",
@@ -57,14 +26,29 @@ export async function migrarBaseRealParaPratica() {
           "uc:sidebar",
           "uc:pratica:ativo",
         ];
+        
         if (!ignorar.includes(k)) {
-          localStorage.removeItem(k);
+          keysParaMigrar.push(k);
         }
       }
     }
 
-    // 3. Limpar chaves legadas específicas
-    const keysParaLimparTotalmente = [
+    // 2. Migrar (Copia para .pratica)
+    keysParaMigrar.forEach(k => {
+      const data = localStorage.getItem(k);
+      if (data) {
+        localStorage.setItem(k + ".pratica", data);
+      }
+    });
+
+    // 3. LIMPEZA TOTAL DA BASE REAL (Local Storage)
+    // Removemos todas as chaves que migramos e garantimos que NADA de dados fiscais reste na real
+    keysParaMigrar.forEach(k => {
+      localStorage.removeItem(k);
+    });
+
+    // Limpeza forçada de chaves conhecidas para evitar qualquer lixo
+    const chavesSensiveis = [
       "usecontabil.empresas.cache.v1",
       "usecontabil.empresaAtual.v1",
       "usecontabil.tributario.v1",
@@ -74,30 +58,22 @@ export async function migrarBaseRealParaPratica() {
       "usecontabil.gestao.v1",
       "usecontabil.guias.v1",
       "usecontabil.compras.v1",
-      "usecontabil.notificacoes",
       "uc:notificacoes",
-      "uc:ajuda",
-      "usecontabil.empresas.v1",
-      "usecontabil.empresas.backup.v1"
+      "uc:ajuda"
     ];
+    chavesSensiveis.forEach(k => localStorage.removeItem(k));
 
-    keysParaLimparTotalmente.forEach(k => {
-      localStorage.removeItem(k);
-    });
-
-    // 4. Limpar empresas na nuvem (Supabase)
+    // 4. Limpar Empresas na Nuvem (Supabase)
     const { data: userResp } = await supabase.auth.getUser();
     if (userResp.user) {
+      // Deleta as empresas reais do usuário
       await supabase.from("empresas").delete().eq("user_id", userResp.user.id);
     }
     
-    // Limpa o cache reativo das empresas
+    // 5. Limpar caches de memória
     limparCacheEmpresas();
 
-    // 5. Garantir que a seleção de empresa atual seja resetada
-    localStorage.removeItem("usecontabil.empresaAtual.v1");
-
-    // 6. Ativar o modo prática para que o usuário veja os dados migrados imediatamente
+    // 6. Ativar o modo prática imediatamente
     setPraticaAtiva(true);
 
     return true;
