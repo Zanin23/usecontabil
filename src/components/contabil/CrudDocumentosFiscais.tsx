@@ -153,6 +153,70 @@ export default function CrudDocumentosFiscais({
     toast.success(`${linhas.length} documento(s) importado(s) para ${formatCompetencia(competencia)}.`);
   };
 
+  const processarXml = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !empresa) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(text, "text/xml");
+
+        // Identificadores básicos (NFe)
+        const infNFe = xmlDoc.getElementsByTagName("infNFe")[0];
+        if (!infNFe) throw new Error("XML não reconhecido como NF-e válida.");
+
+        const ide = xmlDoc.getElementsByTagName("ide")[0];
+        const emit = xmlDoc.getElementsByTagName("emit")[0];
+        const dest = xmlDoc.getElementsByTagName("dest")[0];
+        const totalNode = xmlDoc.getElementsByTagName("total")[0];
+        const prot = xmlDoc.getElementsByTagName("protNFe")[0];
+
+        // Mapeamento de dados
+        const isEntrada = slug === "entradas" || slug === "servicos-tomados" || slug === "transporte";
+        const partNode = isEntrada ? emit : dest;
+
+        const dataOriginal = ide?.getElementsByTagName("dhEmi")[0]?.textContent || "";
+        const dataFormatada = dataOriginal 
+          ? `${dataOriginal.substring(8, 10)}/${dataOriginal.substring(5, 7)}/${dataOriginal.substring(0, 4)}` 
+          : primeiroDia(competencia);
+
+        const vNF = totalNode?.getElementsByTagName("vNF")[0]?.textContent || "0.00";
+        const vICMS = totalNode?.getElementsByTagName("vICMS")[0]?.textContent || "0.00";
+        const vBC = totalNode?.getElementsByTagName("vBC")[0]?.textContent || "0.00";
+
+        const novoDoc: DocFiscal = {
+          id: novoDocId(prefixoId),
+          empresaId: empresa.id,
+          competencia: competenciaDaData(dataFormatada) || competencia,
+          numero: ide?.getElementsByTagName("nNF")[0]?.textContent || "0",
+          serie: ide?.getElementsByTagName("serie")[0]?.textContent || "1",
+          chave: prot?.getElementsByTagName("chNFe")[0]?.textContent || chaveFicticia(),
+          data: dataFormatada,
+          participante: partNode?.getElementsByTagName("xNome")[0]?.textContent || "Participante desconhecido",
+          cnpj: partNode?.getElementsByTagName("CNPJ")[0]?.textContent || partNode?.getElementsByTagName("CPF")[0]?.textContent || "",
+          valor: moedaBR(Number(vNF)),
+          baseIcms: moedaBR(Number(vBC)),
+          icms: moedaBR(Number(vICMS)),
+          tipo: ide?.getElementsByTagName("natOp")[0]?.textContent || "Importação XML",
+          status: statusOk,
+          observacao: "Documento importado via processamento de arquivo XML real.",
+        };
+
+        saveDoc(slug, novoDoc);
+        toast.success(`XML da nota ${novoDoc.numero} importado com sucesso!`);
+      } catch (err) {
+        console.error(err);
+        toast.error("Falha ao processar XML: verifique se o arquivo é uma NF-e válida.");
+      }
+    };
+    reader.readAsText(file);
+    // Limpa o input para permitir re-importar o mesmo arquivo
+    e.target.value = "";
+  };
+
   const limpar = () => {
     if (!empresa) return;
     limparPeriodo(slug, empresa.id, competencia);
@@ -189,9 +253,18 @@ export default function CrudDocumentosFiscais({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {exemplo ? (
-            <Button variant="outline" className="rounded-full" onClick={importarExemplo}>
-              <FileUp className="h-4 w-4 mr-2" /> {labelImportar ?? "Importar XML"}
-            </Button>
+            <div className="relative group">
+              <input
+                type="file"
+                accept=".xml"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                onChange={processarXml}
+                title="Selecionar arquivo XML real"
+              />
+              <Button variant="outline" className="rounded-full">
+                <FileUp className="h-4 w-4 mr-2" /> {labelImportar ?? "Importar XML"}
+              </Button>
+            </div>
           ) : null}
           <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
             <Plus className="h-4 w-4 mr-2" /> {labelNovo}
@@ -256,9 +329,17 @@ export default function CrudDocumentosFiscais({
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 {exemplo ? (
-                  <Button variant="outline" className="rounded-full" onClick={importarExemplo}>
-                    <Download className="h-4 w-4 mr-2" /> {labelImportar ?? "Importar XML"}
-                  </Button>
+                  <div className="relative group">
+                    <input
+                      type="file"
+                      accept=".xml"
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      onChange={processarXml}
+                    />
+                    <Button variant="outline" className="rounded-full">
+                      <Download className="h-4 w-4 mr-2" /> {labelImportar ?? "Importar XML"}
+                    </Button>
+                  </div>
                 ) : null}
                 <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
                   <Plus className="h-4 w-4 mr-2" /> {labelNovo}
