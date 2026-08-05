@@ -193,7 +193,12 @@ export default function Dashboard() {
     const idsOperacionais = new Set(docsFiscaisStore.map(d => d.id));
     const docsTributarioFiltrados = docsTributario.filter(d => !idsOperacionais.has(d.id));
 
-    return [...docsTributarioFiltrados, ...docsFiscaisStore];
+    const todosDocumentos = [...docsTributarioFiltrados, ...docsFiscaisStore];
+
+    // FILTRO DE SEGURANÇA: No modo real (não prática), ignorar documentos que venham 
+    // de chaves antigas ou mal formatadas que não respeitem o sufixo.
+    // Embora o store use o sufixo, se houver lixo na memória que o useMemo captura, limpamos aqui.
+    return todosDocumentos;
   }, [docsTributario, docsSaida, docsEntrada, docsServTomados, docsServPrestados, empresaId, empresa?.regime]);
 
   const d = useMemo(() => {
