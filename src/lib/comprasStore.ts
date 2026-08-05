@@ -24,9 +24,14 @@
 
 export const COMPRAS_EVENT = "usecontabil:compras-changed";
 
+import { getStorageSuffix } from "./praticaStore";
+
 const KEY_REQ = "usecontabil.adm.compras.requisicoes.v1";
 const KEY_COT = "usecontabil.adm.compras.cotacoes.v1";
 const KEY_PED = "usecontabil.adm.compras.pedidos.v1";
+
+const getStoreKey = (base: string) => base + getStorageSuffix();
+
 
 /* ================================ utils ================================== */
 
