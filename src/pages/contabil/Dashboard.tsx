@@ -413,7 +413,7 @@ export default function Dashboard() {
       {header}
 
       {/* KPIs expansíveis */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
         {kpis.map((k) => {
           const open = openKpi === k.label;
           return (
