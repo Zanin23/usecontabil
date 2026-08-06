@@ -174,17 +174,42 @@ const fmtCep = (v: string) => {
 async function fetchCnpj(cnpj: string) {
   const d = digits(cnpj);
   if (d.length !== 14) throw new Error("CNPJ inválido");
-  const r = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${d}`);
-  if (!r.ok) throw new Error("CNPJ não encontrado");
-  return r.json();
+  
+  try {
+    const r = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${d}`);
+    
+    if (r.status === 404) throw new Error("CNPJ não encontrado na base pública.");
+    if (!r.ok) throw new Error(`Erro na consulta (Status: ${r.status})`);
+    
+    return await r.json();
+  } catch (e: any) {
+    console.error("Erro na busca de CNPJ:", e);
+    
+    // Identifica erros de rede/CORS (Failed to fetch)
+    if (e instanceof TypeError || e.message?.includes('fetch')) {
+      throw new Error("Não foi possível conectar ao serviço de busca (BrasilAPI). Tente preencher manualmente ou verifique se sua rede bloqueia o acesso.");
+    }
+    
+    throw e;
+  }
 }
 
 async function fetchCep(cep: string) {
   const d = digits(cep);
   if (d.length !== 8) throw new Error("CEP inválido");
-  const r = await fetch(`https://brasilapi.com.br/api/cep/v2/${d}`);
-  if (!r.ok) throw new Error("CEP não encontrado");
-  return r.json();
+  
+  try {
+    const r = await fetch(`https://brasilapi.com.br/api/cep/v2/${d}`);
+    if (r.status === 404) throw new Error("CEP não encontrado.");
+    if (!r.ok) throw new Error(`Erro na consulta (Status: ${r.status})`);
+    return await r.json();
+  } catch (e: any) {
+    console.error("Erro na busca de CEP:", e);
+    if (e instanceof TypeError || e.message?.includes('fetch')) {
+      throw new Error("Falha na conexão de CEP. Verifique sua internet ou preencha o endereço manualmente.");
+    }
+    throw e;
+  }
 }
 
 /* ------------------------------ primitives ------------------------------ */
