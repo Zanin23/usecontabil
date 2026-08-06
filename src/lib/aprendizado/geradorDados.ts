@@ -5,7 +5,7 @@
  */
 import { saveEmpresa, novoId, registrarAuditoria, empresaDB } from "@/lib/tributarioStore";
 import { saveDocs, novoDocId, moedaBR, chaveFicticia } from "@/lib/fiscalStore";
-import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS_BASE } from "@/lib/contasCaixaStore";
+import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS_BASE, lancarMovimento } from "@/lib/contasCaixaStore";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO } from "./seedPratica";
 
 export function popularDadosPratica(empresaId: string, competencia: string) {
@@ -164,11 +164,22 @@ export function popularDadosPratica(empresaId: string, competencia: string) {
     } catch (e) { console.error(e); }
   }
 
-  // 4. Auditoria
+  // 4. Movimentos de Caixa Extras (Para o Dashboard Bancário)
+  try {
+    lancarMovimento({
+      contaId: "cx-01",
+      data: `${ano}-${String(mes).padStart(2, '0')}-01`,
+      historico: "Aporte de Capital Inicial - Treinamento",
+      tipo: "Entrada",
+      valor: 50000.00
+    });
+  } catch (e) { console.error(e); }
+
+  // 5. Auditoria
   registrarAuditoria(empresaId, {
     origem: "Modo Prática",
     acao: "Carga Completa de Dashboard",
-    detalhe: "Geração de movimento contábil completo: Receitas (17k), Despesas (8.5k), Tributos e Baixas Financeiras.",
+    detalhe: "Geração de movimento contábil completo: Receitas (17k), Despesas (8.5k), Tributos, Baixas Financeiras e Aporte de Capital.",
     competencia
   });
 
