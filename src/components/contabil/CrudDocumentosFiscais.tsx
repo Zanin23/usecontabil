@@ -153,12 +153,12 @@ export default function CrudDocumentosFiscais({
     toast.success(`${linhas.length} documento(s) importado(s) para ${formatCompetencia(competencia)}.`);
   };
 
-  const processarXml = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const processarXml = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !empresa) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const text = event.target?.result as string;
         const parser = new DOMParser();
@@ -226,7 +226,75 @@ export default function CrudDocumentosFiscais({
           observacao: "Documento importado via processamento de arquivo XML real.",
         };
 
+        // Salva no banco de dados fiscal
         saveDoc(slug, novoDoc);
+
+        // Se for uma nota de entrada ou saída, vamos refletir também no faturamento/movimentação financeira
+        // para que apareça no Dashboard e nos relatórios de faturamento
+        if (slug === "entradas" || slug === "saidas") {
+          const { salvarDocumento, processarDocumento, novoId: novoIdTributario } = await import("@/lib/tributarioStore");
+          
+          const grupo = slug === "entradas" ? "demais" : "faturamento";
+          const tipo = slug === "entradas" ? "Nota de entrada" : "NF-e";
+          
+          const docTributario = processarDocumento({
+            id: novoIdTributario("xml"),
+            empresaId: empresa.id,
+            competencia: novoDoc.competencia,
+            grupo: grupo as any,
+            tipo: tipo as any,
+            numero: novoDoc.numero,
+            serie: novoDoc.serie,
+            emissao: novoDoc.data.split("/").reverse().join("-"),
+            participante: novoDoc.participante,
+            participanteDoc: novoDoc.cnpj || "",
+            ufOrigem: (isEntrada ? "EX" : "SP") as any, 
+            ufDestino: (isEntrada ? "SP" : "EX") as any,
+            contribuinte: true,
+            consumidorFinal: false,
+            regime: empresa.regime || "Lucro Presumido",
+            itens: [{
+              id: "item-1",
+              descricao: "Item importado via XML",
+              tipo: "produto",
+              quantidade: 1,
+              unitario: Number(vNF),
+              cfop: cfopXml,
+              ncm: xmlDoc.getElementsByTagName("NCM")[0]?.textContent || ""
+            }],
+            valorProdutos: Number(vNF),
+            valorTotal: Number(vNF),
+            status: "Autorizado",
+            chave: novoDoc.chave,
+            tributos: {
+              icms: Number(vICMS),
+              icmsSt: 0,
+              difal: 0,
+              fcp: 0,
+              ipi: 0,
+              pis: 0,
+              cofins: 0,
+              iss: 0,
+              irrf: 0,
+              inss: 0,
+              csll: 0,
+              retencoes: 0,
+              total: Number(vICMS)
+            },
+            memoria: [],
+            regrasAplicadas: ["Importação XML"],
+            alertas: [],
+            eventos: [{
+              id: "ev-1",
+              data: new Date().toISOString(),
+              usuario: "Sistema",
+              acao: "Importação XML"
+            }]
+          }, empresa.id);
+
+          salvarDocumento(empresa.id, docTributario, "Importado via XML Fiscal");
+        }
+
         toast.success(`XML da nota ${novoDoc.numero} importado com sucesso!`);
       } catch (err) {
         console.error(err);
