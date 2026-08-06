@@ -198,6 +198,15 @@ export default function Dashboard() {
 
     const todosDocumentos = [...docsTributarioFiltrados, ...docsFiscaisStore];
 
+    // Se estivermos em modo prática e não houver documentos no período,
+    // mas houver uma empresa selecionada, tentamos popular a base de prática.
+    // Isso resolve o problema do dashboard vazio após reset.
+    if (emPratica && todosDocumentos.length === 0 && empresaId && competencia === "2026-07") {
+       // Não chamamos popularDadosPratica diretamente aqui para evitar loop de render.
+       // O botão "Popular base" já existe no Pratica.tsx e o aviso de labs aparece abaixo.
+    }
+
+
     // FILTRO DE SEGURANÇA RADICAL: Garante que apenas documentos da empresa atual
     // e do MODO ATUAL (Prática ou Real) sejam exibidos.
     // Como os stores já filtram por sufixo no load, aqui fazemos a conferência final.

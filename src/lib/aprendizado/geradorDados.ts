@@ -4,23 +4,38 @@
  * para que o dashboard e relatórios mostrem informações coerentes.
  */
 import { saveEmpresa, novoId, registrarAuditoria, empresaDB } from "@/lib/tributarioStore";
-import { saveDocs, novoDocId, moedaBR, chaveFicticia } from "@/lib/fiscalStore";
-import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS_BASE } from "@/lib/contasCaixaStore";
+import { saveDocs, novoDocId, moedaBR, chaveFicticia, FISCAL_EVENT } from "@/lib/fiscalStore";
+import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS_BASE, lancarMovimento } from "@/lib/contasCaixaStore";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO } from "./seedPratica";
 
-export function popularDadosPratica(empresaId: string, competencia: string) {
+export function popularDadosPratica(empresaId: string, competencia: string, forcePratica = false) {
   if (!empresaId) return;
 
   const [ano, mes] = competencia.split("-").map(Number);
+  
+  // 0. Garantir sufixo correto se for forçado
+  const sufixo = forcePratica ? ".pratica" : (typeof window !== "undefined" && localStorage.getItem("uc:pratica:ativo") === "1" ? ".pratica" : "");
   
   // 1. Cadastros Analíticos (Tributário Store)
   const produtos = PRODUTOS_TREINAMENTO.map(p => ({ ...p, id: novoId("p") }));
   const parceiros = PARCEIROS_TREINAMENTO.map(p => ({ ...p, id: novoId("parc") }));
   
-  saveEmpresa(empresaId, {
-    produtos,
-    parceiros
-  });
+  // Local storage direto para garantir isolamento se for forçado
+  if (forcePratica) {
+    const KEY_TRIB = "usecontabil.tributario.v1" + sufixo;
+    const dbTrib = JSON.parse(localStorage.getItem(KEY_TRIB) || "{}");
+    dbTrib[empresaId] = {
+      ...(dbTrib[empresaId] || { produtos: [], parceiros: [], documentos: [], regras: [], auditoria: [], fechamentos: [] }),
+      produtos,
+      parceiros
+    };
+    localStorage.setItem(KEY_TRIB, JSON.stringify(dbTrib));
+  } else {
+    saveEmpresa(empresaId, {
+      produtos,
+      parceiros
+    });
+  }
 
   // 2. Documentos Fiscais (Fiscal Store)
   // Notas de Saída (Faturamento) -> Alimenta Receita no Dashboard
@@ -114,21 +129,43 @@ export function popularDadosPratica(empresaId: string, competencia: string) {
     }
   ];
 
-  saveDocs("saidas", docsSaida as any);
-  saveDocs("entradas", docsEntrada as any);
+  if (forcePratica) {
+    const KEY_FISCAL = "usecontabil.fiscal.docs.v1" + sufixo;
+    const dbFiscal = JSON.parse(localStorage.getItem(KEY_FISCAL) || "{}");
+    dbFiscal["saidas"] = [...(docsSaida as any), ...(dbFiscal["saidas"] || [])];
+    dbFiscal["entradas"] = [...(docsEntrada as any), ...(dbFiscal["entradas"] || [])];
+    localStorage.setItem(KEY_FISCAL, JSON.stringify(dbFiscal));
+    window.dispatchEvent(new Event(FISCAL_EVENT));
+  } else {
+    saveDocs("saidas", docsSaida as any);
+    saveDocs("entradas", docsEntrada as any);
+  }
   
   // Também salvar no TributarioStore para que o Dashboard (useTributario) pegue
-  const atualTributario = empresaDB(empresaId);
-  saveEmpresa(empresaId, {
-    documentos: [
-      ...atualTributario.documentos.filter(d => d.competencia !== competencia),
+  if (forcePratica) {
+    const KEY_TRIB = "usecontabil.tributario.v1" + sufixo;
+    const dbTrib = JSON.parse(localStorage.getItem(KEY_TRIB) || "{}");
+    const emp = dbTrib[empresaId] || { produtos: [], parceiros: [], documentos: [], regras: [], auditoria: [], fechamentos: [] };
+    emp.documentos = [
+      ...(emp.documentos || []).filter((d: any) => d.competencia !== competencia),
       ...docsSaida as any,
       ...docsEntrada as any
-    ]
-  });
+    ];
+    dbTrib[empresaId] = emp;
+    localStorage.setItem(KEY_TRIB, JSON.stringify(dbTrib));
+  } else {
+    const atualTributario = empresaDB(empresaId);
+    saveEmpresa(empresaId, {
+      documentos: [
+        ...atualTributario.documentos.filter(d => d.competencia !== competencia),
+        ...docsSaida as any,
+        ...docsEntrada as any
+      ]
+    });
+  }
 
   // 3. Financeiro (Contas a Pagar/Receber)
-  const KEY_BAIXAS = KEY_BAIXAS_BASE + ".pratica";
+  const KEY_BAIXAS = KEY_BAIXAS_BASE + sufixo;
   const todasBaixas = JSON.parse(localStorage.getItem(KEY_BAIXAS) || "[]");
   const outrasBaixas = todasBaixas.filter((b: any) => !b.id.includes(competencia));
   localStorage.setItem(KEY_BAIXAS, JSON.stringify(outrasBaixas));
@@ -164,13 +201,47 @@ export function popularDadosPratica(empresaId: string, competencia: string) {
     } catch (e) { console.error(e); }
   }
 
-  // 4. Auditoria
-  registrarAuditoria(empresaId, {
-    origem: "Modo Prática",
-    acao: "Carga Completa de Dashboard",
-    detalhe: "Geração de movimento contábil completo: Receitas (17k), Despesas (8.5k), Tributos e Baixas Financeiras.",
-    competencia
-  });
+  // 4. Movimentos de Caixa Extras (Para o Dashboard Bancário)
+  try {
+    const KEY_MOVS = "usecontabil.contas.movimentos.v1" + sufixo;
+    const movs = JSON.parse(localStorage.getItem(KEY_MOVS) || "[]");
+    movs.push({
+      id: `mv-${Date.now()}`,
+      contaId: "cx-01",
+      data: `${ano}-${String(mes).padStart(2, '0')}-01`,
+      historico: "Aporte de Capital Inicial - Treinamento",
+      tipo: "Entrada",
+      valor: 50000.00,
+      origem: "Lançamento manual"
+    });
+    localStorage.setItem(KEY_MOVS, JSON.stringify(movs));
+  } catch (e) { console.error(e); }
+
+  // 5. Auditoria
+  if (forcePratica) {
+    const KEY_TRIB = "usecontabil.tributario.v1" + sufixo;
+    const dbTrib = JSON.parse(localStorage.getItem(KEY_TRIB) || "{}");
+    const emp = dbTrib[empresaId] || { produtos: [], parceiros: [], documentos: [], regras: [], auditoria: [], fechamentos: [] };
+    emp.auditoria = [{
+      id: novoId("aud"),
+      data: new Date().toISOString(),
+      empresaId,
+      usuario: "Sistema/Treinamento",
+      origem: "Modo Prática",
+      acao: "Carga Completa de Dashboard",
+      detalhe: "Geração de movimento contábil completo: Receitas (17k), Despesas (8.5k), Tributos, Baixas Financeiras e Aporte de Capital.",
+      competencia
+    }, ...(emp.auditoria || [])].slice(0, 400);
+    dbTrib[empresaId] = emp;
+    localStorage.setItem(KEY_TRIB, JSON.stringify(dbTrib));
+  } else {
+    registrarAuditoria(empresaId, {
+      origem: "Modo Prática",
+      acao: "Carga Completa de Dashboard",
+      detalhe: "Geração de movimento contábil completo: Receitas (17k), Despesas (8.5k), Tributos, Baixas Financeiras e Aporte de Capital.",
+      competencia
+    });
+  }
 
   return true;
 }
