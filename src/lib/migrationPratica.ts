@@ -133,9 +133,13 @@ export async function deletarTudoGeral() {
 
     // 3. Limpar caches e resetar estado
     limparCacheEmpresas();
+    localStorage.removeItem("usecontabil.empresaAtual.v1");
+    localStorage.removeItem("usecontabil.empresaAtual.v1.pratica");
+    
     window.dispatchEvent(new Event(FISCAL_EVENT));
     window.dispatchEvent(new Event(TRIBUTARIO_EVENT));
     window.dispatchEvent(new Event("storage"));
+
     
     return true;
   } catch (error) {
