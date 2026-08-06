@@ -7,7 +7,7 @@ import { registrarLog } from "./auditoriaStore";
  * Move todos os dados da "Base Real" (produção) para a "Base de Prática" (sandbox),
  * e depois limpa a base real.
  */
-export async function migrarBaseRealParaPratica() {
+export async function migrarBaseRealParaPratica(manterEmpresaId?: string) {
   try {
     const keysParaMigrar: string[] = [];
     const prefixes = ["usecontabil", "uc:"];
@@ -67,7 +67,8 @@ export async function migrarBaseRealParaPratica() {
     // 4. Limpar Empresas na Nuvem (Supabase)
     const { data: userResp } = await supabase.auth.getUser();
     if (userResp.user) {
-      // Deleta as empresas reais do usuário
+      // Se tivermos um ID de empresa para manter (ex: a que acabamos de popular dados fictícios), 
+      // não deletamos tudo indiscriminadamente. Mas aqui o objetivo é limpar a Real.
       await supabase.from("empresas").delete().eq("user_id", userResp.user.id);
     }
     
