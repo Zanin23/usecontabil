@@ -1,4 +1,5 @@
-import { migrarBaseRealParaPratica } from "./migrationPratica";
+import { migrarBaseRealParaPratica, deletarTudoGeral } from "./migrationPratica";
+import { supabase } from "@/integrations/supabase/client";
 
 const FLAG = "usecontabil.reset.base.v1";
 
@@ -30,3 +31,17 @@ export async function limparBaseLocalUmaVez() {
 export async function forcarLimpezaBaseReal() {
   return await migrarBaseRealParaPratica();
 }
+
+/**
+ * Limpa TUDO da base de dados (Real e Prática) sem migração.
+ * Esta função deve ser usada com cautela.
+ */
+export async function resetAbsoluto() {
+  const ok = await deletarTudoGeral();
+  if (ok) {
+    localStorage.setItem(FLAG, "done");
+    return true;
+  }
+  return false;
+}
+

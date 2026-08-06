@@ -155,8 +155,10 @@ export default function Dashboard() {
   };
 
   const documentos = useMemo(() => {
+    if (!empresaId) return [];
     // 1. Unificar documentos dos dois principais stores fiscais
     const docsFiscaisStore: DocumentoFiscal[] = [];
+
     
     const converter = (d: any, grupo: any, tipo: any): DocumentoFiscal => {
       const valor = valorBR(d.valor || d.valorTotal);
@@ -340,8 +342,9 @@ export default function Dashboard() {
     },
   ];
 
-  const semEmpresa = empresas.length === 0 || !empresa;
+  const semEmpresa = !empresaId || empresas.length === 0;
   const semDados = !semEmpresa && d.doMes.length === 0;
+
 
   const header = (
     <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 lg:gap-6">

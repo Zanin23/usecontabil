@@ -1,7 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
 import { setPraticaAtiva } from "./praticaStore";
-import { limparCacheEmpresas, loadEmpresas } from "./empresasStore";
+import { limparCacheEmpresas } from "./empresasStore";
 import { registrarLog } from "./auditoriaStore";
+import { FISCAL_EVENT } from "./fiscalStore";
+import { TRIBUTARIO_EVENT } from "./tributarioStore";
+
+
+
 
 /**
  * Move todos os dados da "Base Real" (produção) para a "Base de Prática" (sandbox),
@@ -86,8 +91,16 @@ export async function migrarBaseRealParaPratica(manterEmpresaId?: string) {
       "Sistema (Migração Automática)"
     );
 
-    // 6. Limpar caches de memória
+    // 6. Limpar caches de memória e notificar mudança
     limparCacheEmpresas();
+    localStorage.removeItem("usecontabil.empresaAtual.v1");
+    localStorage.removeItem("usecontabil.empresaAtual.v1.pratica");
+    
+    window.dispatchEvent(new Event(FISCAL_EVENT));
+    window.dispatchEvent(new Event(TRIBUTARIO_EVENT));
+    window.dispatchEvent(new Event("storage"));
+
+
 
     // 7. Ativar o modo prática imediatamente
     setPraticaAtiva(true);
@@ -124,6 +137,13 @@ export async function deletarTudoGeral() {
 
     // 3. Limpar caches e resetar estado
     limparCacheEmpresas();
+    localStorage.removeItem("usecontabil.empresaAtual.v1");
+    localStorage.removeItem("usecontabil.empresaAtual.v1.pratica");
+    
+    window.dispatchEvent(new Event(FISCAL_EVENT));
+    window.dispatchEvent(new Event(TRIBUTARIO_EVENT));
+    window.dispatchEvent(new Event("storage"));
+
     
     return true;
   } catch (error) {
