@@ -229,7 +229,7 @@ export default function PraticaAprendizado() {
                   toast.error("Selecione ou cadastre uma empresa primeiro.");
                   return;
                 }
-                popularDadosPratica(empresaId, competencia);
+                popularDadosPratica(empresaId, competencia, true);
                 toast.success("Dados fictícios gerados com sucesso!", {
                   description: "Produtos, parceiros e documentos foram adicionados à competência atual."
                 });
