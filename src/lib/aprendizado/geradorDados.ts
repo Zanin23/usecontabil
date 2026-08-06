@@ -203,22 +203,45 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
 
   // 4. Movimentos de Caixa Extras (Para o Dashboard Bancário)
   try {
-    lancarMovimento({
+    const KEY_MOVS = "usecontabil.contas.movimentos.v1" + sufixo;
+    const movs = JSON.parse(localStorage.getItem(KEY_MOVS) || "[]");
+    movs.push({
+      id: `mv-${Date.now()}`,
       contaId: "cx-01",
       data: `${ano}-${String(mes).padStart(2, '0')}-01`,
       historico: "Aporte de Capital Inicial - Treinamento",
       tipo: "Entrada",
-      valor: 50000.00
+      valor: 50000.00,
+      origem: "Lançamento manual"
     });
+    localStorage.setItem(KEY_MOVS, JSON.stringify(movs));
   } catch (e) { console.error(e); }
 
   // 5. Auditoria
-  registrarAuditoria(empresaId, {
-    origem: "Modo Prática",
-    acao: "Carga Completa de Dashboard",
-    detalhe: "Geração de movimento contábil completo: Receitas (17k), Despesas (8.5k), Tributos, Baixas Financeiras e Aporte de Capital.",
-    competencia
-  });
+  if (forcePratica) {
+    const KEY_TRIB = "usecontabil.tributario.v1" + sufixo;
+    const dbTrib = JSON.parse(localStorage.getItem(KEY_TRIB) || "{}");
+    const emp = dbTrib[empresaId] || { produtos: [], parceiros: [], documentos: [], regras: [], auditoria: [], fechamentos: [] };
+    emp.auditoria = [{
+      id: novoId("aud"),
+      data: new Date().toISOString(),
+      empresaId,
+      usuario: "Sistema/Treinamento",
+      origem: "Modo Prática",
+      acao: "Carga Completa de Dashboard",
+      detalhe: "Geração de movimento contábil completo: Receitas (17k), Despesas (8.5k), Tributos, Baixas Financeiras e Aporte de Capital.",
+      competencia
+    }, ...(emp.auditoria || [])].slice(0, 400);
+    dbTrib[empresaId] = emp;
+    localStorage.setItem(KEY_TRIB, JSON.stringify(dbTrib));
+  } else {
+    registrarAuditoria(empresaId, {
+      origem: "Modo Prática",
+      acao: "Carga Completa de Dashboard",
+      detalhe: "Geração de movimento contábil completo: Receitas (17k), Despesas (8.5k), Tributos, Baixas Financeiras e Aporte de Capital.",
+      competencia
+    });
+  }
 
   return true;
 }
