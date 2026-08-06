@@ -93,9 +93,13 @@ export async function migrarBaseRealParaPratica(manterEmpresaId?: string) {
 
     // 6. Limpar caches de memória e notificar mudança
     limparCacheEmpresas();
+    localStorage.removeItem("usecontabil.empresaAtual.v1");
+    localStorage.removeItem("usecontabil.empresaAtual.v1.pratica");
+    
     window.dispatchEvent(new Event(FISCAL_EVENT));
     window.dispatchEvent(new Event(TRIBUTARIO_EVENT));
     window.dispatchEvent(new Event("storage"));
+
 
 
     // 7. Ativar o modo prática imediatamente
