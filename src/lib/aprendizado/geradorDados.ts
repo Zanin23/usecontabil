@@ -3,9 +3,9 @@
  * Popula os stores tributário, fiscal, financeiro e outros com dados fictícios
  * para que o dashboard e relatórios mostrem informações coerentes.
  */
-import { saveEmpresa, novoId, registrarAuditoria, empresaDB } from "@/lib/tributarioStore";
+import { saveEmpresa, novoId, registrarAuditoria, empresaDB, TRIBUTARIO_EVENT } from "@/lib/tributarioStore";
 import { saveDocs, novoDocId, moedaBR, chaveFicticia, FISCAL_EVENT } from "@/lib/fiscalStore";
-import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS_BASE, lancarMovimento } from "@/lib/contasCaixaStore";
+import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS_BASE, lancarMovimento, CONTAS_EVENT } from "@/lib/contasCaixaStore";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO } from "./seedPratica";
 
 export function popularDadosPratica(empresaId: string, competencia: string, forcePratica = false) {
@@ -18,6 +18,7 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
   
   if (forcePratica && typeof window !== "undefined") {
     localStorage.setItem("uc:pratica:ativo", "1");
+    // Ensure the global flag in praticaStore is updated
     window.dispatchEvent(new CustomEvent("usecontabil:pratica-changed"));
   }
   
@@ -208,7 +209,8 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
 
   // 3. Financeiro (Contas a Pagar/Receber)
   const KEY_BAIXAS = KEY_BAIXAS_BASE + sufixo;
-  const todasBaixas = JSON.parse(localStorage.getItem(KEY_BAIXAS) || "[]");
+  const rawBaixas = localStorage.getItem(KEY_BAIXAS);
+  const todasBaixas = rawBaixas ? JSON.parse(rawBaixas) : [];
   const outrasBaixas = todasBaixas.filter((b: any) => !b.id.includes(competencia));
   localStorage.setItem(KEY_BAIXAS, JSON.stringify(outrasBaixas));
 
@@ -332,6 +334,11 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
       competencia
     });
   }
+
+  // Notificar todos os stores da mudança
+  window.dispatchEvent(new Event(TRIBUTARIO_EVENT));
+  window.dispatchEvent(new Event(FISCAL_EVENT));
+  window.dispatchEvent(new Event(CONTAS_EVENT));
 
   return true;
 }
