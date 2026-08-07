@@ -268,7 +268,9 @@ function persist(db: DB) {
 export function empresaDB(empresaId?: string | null): EmpresaDB {
   if (!empresaId) return vazio();
   const db = loadDB();
-  return { ...vazio(), ...(db[empresaId] ?? {}) };
+  const data = db[empresaId];
+  if (!data) return vazio();
+  return { ...vazio(), ...data };
 }
 
 export function saveEmpresa(empresaId: string, patch: Partial<EmpresaDB>) {
