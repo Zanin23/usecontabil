@@ -275,28 +275,8 @@ export default function ContabilShell() {
             {!recolhida && <span>Aprender</span>}
           </NavLink>
 
-          <div className={`pt-2 ${recolhida ? "px-1" : "px-3"}`}>
-            <button
-              onClick={() => setPraticaAtiva(!emPratica)}
-              className={`w-full flex items-center gap-3 rounded-lg py-2 text-xs border transition ${
-                recolhida ? "justify-center px-0" : "px-3"
-              } ${
-                emPratica
-                  ? "bg-brand-orange text-primary-foreground border-brand-orange shadow-glow"
-                  : "bg-card text-muted-foreground border-border hover:border-brand-orange/50"
-              }`}
-            >
-              <FlaskConical className={`h-4 w-4 shrink-0 ${emPratica ? "animate-pulse" : ""}`} />
-              {!recolhida && (
-                <div className="text-left leading-tight">
-                  <div className="font-medium">Modo Prática</div>
-                  <div className={`text-[9px] ${emPratica ? "text-primary-foreground/80" : "text-muted-foreground/70"}`}>
-                    {emPratica ? "Ativado" : "Desativado"}
-                  </div>
-                </div>
-              )}
-            </button>
-          </div>
+          {/* O botão de Modo Prática foi removido da barra lateral conforme solicitado. */}
+          {/* Fica acessível apenas nas Configurações da Conta */}
         </nav>
 
 

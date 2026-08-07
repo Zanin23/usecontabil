@@ -15,7 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/design-system/mj-design-system-db98fa";
-import { Check, FileDown, Monitor, Moon, Palette, ShieldCheck, Sun, Volume2, VolumeX, Trash2, AlertTriangle } from "lucide-react";
+import { Check, FileDown, Monitor, Moon, Palette, ShieldCheck, Sun, Volume2, VolumeX, Trash2, AlertTriangle, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import { useTema } from "@/lib/tema";
 import {
@@ -31,6 +31,7 @@ import { ACENTOS, AMBIENTES, usePreferencias, type Acento } from "@/lib/preferen
 import { supabase } from "@/integrations/supabase/client";
 import { gerarDocumentacaoPdf } from "@/lib/documentacaoSistema";
 import { deletarTudoGeral } from "@/lib/migrationPratica";
+import { usePratica } from "@/lib/praticaStore";
 import { 
   AlertDialog, 
   AlertDialogAction, 
@@ -57,6 +58,7 @@ const SWATCH: Record<Acento, string> = {
 export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil }: Props) {
   const { tema, setTema } = useTema();
   const { prefs, definir, redefinir } = usePreferencias();
+  const { praticaAtiva, setPraticaAtiva } = usePratica();
   const [som, setSom] = useState(somAtivo);
   const [digitacao, setDigitacao] = useState(somDigitacaoAtivo);
   const [volume, setVolume] = useState(volumeSom);
@@ -239,27 +241,64 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
           </TabsContent>
 
           {/* Ambiente */}
-          <TabsContent value="ambiente" className="space-y-3 pt-4">
-            {AMBIENTES.map((a) => (
-              <button
-                key={a.id}
-                type="button"
-                onClick={() => definir({ ambiente: a.id })}
-                className={`w-full text-left rounded-2xl border px-4 py-3 transition ${
-                  prefs.ambiente === a.id ? "border-brand-orange ring-2 ring-brand-orange/40 bg-card" : "border-border bg-card/60"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">{a.nome}</span>
-                  {prefs.ambiente === a.id && (
-                    <Badge variant="outline" className="rounded-full h-5 text-[10px] border-brand-orange/40 text-brand-orange">
-                      ATIVO
-                    </Badge>
-                  )}
+          <TabsContent value="ambiente" className="space-y-4 pt-4">
+            <div className="p-4 rounded-xl border border-border bg-card/50 space-y-4">
+              <div className="flex items-start gap-4">
+                <div className="h-10 w-10 shrink-0 rounded-full bg-brand-orange/10 flex items-center justify-center">
+                  <FlaskConical className="h-5 w-5 text-brand-orange" />
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">{a.descricao}</div>
-              </button>
-            ))}
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">Ambiente de Treinamento (Modo Prática)</h4>
+                    <Button
+                      variant={praticaAtiva ? "default" : "outline"}
+                      size="sm"
+                      className={praticaAtiva ? "bg-brand-orange hover:bg-brand-orange/90 rounded-full" : "rounded-full"}
+                      onClick={() => setPraticaAtiva(!praticaAtiva)}
+                    >
+                      {praticaAtiva ? "Desativar" : "Ativar"}
+                    </Button>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Um ambiente seguro para testes e aprendizado. Os dados cadastrados aqui são 
+                    <span className="text-brand-orange font-semibold"> totalmente isolados</span> da sua conta real.
+                  </p>
+                </div>
+              </div>
+
+              {praticaAtiva && (
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-brand-orange/10 text-brand-orange text-xs border border-brand-orange/20">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  <p>
+                    Você está operando na <strong>Base de Prática</strong>. Nenhuma alteração feita aqui 
+                    afetará seus dados oficiais de produção.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              {AMBIENTES.map((a) => (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => definir({ ambiente: a.id })}
+                  className={`w-full text-left rounded-2xl border px-4 py-3 transition ${
+                    prefs.ambiente === a.id ? "border-brand-orange ring-2 ring-brand-orange/40 bg-card" : "border-border bg-card/60"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">{a.nome}</span>
+                    {prefs.ambiente === a.id && (
+                      <Badge variant="outline" className="rounded-full h-5 text-[10px] border-brand-orange/40 text-brand-orange">
+                        ATIVO
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">{a.descricao}</div>
+                </button>
+              ))}
+            </div>
             <p className="text-xs text-muted-foreground">
               O ambiente é apenas visual e interno — nenhuma transmissão é feita a órgãos oficiais.
             </p>
