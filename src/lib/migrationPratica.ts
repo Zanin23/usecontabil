@@ -31,6 +31,7 @@ export async function migrarBaseRealParaPratica(manterEmpresaId?: string) {
           "usecontabil.reset.base.v1",
           "uc:sidebar",
           "uc:pratica:ativo",
+          "uc:pratica:empresas.v1",
         ];
         
         if (!ignorar.includes(k)) {
@@ -65,7 +66,8 @@ export async function migrarBaseRealParaPratica(manterEmpresaId?: string) {
       "usecontabil.guias.v1",
       "usecontabil.compras.v1",
       "uc:notificacoes",
-      "uc:ajuda"
+      "uc:ajuda",
+      "uc:pratica:empresas.v1"
     ];
     chavesSensiveis.forEach(k => localStorage.removeItem(k));
 
