@@ -13,15 +13,20 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
 
   const [ano, mes] = competencia.split("-").map(Number);
   
-  // 0. Garantir sufixo correto se for forçado
+  // 0. Determinar sufixo e ativar modo prática se forçado
   const sufixo = forcePratica ? ".pratica" : (typeof window !== "undefined" && localStorage.getItem("uc:pratica:ativo") === "1" ? ".pratica" : "");
+  
+  if (forcePratica && typeof window !== "undefined") {
+    localStorage.setItem("uc:pratica:ativo", "1");
+    window.dispatchEvent(new CustomEvent("usecontabil:pratica-changed"));
+  }
   
   // 1. Cadastros Analíticos (Tributário Store)
   const produtos = PRODUTOS_TREINAMENTO.map(p => ({ ...p, id: novoId("p") }));
   const parceiros = PARCEIROS_TREINAMENTO.map(p => ({ ...p, id: novoId("parc") }));
   
   // Local storage direto para garantir isolamento se for forçado
-  if (forcePratica) {
+  if (sufixo === ".pratica") {
     const KEY_TRIB = "usecontabil.tributario.v1" + sufixo;
     const dbTrib = JSON.parse(localStorage.getItem(KEY_TRIB) || "{}");
     dbTrib[empresaId] = {
@@ -166,7 +171,7 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
     }
   ];
 
-  if (forcePratica) {
+  if (sufixo === ".pratica") {
     const KEY_FISCAL = "usecontabil.fiscal.docs.v1" + sufixo;
     const dbFiscal = JSON.parse(localStorage.getItem(KEY_FISCAL) || "{}");
     dbFiscal["saidas"] = [...(docsSaida as any), ...(dbFiscal["saidas"] || [])];
@@ -179,7 +184,7 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
   }
   
   // Também salvar no TributarioStore para que o Dashboard (useTributario) pegue
-  if (forcePratica) {
+  if (sufixo === ".pratica") {
     const KEY_TRIB = "usecontabil.tributario.v1" + sufixo;
     const dbTrib = JSON.parse(localStorage.getItem(KEY_TRIB) || "{}");
     const emp = dbTrib[empresaId] || { produtos: [], parceiros: [], documentos: [], regras: [], auditoria: [], fechamentos: [] };
@@ -303,7 +308,7 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
   // Nota: O DRE e SPEDs são gerados dinamicamente no sistema a partir dos documentos fiscais e movimentos.
   // Ao popular os documentos e movimentos acima, os módulos de DRE, SPED e Guias já refletirão esses dados.
   
-  if (forcePratica) {
+  if (sufixo === ".pratica") {
     const KEY_TRIB = "usecontabil.tributario.v1" + sufixo;
     const dbTrib = JSON.parse(localStorage.getItem(KEY_TRIB) || "{}");
     const emp = dbTrib[empresaId] || { produtos: [], parceiros: [], documentos: [], regras: [], auditoria: [], fechamentos: [] };
