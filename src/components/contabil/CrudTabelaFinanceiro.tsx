@@ -243,42 +243,76 @@ export default function CrudTabelaFinanceiro({
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editing ? "Editar linha" : labelNovo}</DialogTitle>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto rounded-[2rem] border-none shadow-elevated">
+          <DialogHeader className="pb-4 border-b border-muted/50 mb-2">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-brand-orange/10 grid place-items-center">
+                <Icone className="h-5 w-5 text-brand-orange" />
+              </div>
+              <DialogTitle className="text-xl font-display">{editing ? "Editar registro" : labelNovo}</DialogTitle>
+            </div>
           </DialogHeader>
           <AssistenteCampos titulo={titulo} campos={campos} draft={draft} />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 py-2">
             {campos.map((c) => (
-              <div key={c.key} className={c.span === 2 ? "md:col-span-2 space-y-1.5" : "space-y-1.5"}>
-                <Label>{c.label}{c.required ? " *" : ""}</Label>
-                {c.type === "select" ? (
-                  <Select value={draft[c.key] ?? ""} onValueChange={(v) => setDraft((d) => ({ ...d, [c.key]: v }))}>
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                    <SelectContent>
-                      {(c.options ?? []).map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                ) : c.type === "textarea" ? (
-                  <Textarea
-                    value={draft[c.key] ?? ""}
-                    placeholder={c.placeholder}
-                    onChange={(e) => setDraft((d) => ({ ...d, [c.key]: e.target.value }))}
-                  />
-                ) : (
-                  <Input
-                    value={draft[c.key] ?? ""}
-                    placeholder={c.placeholder}
-                    onChange={(e) => setDraft((d) => ({ ...d, [c.key]: e.target.value }))}
-                  />
-                )}
-                {c.ajuda ? <p className="text-xs text-muted-foreground">{c.ajuda}</p> : null}
+              <div key={c.key} className={c.span === 2 ? "md:col-span-2 space-y-2" : "space-y-2"}>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">
+                    {c.label}
+                    {c.required ? <span className="text-brand-orange ml-1">*</span> : ""}
+                  </Label>
+                </div>
+                
+                <div className="relative">
+                  {c.type === "select" ? (
+                    <Select value={draft[c.key] ?? ""} onValueChange={(v) => setDraft((d) => ({ ...d, [c.key]: v }))}>
+                      <SelectTrigger className="rounded-xl border-muted-foreground/20 h-11 bg-background focus:ring-brand-orange/20 focus:border-brand-orange">
+                        <SelectValue placeholder="Selecione..." />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border-muted-foreground/20">
+                        {(c.options ?? []).map((o) => (
+                          <SelectItem key={o} value={o} className="rounded-lg focus:bg-brand-orange/10 focus:text-brand-orange cursor-pointer">
+                            {o}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : c.type === "textarea" ? (
+                    <Textarea
+                      className="rounded-xl border-muted-foreground/20 min-h-[100px] resize-none focus:ring-brand-orange/20 focus:border-brand-orange bg-background p-3"
+                      value={draft[c.key] ?? ""}
+                      placeholder={c.placeholder}
+                      onChange={(e) => setDraft((d) => ({ ...d, [c.key]: e.target.value }))}
+                    />
+                  ) : (
+                    <Input
+                      className={[
+                        "rounded-xl border-muted-foreground/20 h-11 focus:ring-brand-orange/20 focus:border-brand-orange bg-background px-3",
+                        c.align === "right" ? "text-right" : "",
+                        c.mono ? "font-mono" : ""
+                      ].join(" ").trim()}
+                      value={draft[c.key] ?? ""}
+                      placeholder={c.placeholder}
+                      onChange={(e) => setDraft((d) => ({ ...d, [c.key]: e.target.value }))}
+                    />
+                  )}
+                </div>
+                
+                {c.ajuda ? (
+                  <p className="text-[11px] text-muted-foreground/80 pl-1 leading-relaxed italic">
+                    {c.ajuda}
+                  </p>
+                ) : null}
               </div>
             ))}
           </div>
-          <DialogFooter>
-            <Button variant="outline" className="rounded-full" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar</Button>
+          <DialogFooter className="pt-6 border-t border-muted/50 mt-4 gap-3">
+            <Button variant="outline" className="rounded-full px-6 h-11 border-muted-foreground/20 hover:bg-muted/50 transition-colors" onClick={() => setOpen(false)}>
+              Cancelar
+            </Button>
+            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90 px-8 h-11 shadow-glow transition-all active:scale-95" onClick={salvar}>
+              Salvar Registro
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

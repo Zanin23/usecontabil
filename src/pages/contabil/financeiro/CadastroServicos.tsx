@@ -12,22 +12,23 @@ export default function CadastroServicos() {
       prefixoId="SVC"
       labelNovo="Novo serviço"
       badgeKey="situacao"
-      colunas={["codigo", "servico", "cnae", "iss", "valor", "situacao"]}
+      colunas={["codigo", "servico", "unidade", "cnae", "iss", "valor", "situacao"]}
       campos={[
-        { key: "codigo", label: "Código", mono: true, required: true, placeholder: "SVC-001" },
-        { key: "servico", label: "Serviço", required: true, span: 2, placeholder: "Rateio de estrutura administrativa" },
-        { key: "cnae", label: "CNAE", mono: true, placeholder: "6920-6/01" },
-        { key: "itemLc", label: "Item LC 116", mono: true, placeholder: "17.19" },
-        { key: "iss", label: "Alíquota ISS", mono: true, align: "right", placeholder: "5,00%" },
-        { key: "valor", label: "Preço base (R$)", mono: true, align: "right", required: true, placeholder: "4.200,00" },
-        { key: "situacao", label: "Situação", type: "select", options: ["Ativo", "Inativo"] },
-        { key: "observacao", label: "Observações", type: "textarea", span: 2 },
+        { key: "codigo", label: "Código", mono: true, required: true, placeholder: "SVC-001", ajuda: "Identificador único do serviço." },
+        { key: "servico", label: "Nome do Serviço", required: true, span: 2, placeholder: "Ex: Consultoria em TI", ajuda: "Descrição clara para emissão da NFS-e." },
+        { key: "unidade", label: "Unidade", type: "select", options: ["UN", "HR", "KM", "MES", "DIA"], required: true, ajuda: "Unidade de medida para cobrança." },
+        { key: "cnae", label: "CNAE", mono: true, placeholder: "6920-6/01", ajuda: "Classificação Nacional de Atividades Econômicas." },
+        { key: "itemLc", label: "Item LC 116", mono: true, placeholder: "17.19", ajuda: "Item da lista de serviços da Lei Complementar 116/03." },
+        { key: "iss", label: "Alíquota ISS (%)", mono: true, align: "right", placeholder: "5,00", ajuda: "Percentual do imposto municipal." },
+        { key: "valor", label: "Preço Base (R$)", mono: true, align: "right", required: true, placeholder: "0,00", ajuda: "Valor padrão unitário do serviço." },
+        { key: "situacao", label: "Situação", type: "select", options: ["Ativo", "Inativo"], ajuda: "Somente serviços ativos podem ser faturados." },
+        { key: "observacao", label: "Instruções Internas", type: "textarea", span: 2, placeholder: "Detalhes sobre a execução ou particularidades do serviço..." },
       ]}
       padrao={[
-        { codigo: "SVC-001", servico: "Rateio de estrutura administrativa", cnae: "6920-6/01", itemLc: "17.19", iss: "5,00%", valor: "4.200,00", situacao: "Ativo", observacao: "" },
-        { codigo: "SVC-002", servico: "Escrituração fiscal entre unidades", cnae: "6920-6/01", itemLc: "17.19", iss: "5,00%", valor: "1.800,00", situacao: "Ativo", observacao: "" },
-        { codigo: "SVC-003", servico: "Suporte de TI compartilhado", cnae: "6209-1/00", itemLc: "1.07", iss: "2,00%", valor: "3.600,00", situacao: "Ativo", observacao: "" },
-        { codigo: "SVC-004", servico: "Locação de espaço industrial", cnae: "6810-2/02", itemLc: "3.03", iss: "0,00%", valor: "12.000,00", situacao: "Ativo", observacao: "" },
+        { codigo: "SVC-001", servico: "Rateio de estrutura administrativa", unidade: "MES", cnae: "6920-6/01", itemLc: "17.19", iss: "5,00", valor: "4.200,00", situacao: "Ativo", observacao: "" },
+        { codigo: "SVC-002", servico: "Escrituração fiscal entre unidades", unidade: "UN", cnae: "6920-6/01", itemLc: "17.19", iss: "5,00", valor: "1.800,00", situacao: "Ativo", observacao: "" },
+        { codigo: "SVC-003", servico: "Suporte de TI compartilhado", unidade: "HR", cnae: "6209-1/00", itemLc: "1.07", iss: "2,00", valor: "3.600,00", situacao: "Ativo", observacao: "" },
+        { codigo: "SVC-004", servico: "Locação de espaço industrial", unidade: "MES", cnae: "6810-2/02", itemLc: "3.03", iss: "0,00", valor: "12.000,00", situacao: "Ativo", observacao: "" },
       ]}
       indicadores={(l) => [
         { label: "Serviços cadastrados", valor: String(l.length) },
