@@ -269,6 +269,7 @@ export function empresaDB(empresaId?: string | null): EmpresaDB {
   if (!empresaId) return vazio();
   const db = loadDB();
   const data = db[empresaId];
+  // Ensure rules are always present (at least the native ones if empty)
   if (!data) return vazio();
   return { ...vazio(), ...data };
 }
