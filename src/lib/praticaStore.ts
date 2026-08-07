@@ -9,7 +9,7 @@ const CHAVE_ATIVO = "uc:pratica:ativo";
 const EVENTO = "usecontabil:pratica-changed";
 
 // Flags globais reativas
-let ativo = typeof window !== "undefined" && localStorage.getItem(CHAVE_ATIVO) === "1";
+let ativo = typeof window !== "undefined" ? localStorage.getItem(CHAVE_ATIVO) === "1" : false;
 
 export function isPraticaAtiva() {
   return ativo;

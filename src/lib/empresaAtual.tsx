@@ -5,6 +5,7 @@ import {
 } from "@/lib/empresasStore";
 
 const SELECTED_KEY = "usecontabil.empresaAtual.v1";
+const EVENTO_PRATICA = "usecontabil:pratica-changed";
 
 export type EmpresaOption = {
   id: string;
@@ -28,13 +29,25 @@ function toOption(e: EmpresaRecord): EmpresaOption {
 
 export function EmpresaProvider({ children }: { children: ReactNode }) {
   const [empresas, setEmpresas] = useState<EmpresaOption[]>(() => loadEmpresas().map(toOption));
-  const [empresaId, setEmpresaIdState] = useState<string | null>(
-    () => localStorage.getItem(SELECTED_KEY),
-  );
+  const [empresaId, setEmpresaIdState] = useState<string | null>(() => {
+    const suf = typeof window !== "undefined" && localStorage.getItem("uc:pratica:ativo") === "1" ? ".pratica" : "";
+    return localStorage.getItem(SELECTED_KEY + suf);
+  });
 
   useEffect(() => {
-    const refresh = () => setEmpresas(loadEmpresas().map(toOption));
+    const refresh = () => {
+      const list = loadEmpresas().map(toOption);
+      setEmpresas(list);
+      
+      const suf = typeof window !== "undefined" && localStorage.getItem("uc:pratica:ativo") === "1" ? ".pratica" : "";
+      const stored = localStorage.getItem(SELECTED_KEY + suf);
+      if (stored !== empresaId) {
+        setEmpresaIdState(stored);
+      }
+    };
+    
     window.addEventListener(EMPRESAS_EVENT, refresh);
+    window.addEventListener(EVENTO_PRATICA, refresh);
     window.addEventListener("storage", refresh);
     window.addEventListener("focus", refresh);
 
@@ -63,24 +76,28 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
 
   // Keep the selection valid whenever the list changes.
   useEffect(() => {
+    const suf = typeof window !== "undefined" && localStorage.getItem("uc:pratica:ativo") === "1" ? ".pratica" : "";
+    const currentKey = SELECTED_KEY + suf;
+
     if (empresas.length === 0) {
       if (empresaId !== null) {
         setEmpresaIdState(null);
-        localStorage.removeItem(SELECTED_KEY);
+        localStorage.removeItem(currentKey);
       }
       return;
     }
     if (!empresaId || !empresas.some((e) => e.id === empresaId)) {
       const next = empresas[0].id;
       setEmpresaIdState(next);
-      localStorage.setItem(SELECTED_KEY, next);
+      localStorage.setItem(currentKey, next);
     }
   }, [empresas, empresaId]);
 
   const value = useMemo<Ctx>(() => {
     const setEmpresaId = (id: string) => {
       setEmpresaIdState(id);
-      localStorage.setItem(SELECTED_KEY, id);
+      const suf = typeof window !== "undefined" && localStorage.getItem("uc:pratica:ativo") === "1" ? ".pratica" : "";
+      localStorage.setItem(SELECTED_KEY + suf, id);
     };
     return {
       empresas,
