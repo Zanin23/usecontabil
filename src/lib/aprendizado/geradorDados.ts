@@ -48,7 +48,7 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
       tipo: "NF-e",
       numero: "101",
       serie: "1",
-      emissao: `${ano}-${String(mes).padStart(2, '0')}-10`,
+      emissao: `${ano}-${String(mes).padStart(2, '0')}-02`,
       participante: "Lojão das Roupas ME",
       participanteDoc: "44.555.666/0001-77",
       valorTotal: 12500.00,
@@ -59,12 +59,7 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
       status: "Autorizado",
       chave: chaveFicticia(),
       cfop: "5102",
-      tributos: {
-        icms: 1500.00,
-        pis: 206.25,
-        cofins: 950.00,
-        total: 2656.25
-      },
+      tributos: { icms: 1500.00, pis: 206.25, cofins: 950.00, total: 2656.25 },
       memoria: [
         { tributo: "ICMS", valor: 1500.00, base: 12500.00, aliquota: 12 },
         { tributo: "PIS", valor: 206.25, base: 12500.00, aliquota: 1.65 },
@@ -79,6 +74,32 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
       tipo: "NF-e",
       numero: "102",
       serie: "1",
+      emissao: `${ano}-${String(mes).padStart(2, '0')}-05`,
+      participante: "Moda Fashion Ltda",
+      participanteDoc: "22.333.444/0001-55",
+      valorTotal: 28400.00,
+      valorProdutos: 28400.00,
+      valor: moedaBR(28400.00),
+      baseIcms: moedaBR(28400.00),
+      icms: moedaBR(3408.00),
+      status: "Autorizado",
+      chave: chaveFicticia(),
+      cfop: "5102",
+      tributos: { icms: 3408.00, pis: 468.60, cofins: 2158.40, total: 6035.00 },
+      memoria: [
+        { tributo: "ICMS", valor: 3408.00, base: 28400.00, aliquota: 12 },
+        { tributo: "PIS", valor: 468.60, base: 28400.00, aliquota: 1.65 },
+        { tributo: "COFINS", valor: 2158.40, base: 28400.00, aliquota: 7.6 }
+      ]
+    },
+    {
+      id: novoDocId("nf"),
+      empresaId,
+      competencia,
+      grupo: "faturamento",
+      tipo: "NF-e",
+      numero: "103",
+      serie: "1",
       emissao: `${ano}-${String(mes).padStart(2, '0')}-15`,
       participante: "Consumidor Final Silva",
       participanteDoc: "999.888.777-66",
@@ -90,12 +111,7 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
       status: "Autorizado",
       chave: chaveFicticia(),
       cfop: "6108",
-      tributos: {
-        icms: 540.00,
-        pis: 74.25,
-        cofins: 342.00,
-        total: 956.25
-      },
+      tributos: { icms: 540.00, pis: 74.25, cofins: 342.00, total: 956.25 },
       memoria: [
         { tributo: "ICMS", valor: 540.00, base: 4500.00, aliquota: 12 },
         { tributo: "PIS", valor: 74.25, base: 4500.00, aliquota: 1.65 },
@@ -126,6 +142,27 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
       cfop: "1102",
       tributos: { icms: 1020.00, total: 1020.00 },
       memoria: [{ tributo: "ICMS", valor: 1020.00, base: 8500.00, aliquota: 12 }]
+    },
+    {
+      id: novoDocId("nf"),
+      empresaId,
+      competencia,
+      grupo: "demais",
+      tipo: "Nota de entrada",
+      numero: "8820",
+      serie: "1",
+      emissao: `${ano}-${String(mes).padStart(2, '0')}-12`,
+      participante: "Fios e Malhas Continental",
+      participanteDoc: "05.111.222/0001-33",
+      valorTotal: 15750.00,
+      valor: moedaBR(15750.00),
+      baseIcms: moedaBR(15750.00),
+      icms: moedaBR(1890.00),
+      status: "Autorizado",
+      chave: chaveFicticia(),
+      cfop: "1102",
+      tributos: { icms: 1890.00, total: 1890.00 },
+      memoria: [{ tributo: "ICMS", valor: 1890.00, base: 15750.00, aliquota: 12 }]
     }
   ];
 
@@ -201,23 +238,71 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
     } catch (e) { console.error(e); }
   }
 
-  // 4. Movimentos de Caixa Extras (Para o Dashboard Bancário)
+  // 4. Movimentos de Caixa Extras (Para o Dashboard Bancário e Conciliação)
   try {
     const KEY_MOVS = "usecontabil.contas.movimentos.v1" + sufixo;
     const movs = JSON.parse(localStorage.getItem(KEY_MOVS) || "[]");
-    movs.push({
-      id: `mv-${Date.now()}`,
-      contaId: "cx-01",
+    
+    // Filtra movimentos da competência atual para não duplicar se rodar de novo
+    const movsFiltrados = movs.filter((m: any) => !m.data.startsWith(competencia));
+
+    movsFiltrados.push({
+      id: `mv-aporte-${Date.now()}`,
+      contaId: "itau-01",
       data: `${ano}-${String(mes).padStart(2, '0')}-01`,
-      historico: "Aporte de Capital Inicial - Treinamento",
+      historico: "Capital Social Integralizado",
       tipo: "Entrada",
-      valor: 50000.00,
-      origem: "Lançamento manual"
+      valor: 150000.00,
+      origem: "Aporte de Capital"
     });
-    localStorage.setItem(KEY_MOVS, JSON.stringify(movs));
+
+    movsFiltrados.push({
+      id: `mv-tarifa-${Date.now()}`,
+      contaId: "bb-01",
+      data: `${ano}-${String(mes).padStart(2, '0')}-05`,
+      historico: "Tarifa Manutenção Conta",
+      tipo: "Saída",
+      valor: 45.00,
+      origem: "Tarifa Bancária"
+    });
+
+    movsFiltrados.push({
+      id: `mv-energia-${Date.now()}`,
+      contaId: "itau-01",
+      data: `${ano}-${String(mes).padStart(2, '0')}-10`,
+      historico: "Pagamento Enel Distribuição",
+      tipo: "Saída",
+      valor: 850.40,
+      origem: "Despesa Operacional"
+    });
+
+    localStorage.setItem(KEY_MOVS, JSON.stringify(movsFiltrados));
+    
+    // 4.1 Conciliação Bancária (Simulação)
+    const KEY_CONC = "usecontabil:conciliacao" + sufixo;
+    const estadoConc = JSON.parse(localStorage.getItem(KEY_CONC) || '{"vinculos":[],"fechamentos":{},"ignorados":[]}');
+    
+    // Adicionar um vínculo de conciliação automático para teste
+    estadoConc.vinculos.push({
+      id: `VIN-AUTO-${Date.now()}`,
+      contaId: "itau-01",
+      competencia,
+      extratoIds: [`EXT-itau-01-0`], // Simulado
+      contabilIds: [`mv-aporte-${Date.now()}`],
+      metodo: "Automático",
+      confianca: 100,
+      criadoEm: new Date().toISOString(),
+      usuario: "Sistema"
+    });
+    
+    localStorage.setItem(KEY_CONC, JSON.stringify(estadoConc));
+
   } catch (e) { console.error(e); }
 
-  // 5. Auditoria
+  // 5. Auditoria e Outros Registros (SPED, DARF, DRE)
+  // Nota: O DRE e SPEDs são gerados dinamicamente no sistema a partir dos documentos fiscais e movimentos.
+  // Ao popular os documentos e movimentos acima, os módulos de DRE, SPED e Guias já refletirão esses dados.
+  
   if (forcePratica) {
     const KEY_TRIB = "usecontabil.tributario.v1" + sufixo;
     const dbTrib = JSON.parse(localStorage.getItem(KEY_TRIB) || "{}");
@@ -228,8 +313,8 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
       empresaId,
       usuario: "Sistema/Treinamento",
       origem: "Modo Prática",
-      acao: "Carga Completa de Dashboard",
-      detalhe: "Geração de movimento contábil completo: Receitas (17k), Despesas (8.5k), Tributos, Baixas Financeiras e Aporte de Capital.",
+      acao: "Carga Completa de Dados",
+      detalhe: "Geração de cenário contábil complexo: Receitas (45k), Despesas (24k), Tributos, Conciliação, DARFs e DRE.",
       competencia
     }, ...(emp.auditoria || [])].slice(0, 400);
     dbTrib[empresaId] = emp;
@@ -237,8 +322,8 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
   } else {
     registrarAuditoria(empresaId, {
       origem: "Modo Prática",
-      acao: "Carga Completa de Dashboard",
-      detalhe: "Geração de movimento contábil completo: Receitas (17k), Despesas (8.5k), Tributos, Baixas Financeiras e Aporte de Capital.",
+      acao: "Carga Completa de Dados",
+      detalhe: "Geração de cenário contábil complexo: Receitas (45k), Despesas (24k), Tributos, Conciliação, DARFs e DRE.",
       competencia
     });
   }
