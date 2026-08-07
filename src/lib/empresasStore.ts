@@ -2,6 +2,7 @@
 // Fonte de verdade: banco de dados na nuvem (tabela `empresas`, por usuário).
 // O localStorage é apenas um cache local para leitura instantânea/offline.
 import { supabase } from "@/integrations/supabase/client";
+import { isPraticaAtiva, loadEmpresasPratica, saveEmpresasPratica } from "./praticaStore";
 
 const CACHE_KEY = "usecontabil.empresas.cache.v1";
 const LEGACY_KEYS = ["usecontabil.empresas.v1", "usecontabil.empresas.backup.v1"];
@@ -36,6 +37,9 @@ function parseList(raw: string | null): EmpresaRecord[] | null {
 }
 
 function lerCacheLocal(): EmpresaRecord[] {
+  if (isPraticaAtiva()) {
+    return loadEmpresasPratica();
+  }
   const atual = parseList(localStorage.getItem(CACHE_KEY));
   if (atual) return atual;
   for (const k of LEGACY_KEYS) {
@@ -55,6 +59,10 @@ let cache: EmpresaRecord[] = (() => {
 
 function gravarCache(list: EmpresaRecord[]) {
   cache = list;
+  if (isPraticaAtiva()) {
+    saveEmpresasPratica(list);
+    return;
+  }
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(list));
   } catch {
@@ -124,6 +132,11 @@ function toRow(rec: EmpresaRecord, uid: string) {
 
 /** Baixa as empresas da nuvem e (na primeira vez) sobe os cadastros locais antigos. */
 export async function sincronizarEmpresas(): Promise<EmpresaRecord[]> {
+  if (isPraticaAtiva()) {
+    cache = lerCacheLocal();
+    notify();
+    return cache;
+  }
   const uid = await userId();
   if (!uid) return cache;
 
@@ -152,6 +165,13 @@ export async function sincronizarEmpresas(): Promise<EmpresaRecord[]> {
 }
 
 export async function saveEmpresa(rec: EmpresaRecord): Promise<EmpresaRecord> {
+  if (isPraticaAtiva()) {
+    const existente = cache.find(e => e.id === rec.id || (soDigitos(e.cnpj) && soDigitos(e.cnpj) === soDigitos(rec.cnpj)));
+    const final = existente ? { ...existente, ...rec } : { ...rec, id: rec.id || crypto.randomUUID(), createdAt: new Date().toISOString() };
+    const list = existente ? cache.map(e => e.id === final.id ? final : e) : [final, ...cache];
+    gravarCache(list);
+    return final;
+  }
   const uid = await userId();
   if (!uid) throw new Error("Faça login para salvar o cadastro na nuvem.");
 
@@ -174,6 +194,10 @@ export async function saveEmpresa(rec: EmpresaRecord): Promise<EmpresaRecord> {
 }
 
 export async function removeEmpresa(id: string): Promise<void> {
+  if (isPraticaAtiva()) {
+    gravarCache(cache.filter((e) => e.id !== id));
+    return;
+  }
   const uid = await userId();
   if (!uid) throw new Error("Faça login para excluir o cadastro.");
   const { error } = await supabase.from("empresas").delete().eq("id", id);

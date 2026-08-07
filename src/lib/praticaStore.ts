@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO, CENARIOS_PRATICA } from "./aprendizado/seedPratica";
 
 const CHAVE_ATIVO = "uc:pratica:ativo";
+const CHAVE_EMPRESAS = "uc:pratica:empresas.v1";
 const EVENTO = "usecontabil:pratica-changed";
 
 // Flags globais reativas
@@ -18,7 +19,26 @@ export function isPraticaAtiva() {
 export function setPraticaAtiva(v: boolean) {
   ativo = v;
   localStorage.setItem(CHAVE_ATIVO, v ? "1" : "0");
-  window.dispatchEvent(new CustomEvent(EVENTO));
+  
+  // Limpa cache de memória de outros stores se necessário via evento
+  window.dispatchEvent(new CustomEvent(EVENTO, { detail: { ativa: v } }));
+}
+
+/**
+ * Funções para gerenciar empresas exclusivas do modo prática (armazenadas apenas localmente).
+ */
+export function loadEmpresasPratica(): any[] {
+  try {
+    const raw = localStorage.getItem(CHAVE_EMPRESAS);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveEmpresasPratica(list: any[]) {
+  localStorage.setItem(CHAVE_EMPRESAS, JSON.stringify(list));
+  window.dispatchEvent(new Event("usecontabil:empresas-changed"));
 }
 
 /**
