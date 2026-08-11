@@ -98,7 +98,7 @@ export default function AssistenteCampos({
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${
-              sess.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+              sess.data.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
             }`,
           },
           body: JSON.stringify({ messages: next, contexto }),

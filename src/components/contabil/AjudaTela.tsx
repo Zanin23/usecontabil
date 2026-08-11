@@ -84,13 +84,10 @@ export default function AjudaTela() {
         },
       });
       if (error) throw error;
-      const resposta =
-        typeof data === "string"
-          ? data
-          : (data?.resposta as string) ?? (data?.content as string) ?? "";
+      const resposta = data?.choices?.[0]?.message?.content || data?.content || data || "";
       setMsgs((m) => [
         ...m,
-        { role: "assistant", content: resposta || "Não consegui responder agora. Tente reformular a pergunta." },
+        { role: "assistant", content: typeof resposta === 'string' ? resposta : "Não consegui responder agora." },
       ]);
     } catch (e) {
       toast.error("Não foi possível consultar a IA agora.");
