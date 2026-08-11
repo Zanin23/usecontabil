@@ -61,8 +61,8 @@ export default function CrudDocumentosFiscais({
   campos, colunas, statusKey, statusOk, valorKey, dataKey, exemplo, indicadoresExtras, dicas,
 }: CrudDocumentosProps) {
   const { empresa } = useEmpresaAtual();
-  const { competencia } = useCompetencia();
-  const docs = useDocsFiscais(slug, empresa?.id, competencia);
+  const { competencia, competenciasNoPeriodo } = useCompetencia();
+  const docs = useDocsFiscais(slug, empresa?.id, competenciasNoPeriodo);
 
   const [query, setQuery] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
@@ -366,7 +366,7 @@ export default function CrudDocumentosFiscais({
             <h1 className="text-2xl font-display leading-tight">{titulo}</h1>
             <p className="text-sm text-muted-foreground max-w-2xl">{descricao}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Competência: <span className="text-brand-orange">{formatCompetencia(competencia)}</span>
+              Competência: <span className="text-brand-orange">{competenciasNoPeriodo.length > 1 ? `${formatCompetencia(competenciasNoPeriodo[0])} até ${formatCompetencia(competenciasNoPeriodo[competenciasNoPeriodo.length - 1])}` : formatCompetencia(competencia)}</span>
               {empresa ? <> · {empresa.razao}</> : null}
             </p>
           </div>
