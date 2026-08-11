@@ -443,7 +443,7 @@ export function resumoPatrimonio(competencia: string | string[]): ResumoPatrimon
   };
 }
 
-export function porGrupo(competencia: string) {
+export function porGrupo(competencia: string | string[]) {
   const mapa = new Map<string, { grupo: string; aquisicao: number; contabil: number; depreciacao: number; qtd: number }>();
   for (const b of bensCalculados(competencia)) {
     if (b.situacao === "Baixado") continue;

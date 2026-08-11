@@ -73,7 +73,7 @@ function LinhaMov({
 
 export default function ConciliacaoBancaria() {
   const { empresa } = useEmpresaAtual();
-  const { competencia } = useCompetencia();
+  const { competencia, competenciasNoPeriodo, isPeriodo, competenciaFim } = useCompetencia();
   const lista = useMemo(() => contas(), []);
   const [contaId, setContaId] = useState(lista[0].id);
   const [tick, setTick] = useState(0);
@@ -88,13 +88,13 @@ export default function ConciliacaoBancaria() {
   }, [refresh]);
 
   const resultados = useMemo(
-    () => lista.map((c) => resultado(c, empresa?.id, competencia)),
+    () => lista.map((c) => resultado(c, empresa?.id, competenciasNoPeriodo)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [lista, empresa, competencia, tick],
+    [lista, empresa, competenciasNoPeriodo, tick],
   );
   const res = resultados.find((r) => r.conta.id === contaId)!;
   const divs = useMemo(() => divergencias(res), [res]);
-  const vinculos = useMemo(() => vinculosDa(contaId, competencia), [contaId, competencia, tick]);
+  const vinculos = useMemo(() => vinculosDa(contaId, competenciasNoPeriodo), [contaId, competenciasNoPeriodo, tick]);
 
   const filtro = (m: Movimento) =>
     !busca ||
@@ -139,7 +139,7 @@ export default function ConciliacaoBancaria() {
           tratamento de divergências e fechamento bloqueado da conta.
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-          <Badge variant="secondary" className="rounded-full">{formatCompetencia(competencia)}</Badge>
+          <Badge variant="secondary" className="rounded-full">{isPeriodo ? `${formatCompetencia(competencia)} até ${formatCompetencia(competenciaFim!)}` : formatCompetencia(competencia)}</Badge>
           <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
           <Button asChild size="sm" variant="outline" className="rounded-full">
             <Link to="/financeiro/operacional">Voltar</Link>

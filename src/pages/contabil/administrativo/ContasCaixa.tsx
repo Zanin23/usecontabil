@@ -210,7 +210,7 @@ function DialogBaixa({
 
 function Carteira({ tipo }: { tipo: TipoTitulo }) {
   const { empresa } = useEmpresaAtual();
-  const { competencia } = useCompetencia();
+  const { competencia, competenciasNoPeriodo, isPeriodo, competenciaFim } = useCompetencia();
   const [tick, setTick] = useState(0);
   const [busca, setBusca] = useState("");
   const [situacao, setSituacao] = useState("todas");
@@ -223,9 +223,9 @@ function Carteira({ tipo }: { tipo: TipoTitulo }) {
   }, [refresh]);
 
   const lista = useMemo(
-    () => carteira(tipo, empresa?.id, competencia),
+    () => carteira(tipo, empresa?.id, competenciasNoPeriodo),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tipo, empresa, competencia, tick],
+    [tipo, empresa, competenciasNoPeriodo, tick],
   );
   const r = useMemo(() => resumo(lista), [lista]);
 
@@ -446,7 +446,7 @@ function Carteira({ tipo }: { tipo: TipoTitulo }) {
 /* ============================ tesouraria ================================= */
 
 function CaixaTesouraria() {
-  const { competencia } = useCompetencia();
+  const { competencia, competenciasNoPeriodo, isPeriodo, competenciaFim } = useCompetencia();
   const [tick, setTick] = useState(0);
   const refresh = useCallback(() => setTick((t) => t + 1), []);
   useEffect(() => {
@@ -454,8 +454,8 @@ function CaixaTesouraria() {
     return () => window.removeEventListener(CONTAS_EVENT, refresh);
   }, [refresh]);
 
-  const contas = useMemo(() => saldos(competencia), [competencia, tick]);
-  const [contaId, setContaId] = useState(contas[0].id);
+  const contas = useMemo(() => saldos(competenciasNoPeriodo), [competenciasNoPeriodo, tick]);
+  const [contaId, setContaId] = useState(contas[0]?.id);
   const conta = contas.find((c) => c.id === contaId)!;
   const total = contas.reduce((a, c) => a + c.saldo, 0);
   const disponivel = contas.filter((c) => c.tipo !== "Cartão").reduce((a, c) => a + c.saldo, 0);
@@ -604,7 +604,7 @@ function CaixaTesouraria() {
 
 function FluxoCaixa() {
   const { empresa } = useEmpresaAtual();
-  const { competencia } = useCompetencia();
+  const { competencia, competenciasNoPeriodo } = useCompetencia();
   const [tick, setTick] = useState(0);
   const [semanas, setSemanas] = useState("8");
   const refresh = useCallback(() => setTick((t) => t + 1), []);
@@ -614,11 +614,11 @@ function FluxoCaixa() {
   }, [refresh]);
 
   const dados = useMemo(
-    () => fluxo(empresa?.id, competencia, Number(semanas)),
+    () => fluxo(empresa?.id, competenciasNoPeriodo, Number(semanas)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [empresa, competencia, semanas, tick],
+    [empresa, competenciasNoPeriodo, semanas, tick],
   );
-  const saldoAtual = useMemo(() => saldos(competencia).reduce((a, c) => a + c.saldo, 0), [competencia, tick]);
+  const saldoAtual = useMemo(() => saldos(competenciasNoPeriodo).reduce((a, c) => a + c.saldo, 0), [competenciasNoPeriodo, tick]);
   const pior = dados.reduce((min, s) => (s.acumulado < min.acumulado ? s : min), dados[0]);
   const entradas = dados.reduce((a, s) => a + s.entradas, 0);
   const saidas = dados.reduce((a, s) => a + s.saidas, 0);
@@ -732,7 +732,7 @@ function FluxoCaixa() {
 
 function Cobranca() {
   const { empresa } = useEmpresaAtual();
-  const { competencia } = useCompetencia();
+  const { competencia, competenciasNoPeriodo, isPeriodo, competenciaFim } = useCompetencia();
   const [tick, setTick] = useState(0);
   const refresh = useCallback(() => setTick((t) => t + 1), []);
   useEffect(() => {
@@ -741,9 +741,9 @@ function Cobranca() {
   }, [refresh]);
 
   const lista = useMemo(
-    () => inadimplentes(empresa?.id, competencia),
+    () => inadimplentes(empresa?.id, competenciasNoPeriodo),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [empresa, competencia, tick],
+    [empresa, competenciasNoPeriodo, tick],
   );
   const [alvo, setAlvo] = useState<string | null>(null);
   const [obs, setObs] = useState("");

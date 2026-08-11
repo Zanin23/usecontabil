@@ -171,10 +171,10 @@ export function setObrEstado(
   return db[k];
 }
 
-export function useObrEstado(obr: ObrSlug, empresaId?: string | null, competencia?: string) {
-  const [estado, setLocal] = useState<ObrEstado>(() => getObrEstado(obr, empresaId, competencia));
+export function useObrEstado(obr: ObrSlug, empresaId?: string | null, competencia?: string | string[]) {
+  const [estado, setLocal] = useState<ObrEstado>(() => getObrEstado(obr, empresaId, Array.isArray(competencia) ? competencia[competencia.length - 1] : competencia));
   useEffect(() => {
-    const sync = () => setLocal(getObrEstado(obr, empresaId, competencia));
+    const sync = () => setLocal(getObrEstado(obr, empresaId, Array.isArray(competencia) ? competencia[competencia.length - 1] : competencia));
     sync();
     window.addEventListener(OBRIGACOES_EVENT, sync);
     window.addEventListener("storage", sync);

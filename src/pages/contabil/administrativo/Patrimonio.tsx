@@ -508,7 +508,7 @@ function DialogBenfeitoria({ bem, onClose }: { bem: BemCalculado; onClose: () =>
 
 function Bens() {
   useRefresh();
-  const { competencia } = useCompetencia();
+  const { competencia, competenciasNoPeriodo, isPeriodo, competenciaFim } = useCompetencia();
   const [busca, setBusca] = useState("");
   const [grupo, setGrupo] = useState("todos");
   const [situacao, setSituacao] = useState("ativos");
@@ -518,9 +518,9 @@ function Bens() {
   const [benfeitoria, setBenfeitoria] = useState<BemCalculado | null>(null);
   const [aberto, setAberto] = useState<string | null>(null);
 
-  const lista = useMemo(() => bensCalculados(competencia), [competencia]);
-  const resumo = useMemo(() => resumoPatrimonio(competencia), [competencia]);
-  const grupos = useMemo(() => porGrupo(competencia), [competencia]);
+  const lista = useMemo(() => bensCalculados(competenciasNoPeriodo), [competenciasNoPeriodo]);
+  const resumo = useMemo(() => resumoPatrimonio(competenciasNoPeriodo), [competenciasNoPeriodo]);
+  const grupos = useMemo(() => porGrupo(competenciasNoPeriodo), [competenciasNoPeriodo]);
 
   const filtrados = lista.filter((b) => {
     if (grupo !== "todos" && b.grupo !== grupo) return false;
