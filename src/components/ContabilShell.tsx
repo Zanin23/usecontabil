@@ -27,7 +27,7 @@ const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 
 
 export default function ContabilShell() {
-  const { competencia, setCompetencia } = useCompetencia();
+  const { competencia, setCompetencia, competenciaFim, setCompetenciaFim, isPeriodo } = useCompetencia();
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
   useTema();
   const { prefs } = usePreferencias();

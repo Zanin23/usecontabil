@@ -117,7 +117,7 @@ export function formatarChave(chave: string) {
 
 /* ------------------------------- react hook ------------------------------ */
 
-export function useDocsFiscais(slug: DocSlug, empresaId?: string | null, competencia?: string) {
+export function useDocsFiscais(slug: DocSlug, empresaId?: string | null, competencia?: string | string[]) {
   const [docs, setDocs] = useState<DocFiscal[]>(() => loadDocs(slug));
 
   useEffect(() => {
@@ -134,6 +134,6 @@ export function useDocsFiscais(slug: DocSlug, empresaId?: string | null, compete
   return docs.filter(
     (d) =>
       (!empresaId || d.empresaId === empresaId) &&
-      (!competencia || d.competencia === competencia),
+      (!competencia || (Array.isArray(competencia) ? competencia.includes(d.competencia) : d.competencia === competencia)),
   );
 }
