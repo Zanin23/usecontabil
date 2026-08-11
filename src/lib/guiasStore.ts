@@ -394,8 +394,9 @@ export const GRUPOS = [
 ];
 
 export const economiaCompensacoes = (empresaId: string | null) => 0;
-export const renegociar = (id: string) => {};
-export const salvarParcelamento = (p: any) => {};
+export const renegociar = (id: string | any, novas?: number) => {};
+export const salvarParcelamento = (p: any, msg?: string) => {};
+
 export const EventoCalendario = "calendario_change";
 export type EventoCalendario = { id: string; data: string; label: string; prioridade: string; titulo: string; valor: string; dias: number; status: string; detalhe?: string; responsavel?: string };
 
