@@ -29,6 +29,13 @@ export type Ajuste = {
   criadoEm: string;
 };
 
+export function getConfig() {
+  return { antecipaFimDeSemana: true, notificar: true };
+}
+
+export function setConfig(cfg: any) {}
+
+
 export type LogEntry = {
   id: string;
   em: string;
@@ -165,15 +172,16 @@ const OK_POR_SLUG: Partial<Record<DocSlug, string>> = {
   cupons: "Consolidado",
 };
 
-export function docsDoPeriodo(slug: DocSlug, empresaId?: string | null, competencia?: string) {
+export function docsDoPeriodo(slug: DocSlug, empresaId?: string | null, competencia?: string | string[]) {
+  const comps = Array.isArray(competencia) ? competencia : [competencia];
   return loadDocs(slug).filter(
     (d) =>
       (!empresaId || d.empresaId === empresaId) &&
-      (!competencia || d.competencia === competencia),
+      (!competencia || comps.includes(d.competencia)),
   );
 }
 
-export function docsValidos(slug: DocSlug, empresaId?: string | null, competencia?: string) {
+export function docsValidos(slug: DocSlug, empresaId?: string | null, competencia?: string | string[]) {
   const ok = OK_POR_SLUG[slug];
   return docsDoPeriodo(slug, empresaId, competencia).filter((d) => !ok || d.status === ok);
 }

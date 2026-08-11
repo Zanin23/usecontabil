@@ -16,10 +16,11 @@ import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import GuiaPainel, { corStatus } from "@/components/contabil/GuiaPainel";
 import {
   FLUXO, alertas, auditoriaDoGrupo, brl, calendario, conciliarRetornoBancario,
-  dataBR, emitirGuia, etapaDoGrupo, getConfig, grupoDe, kpisDe, listarCompensacoes,
-  listarParcelamentos, detalharParcelamento, resumoGuias, setConfig, useGuias,
-  validarGrupo, type Guia, type GrupoSlug,
+  dataBR, emitirGuia, etapaDoGrupo, grupoDe, kpisDe, listarCompensacoes,
+  listarParcelamentos, detalharParcelamento, resumoGuias, useGuias,
+  validarGrupo, pendenciasGuias, type Guia, type GrupoSlug,
 } from "@/lib/guiasStore";
+import { getConfig, setConfig } from "@/lib/apuracaoStore";
 
 const ABAS: [string, string][] = [
   ["resumo", "Resumo"], ["guias", "Guias"], ["pagamentos", "Pagamentos"],
@@ -97,7 +98,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
           <Button
             className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
             onClick={() => {
-              guias.filter((g) => !g.emitida).forEach(emitirGuia);
+              guias.filter((g) => !g.emitida).forEach((g) => emitirGuia(g, "Sistema"));
               toast.success("Guias emitidas com código de barras e PIX");
             }}
           >

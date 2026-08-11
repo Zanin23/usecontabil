@@ -131,9 +131,10 @@ const HISTORICOS: Array<[string, TipoMov, string]> = [
 ];
 
 /** Gera extrato bancário e razão contábil com divergências plausíveis. */
-export function movimentos(contaId: string, empresaId: string | null | undefined, competencia: string) {
-  const r = rng(`${contaId}|${empresaId ?? "grupo"}|${competencia}`);
-  const [y, m] = competencia.split("-").map(Number);
+export function movimentos(contaId: string, empresaId: string | null | undefined, competencia: string | string[]) {
+  const compRef = Array.isArray(competencia) ? competencia[competencia.length - 1] : (competencia || "");
+  const r = rng(`${contaId}|${empresaId ?? "grupo"}|${compRef}`);
+  const [y, m] = compRef.split("-").map(Number);
   const diasNoMes = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
   const qtd = 18 + Math.floor(r() * 10);
 
@@ -193,11 +194,12 @@ export const saldoDe = (movs: Movimento[]) =>
 
 /* ------------------------------------------------------------- vínculos */
 
-export function vinculosDa(contaId: string, competencia: string) {
-  return ler().vinculos.filter((v) => v.contaId === contaId && v.competencia === competencia);
+export function vinculosDa(contaId: string, competencia: string | string[]) {
+  const comps = Array.isArray(competencia) ? competencia : [competencia];
+  return ler().vinculos.filter((v) => v.contaId === contaId && comps.includes(v.competencia));
 }
 
-export function idsConciliados(contaId: string, competencia: string) {
+export function idsConciliados(contaId: string, competencia: string | string[]) {
   const vs = vinculosDa(contaId, competencia);
   return {
     extrato: new Set(vs.flatMap((v) => v.extratoIds)),
@@ -307,7 +309,7 @@ export type ResultadoConta = {
 export function resultado(
   conta: ContaBancaria,
   empresaId: string | null | undefined,
-  competencia: string,
+  competencia: string | string[],
 ): ResultadoConta {
   const { extrato, contabil } = movimentos(conta.id, empresaId, competencia);
   const ids = idsConciliados(conta.id, competencia);
@@ -317,7 +319,8 @@ export function resultado(
   const saldoContabil = saldoDe(contabil);
   const total = extrato.length + contabil.length;
   const conciliados = ids.extrato.size + ids.contabil.size;
-  const fechada = Boolean(ler().fechamentos[`${conta.id}|${competencia}`]);
+  const comps = Array.isArray(competencia) ? competencia : [competencia];
+  const fechada = comps.some(c => Boolean(ler().fechamentos[`${conta.id}|${c}`]));
   const percentual = total ? Math.round((conciliados / total) * 100) : 0;
   const diferenca = Math.round((saldoBanco - saldoContabil) * 100) / 100;
 

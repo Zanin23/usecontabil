@@ -272,8 +272,12 @@ export function calcular(t: Titulo, ref = hojeISO(), todas = baixas()): TituloCa
 
 export function carteira(tipo: TipoTitulo, empresaId?: string, competencia?: string | string[], ref = hojeISO()) {
   const todas = baixas();
-  const compRef = competencia || "2026-07";
-  return titulos(tipo, empresaId || "geral", compRef).map((t) => calcular(t, ref, todas));
+  const comps = Array.isArray(competencia) ? competencia : [competencia || "2026-07"];
+  const list: Titulo[] = [];
+  comps.forEach(c => {
+    list.push(...titulos(tipo, empresaId || "geral", c));
+  });
+  return list.map((t) => calcular(t, ref, todas));
 }
 
 export type ResumoCarteira = {
@@ -385,9 +389,10 @@ export type SaldoConta = ContaTesouraria & {
 export function saldos(competencia: string | string[] = "2026-07"): SaldoConta[] {
   const bx = baixas();
   const manuais = movimentosManuais();
+  const comps = Array.isArray(competencia) ? competencia : [competencia];
   const tits = new Map<string, Titulo>();
   (["pagar", "receber"] as TipoTitulo[]).forEach((tp) =>
-    titulos(tp, "geral", competencia).forEach((t) => tits.set(t.id, t)),
+    comps.forEach(c => titulos(tp, "geral", c).forEach((t) => tits.set(t.id, t)))
   );
 
   return CONTAS_TESOURARIA.map((c) => {
@@ -397,7 +402,7 @@ export function saldos(competencia: string | string[] = "2026-07"): SaldoConta[]
         const t = tits.get(b.tituloId);
         const entrada = b.tituloId.startsWith("AR");
         return {
-          id: b.id,
+          id: b.id, competencia: b.data.slice(0, 7),
           contaId: c.id,
           data: b.data,
           historico: `${entrada ? "Recebimento" : "Pagamento"} ${t?.numero || b.tituloId} · ${t?.parceiro || "—"}`,
@@ -405,9 +410,13 @@ export function saldos(competencia: string | string[] = "2026-07"): SaldoConta[]
           valor: round(b.valor + b.juros + b.multa - b.desconto),
           origem: "Baixa de título",
         } as MovimentoCaixa;
-      });
-    const movimentos = [...doBaixas, ...manuais.filter((m) => m.contaId === c.id)]
-      .sort((a, b) => b.data.localeCompare(a.data));
+      })
+      .filter(m => comps.includes(m.data.slice(0, 7)));
+
+    const doManuais: MovimentoCaixa[] = manuais
+      .filter((m) => m.contaId === c.id && comps.includes(m.data.slice(0, 7)));
+
+    const movimentos = [...doBaixas, ...doManuais].sort((a, b) => b.data.localeCompare(a.data));
     const entradas = round(movimentos.filter((m) => m.tipo === "Entrada").reduce((a, m) => a + m.valor, 0));
     const saidas = round(movimentos.filter((m) => m.tipo === "Saída").reduce((a, m) => a + m.valor, 0));
     return { ...c, entradas, saidas, saldo: round(c.saldoInicial + entradas - saidas), movimentos };
@@ -482,7 +491,7 @@ export type Inadimplente = {
   ultimaAcao?: AcaoCobranca;
 };
 
-export function inadimplentes(empresaId?: string, competencia?: string, ref = hojeISO()): Inadimplente[] {
+export function inadimplentes(empresaId?: string, competencia?: string | string[], ref = hojeISO()): Inadimplente[] {
   const lista = carteira("receber", empresaId, competencia, ref).filter((t) => t.saldo > 0 && t.diasAtraso > 0);
   const hist = acoes();
   const mapa = new Map<string, TituloCalculado[]>();

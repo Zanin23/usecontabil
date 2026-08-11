@@ -10,10 +10,10 @@ import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import {
   GRUPOS, alertas, brl, calendario, dataBR, diasEntre, economiaCompensacoes,
-  hojeISO, resumoGuias, resumoParcelamentos, useGuias, type GrupoSlug,
+  hojeISO, resumoGuias, resumoParcelamentos, useGuias, type GrupoSlug, type EventoCalendario,
 } from "@/lib/guiasStore";
 
-const ICONES: Record<GrupoSlug, LucideIcon> = {
+const ICONES: Partial<Record<GrupoSlug, LucideIcon>> = {
   darf: Banknote,
   estaduais: Landmark,
   parcelamentos: HandCoins,
@@ -42,7 +42,7 @@ export default function GuiasHub() {
   const rFed = resumoGuias(federais);
   const rEst = resumoGuias(estaduais);
   const parc = resumoParcelamentos(empresa?.id);
-  const eventos = calendario(empresa?.id, competencia);
+  const eventos = calendario(empresa?.id, competencia) as EventoCalendario[];
   const avisos = alertas(empresa?.id, competencia);
 
   const doDia = eventos.filter((e) => e.data === hoje).length;
@@ -58,10 +58,10 @@ export default function GuiasHub() {
     { label: "Próximas do vencimento", valor: String(rTotal.proximas) },
     { label: "Multas acumuladas", valor: brl(rTotal.multa), destaque: rTotal.multa > 0 },
     { label: "Juros acumulados", valor: brl(rTotal.juros), destaque: rTotal.juros > 0 },
-    { label: "Economia por compensações", valor: brl(economiaCompensacoes(empresa?.id, competencia)) },
+    { label: "Economia por compensações", valor: brl(economiaCompensacoes(empresa?.id)) },
   ];
 
-  const indicadoresPorGrupo: Record<GrupoSlug, { label: string; valor: string; hint?: string; destaque?: boolean }[]> = {
+  const indicadoresPorGrupo: Partial<Record<GrupoSlug, { label: string; valor: string; hint?: string; destaque?: boolean }[]>> = {
     darf: [
       { label: "Emitidas", valor: String(rFed.emitidas) },
       { label: "Pagas", valor: String(rFed.pagas) },
@@ -70,7 +70,7 @@ export default function GuiasHub() {
       { label: "Valor total", valor: brl(rFed.valorTotal) },
       { label: "Multas", valor: brl(rFed.multa) },
       { label: "Juros", valor: brl(rFed.juros) },
-      { label: "Compensações", valor: brl(economiaCompensacoes(empresa?.id, competencia)) },
+      { label: "Compensações", valor: brl(economiaCompensacoes(empresa?.id)) },
     ],
     estaduais: [
       { label: "Guias estaduais", valor: String(estaduais.length) },
@@ -92,11 +92,11 @@ export default function GuiasHub() {
       { label: "Tributos do mês", valor: String(eventos.length) },
       { label: "Guias atrasadas", valor: String(atrasadas), destaque: atrasadas > 0 },
       { label: "Guias do dia", valor: String(doDia) },
-      { label: "Pendências da empresa", valor: String(avisos.filter((a) => a.nivel === "crítico").length) },
+      { label: "Pendências da empresa", valor: String(avisos.length) },
     ],
   };
 
-  const rotas: Record<GrupoSlug, string> = {
+  const rotas: Partial<Record<GrupoSlug, string>> = {
     darf: "/fiscal/guias/darf",
     estaduais: "/fiscal/guias/estaduais",
     parcelamentos: "/fiscal/guias/parcelamentos",
@@ -153,9 +153,10 @@ export default function GuiasHub() {
       </Card>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        {GRUPOS.map((g) => {
-          const Icone = ICONES[g.slug];
-          const inds = indicadoresPorGrupo[g.slug];
+        {GRUPOS.map((g: any) => {
+          const rota = rotas[g.slug as GrupoSlug] || "#";
+          const Icone = ICONES[g.slug] || Banknote;
+          const inds = indicadoresPorGrupo[g.slug] || [];
           return (
             <Card key={g.slug} className="rounded-3xl border-border/70 transition-shadow hover:shadow-card">
               <CardContent className="space-y-4 p-6">
