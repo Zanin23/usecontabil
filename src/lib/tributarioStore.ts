@@ -626,6 +626,11 @@ export function processarDocumento(doc: DocumentoFiscal, empresaId: string): Doc
 export function salvarDocumento(empresaId: string, doc: DocumentoFiscal, acao = "Documento salvo") {
   const db = empresaDB(empresaId);
   const processado = processarDocumento(doc, empresaId);
+  // Garante que o documento tenha a competência correta baseada na data de emissão se não estiver definida
+  if (!processado.competencia && processado.emissao) {
+    const [y, m] = processado.emissao.split("-");
+    if (y && m) processado.competencia = `${y}-${m.padStart(2, "0")}`;
+  }
   const evento: EventoDoc = { id: novoId("ev"), data: new Date().toISOString(), usuario: usuarioAtual(), acao };
   const comEvento = { ...processado, eventos: [evento, ...(processado.eventos ?? [])] };
   const idx = db.documentos.findIndex((d) => d.id === doc.id);
