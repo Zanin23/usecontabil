@@ -200,7 +200,7 @@ export default function CalendarioFiscal() {
             </CardContent>
           </Card>
 
-          <AssistenteFechamento />
+          <AssistenteFechamento contexto={{ eventos }} resumo="Análise do calendário fiscal e próximos vencimentos." />
         </div>
       </div>
     </div>
