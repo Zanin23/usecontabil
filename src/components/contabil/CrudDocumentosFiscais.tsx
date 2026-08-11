@@ -125,6 +125,7 @@ export default function CrudDocumentosFiscais({
     if (comp !== competencia) {
       toast.warning(
         `Documento registrado na competência ${formatCompetencia(comp)} — troque o período para visualizá-lo.`,
+        { duration: 5000 }
       );
     }
     saveDoc(slug, {
@@ -315,7 +316,15 @@ export default function CrudDocumentosFiscais({
           }
         }
 
-        toast.success(`Nota ${novoDoc.numero} importada com sucesso!`);
+        const compNota = novoDoc.competencia;
+        if (compNota !== competencia) {
+          toast.warning(`Nota ${novoDoc.numero} importada para a competência ${formatCompetencia(compNota)}. Troque o período para visualizá-la.`, {
+            duration: 6000,
+            description: "A nota não aparece na lista atual porque pertence a outro mês/ano."
+          });
+        } else {
+          toast.success(`Nota ${novoDoc.numero} importada com sucesso!`);
+        }
       } catch (err: any) {
         console.error("XML Import Error:", err);
         toast.error(err.message || "Falha ao processar XML: formato inválido.");
