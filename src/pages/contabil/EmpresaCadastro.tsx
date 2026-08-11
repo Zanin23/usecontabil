@@ -176,7 +176,7 @@ async function fetchCnpj(cnpj: string) {
   if (d.length !== 14) throw new Error("CNPJ inválido");
   
   try {
-    const r = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${d}`);
+    const r = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${d}`, { mode: 'cors' });
     
     if (r.status === 404) throw new Error("CNPJ não encontrado na base pública.");
     if (!r.ok) throw new Error(`Erro na consulta (Status: ${r.status})`);
@@ -199,7 +199,7 @@ async function fetchCep(cep: string) {
   if (d.length !== 8) throw new Error("CEP inválido");
   
   try {
-    const r = await fetch(`https://brasilapi.com.br/api/cep/v2/${d}`);
+    const r = await fetch(`https://brasilapi.com.br/api/cep/v2/${d}`, { mode: 'cors' });
     if (r.status === 404) throw new Error("CEP não encontrado.");
     if (!r.ok) throw new Error(`Erro na consulta (Status: ${r.status})`);
     return await r.json();

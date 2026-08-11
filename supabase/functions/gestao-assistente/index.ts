@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        model: "google/gemini-3.6-flash",
+        model: "gpt-4o-mini",
         stream: true,
         messages: [
           { role: "system", content: SYSTEM },
