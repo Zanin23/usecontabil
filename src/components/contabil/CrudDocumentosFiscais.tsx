@@ -358,7 +358,7 @@ export default function CrudDocumentosFiscais({
               <input
                 type="file"
                 accept=".xml"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-[100] block"
                 onChange={processarXml}
                 title="Selecionar arquivo XML real"
               />
