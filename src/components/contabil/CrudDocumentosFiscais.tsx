@@ -164,14 +164,16 @@ export default function CrudDocumentosFiscais({
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(text, "text/xml");
 
-        // Tenta encontrar a tag raiz (nfeProc ou NFe)
-        const nfeNode = xmlDoc.getElementsByTagName("infNFe")[0];
-        if (!nfeNode) {
-          // Fallback para outros tipos de documentos fiscais ou estrutura diferente
-          const rootNode = xmlDoc.documentElement;
-          if (!rootNode || rootNode.nodeName === "parsererror") {
-            throw new Error("Arquivo XML inválido ou mal formatado.");
-          }
+        // Verifica erro de parse
+        const parseError = xmlDoc.getElementsByTagName("parsererror")[0];
+        if (parseError) {
+          throw new Error("Erro ao ler XML: formato inválido.");
+        }
+
+        // Tenta encontrar a tag raiz da NF-e (infNFe)
+        const infNFe = xmlDoc.getElementsByTagName("infNFe")[0];
+        if (!infNFe) {
+          throw new Error("Este arquivo não parece ser uma NF-e válida (falta tag <infNFe>).");
         }
 
         const ide = xmlDoc.getElementsByTagName("ide")[0];
@@ -183,126 +185,136 @@ export default function CrudDocumentosFiscais({
         // Mapeamento de dados
         const isEntrada = slug === "entradas" || slug === "servicos-tomados" || slug === "transporte";
         
-        // Na NF-e de entrada (compra), o emissor é o fornecedor externo e o destinatário é a nossa empresa.
+        // Na NF-e de entrada (compra), o emissor é o fornecedor e o destinatário é a nossa empresa.
         // Na NF-e de saída (venda), o emissor é a nossa empresa e o destinatário é o cliente.
         const partNode = isEntrada ? emit : dest;
 
-        const dataOriginal = ide?.getElementsByTagName("dhEmi")[0]?.textContent || ide?.getElementsByTagName("dEmi")[0]?.textContent || "";
-        const dataFormatada = dataOriginal 
-          ? (dataOriginal.includes("-") 
-              ? `${dataOriginal.substring(8, 10)}/${dataOriginal.substring(5, 7)}/${dataOriginal.substring(0, 4)}`
-              : dataOriginal)
+        // Extração de dados robusta
+        const getTag = (parent: Element | Document | undefined, tagName: string) => 
+          parent?.getElementsByTagName(tagName)[0]?.textContent || "";
+
+        const nNF = getTag(ide, "nNF");
+        const serie = getTag(ide, "serie") || "1";
+        const dhEmi = getTag(ide, "dhEmi") || getTag(ide, "dEmi");
+        const natOp = getTag(ide, "natOp");
+        
+        const dataFormatada = dhEmi 
+          ? (dhEmi.includes("-") 
+              ? `${dhEmi.substring(8, 10)}/${dhEmi.substring(5, 7)}/${dhEmi.substring(0, 4)}`
+              : dhEmi)
           : primeiroDia(competencia);
 
-        const vNF = totalNode?.getElementsByTagName("vNF")[0]?.textContent || 
-                    xmlDoc.getElementsByTagName("vNF")[0]?.textContent || "0.00";
-        const vICMS = totalNode?.getElementsByTagName("vICMS")[0]?.textContent || 
-                      xmlDoc.getElementsByTagName("vICMS")[0]?.textContent || "0.00";
-        const vBC = totalNode?.getElementsByTagName("vBC")[0]?.textContent || 
-                    xmlDoc.getElementsByTagName("vBC")[0]?.textContent || "0.00";
+        const vNF = getTag(totalNode, "vNF") || getTag(xmlDoc, "vNF") || "0.00";
+        const vICMS = getTag(totalNode, "vICMS") || getTag(xmlDoc, "vICMS") || "0.00";
+        const vBC = getTag(totalNode, "vBC") || getTag(xmlDoc, "vBC") || "0.00";
 
-        // Captura CFOP da primeira tag det/prod se disponível
+        const nomePart = getTag(partNode, "xNome") || "Participante Desconhecido";
+        const cnpjPart = getTag(partNode, "CNPJ") || getTag(partNode, "CPF") || "";
+        const chave = getTag(prot, "chNFe") || getTag(xmlDoc, "chNFe") || chaveFicticia();
+
+        // CFOP e NCM da primeira tag det/prod
         const firstProd = xmlDoc.getElementsByTagName("prod")[0];
-        const cfopXml = firstProd?.getElementsByTagName("CFOP")[0]?.textContent || "";
+        const cfopXml = getTag(firstProd, "CFOP");
+        const ncmXml = getTag(firstProd, "NCM");
 
         const novoDoc: DocFiscal = {
           id: novoDocId(prefixoId),
           empresaId: empresa.id,
           competencia: competenciaDaData(dataFormatada) || competencia,
-          numero: ide?.getElementsByTagName("nNF")[0]?.textContent || "0",
-          serie: ide?.getElementsByTagName("serie")[0]?.textContent || "1",
-          chave: prot?.getElementsByTagName("chNFe")[0]?.textContent || 
-                 xmlDoc.getElementsByTagName("chNFe")[0]?.textContent || 
-                 chaveFicticia(),
+          numero: nNF || "0",
+          serie: serie,
+          chave: chave,
           data: dataFormatada,
-          participante: partNode?.getElementsByTagName("xNome")[0]?.textContent || "Participante desconhecido",
-          cnpj: partNode?.getElementsByTagName("CNPJ")[0]?.textContent || partNode?.getElementsByTagName("CPF")[0]?.textContent || "",
+          participante: nomePart,
+          cnpj: cnpjPart,
           valor: moedaBR(Number(vNF)),
           baseIcms: moedaBR(Number(vBC)),
           icms: moedaBR(Number(vICMS)),
           cfop: cfopXml,
-          tipo: ide?.getElementsByTagName("natOp")[0]?.textContent || "Importação XML",
+          tipo: natOp || "Importação XML",
           status: statusOk,
-          observacao: "Documento importado via processamento de arquivo XML real.",
+          observacao: `Importado em ${new Date().toLocaleDateString()} - Chave: ${chave}`,
         };
 
         // Salva no banco de dados fiscal
         saveDoc(slug, novoDoc);
 
-        // Se for uma nota de entrada ou saída, vamos refletir também no faturamento/movimentação financeira
-        // para que apareça no Dashboard e nos relatórios de faturamento
+        // Integração com o módulo financeiro/tributário
         if (slug === "entradas" || slug === "saidas") {
-          const { salvarDocumento, processarDocumento, novoId: novoIdTributario } = await import("@/lib/tributarioStore");
-          
-          const grupo = slug === "entradas" ? "demais" : "faturamento";
-          const tipo = slug === "entradas" ? "Nota de entrada" : "NF-e";
-          
-          const docTributario = processarDocumento({
-            id: novoIdTributario("xml"),
-            empresaId: empresa.id,
-            competencia: novoDoc.competencia,
-            grupo: grupo as any,
-            tipo: tipo as any,
-            numero: novoDoc.numero,
-            serie: novoDoc.serie,
-            emissao: novoDoc.data.split("/").reverse().join("-"),
-            participante: novoDoc.participante,
-            participanteDoc: novoDoc.cnpj || "",
-            ufOrigem: (isEntrada ? "EX" : "SP") as any, 
-            ufDestino: (isEntrada ? "SP" : "EX") as any,
-            contribuinte: true,
-            consumidorFinal: false,
-            regime: empresa.regime || "Lucro Presumido",
-            itens: [{
-              id: "item-1",
-              descricao: "Item importado via XML",
-              tipo: "produto",
-              quantidade: 1,
-              unitario: Number(vNF),
-              cfop: cfopXml,
-              ncm: xmlDoc.getElementsByTagName("NCM")[0]?.textContent || ""
-            }],
-            valorProdutos: Number(vNF),
-            valorTotal: Number(vNF),
-            status: "Autorizado",
-            chave: novoDoc.chave,
-            tributos: {
-              icms: Number(vICMS),
-              icmsSt: 0,
-              difal: 0,
-              fcp: 0,
-              ipi: 0,
-              pis: 0,
-              cofins: 0,
-              iss: 0,
-              irrf: 0,
-              inss: 0,
-              csll: 0,
-              retencoes: 0,
-              total: Number(vICMS)
-            },
-            memoria: [],
-            regrasAplicadas: ["Importação XML"],
-            alertas: [],
-            eventos: [{
-              id: "ev-1",
-              data: new Date().toISOString(),
-              usuario: "Sistema",
-              acao: "Importação XML"
-            }]
-          }, empresa.id);
+          try {
+            const { salvarDocumento, processarDocumento, novoId: novoIdTributario } = await import("@/lib/tributarioStore");
+            
+            const grupo = slug === "entradas" ? "demais" : "faturamento";
+            const tipo = slug === "entradas" ? "Nota de entrada" : "NF-e";
+            
+            const docTributario = processarDocumento({
+              id: novoIdTributario("xml"),
+              empresaId: empresa.id,
+              competencia: novoDoc.competencia,
+              grupo: grupo as any,
+              tipo: tipo as any,
+              numero: novoDoc.numero,
+              serie: novoDoc.serie,
+              emissao: novoDoc.data.split("/").reverse().join("-"),
+              participante: novoDoc.participante,
+              participanteDoc: novoDoc.cnpj || "",
+              ufOrigem: (isEntrada ? "EX" : "SP") as any, 
+              ufDestino: (isEntrada ? "SP" : "EX") as any,
+              contribuinte: true,
+              consumidorFinal: false,
+              regime: empresa.regime || "Lucro Presumido",
+              itens: [{
+                id: "item-1",
+                descricao: `Produto(s) da Nota ${novoDoc.numero}`,
+                tipo: "produto",
+                quantidade: 1,
+                unitario: Number(vNF),
+                cfop: cfopXml,
+                ncm: ncmXml
+              }],
+              valorProdutos: Number(vNF),
+              valorTotal: Number(vNF),
+              status: "Autorizado",
+              chave: novoDoc.chave,
+              tributos: {
+                icms: Number(vICMS),
+                icmsSt: 0,
+                difal: 0,
+                fcp: 0,
+                ipi: 0,
+                pis: 0,
+                cofins: 0,
+                iss: 0,
+                irrf: 0,
+                inss: 0,
+                csll: 0,
+                retencoes: 0,
+                total: Number(vICMS)
+              },
+              memoria: [],
+              regrasAplicadas: ["Importação XML"],
+              alertas: [],
+              eventos: [{
+                id: "ev-1",
+                data: new Date().toISOString(),
+                usuario: "Sistema",
+                acao: "Importação XML"
+              }]
+            }, empresa.id);
 
-          salvarDocumento(empresa.id, docTributario, "Importado via XML Fiscal");
+            salvarDocumento(empresa.id, docTributario, "Importado via XML Fiscal");
+          } catch (stErr) {
+            console.warn("Erro ao integrar com tributarioStore:", stErr);
+          }
         }
 
-        toast.success(`XML da nota ${novoDoc.numero} importado com sucesso!`);
-      } catch (err) {
-        console.error(err);
-        toast.error("Falha ao processar XML: verifique se o arquivo é uma NF-e válida.");
+        toast.success(`Nota ${novoDoc.numero} importada com sucesso!`);
+      } catch (err: any) {
+        console.error("XML Import Error:", err);
+        toast.error(err.message || "Falha ao processar XML: formato inválido.");
       }
     };
     reader.readAsText(file);
-    // Limpa o input para permitir re-importar o mesmo arquivo
     e.target.value = "";
   };
 
@@ -346,7 +358,7 @@ export default function CrudDocumentosFiscais({
               <input
                 type="file"
                 accept=".xml"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-[100] block"
                 onChange={processarXml}
                 title="Selecionar arquivo XML real"
               />

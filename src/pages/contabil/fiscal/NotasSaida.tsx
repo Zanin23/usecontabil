@@ -15,7 +15,7 @@ export default function NotasSaida() {
       slug="saidas"
       prefixoId="NFE-S"
       labelNovo="Nova nota"
-      labelImportar="Importar lote"
+      labelImportar="Importar XML"
       dataKey="data"
       statusKey="status"
       statusOk="Autorizada"
