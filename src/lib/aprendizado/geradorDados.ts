@@ -5,10 +5,10 @@
  */
 import { saveEmpresa, novoId, registrarAuditoria, empresaDB, TRIBUTARIO_EVENT } from "@/lib/tributarioStore";
 import { saveDocs, novoDocId, moedaBR, chaveFicticia, FISCAL_EVENT } from "@/lib/fiscalStore";
-import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS_BASE, lancarMovimento, CONTAS_EVENT } from "@/lib/contasCaixaStore";
+import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS_BASE, lancarMovimento, CONTAS_EVENT, loadMovimentos } from "@/lib/contasCaixaStore";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO } from "./seedPratica";
 
-export function popularDadosPratica(empresaId: string, competencia: string, forcePratica = false) {
+export async function popularDadosPratica(empresaId: string, competencia: string, forcePratica = false) {
   if (!empresaId) return;
 
   const [ano, mes] = competencia.split("-").map(Number);
@@ -253,8 +253,9 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
     // Filtra movimentos da competência atual para não duplicar se rodar de novo
     const movsFiltrados = movs.filter((m: any) => !m.data.startsWith(competencia));
 
+    const idAporte = `mv-aporte-${Date.now()}`;
     movsFiltrados.push({
-      id: `mv-aporte-${Date.now()}`,
+      id: idAporte,
       contaId: "itau-01",
       data: `${ano}-${String(mes).padStart(2, '0')}-01`,
       historico: "Capital Social Integralizado",
@@ -295,7 +296,7 @@ export function popularDadosPratica(empresaId: string, competencia: string, forc
       contaId: "itau-01",
       competencia,
       extratoIds: [`EXT-itau-01-0`], // Simulado
-      contabilIds: [`mv-aporte-${Date.now()}`],
+      contabilIds: [idAporte],
       metodo: "Automático",
       confianca: 100,
       criadoEm: new Date().toISOString(),

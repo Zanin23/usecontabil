@@ -29,7 +29,10 @@ export async function limparBaseLocalUmaVez() {
  * Força a limpeza imediata da base real movendo para prática.
  */
 export async function forcarLimpezaBaseReal() {
-  return await migrarBaseRealParaPratica();
+  const ok = await migrarBaseRealParaPratica();
+  // Limpar caches reativos após migração
+  window.dispatchEvent(new Event("usecontabil:pratica-changed"));
+  return ok;
 }
 
 /**

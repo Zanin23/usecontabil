@@ -269,9 +269,13 @@ export function empresaDB(empresaId?: string | null): EmpresaDB {
   if (!empresaId) return vazio();
   const db = loadDB();
   const data = db[empresaId];
-  // Ensure rules are always present (at least the native ones if empty)
   if (!data) return vazio();
-  return { ...vazio(), ...data };
+  // Forçar retorno de regras nativas se a lista estiver vazia para garantir auditoria básica
+  return { 
+    ...vazio(), 
+    ...data,
+    regras: data.regras && data.regras.length > 0 ? data.regras : REGRAS_NATIVAS 
+  };
 }
 
 export function saveEmpresa(empresaId: string, patch: Partial<EmpresaDB>) {
