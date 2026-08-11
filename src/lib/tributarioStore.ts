@@ -300,7 +300,12 @@ export const brl = (v: number) =>
 export const pct = (v: number) =>
   `${(Number.isFinite(v) ? v : 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 
-export const dataBR = (iso?: string) => (iso ? iso.slice(0, 10).split("-").reverse().join("/") : "—");
+export const dataBR = (iso?: string) => {
+  if (!iso) return "—";
+  const raw = iso.slice(0, 10);
+  if (!raw.includes("-")) return raw;
+  return raw.split("-").reverse().join("/");
+};
 
 export const hojeISO = () => new Date().toISOString().slice(0, 10);
 
@@ -794,10 +799,11 @@ export const ETAPAS_FECHAMENTO: EtapaFechamento[] = [
   { slug: "log", titulo: "Gerar log", descricao: "Registro completo do fechamento na trilha de auditoria.", automatica: false },
 ];
 
-export function fechamentoAtual(empresaId?: string | null, competencia?: string): Fechamento {
+export function fechamentoAtual(empresaId?: string | null, competencia?: string | string[]): Fechamento {
   const db = empresaDB(empresaId);
+  const comp = Array.isArray(competencia) ? competencia[competencia.length - 1] : competencia;
   return (
-    db.fechamentos.find((f) => f.competencia === competencia) ?? {
+    db.fechamentos.find((f) => f.competencia === comp) ?? {
       competencia: competencia ?? "", empresaId: empresaId ?? "", status: "Aberta",
       etapasConcluidas: [], reaberturas: [],
     }
