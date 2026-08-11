@@ -57,7 +57,7 @@ export default function Auth() {
     });
     setBusy(false);
     if (error) return toast.error(error.message);
-    toast.success("Conta criada. Verifique seu e-mail para confirmar o acesso.");
+    toast.success("Conta criada. Aguarde a liberação do seu acesso pelo administrador.");
   };
 
   return (
