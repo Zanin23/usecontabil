@@ -13,8 +13,10 @@ import { moedaBR, valorBR } from "@/lib/fiscalStore";
 import { getEmpresa } from "@/lib/empresasStore";
 import { loadFiliais } from "@/lib/filiaisStore";
 import { loadRegistros } from "@/lib/empresaDadosStore";
+import { getStorageSuffix } from "@/lib/praticaStore";
 
-const KEY = "usecontabil.obrigacoes.v1";
+const KEY_BASE = "usecontabil.obrigacoes.v1";
+const KEY = () => KEY_BASE + getStorageSuffix();
 export const OBRIGACOES_EVENT = "usecontabil:obrigacoes-changed";
 
 const USUARIO = "M. Andrade";
@@ -106,14 +108,14 @@ function notify() {
 
 function loadDB(): DB {
   try {
-    return JSON.parse(localStorage.getItem(KEY) ?? "{}") as DB;
+    return JSON.parse(localStorage.getItem(KEY()) ?? "{}") as DB;
   } catch {
     return {};
   }
 }
 
 function saveDB(db: DB) {
-  localStorage.setItem(KEY, JSON.stringify(db));
+  localStorage.setItem(KEY(), JSON.stringify(db));
   notify();
 }
 

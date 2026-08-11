@@ -224,19 +224,27 @@ export default function PraticaAprendizado() {
 
             <Button 
               className="rounded-full bg-brand-orange hover:bg-brand-orange/90 gap-2"
-              onClick={() => {
+              onClick={async () => {
                 if (!empresaId) {
                   toast.error("Selecione ou cadastre uma empresa primeiro.");
                   return;
                 }
-                popularDadosPratica(empresaId, competencia, true);
-                toast.success("Dados fictícios gerados com sucesso!", {
-                  description: "Produtos, parceiros e documentos foram adicionados à competência atual."
-                });
+                const loadingToast = toast.loading("Gerando ecossistema de dados...");
+                try {
+                  await popularDadosPratica(empresaId, competencia, true);
+                  toast.success("Ecossistema gerado com sucesso!", {
+                    id: loadingToast,
+                    description: "Notas, lançamentos bancários e apurações integrados no Dashboard."
+                  });
+                  // Forçar atualização reativa disparando evento global
+                  window.dispatchEvent(new Event("usecontabil:pratica-changed"));
+                } catch (err) {
+                  toast.error("Erro ao gerar dados.", { id: loadingToast });
+                }
               }}
             >
               <Database className="h-4 w-4 text-primary-foreground" />
-              Popular base
+              Popular base completa
             </Button>
 
           </div>

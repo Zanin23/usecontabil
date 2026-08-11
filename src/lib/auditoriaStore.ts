@@ -22,9 +22,11 @@ import {
 } from "@/lib/escrituracaoStore";
 import { apurar, getEstado, regimeDaEmpresa, type MotorSlug } from "@/lib/apuracaoStore";
 import { monitorar } from "@/lib/obrigacoesStore";
+import { getStorageSuffix } from "@/lib/praticaStore";
 
 export const AUDITORIA_EVENT = "usecontabil:auditoria-changed";
-const KEY = "usecontabil.auditoria.v1";
+const KEY_BASE = "usecontabil.auditoria.v1";
+const KEY = () => KEY_BASE + getStorageSuffix();
 
 /* ============================== tipos ==================================== */
 
@@ -172,7 +174,7 @@ const vazio = (): Persist => ({
 
 export function loadAud(): Persist {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY());
     return raw ? { ...vazio(), ...(JSON.parse(raw) as Persist) } : vazio();
   } catch {
     return vazio();
@@ -180,7 +182,7 @@ export function loadAud(): Persist {
 }
 
 function persist(db: Persist) {
-  localStorage.setItem(KEY, JSON.stringify(db));
+  localStorage.setItem(KEY(), JSON.stringify(db));
   window.dispatchEvent(new Event(AUDITORIA_EVENT));
 }
 
