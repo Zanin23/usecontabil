@@ -233,9 +233,10 @@ export default function AssistenteCampos({
           </div>
         ))}
 
-        {loading && messages[messages.length - 1]?.role === "user" && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Loader2 className="h-3 w-3 animate-spin" /> Consultando…
+        {loading && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground animate-pulse">
+            <Loader2 className="h-3 w-3 animate-spin" /> 
+            <span>{messages[messages.length-1]?.role === "assistant" ? "Aguardando resposta da IA..." : "Consultando..."}</span>
           </div>
         )}
       </div>
