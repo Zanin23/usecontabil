@@ -397,8 +397,13 @@ export default function Dashboard() {
               <p>
                 {semEmpresa
                   ? "A base está zerada. Cadastre a primeira empresa do grupo para que os indicadores, apurações e obrigações passem a ser calculados."
-                  : "Nenhum documento fiscal foi escriturado para esta empresa na competência selecionada. Lance os documentos para que o painel seja calculado."}
+                  : `Nenhum documento fiscal foi escriturado para esta empresa na competência ${isPeriodo ? "selecionada (intervalo)" : formatCompetencia(competencia)}. Lance os documentos para que o painel seja calculado.`}
               </p>
+              {isPeriodo && competenciasNoPeriodo.length > 0 && !semEmpresa && (
+                <p className="text-xs text-brand-orange bg-brand-orange/5 border border-brand-orange/20 p-2 rounded-lg inline-block">
+                  <strong>Aviso:</strong> Você está visualizando o período de <strong>{formatCompetencia(competenciasNoPeriodo[0])}</strong> até <strong>{formatCompetencia(competenciasNoPeriodo[competenciasNoPeriodo.length - 1])}</strong>.
+                </p>
+              )}
               {!semEmpresa && emPratica && (
                 <p className="text-brand-orange font-medium">
                   💡 No modo prática, você pode carregar cenários de treinamento na tela de Laboratórios para ver o sistema em funcionamento.
