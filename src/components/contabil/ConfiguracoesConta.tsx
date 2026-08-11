@@ -508,7 +508,7 @@ function UsersList() {
         </div>
       )}
       {users.map((u) => {
-        const isUser = u.roles.includes("user");
+        const hasAccess = u.roles.length > 0;
         const isAdmin = u.roles.includes("admin");
         
         return (
@@ -516,21 +516,19 @@ function UsersList() {
             <div className="min-w-0">
               <div className="text-sm font-medium truncate">{u.display_name}</div>
               <div className="text-[10px] text-muted-foreground flex gap-2">
-                {isAdmin && <span className="text-brand-orange font-bold uppercase">ADMIN</span>}
-                {!isUser && !isAdmin && <span className="text-destructive uppercase">PENDENTE</span>}
-                {isUser && <span className="text-success uppercase">LIBERADO</span>}
+                {!hasAccess && <span className="text-destructive uppercase">PENDENTE</span>}
+                {hasAccess && <span className="text-success uppercase">LIBERADO</span>}
+                {isAdmin && <span className="text-brand-orange font-bold uppercase ml-1">ADMIN</span>}
               </div>
             </div>
-            {!isAdmin && (
-              <Button 
-                size="sm" 
-                variant={isUser ? "outline" : "default"}
-                className="rounded-full h-8"
-                onClick={() => toggleAccess(u.id, isUser)}
-              >
-                {isUser ? "Bloquear" : "Liberar"}
-              </Button>
-            )}
+            <Button 
+              size="sm" 
+              variant={hasAccess ? "outline" : "default"}
+              className="rounded-full h-8"
+              onClick={() => toggleAccess(u.id, hasAccess)}
+            >
+              {hasAccess ? "Bloquear" : "Liberar"}
+            </Button>
           </div>
         );
       })}
