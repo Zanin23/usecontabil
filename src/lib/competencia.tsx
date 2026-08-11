@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, useEffect, ReactNode } from "react";
 
 export const COMPETENCIAS = [
   "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12",
@@ -32,8 +32,24 @@ type Ctx = {
 const CompetenciaContext = createContext<Ctx | null>(null);
 
 export function CompetenciaProvider({ children }: { children: ReactNode }) {
-  const [competencia, setCompetencia] = useState("2026-07");
-  const [competenciaFim, setCompetenciaFim] = useState<string | null>(null);
+  const [competencia, setCompetencia] = useState(() => {
+    return localStorage.getItem("usecontabil_competencia") || "2026-07";
+  });
+  const [competenciaFim, setCompetenciaFim] = useState<string | null>(() => {
+    return localStorage.getItem("usecontabil_competencia_fim");
+  });
+
+  useEffect(() => {
+    localStorage.setItem("usecontabil_competencia", competencia);
+  }, [competencia]);
+
+  useEffect(() => {
+    if (competenciaFim) {
+      localStorage.setItem("usecontabil_competencia_fim", competenciaFim);
+    } else {
+      localStorage.removeItem("usecontabil_competencia_fim");
+    }
+  }, [competenciaFim]);
 
   const competenciasNoPeriodo = useMemo(() => {
     if (!competenciaFim) return [competencia];
