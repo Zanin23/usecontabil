@@ -404,7 +404,7 @@ function addMesesISO(iso: string, n: number) {
   return d.toISOString().slice(0, 10);
 }
 
-export function bensCalculados(competencia: string): BemCalculado[] {
+export function bensCalculados(competencia: string | string[]): BemCalculado[] {
   return listarBens()
     .map((b) => calcularBem(b, competencia))
     .sort((a, b) => a.patrimonio.localeCompare(b.patrimonio));
@@ -421,10 +421,11 @@ export type ResumoPatrimonio = {
   resultadoBaixasAno: number;
 };
 
-export function resumoPatrimonio(competencia: string): ResumoPatrimonio {
+export function resumoPatrimonio(competencia: string | string[]): ResumoPatrimonio {
   const lista = bensCalculados(competencia);
+  const compRef = Array.isArray(competencia) ? competencia[competencia.length - 1] : competencia;
   const ativos = lista.filter((b) => b.situacao !== "Baixado");
-  const ano = competencia.slice(0, 4);
+  const ano = compRef.slice(0, 4);
   return {
     qtdAtivos: ativos.length,
     qtdBaixados: lista.length - ativos.length,

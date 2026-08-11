@@ -801,13 +801,15 @@ export const ETAPAS_FECHAMENTO: EtapaFechamento[] = [
 
 export function fechamentoAtual(empresaId?: string | null, competencia?: string | string[]): Fechamento {
   const db = empresaDB(empresaId);
-  const comp = Array.isArray(competencia) ? competencia[competencia.length - 1] : competencia;
-  return (
-    db.fechamentos.find((f) => f.competencia === comp) ?? {
-      competencia: competencia ?? "", empresaId: empresaId ?? "", status: "Aberta",
-      etapasConcluidas: [], reaberturas: [],
-    }
-  );
+  const comp = Array.isArray(competencia) ? competencia[competencia.length - 1] : (competencia || "");
+  const defaultFechamento: Fechamento = {
+    competencia: comp, 
+    empresaId: empresaId ?? "", 
+    status: "Aberta",
+    etapasConcluidas: [], 
+    reaberturas: [],
+  };
+  return db.fechamentos.find((f) => f.competencia === comp) ?? defaultFechamento;
 }
 
 export function validacoesAutomaticas(empresaId?: string | null, competencia?: string) {

@@ -188,9 +188,10 @@ const FORMAS = ["Boleto", "PIX", "TED", "Cartão", "Débito automático"];
  * Gera a carteira determinística de títulos da competência.
  * A base é sempre a mesma para o mesmo par (empresa, competência).
  */
-export function titulos(tipo: TipoTitulo, empresaId = "geral", competencia = "2026-07"): Titulo[] {
-  const rnd = seed(`${tipo}|${empresaId}|${competencia}`);
-  const [ano, mes] = competencia.split("-").map(Number);
+export function titulos(tipo: TipoTitulo, empresaId = "geral", competencia: string | string[] = "2026-07"): Titulo[] {
+  const compUnica = Array.isArray(competencia) ? competencia[competencia.length - 1] : competencia;
+  const rnd = seed(`${tipo}|${empresaId}|${compUnica}`);
+  const [ano, mes] = compUnica.split("-").map(Number);
   const parceiros = tipo === "pagar" ? PARCEIROS_PAGAR : PARCEIROS_RECEBER;
   const categorias = tipo === "pagar" ? CATEGORIA_PAGAR : CATEGORIA_RECEBER;
   const prefixo = tipo === "pagar" ? "AP" : "AR";
@@ -269,9 +270,10 @@ export function calcular(t: Titulo, ref = hojeISO(), todas = baixas()): TituloCa
   };
 }
 
-export function carteira(tipo: TipoTitulo, empresaId?: string, competencia?: string, ref = hojeISO()) {
+export function carteira(tipo: TipoTitulo, empresaId?: string, competencia?: string | string[], ref = hojeISO()) {
   const todas = baixas();
-  return titulos(tipo, empresaId || "geral", competencia || "2026-07").map((t) => calcular(t, ref, todas));
+  const compRef = competencia || "2026-07";
+  return titulos(tipo, empresaId || "geral", compRef).map((t) => calcular(t, ref, todas));
 }
 
 export type ResumoCarteira = {
@@ -380,7 +382,7 @@ export type SaldoConta = ContaTesouraria & {
   movimentos: MovimentoCaixa[];
 };
 
-export function saldos(competencia = "2026-07"): SaldoConta[] {
+export function saldos(competencia: string | string[] = "2026-07"): SaldoConta[] {
   const bx = baixas();
   const manuais = movimentosManuais();
   const tits = new Map<string, Titulo>();
@@ -425,7 +427,7 @@ export type SemanaFluxo = {
 };
 
 /** R7/R8: projeção semanal a partir do saldo de tesouraria e dos títulos em aberto. */
-export function fluxo(empresaId?: string, competencia = "2026-07", semanas = 8, ref = hojeISO()): SemanaFluxo[] {
+export function fluxo(empresaId?: string, competencia: string | string[] = "2026-07", semanas = 8, ref = hojeISO()): SemanaFluxo[] {
   const receber = carteira("receber", empresaId, competencia, ref).filter((t) => t.saldo > 0);
   const pagar = carteira("pagar", empresaId, competencia, ref).filter((t) => t.saldo > 0);
   let acumulado = saldos(competencia).reduce((a, c) => a + c.saldo, 0);
