@@ -321,6 +321,9 @@ export default function CrudDocumentosFiscais({
         toast.error(err.message || "Falha ao processar XML: formato inválido.");
       }
     };
+    reader.onerror = () => {
+      toast.error("Erro ao ler o arquivo.");
+    };
     reader.readAsText(file);
     e.target.value = "";
   };
