@@ -2,9 +2,9 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertTriangle, ArrowRight, Banknote, CalendarClock, CheckCircle2, Clock,
-  HandCoins, Landmark, Wallet2, type LucideIcon,
+  HandCoins, Landmark, Wallet2, Sparkles, type LucideIcon,
 } from "lucide-react";
-import { Badge, Button, Card, CardContent } from "@/design-system/mj-design-system-db98fa";
+import { Badge, Button, Card, CardContent, Separator } from "@/design-system/mj-design-system-db98fa";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
