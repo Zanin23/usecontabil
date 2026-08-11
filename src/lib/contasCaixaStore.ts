@@ -247,6 +247,7 @@ export const FAIXAS = ["A vencer", "1 a 15 dias", "16 a 30 dias", "31 a 60 dias"
 export const baixas = () => read<Baixa>(KEY_BAIXAS);
 export const acoes = () => read<AcaoCobranca>(getAcoesKey());
 export const movimentosManuais = () => read<MovimentoCaixa>(getMovsKey());
+export const loadMovimentos = movimentosManuais;
 
 export function calcular(t: Titulo, ref = hojeISO(), todas = baixas()): TituloCalculado {
   const minhas = todas.filter((b) => b.tituloId === t.id);
