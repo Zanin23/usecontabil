@@ -52,12 +52,12 @@ export default function MovimentoView({
   dicas: string[];
 }) {
   const { empresa } = useEmpresaAtual();
-  const { competencia } = useCompetencia();
+  const { competencia, competenciaFim, isPeriodo, competenciasNoPeriodo } = useCompetencia();
   const empresaId = empresa?.id ?? "";
 
   const docs = useTributario(
-    () => documentosDaCompetencia(empresaId, competencia, grupo),
-    [empresaId, competencia, grupo],
+    () => documentosDaCompetencia(empresaId, competenciasNoPeriodo, grupo),
+    [empresaId, competenciasNoPeriodo, grupo],
   );
 
   const [query, setQuery] = useState("");
@@ -144,7 +144,7 @@ export default function MovimentoView({
   const contexto = {
     tela: titulo,
     modulo: "Financeiro › Movimentos",
-    competencia: formatCompetencia(competencia),
+    competencia: isPeriodo ? `${formatCompetencia(competencia)} até ${formatCompetencia(competenciaFim!)}` : formatCompetencia(competencia),
     empresa: empresa ? { razao: empresa.razao, cnpj: empresa.cnpj, regime: empresa.regime } : null,
     resumo: r,
     documentos: docs.slice(0, 20).map((d) => ({
@@ -165,7 +165,7 @@ export default function MovimentoView({
             <h1 className="font-display text-2xl leading-tight">{titulo}</h1>
             <p className="max-w-2xl text-sm text-muted-foreground">{descricao}</p>
             <div className="mt-2 flex flex-wrap gap-2 text-xs">
-              <Badge variant="secondary" className="rounded-full">{formatCompetencia(competencia)}</Badge>
+              <Badge variant="secondary" className="rounded-full">{isPeriodo ? `${formatCompetencia(competencia)} até ${formatCompetencia(competenciaFim!)}` : formatCompetencia(competencia)}</Badge>
               <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
             </div>
           </div>

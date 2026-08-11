@@ -300,7 +300,12 @@ export const brl = (v: number) =>
 export const pct = (v: number) =>
   `${(Number.isFinite(v) ? v : 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 
-export const dataBR = (iso?: string) => (iso ? iso.slice(0, 10).split("-").reverse().join("/") : "—");
+export const dataBR = (iso?: string) => {
+  if (!iso) return "—";
+  const raw = iso.slice(0, 10);
+  if (!raw.includes("-")) return raw;
+  return raw.split("-").reverse().join("/");
+};
 
 export const hojeISO = () => new Date().toISOString().slice(0, 10);
 
@@ -692,10 +697,13 @@ function gerarChave(doc: DocumentoFiscal) {
   return s;
 }
 
-export function documentosDaCompetencia(empresaId?: string | null, competencia?: string, grupo?: GrupoMovimento) {
-  return empresaDB(empresaId).documentos.filter(
-    (d) => (!competencia || d.competencia === competencia) && (!grupo || d.grupo === grupo),
-  );
+export function documentosDaCompetencia(empresaId?: string | null, competencia?: string | string[], grupo?: GrupoMovimento) {
+  const db = empresaDB(empresaId);
+  return db.documentos.filter((d) => {
+    const okComp = !competencia || (Array.isArray(competencia) ? competencia.includes(d.competencia) : d.competencia === competencia);
+    const okGrupo = !grupo || d.grupo === grupo;
+    return okComp && okGrupo;
+  });
 }
 
 export function resumoDocumentos(docs: DocumentoFiscal[]) {
@@ -794,19 +802,22 @@ export const ETAPAS_FECHAMENTO: EtapaFechamento[] = [
   { slug: "log", titulo: "Gerar log", descricao: "Registro completo do fechamento na trilha de auditoria.", automatica: false },
 ];
 
-export function fechamentoAtual(empresaId?: string | null, competencia?: string): Fechamento {
+export function fechamentoAtual(empresaId?: string | null, competencia?: string | string[]): Fechamento {
   const db = empresaDB(empresaId);
-  return (
-    db.fechamentos.find((f) => f.competencia === competencia) ?? {
-      competencia: competencia ?? "", empresaId: empresaId ?? "", status: "Aberta",
-      etapasConcluidas: [], reaberturas: [],
-    }
-  );
+  const comp = Array.isArray(competencia) ? competencia[competencia.length - 1] : (competencia || "");
+  const defaultFechamento: Fechamento = {
+    competencia: comp, 
+    empresaId: empresaId ?? "", 
+    status: "Aberta",
+    etapasConcluidas: [], 
+    reaberturas: [],
+  };
+  return db.fechamentos.find((f) => f.competencia === comp) ?? defaultFechamento;
 }
 
-export function validacoesAutomaticas(empresaId?: string | null, competencia?: string) {
+export function validacoesAutomaticas(empresaId?: string | null, competencia?: string | string[]) {
   const db = empresaDB(empresaId);
-  const docs = db.documentos.filter((d) => d.competencia === competencia);
+  const docs = documentosDaCompetencia(empresaId, competencia);
   const docsPendentes = docs.filter((d) => ["Rascunho", "Processando", "Rejeitado"].includes(d.status));
   const bloqueios = docs.filter((d) => d.alertas.some((a) => a.nivel === "bloqueio"));
   const prodInvalidos = db.produtos.filter((p) => !p.ncm || !p.cfopPadrao);

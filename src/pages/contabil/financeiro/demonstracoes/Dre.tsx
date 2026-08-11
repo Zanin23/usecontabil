@@ -23,16 +23,16 @@ const vazio = { linha: "cmv" as LinhaChave, historico: "", valor: "" };
 
 export default function Dre() {
   const { empresa } = useEmpresaAtual();
-  const { competencia } = useCompetencia();
+  const { competencia, competenciaFim, isPeriodo, competenciasNoPeriodo } = useCompetencia();
   const empresaId = empresa?.id ?? "";
   const [modo, setModo] = useState<"gerencial" | "comparativo">("gerencial");
   const [dialogo, setDialogo] = useState(false);
   const [form, setForm] = useState(vazio);
 
-  const dre = useDRE(() => montarDRE(empresaId, competencia), [empresaId, competencia]);
-  const serie = useDRE(() => evolucao(empresaId, competencia, 6), [empresaId, competencia]);
-  const lista = useDRE(() => ajustes(empresaId, competencia), [empresaId, competencia]);
-  const rastro = useDRE(() => rastreabilidade(empresaId, competencia), [empresaId, competencia]);
+  const dre = useDRE(() => montarDRE(empresaId, competenciasNoPeriodo), [empresaId, competenciasNoPeriodo]);
+  const serie = useDRE(() => evolucao(empresaId, competenciasNoPeriodo, 6), [empresaId, competenciasNoPeriodo]);
+  const lista = useDRE(() => ajustes(empresaId, competenciasNoPeriodo), [empresaId, competenciasNoPeriodo]);
+  const rastro = useDRE(() => rastreabilidade(empresaId, competenciasNoPeriodo), [empresaId, competenciasNoPeriodo]);
 
   const anterior = competenciaAnterior(competencia);
 
@@ -68,7 +68,7 @@ export default function Dre() {
   const contexto = {
     tela: "DRE — Demonstração do Resultado",
     modulo: "Financeiro › Demonstrações",
-    competencia: formatCompetencia(competencia),
+    competencia: isPeriodo ? `${formatCompetencia(competencia)} até ${formatCompetencia(competenciaFim!)}` : formatCompetencia(competencia),
     empresa: empresa ? { razao: empresa.razao, regime: empresa.regime } : null,
     resultado: {
       receitaBruta: dre.receitaBruta,
@@ -99,14 +99,14 @@ export default function Dre() {
             horizontal e ajustes de encerramento.
           </p>
           <div className="mt-2 flex flex-wrap gap-2 text-xs">
-            <Badge variant="secondary" className="rounded-full">{formatCompetencia(competencia)}</Badge>
+            <Badge variant="secondary" className="rounded-full">{isPeriodo ? `${formatCompetencia(competencia)} até ${formatCompetencia(competenciaFim!)}` : formatCompetencia(competencia)}</Badge>
             <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
             <Badge variant="secondary" className="rounded-full">Comparativo {formatCompetencia(anterior)}</Badge>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <ExportarMenu
-            nome={`DRE ${formatCompetencia(competencia)}`}
+            nome={`DRE ${isPeriodo ? `${formatCompetencia(competencia)}-${formatCompetencia(competenciaFim!)}` : formatCompetencia(competencia)}`}
             colunas={[
               { key: "conta", label: "Conta" },
               { key: "valor", label: "Competência" },
@@ -168,7 +168,7 @@ export default function Dre() {
         <CardContent className="p-0">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b px-5 py-4">
             <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              Demonstração do resultado — {formatCompetencia(competencia)}
+              Demonstração do resultado — {isPeriodo ? `${formatCompetencia(competencia)} até ${formatCompetencia(competenciaFim!)}` : formatCompetencia(competencia)}
             </div>
             <div className="flex gap-2">
               {(["gerencial", "comparativo"] as const).map((m) => (

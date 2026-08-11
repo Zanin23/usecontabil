@@ -27,7 +27,7 @@ const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 
 
 export default function ContabilShell() {
-  const { competencia, setCompetencia } = useCompetencia();
+  const { competencia, setCompetencia, competenciaFim, setCompetenciaFim, isPeriodo } = useCompetencia();
   const { empresas, empresaId, setEmpresaId } = useEmpresaAtual();
   useTema();
   const { prefs } = usePreferencias();
@@ -431,17 +431,35 @@ export default function ContabilShell() {
 
             <div className="flex items-center gap-2 rounded-md border border-border bg-card px-2 lg:px-3 h-9 text-sm shrink-0">
               <CalendarRange className="h-4 w-4 text-muted-foreground" />
-              <select
-                value={competencia}
-                onChange={(e) => setCompetencia(e.target.value)}
-                className="bg-transparent outline-none text-foreground"
-              >
-                {COMPETENCIAS.map((c) => (
-                  <option key={c} value={c} className="bg-card">
-                    {formatCompetencia(c)}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-1">
+                <select
+                  value={competencia}
+                  onChange={(e) => setCompetencia(e.target.value)}
+                  className="bg-transparent outline-none text-foreground font-medium"
+                >
+                  {COMPETENCIAS.map((c) => (
+                    <option key={c} value={c} className="bg-card">
+                      {formatCompetencia(c)}
+                    </option>
+                  ))}
+                </select>
+                
+                <div className="flex items-center gap-1 ml-1 border-l border-border pl-2">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">até</span>
+                  <select
+                    value={competenciaFim ?? ""}
+                    onChange={(e) => setCompetenciaFim(e.target.value || null)}
+                    className={`bg-transparent outline-none text-xs ${competenciaFim ? "text-brand-orange font-medium" : "text-muted-foreground"}`}
+                  >
+                    <option value="" className="bg-card">—</option>
+                    {COMPETENCIAS.map((c) => (
+                      <option key={c} value={c} className="bg-card">
+                        {formatCompetencia(c)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
 
             <button

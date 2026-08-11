@@ -131,17 +131,17 @@ const valido = (d: DocumentoFiscal) => d.status !== "Cancelado" && d.status !== 
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { competencia } = useCompetencia();
+  const { competencia, competenciaFim, isPeriodo, competenciasNoPeriodo } = useCompetencia();
   const { empresa, empresas } = useEmpresaAtual();
   const empresaId = empresa?.id ?? "";
   const [openKpi, setOpenKpi] = useState<string | null>(null);
   const { praticaAtiva: emPratica } = usePratica();
 
   const docsTributario = useTributario(() => empresaDB(empresaId).documentos, [empresaId]);
-  const docsSaida = useDocsFiscais("saidas", empresaId, competencia);
-  const docsEntrada = useDocsFiscais("entradas", empresaId, competencia);
-  const docsServTomados = useDocsFiscais("servicos-tomados", empresaId, competencia);
-  const docsServPrestados = useDocsFiscais("servicos-prestados", empresaId, competencia);
+  const docsSaida = useDocsFiscais("saidas", empresaId, competenciasNoPeriodo);
+  const docsEntrada = useDocsFiscais("entradas", empresaId, competenciasNoPeriodo);
+  const docsServTomados = useDocsFiscais("servicos-tomados", empresaId, competenciasNoPeriodo);
+  const docsServPrestados = useDocsFiscais("servicos-prestados", empresaId, competenciasNoPeriodo);
 
   // Filtro radical para garantir que nada de outra empresa ou modo vaze
   const isDocValido = (d: any) => {
@@ -216,7 +216,7 @@ export default function Dashboard() {
   }, [docsTributario, docsSaida, docsEntrada, docsServTomados, docsServPrestados, empresaId, empresa?.regime]);
 
   const d = useMemo(() => {
-    const doMes = documentos.filter((x) => x.competencia === competencia && valido(x));
+    const doMes = documentos.filter((x) => competenciasNoPeriodo.includes(x.competencia) && valido(x));
     const receitas = doMes.filter(eReceita);
     const despesas = doMes.filter((x) => !eReceita(x));
 
@@ -271,7 +271,7 @@ export default function Dashboard() {
 
     const porStatus = Object.entries(
       documentos
-        .filter((x) => x.competencia === competencia)
+        .filter((x) => competenciasNoPeriodo.includes(x.competencia))
         .reduce<Record<string, number>>((acc, x) => {
           acc[x.status] = (acc[x.status] || 0) + 1;
           return acc;
@@ -354,7 +354,7 @@ export default function Dashboard() {
           Visão geral <span className="text-brand-orange">contábil</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-1.5">
-          Competência {formatCompetencia(competencia)} — {empresa ? empresa.razao : "nenhuma empresa cadastrada"}
+          Competência {isPeriodo ? `${formatCompetencia(competencia)} até ${formatCompetencia(competenciaFim!)}` : formatCompetencia(competencia)} — {empresa ? empresa.razao : "nenhuma empresa cadastrada"}
         </p>
       </div>
       <div className="flex flex-wrap gap-2">

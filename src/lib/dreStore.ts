@@ -53,8 +53,9 @@ function writeAjustes(lista: AjusteDRE[]) {
   window.dispatchEvent(new Event(DRE_EVENT));
 }
 
-export function ajustes(empresaId: string, competencia: string) {
-  return readAjustes().filter((a) => a.empresaId === empresaId && a.competencia === competencia);
+export function ajustes(empresaId: string, competencia: string | string[]) {
+  const comps = Array.isArray(competencia) ? competencia : [competencia];
+  return readAjustes().filter((a) => a.empresaId === empresaId && comps.includes(a.competencia));
 }
 
 export function salvarAjuste(a: Omit<AjusteDRE, "id" | "usuario" | "criadoEm"> & { id?: string }) {
@@ -190,7 +191,7 @@ type Base = {
   irpjCsll: number;
 };
 
-function baseCompetencia(empresaId: string, competencia: string): Base {
+function baseCompetencia(empresaId: string, competencia: string | string[]): Base {
   const docs = documentosDaCompetencia(empresaId, competencia);
   const autorizados = docs.filter((d) => d.status === "Autorizado");
 
@@ -272,9 +273,10 @@ function totalAjuste(lista: AjusteDRE[], linha: LinhaChave) {
 }
 
 /** Monta a DRE gerencial da competência, com comparativo do mês anterior. */
-export function montarDRE(empresaId: string, competencia: string): DRE {
+export function montarDRE(empresaId: string, competencia: string | string[]): DRE {
   const listaAjustes = ajustes(empresaId, competencia);
-  const anteriorComp = competenciaAnterior(competencia);
+  const compUnica = Array.isArray(competencia) ? competencia[competencia.length - 1] : competencia;
+  const anteriorComp = competenciaAnterior(compUnica);
 
   const b = aplicarAjustes(baseCompetencia(empresaId, competencia), listaAjustes);
   const p = aplicarAjustes(
@@ -365,7 +367,7 @@ export function montarDRE(empresaId: string, competencia: string): DRE {
   ];
 
   return {
-    competencia,
+    competencia: Array.isArray(competencia) ? `${competencia[0]}~${competencia[competencia.length - 1]}` : competencia,
     linhas,
     receitaBruta: c.receitaBruta,
     receitaLiquida: c.receitaLiquida,
@@ -381,9 +383,10 @@ export function montarDRE(empresaId: string, competencia: string): DRE {
 }
 
 /** Série de resultados das últimas N competências (para o gráfico de evolução). */
-export function evolucao(empresaId: string, competencia: string, meses = 6) {
+export function evolucao(empresaId: string, competencia: string | string[], meses = 6) {
+  const compRef = Array.isArray(competencia) ? competencia[competencia.length - 1] : competencia;
   const comps: string[] = [];
-  let c = competencia;
+  let c = compRef;
   for (let i = 0; i < meses; i += 1) {
     comps.unshift(c);
     c = competenciaAnterior(c);
@@ -410,7 +413,7 @@ export function evolucao(empresaId: string, competencia: string, meses = 6) {
 }
 
 /** Quantidade de documentos e títulos que sustentam a DRE — usado no rodapé de rastreabilidade. */
-export function rastreabilidade(empresaId: string, competencia: string) {
+export function rastreabilidade(empresaId: string, competencia: string | string[]) {
   const docs = documentosDaCompetencia(empresaId, competencia);
   const pagar = titulos("pagar", empresaId || "geral", competencia);
   return {

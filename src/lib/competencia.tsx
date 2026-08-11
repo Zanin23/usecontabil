@@ -21,21 +21,44 @@ export function competenciaBR(c: string) {
 
 type Ctx = {
   competencia: string;
+  competenciaFim: string | null;
+  isPeriodo: boolean;
   setCompetencia: (c: string) => void;
+  setCompetenciaFim: (c: string | null) => void;
   isInCompetencia: (isoDate: string) => boolean;
+  competenciasNoPeriodo: string[];
 };
 
 const CompetenciaContext = createContext<Ctx | null>(null);
 
 export function CompetenciaProvider({ children }: { children: ReactNode }) {
   const [competencia, setCompetencia] = useState("2026-07");
+  const [competenciaFim, setCompetenciaFim] = useState<string | null>(null);
+
+  const competenciasNoPeriodo = useMemo(() => {
+    if (!competenciaFim) return [competencia];
+    const startIdx = COMPETENCIAS.indexOf(competencia);
+    const endIdx = COMPETENCIAS.indexOf(competenciaFim);
+    if (startIdx === -1 || endIdx === -1) return [competencia];
+    
+    const [low, high] = startIdx <= endIdx ? [startIdx, endIdx] : [endIdx, startIdx];
+    return COMPETENCIAS.slice(low, high + 1);
+  }, [competencia, competenciaFim]);
+
   const value = useMemo<Ctx>(
     () => ({
       competencia,
+      competenciaFim,
+      isPeriodo: !!competenciaFim,
       setCompetencia,
-      isInCompetencia: (isoDate: string) => isoDate.startsWith(competencia),
+      setCompetenciaFim,
+      competenciasNoPeriodo,
+      isInCompetencia: (isoDate: string) => {
+        const docComp = isoDate.slice(0, 7);
+        return competenciasNoPeriodo.includes(docComp);
+      },
     }),
-    [competencia],
+    [competencia, competenciaFim, competenciasNoPeriodo],
   );
   return <CompetenciaContext.Provider value={value}>{children}</CompetenciaContext.Provider>;
 }
