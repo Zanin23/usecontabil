@@ -65,6 +65,9 @@ export async function migrarBaseRealParaPratica(manterEmpresaId?: string) {
       "usecontabil.gestao.v1",
       "usecontabil.guias.v1",
       "usecontabil.compras.v1",
+      "usecontabil.apuracoes.v1",
+      "usecontabil.obrigacoes.v1",
+      "usecontabil.auditoria.v1",
       "uc:notificacoes",
       "uc:ajuda",
       "uc:pratica:empresas.v1"
