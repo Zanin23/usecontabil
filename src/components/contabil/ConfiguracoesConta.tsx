@@ -103,6 +103,9 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
             <TabsTrigger value="notificacoes" className="rounded-full">Notificações</TabsTrigger>
             <TabsTrigger value="ambiente" className="rounded-full">Ambiente</TabsTrigger>
             {admin && (
+              <TabsTrigger value="usuarios" className="rounded-full">Usuários</TabsTrigger>
+            )}
+            {admin && (
               <TabsTrigger value="documentacao" className="rounded-full">Documentação</TabsTrigger>
             )}
           </TabsList>
@@ -303,6 +306,22 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
               O ambiente é apenas visual e interno — nenhuma transmissão é feita a órgãos oficiais.
             </p>
           </TabsContent>
+          {/* Gestão de Usuários — exclusivo do administrador */}
+          {admin && (
+            <TabsContent value="usuarios" className="space-y-4 pt-4">
+              <div className="rounded-2xl border border-border bg-card px-4 py-3 space-y-2">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Users2 className="h-4 w-4 text-brand-orange" /> Controle de Acesso
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Libere ou remova o acesso de usuários ao sistema. Usuários sem papel atribuído não conseguem acessar as funcionalidades.
+                </p>
+              </div>
+
+              <UsersList />
+            </TabsContent>
+          )}
+
           {/* Documentação — exclusivo do administrador */}
           {admin && (
             <TabsContent value="documentacao" className="space-y-3 pt-4">
@@ -417,5 +436,104 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function UsersList() {
+  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<any[]>([]);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    // Buscamos perfis e seus papéis
+    const { data: profiles, error: pError } = await supabase
+      .from("profiles")
+      .select("id, display_name");
+    
+    const { data: roles, error: rError } = await supabase
+      .from("user_roles")
+      .select("user_id, role");
+
+    if (pError || rError) {
+      toast.error("Erro ao carregar usuários");
+    } else {
+      const combined = profiles.map(p => ({
+        ...p,
+        roles: roles.filter(r => r.user_id === p.id).map(r => r.role)
+      }));
+      setUsers(combined);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const toggleAccess = async (userId: string, hasAccess: boolean) => {
+    if (hasAccess) {
+      // Remover acesso (deletar papel 'user')
+      const { error } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("user_id", userId)
+        .eq("role", "user");
+      
+      if (error) toast.error("Erro ao remover acesso");
+      else {
+        toast.success("Acesso removido");
+        fetchUsers();
+      }
+    } else {
+      // Liberar acesso (inserir papel 'user')
+      const { error } = await supabase
+        .from("user_roles")
+        .insert({ user_id: userId, role: "user" });
+      
+      if (error) toast.error("Erro ao liberar acesso");
+      else {
+        toast.success("Acesso liberado");
+        fetchUsers();
+      }
+    }
+  };
+
+  if (loading) return <div className="py-10 text-center text-xs text-muted-foreground">Carregando usuários...</div>;
+
+  return (
+    <div className="space-y-2">
+      {users.length === 0 && (
+        <div className="py-10 text-center text-xs text-muted-foreground border border-dashed rounded-2xl">
+          Nenhum usuário encontrado.
+        </div>
+      )}
+      {users.map((u) => {
+        const isUser = u.roles.includes("user");
+        const isAdmin = u.roles.includes("admin");
+        
+        return (
+          <div key={u.id} className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-card px-4 py-3">
+            <div className="min-w-0">
+              <div className="text-sm font-medium truncate">{u.display_name}</div>
+              <div className="text-[10px] text-muted-foreground flex gap-2">
+                {isAdmin && <span className="text-brand-orange font-bold uppercase">ADMIN</span>}
+                {!isUser && !isAdmin && <span className="text-destructive uppercase">PENDENTE</span>}
+                {isUser && <span className="text-success uppercase">LIBERADO</span>}
+              </div>
+            </div>
+            {!isAdmin && (
+              <Button 
+                size="sm" 
+                variant={isUser ? "outline" : "default"}
+                className="rounded-full h-8"
+                onClick={() => toggleAccess(u.id, isUser)}
+              >
+                {isUser ? "Bloquear" : "Liberar"}
+              </Button>
+            )}
+          </div>
+        );
+      })}
+    </div>
   );
 }
