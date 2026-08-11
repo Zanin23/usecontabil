@@ -15,7 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/design-system/mj-design-system-db98fa";
-import { Check, FileDown, Monitor, Moon, Palette, ShieldCheck, Sun, Volume2, VolumeX, Trash2, AlertTriangle, FlaskConical } from "lucide-react";
+import { Check, FileDown, Monitor, Moon, Palette, ShieldCheck, Sun, Volume2, VolumeX, Trash2, AlertTriangle, FlaskConical, Users2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTema } from "@/lib/tema";
 import {
@@ -472,12 +472,11 @@ function UsersList() {
 
   const toggleAccess = async (userId: string, hasAccess: boolean) => {
     if (hasAccess) {
-      // Remover acesso (deletar papel 'user')
+      // Remover acesso (apenas admins permanecem, usuários comuns são removidos)
       const { error } = await supabase
         .from("user_roles")
         .delete()
-        .eq("user_id", userId)
-        .eq("role", "user");
+        .eq("user_id", userId);
       
       if (error) toast.error("Erro ao remover acesso");
       else {
@@ -485,10 +484,11 @@ function UsersList() {
         fetchUsers();
       }
     } else {
-      // Liberar acesso (inserir papel 'user')
+      // Liberar acesso (inserir papel 'admin' pois o enum só tem 'admin')
+      // NOTA: No Use Contábil, 'admin' é o papel que libera o acesso total.
       const { error } = await supabase
         .from("user_roles")
-        .insert({ user_id: userId, role: "user" });
+        .insert({ user_id: userId, role: "admin" });
       
       if (error) toast.error("Erro ao liberar acesso");
       else {
