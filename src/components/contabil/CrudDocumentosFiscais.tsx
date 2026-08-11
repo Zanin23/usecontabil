@@ -191,18 +191,25 @@ export default function CrudDocumentosFiscais({
 
         // Extração de dados robusta
         const getTag = (parent: Element | Document | undefined, tagName: string) => 
-          parent?.getElementsByTagName(tagName)[0]?.textContent || "";
+          parent?.getElementsByTagName(tagName)[0]?.textContent?.trim() || "";
 
         const nNF = getTag(ide, "nNF");
         const serie = getTag(ide, "serie") || "1";
         const dhEmi = getTag(ide, "dhEmi") || getTag(ide, "dEmi");
         const natOp = getTag(ide, "natOp");
         
-        const dataFormatada = dhEmi 
-          ? (dhEmi.includes("-") 
-              ? `${dhEmi.substring(8, 10)}/${dhEmi.substring(5, 7)}/${dhEmi.substring(0, 4)}`
-              : dhEmi)
-          : primeiroDia(competencia);
+        let dataFormatada = primeiroDia(competencia);
+        if (dhEmi) {
+          // Trata formatos ISO (2026-08-11T...) ou BR (11/08/2026)
+          if (dhEmi.includes("-")) {
+            const parts = dhEmi.split("T")[0].split("-");
+            if (parts.length === 3) {
+              dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+          } else if (dhEmi.includes("/")) {
+            dataFormatada = dhEmi.substring(0, 10);
+          }
+        }
 
         const vNF = getTag(totalNode, "vNF") || getTag(xmlDoc, "vNF") || "0.00";
         const vICMS = getTag(totalNode, "vICMS") || getTag(xmlDoc, "vICMS") || "0.00";
@@ -313,6 +320,9 @@ export default function CrudDocumentosFiscais({
         console.error("XML Import Error:", err);
         toast.error(err.message || "Falha ao processar XML: formato inválido.");
       }
+    };
+    reader.onerror = () => {
+      toast.error("Erro ao ler o arquivo.");
     };
     reader.readAsText(file);
     e.target.value = "";
