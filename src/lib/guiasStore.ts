@@ -387,11 +387,12 @@ export const detalharParcelamento = (p: any) => resumoParcelamentos();
 export const conciliarRetornoBancario = (guias: Guia[]) => 0;
 export const auditoriaDoGrupo = (guias: Guia[]) => [];
 export const GRUPOS = [
-  { slug: "darf" as GrupoSlug, label: "Federal (DARF)" },
-  { slug: "estaduais" as GrupoSlug, label: "Estadual" },
-  { slug: "parcelamentos" as GrupoSlug, label: "Parcelamentos" },
-  { slug: "calendario" as GrupoSlug, label: "Calendário Fiscal" },
+  { slug: "darf" as GrupoSlug, label: "Federal (DARF)", submodulos: ["PIS", "COFINS", "IRPJ", "CSLL", "IPI", "Simples Nacional", "INSS Patronal", "IRRF Folha"] },
+  { slug: "estaduais" as GrupoSlug, label: "Estadual", submodulos: ["ICMS Próprio", "ICMS ST", "DIFAL", "Taxas de Fiscalização", "IPVA", "ITCMD"] },
+  { slug: "parcelamentos" as GrupoSlug, label: "Parcelamentos", submodulos: ["PERT", "PRT", "REFIS", "Transação Tributária", "Parcelamentos Ordinários"] },
+  { slug: "calendario" as GrupoSlug, label: "Calendário Fiscal", submodulos: ["SPED Fiscal", "EFD Contribuições", "DCTF", "REINF", "GIA", "Destda"] },
 ];
+
 
 export const economiaCompensacoes = (empresaId: string | null) => 0;
 export const renegociar = (id: string | any, novas?: number) => {};
