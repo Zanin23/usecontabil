@@ -329,7 +329,8 @@ export const RESIDUAL_SUGERIDO = RESIDUAL;
 const COEF_TURNO: Record<1 | 2 | 3, number> = { 1: 1, 2: 1.5, 3: 2 };
 
 /** Calcula a posição do bem até a competência informada (AAAA-MM). */
-export function calcularBem(b: Bem, competencia: string): BemCalculado {
+export function calcularBem(b: Bem, competencia: string | string[]): BemCalculado {
+  const compRef = Array.isArray(competencia) ? competencia[competencia.length - 1] : (competencia || "");
   const valorCorrigido = round(b.valorAquisicao + (b.benfeitorias || 0));
   const valorResidualEstimado = round(valorCorrigido * (b.residualPercent / 100));
   const baseDepreciavel = round(Math.max(valorCorrigido - valorResidualEstimado, 0));
@@ -346,14 +347,14 @@ export function calcularBem(b: Bem, competencia: string): BemCalculado {
     const meses = Math.max(Math.min(mesesEntre(compInicio, limite), vidaEfetiva), 0);
     return round(Math.min(quotaBase * meses, baseDepreciavel));
   };
-  const compLimite = b.baixaData ? menor(compDe(b.baixaData), competencia) : competencia;
+  const compLimite = b.baixaData ? menor(compDe(b.baixaData), compRef) : compRef;
   const decorridos = mesesEntre(compInicio, compLimite); // 0 no mês da entrada
   const mesesDepreciados = b.deprecia ? Math.max(Math.min(decorridos, vidaEfetiva), 0) : 0;
 
-  const depreciacaoAcumulada = acumuladaAte(competencia);
+  const depreciacaoAcumulada = acumuladaAte(compRef);
   const encerrado = mesesDepreciados >= vidaEfetiva;
   const quotaMensal = b.deprecia && !encerrado ? quotaBase : 0;
-  const depreciacaoCompetencia = round(depreciacaoAcumulada - acumuladaAte(mesAnterior(competencia)));
+  const depreciacaoCompetencia = round(depreciacaoAcumulada - acumuladaAte(mesAnterior(compRef)));
 
 
   const valorContabil = round(valorCorrigido - depreciacaoAcumulada);

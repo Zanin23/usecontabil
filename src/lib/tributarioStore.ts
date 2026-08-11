@@ -697,10 +697,13 @@ function gerarChave(doc: DocumentoFiscal) {
   return s;
 }
 
-export function documentosDaCompetencia(empresaId?: string | null, competencia?: string, grupo?: GrupoMovimento) {
-  return empresaDB(empresaId).documentos.filter(
-    (d) => (!competencia || d.competencia === competencia) && (!grupo || d.grupo === grupo),
-  );
+export function documentosDaCompetencia(empresaId?: string | null, competencia?: string | string[], grupo?: GrupoMovimento) {
+  const db = empresaDB(empresaId);
+  return db.documentos.filter((d) => {
+    const okComp = !competencia || (Array.isArray(competencia) ? competencia.includes(d.competencia) : d.competencia === competencia);
+    const okGrupo = !grupo || d.grupo === grupo;
+    return okComp && okGrupo;
+  });
 }
 
 export function resumoDocumentos(docs: DocumentoFiscal[]) {
@@ -812,9 +815,9 @@ export function fechamentoAtual(empresaId?: string | null, competencia?: string 
   return db.fechamentos.find((f) => f.competencia === comp) ?? defaultFechamento;
 }
 
-export function validacoesAutomaticas(empresaId?: string | null, competencia?: string) {
+export function validacoesAutomaticas(empresaId?: string | null, competencia?: string | string[]) {
   const db = empresaDB(empresaId);
-  const docs = db.documentos.filter((d) => d.competencia === competencia);
+  const docs = documentosDaCompetencia(empresaId, competencia);
   const docsPendentes = docs.filter((d) => ["Rascunho", "Processando", "Rejeitado"].includes(d.status));
   const bloqueios = docs.filter((d) => d.alertas.some((a) => a.nivel === "bloqueio"));
   const prodInvalidos = db.produtos.filter((p) => !p.ncm || !p.cfopPadrao);
