@@ -64,31 +64,73 @@ export default function AjudaTela() {
     setPergunta("");
     setCarregando(true);
     try {
-      const { data, error } = await supabase.functions.invoke("gestao-assistente", {
-        body: {
-          messages: novas,
-          contexto: {
-            modo: praticaAtiva ? "pratica" : "aprendizado",
-            instrucao: praticaAtiva
-              ? "Você é um Tutor Contábil em Modo Prática. O usuário está usando o sistema real como laboratório. Explique cada campo, sugira valores de teste e explique o impacto contábil/fiscal de cada ação nesta tela específica."
-              : "Responda em tom didático, explicando o PORQUÊ e o COMO FUNCIONA, não apenas onde clicar. Use exemplos numéricos curtos quando ajudar.",
-            tela: pathname,
-            licao: {
-              titulo: licao.titulo,
-              comoUsar: licao.comoUsar,
-              conceito: licao.conceito,
-              baseLegal: licao.baseLegal ?? [],
-            },
-            aviso: AVISO_SIMULACAO,
+      const { data: sess } = await supabase.auth.getSession();
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gestao-assistente`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${
+              sess.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+            }`,
           },
+          body: JSON.stringify({
+            messages: novas,
+            contexto: {
+              modo: praticaAtiva ? "pratica" : "aprendizado",
+              instrucao: praticaAtiva
+                ? "Você é um Tutor Contábil em Modo Prática. O usuário está usando o sistema real como laboratório. Explique cada campo, sugira valores de teste e explique o impacto contábil/fiscal de cada ação nesta tela específica."
+                : "Responda em tom didático, explicando o PORQUÊ e o COMO FUNCIONA, não apenas onde clicar. Use exemplos numéricos curtos quando ajudar.",
+              tela: pathname,
+              licao: {
+                titulo: licao.titulo,
+                comoUsar: licao.comoUsar,
+                conceito: licao.conceito,
+                baseLegal: licao.baseLegal ?? [],
+              },
+              aviso: AVISO_SIMULACAO,
+            },
+          }),
         },
-      });
-      if (error) throw error;
-      const resposta = data?.choices?.[0]?.message?.content || data?.content || data || "";
-      setMsgs((m) => [
-        ...m,
-        { role: "assistant", content: typeof resposta === 'string' ? resposta : "Não consegui responder agora." },
-      ]);
+      );
+
+      if (!resp.ok) throw new Error("Não foi possível falar com a IA agora.");
+      
+      setMsgs((m) => [...m, { role: "assistant", content: "" }]);
+      const reader = resp.body?.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      if (!reader) throw new Error("Stream não disponível");
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const payload = line.slice(6).trim();
+          if (payload === "[DONE]") continue;
+          try {
+            const delta = JSON.parse(payload)?.choices?.[0]?.delta?.content;
+            if (delta) {
+              setMsgs((m) => {
+                const copy = [...m];
+                copy[copy.length - 1] = {
+                  role: "assistant",
+                  content: copy[copy.length - 1].content + delta,
+                };
+                return copy;
+              });
+            }
+          } catch {
+            /* ignora chunks parciais */
+          }
+        }
+      }
     } catch (e) {
       toast.error("Não foi possível consultar a IA agora.");
       setMsgs((m) => [...m, { role: "assistant", content: "Falha ao consultar a IA. Tente novamente em instantes." }]);
