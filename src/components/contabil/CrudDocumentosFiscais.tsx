@@ -443,7 +443,23 @@ export default function CrudDocumentosFiscais({
           </div>
 
           {filtered.length === 0 ? (
-            <div className="py-14 text-center space-y-3">
+            <div className="py-14 text-center space-y-4">
+              <div className="h-16 w-16 rounded-full bg-muted/30 grid place-items-center mx-auto mb-4">
+                <Icone className="h-8 w-8 text-muted-foreground/50" />
+              </div>
+              <p className="text-muted-foreground">
+                Nenhum documento nesta competência. Importe um lote ou lance manualmente.
+              </p>
+              {competenciasNoPeriodo.length > 1 && (
+                <div className="bg-brand-orange/5 border border-brand-orange/20 rounded-2xl p-4 max-w-md mx-auto mt-4">
+                  <p className="text-xs text-brand-orange leading-relaxed">
+                    <strong>Dica de Período:</strong> Você está visualizando um intervalo de {competenciasNoPeriodo.length} meses. 
+                    Se importou uma nota e ela não aparece aqui, verifique se a data da nota está entre 
+                    <strong> {formatCompetencia(competenciasNoPeriodo[0])}</strong> e 
+                    <strong> {formatCompetencia(competenciasNoPeriodo[competenciasNoPeriodo.length - 1])}</strong>.
+                  </p>
+                </div>
+              )}
               <p className="text-sm text-muted-foreground">
                 Nenhum documento nesta competência. Importe um lote ou lance manualmente.
               </p>
