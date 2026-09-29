@@ -12,7 +12,6 @@ import { usePratica, setPraticaAtiva } from "@/lib/praticaStore";
 
 
 import { useEmpresaAtual } from "@/lib/empresaAtual";
-import { limparBaseLocalUmaVez } from "@/lib/resetBase";
 import { AREAS } from "@/lib/contabilNav";
 import { useTema } from "@/lib/tema";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,14 +34,8 @@ export default function ContabilShell() {
   const { praticaAtiva: emPratica } = usePratica();
   const [apresentacaoAberta, setApresentacaoAberta] = useState(false);
 
-
-
-  useEffect(() => {
-    limparBaseLocalUmaVez();
-  }, []);
-
-
-
+  // IMPORTANTE: não existe reset automático da base ao abrir o sistema.
+  // Zerar/isolar dados só acontece por ação explícita do usuário (ver lib/resetBase.ts).
 
   const [usuarioNome, setUsuarioNome] = useState("—");
   const [usuarioPerfil, setUsuarioPerfil] = useState("Usuário");
