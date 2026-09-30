@@ -1,7 +1,8 @@
+import { cn } from "@/design-system/mj-design-system-db98fa";
+
 /**
- * Solid black speech waveform brand mark.
- * Size is driven by Tailwind classes from the caller (h-* w-*).
- * `glow` prop kept for API compatibility but no longer rendered.
+ * Marca do Use Contábil: "U" branco sobre pastilha em degradê índigo→violeta (mesma do menu lateral).
+ * O tamanho vem das classes do chamador (h-* w-*). `glow` é mantido só por compatibilidade de API.
  */
 export default function LogoMark({
   className = "h-8 w-8",
@@ -12,23 +13,13 @@ export default function LogoMark({
 }) {
   return (
     <span
-      className={`relative inline-flex items-center justify-center text-foreground ${className}`}
+      className={cn(
+        "relative inline-flex shrink-0 items-center justify-center rounded-xl bg-gradient-brand text-white shadow-glow ring-1 ring-white/25",
+        className,
+      )}
       aria-hidden
     >
-      <svg
-        viewBox="0 0 24 24"
-        className="h-full w-full"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.4}
-        strokeLinecap="round"
-      >
-        <line x1="3" y1="11" x2="3" y2="13" />
-        <line x1="8" y1="8" x2="8" y2="16" />
-        <line x1="12" y1="5" x2="12" y2="19" />
-        <line x1="16" y1="8" x2="16" y2="16" />
-        <line x1="21" y1="11" x2="21" y2="13" />
-      </svg>
+      <span className="font-display text-[1.05em] font-semibold leading-none">U</span>
     </span>
   );
 }
