@@ -12,6 +12,7 @@ import { EMPRESAS_EVENT, loadEmpresas, removeEmpresa, type EmpresaRecord } from 
 import ExportarMenu from "@/components/contabil/ExportarMenu";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
+import { regimeDefinido } from "@/lib/regime";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
@@ -61,7 +62,7 @@ export default function ModulePage() {
 
 
   const handleDeleteEmpresa = async (rec: EmpresaRecord) => {
-    if (!confirm(`Excluir "${rec.razao}"? Esta ação não pode ser desfeita.`)) return;
+    if (!confirm(`Excluir "${rec.razao}"? Esta ação não pode ser desfeita.\n\nOs lançamentos dela (documentos, apurações, guias…) continuam guardados neste navegador, sem vínculo com nenhuma empresa, e ocupam espaço.`)) return;
     try {
       await removeEmpresa(rec.id);
       toast.success(`Empresa "${rec.razao}" removida`);
@@ -222,10 +223,13 @@ export default function ModulePage() {
                   {module.columns.map((c) => {
                     const v = row[c.key];
                     const isStatus = c.key === "status" || c.key === "situacao" || c.key === "abonada" || c.key === "resultado";
+                    const regimePendente = isEmpresas && c.key === "regime" && typeof v === "string" && !regimeDefinido(v);
                     return (
                       <TableCell
                         key={c.key}
+                        title={regimePendente ? "Regime tributário não definido — abra o cadastro (lápis) para definir" : undefined}
                         className={[
+                          regimePendente ? "text-warn font-medium" : "",
                           c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : "",
                           c.mono ? "font-mono text-xs" : "",
                           isStatus && typeof v === "string" ? statusClass(v) : "",

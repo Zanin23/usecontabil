@@ -31,6 +31,7 @@ import {
   situacaoAviso, useAvisos, type Aviso, type AvisoNivel,
 } from "@/lib/avisosStore";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
+import { confirmarExclusao } from "@/lib/confirmar";
 
 
 /* ============================== apoio visual ============================= */
@@ -322,7 +323,8 @@ function DialogSenha({ dados, onClose }: {
           <DialogTitle className="font-display text-2xl">Acesso criado</DialogTitle>
         </DialogHeader>
         <p className="text-sm text-muted-foreground">
-          A conta de <strong className="text-foreground">{dados.nome}</strong> já existe de verdade e pode entrar no sistema.
+          A conta de <strong className="text-foreground">{dados.nome}</strong> foi criada, mas <strong className="text-foreground">ainda não tem acesso ao sistema</strong>:
+          até ser liberada, a pessoa entra em «Acesso pendente». Libere em Configurações da conta › Usuários (a liberação concede acesso total).
           Repasse a senha provisória abaixo — ela só aparece uma vez e deve ser trocada no primeiro acesso.
         </p>
         <div className="space-y-2 rounded-2xl border border-border/70 p-4">
@@ -482,7 +484,7 @@ function Usuarios() {
                               <KeyRound className="h-4 w-4" />
                             </Button>
                             <Button size="icon" variant="ghost" title="Editar" onClick={() => setEdicao(u)}><Pencil className="h-4 w-4" /></Button>
-                            <Button size="icon" variant="ghost" title="Excluir conta" onClick={() => acaoAsync(() => excluirUsuario(u.id), "Usuário excluído.")}>
+                            <Button size="icon" variant="ghost" title="Excluir conta" onClick={() => confirmarExclusao(`a conta de ${u.nome}`, "A pessoa perde o acesso ao sistema. Esta ação não pode ser desfeita.") && acaoAsync(() => excluirUsuario(u.id), "Usuário excluído.")}>
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
 
@@ -843,7 +845,7 @@ function CentrosCusto() {
                           <Power className={`h-4 w-4 ${c.ativo ? "text-brand-orange" : "text-muted-foreground"}`} />
                         </Button>
                         <Button size="icon" variant="ghost" onClick={() => setEdicao(c)}><Pencil className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" onClick={() => acao(() => excluirCentro(c.id), "Centro excluído.")}>
+                        <Button size="icon" variant="ghost" onClick={() => confirmarExclusao("este centro de custo") && acao(() => excluirCentro(c.id), "Centro excluído.")}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
@@ -1048,7 +1050,7 @@ function Parametros() {
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button size="icon" variant="ghost" onClick={() => setEdicao(p)}><Pencil className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" onClick={() => acao(() => excluirParametro(p.id), "Parâmetro excluído.")}>
+                        <Button size="icon" variant="ghost" onClick={() => confirmarExclusao("este parâmetro") && acao(() => excluirParametro(p.id), "Parâmetro excluído.")}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
@@ -1280,7 +1282,7 @@ function Politicas() {
                           <Power className={`h-4 w-4 ${p.ativa ? "text-brand-orange" : "text-muted-foreground"}`} />
                         </Button>
                         <Button size="icon" variant="ghost" onClick={() => setEdicao(p)}><Pencil className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" onClick={() => acao(() => excluirPolitica(p.id), "Alçada excluída.")}>
+                        <Button size="icon" variant="ghost" onClick={() => confirmarExclusao("esta alçada") && acao(() => excluirPolitica(p.id), "Alçada excluída.")}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
@@ -1509,7 +1511,7 @@ function Avisos() {
                             <Power className={`h-4 w-4 ${a.ativo ? "text-brand-orange" : "text-muted-foreground"}`} />
                           </Button>
                           <Button size="icon" variant="ghost" onClick={() => setEdicao(a)}><Pencil className="h-4 w-4" /></Button>
-                          <Button size="icon" variant="ghost" onClick={() => acao(() => excluirAviso(a.id), "Aviso excluído.")}>
+                          <Button size="icon" variant="ghost" onClick={() => confirmarExclusao("este aviso") && acao(() => excluirAviso(a.id), "Aviso excluído.")}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>

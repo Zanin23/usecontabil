@@ -91,7 +91,7 @@ export default function AdministrativoHub() {
         <Card className="rounded-3xl border-border/70">
           <CardContent className="space-y-3 p-5">
             <div className="flex items-center gap-2 text-sm font-medium">
-              <RefreshCw className="h-4 w-4 text-brand-orange" /> Últimas sincronizações
+              <RefreshCw className="h-4 w-4 text-brand-orange" /> Últimas sincronizações (simuladas)
             </div>
             {LOG_SYNC.map((l) => (
               <div key={l.id} className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border/70 px-4 py-3 text-sm">
@@ -106,13 +106,13 @@ export default function AdministrativoHub() {
 
         <Card className="rounded-3xl border-border/70">
           <CardContent className="space-y-3 p-5">
-            <div className="text-sm font-medium">Integrações</div>
+            <div className="text-sm font-medium">Integrações <span className="text-xs font-normal text-muted-foreground">(simuladas — nenhuma está conectada)</span></div>
             <div className="grid gap-2 sm:grid-cols-2">
               {INTEGRACOES.map((i) => (
                 <div key={i.nome} className="rounded-2xl border border-border/70 px-4 py-3">
                   <div className="flex items-center justify-between text-sm">
                     <span>{i.nome}</span>
-                    <Badge className="rounded-full border-0 bg-brand-blue/15 text-brand-blue">{i.status}</Badge>
+                    <Badge className="rounded-full border-0 bg-muted text-muted-foreground">Simulado</Badge>
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">{i.tipo} · {i.detalhe}</div>
                 </div>

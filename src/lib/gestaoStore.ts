@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { loadEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
 import { loadFiliais } from "@/lib/filiaisStore";
+import { regimeDefinido } from "@/lib/regime";
 import { documentosPendentes, linhasDoPeriodo, somar } from "@/lib/escrituracaoStore";
 import { getStoreKey } from "./storeUtils";
 
@@ -325,7 +326,7 @@ export function pendenciasCadastro(empresaId: string | null): PendenciaCadastro[
       detalhe: "Define as tabelas de apuração usadas no período.",
       destino: "/preparativos/cadastros/empresas",
       critica: true,
-      resolvida: has(empresa?.regime),
+      resolvida: regimeDefinido(empresa?.regime),
     },
     {
       id: "atividade",

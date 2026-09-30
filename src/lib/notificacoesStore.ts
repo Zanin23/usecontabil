@@ -121,7 +121,9 @@ export function gerarNotificacoes(empresaId: string | null, competencia: string)
   }
 
   /* ---- Obrigações acessórias ---- */
-  for (const def of CATALOGO) {
+  // Sem empresa não há obrigação a cumprir: antes, uma conta vazia já nascia com "EFD-Contribuições,
+  // DCTFWeb, EFD-Reinf… em atraso — Crítico" (estado padrão "Não iniciada" contra prazos vencidos).
+  for (const def of empresaId ? CATALOGO : []) {
     const estado = getObrEstado(def.slug, empresaId, competencia);
     if (estado.status === "Transmitida") continue;
     const dias = diasRestantes(def.slug, competencia);

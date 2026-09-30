@@ -2,11 +2,22 @@
 // Documents are scoped by empresa (selected company) and competência (YYYY-MM).
 import { useEffect, useState } from "react";
 import { getStorageSuffix } from "./praticaStore";
+import { parseNumeroBR } from "./numeros";
 
 const KEY_BASE = "usecontabil.fiscal.docs.v1";
 const getStoreKey = () => KEY_BASE + getStorageSuffix();
 
 export const FISCAL_EVENT = "usecontabil:fiscal-changed";
+
+/**
+ * Um lançamento pertence a UMA empresa. Sem empresa selecionada (null / undefined / ""),
+ * nada pode casar — antes o filtro era ignorado e as telas mostravam (e somavam) os
+ * documentos de todas as empresas, inclusive de empresas já excluídas e de outros usuários
+ * que usaram o mesmo navegador.
+ */
+export function daEmpresa(empresaIdDoRegistro: string | undefined | null, empresaId?: string | null): boolean {
+  return !!empresaId && empresaIdDoRegistro === empresaId;
+}
 
 export type DocSlug =
   | "entradas"
@@ -95,10 +106,7 @@ export function primeiroDia(competencia: string) {
 
 /** Converte "1.234,56" em número. */
 export function valorBR(valor?: string) {
-  if (!valor) return 0;
-  const limpo = valor.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
-  const n = Number(limpo);
-  return Number.isFinite(n) ? n : 0;
+  return parseNumeroBR(valor) ?? 0;
 }
 
 export const moedaBR = (n: number) =>
@@ -133,7 +141,7 @@ export function useDocsFiscais(slug: DocSlug, empresaId?: string | null, compete
 
   return docs.filter(
     (d) =>
-      (!empresaId || d.empresaId === empresaId) &&
+      daEmpresa(d.empresaId, empresaId) &&
       (!competencia || (Array.isArray(competencia) ? competencia.includes(d.competencia) : d.competencia === competencia)),
   );
 }

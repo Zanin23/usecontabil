@@ -10,10 +10,15 @@ import {
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
+import { parseNumeroBR } from "@/lib/numeros";
+import { usuarioAtual } from "@/lib/usuarioAtual";
+import { getEmpresa } from "@/lib/empresasStore";
+import { cfopDeEntrada, cfopPrincipal, conferirParticipacao, lerNFe, type SituacaoNFe } from "@/lib/nfeXml";
+import { confirmarExclusao, confirmarLimpeza } from "@/lib/confirmar";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import {
-  chaveFicticia, competenciaDaData, formatarChave, limparPeriodo, moedaBR, novoDocId,
+  chaveFicticia, competenciaDaData, formatarChave, limparPeriodo, loadDocs, moedaBR, novoDocId,
   primeiroDia, removeDoc, saveDoc, saveDocs, useDocsFiscais, valorBR,
   type DocFiscal, type DocSlug,
 } from "@/lib/fiscalStore";
@@ -120,6 +125,14 @@ export default function CrudDocumentosFiscais({
     if (!empresa) return toast.error("Selecione uma empresa no cabeçalho.");
     const faltando = campos.filter((c) => c.required && !(draft[c.key] ?? "").trim());
     if (faltando.length) return toast.error(`Preencha: ${faltando.map((c) => c.label).join(", ")}`);
+    // Campos alinhados à direita são numéricos (valores, bases, quantidades): texto livre virava NaN nos totais.
+    const naoNumericos = campos.filter((c) => c.align === "right" && (draft[c.key] ?? "").trim() && parseNumeroBR(draft[c.key]) === null);
+    if (naoNumericos.length) {
+      return toast.error(`Valor inválido em: ${naoNumericos.map((c) => c.label).join(", ")} — use apenas números (ex.: 1.234,56)`);
+    }
+    if ((draft[dataKey] ?? "").trim() && !competenciaDaData(draft[dataKey])) {
+      return toast.error("Data inválida — use o formato dd/mm/aaaa");
+    }
 
     const comp = competenciaDaData(draft[dataKey]) || competencia;
     if (comp !== competencia) {
@@ -154,6 +167,17 @@ export default function CrudDocumentosFiscais({
     toast.success(`${linhas.length} documento(s) importado(s) para ${formatCompetencia(competencia)}.`);
   };
 
+  /** Status da nota importada conforme o protocolo da SEFAZ — nunca "OK" para nota cancelada/denegada/sem protocolo. */
+  const statusDaSituacao = (situacao: SituacaoNFe): string => {
+    if (situacao === "autorizada") return statusOk;
+    const acha = (re: RegExp) => statusOptions.find((o) => o !== statusOk && re.test(o));
+    const qualquerNaoOk = statusOptions.find((o) => o !== statusOk) ?? "Pendente";
+    if (situacao === "cancelada") return acha(/cancel/i) ?? acha(/rejeit/i) ?? qualquerNaoOk;
+    if (situacao === "denegada") return acha(/deneg/i) ?? acha(/rejeit/i) ?? qualquerNaoOk;
+    if (situacao === "rejeitada") return acha(/rejeit/i) ?? acha(/deneg/i) ?? qualquerNaoOk;
+    return acha(/digita|pendente/i) ?? qualquerNaoOk; // sem protocolo
+  };
+
   const processarXml = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !empresa) return;
@@ -161,153 +185,110 @@ export default function CrudDocumentosFiscais({
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {
-        const text = event.target?.result as string;
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(text, "text/xml");
+        const nfe = lerNFe(event.target?.result as string);
 
-        // Verifica erro de parse
-        const parseError = xmlDoc.getElementsByTagName("parsererror")[0];
-        if (parseError) {
-          throw new Error("Erro ao ler XML: formato inválido.");
+        // A nota precisa ser da empresa selecionada (antes, notas de terceiros entravam na empresa atual).
+        const conf = conferirParticipacao(slug, empresa.cnpj, nfe);
+        if (!conf.ok) throw new Error(conf.motivo);
+
+        // Entradas, serviços tomados, transportes e manifestação: o participante é quem emitiu a nota.
+        const participanteEhEmitente = ["entradas", "servicos-tomados", "transporte", "manifestacao"].includes(slug);
+        const isEntrada = slug === "entradas";
+        const participante = participanteEhEmitente ? nfe.emitente : nfe.destinatario;
+
+        // Mesma nota importada de novo (antes: gerava um segundo documento e dobrava a receita).
+        const daEmpresa = loadDocs(slug).filter((d) => d.empresaId === empresa.id);
+        const jaExiste = nfe.chave
+          ? daEmpresa.some((d) => (d.chave ?? "").replace(/\D/g, "") === nfe.chave)
+          : daEmpresa.some(
+              (d) => d.numero === nfe.numero && (d.serie || "1") === nfe.serie && (d.cnpj ?? "").replace(/\D/g, "") === participante.cnpj && valorBR(d.valor) === nfe.valorNF,
+            );
+        if (jaExiste) {
+          toast.warning(`NF-e ${nfe.numero} já foi importada para esta empresa — arquivo ignorado.`, {
+            duration: 6000,
+            description: nfe.chave ? `Chave ${formatarChave(nfe.chave)}` : undefined,
+          });
+          return;
         }
 
-        // Tenta encontrar a tag raiz da NF-e (infNFe)
-        const infNFe = xmlDoc.getElementsByTagName("infNFe")[0];
-        if (!infNFe) {
-          throw new Error("Este arquivo não parece ser uma NF-e válida (falta tag <infNFe>).");
-        }
+        const dataFormatada = nfe.dataBR || primeiroDia(competencia);
+        const { cfop: cfopEmitente, distintos } = cfopPrincipal(nfe.itens);
+        const cfop = isEntrada ? cfopDeEntrada(cfopEmitente) : cfopEmitente;
+        const chave = nfe.chave || chaveFicticia();
+        const status = statusDaSituacao(nfe.situacao);
 
-        const ide = xmlDoc.getElementsByTagName("ide")[0];
-        const emit = xmlDoc.getElementsByTagName("emit")[0];
-        const dest = xmlDoc.getElementsByTagName("dest")[0];
-        const totalNode = xmlDoc.getElementsByTagName("total")[0] || xmlDoc.getElementsByTagName("ICMSTot")[0];
-        const prot = xmlDoc.getElementsByTagName("protNFe")[0] || xmlDoc.getElementsByTagName("infProt")[0];
-
-        // Mapeamento de dados
-        const isEntrada = slug === "entradas" || slug === "servicos-tomados" || slug === "transporte";
-        
-        // Na NF-e de entrada (compra), o emissor é o fornecedor e o destinatário é a nossa empresa.
-        // Na NF-e de saída (venda), o emissor é a nossa empresa e o destinatário é o cliente.
-        const partNode = isEntrada ? emit : dest;
-
-        // Extração de dados robusta
-        const getTag = (parent: Element | Document | undefined, tagName: string) => 
-          parent?.getElementsByTagName(tagName)[0]?.textContent?.trim() || "";
-
-        const nNF = getTag(ide, "nNF");
-        const serie = getTag(ide, "serie") || "1";
-        const dhEmi = getTag(ide, "dhEmi") || getTag(ide, "dEmi");
-        const natOp = getTag(ide, "natOp");
-        
-        let dataFormatada = primeiroDia(competencia);
-        if (dhEmi) {
-          // Trata formatos ISO (2026-08-11T...) ou BR (11/08/2026)
-          if (dhEmi.includes("-")) {
-            const parts = dhEmi.split("T")[0].split("-");
-            if (parts.length === 3) {
-              dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
-            }
-          } else if (dhEmi.includes("/")) {
-            dataFormatada = dhEmi.substring(0, 10);
-          }
-        }
-
-        const vNF = getTag(totalNode, "vNF") || getTag(xmlDoc, "vNF") || "0.00";
-        const vICMS = getTag(totalNode, "vICMS") || getTag(xmlDoc, "vICMS") || "0.00";
-        const vBC = getTag(totalNode, "vBC") || getTag(xmlDoc, "vBC") || "0.00";
-
-        const nomePart = getTag(partNode, "xNome") || "Participante Desconhecido";
-        const cnpjPart = getTag(partNode, "CNPJ") || getTag(partNode, "CPF") || "";
-        const chave = getTag(prot, "chNFe") || getTag(xmlDoc, "chNFe") || chaveFicticia();
-
-        // CFOP e NCM da primeira tag det/prod
-        const firstProd = xmlDoc.getElementsByTagName("prod")[0];
-        const cfopXml = getTag(firstProd, "CFOP");
-        const ncmXml = getTag(firstProd, "NCM");
+        const obs = [`Importado em ${new Date().toLocaleDateString("pt-BR")} — Chave: ${chave}`];
+        if (isEntrada && cfop !== cfopEmitente) obs.push(`CFOP do emitente: ${cfopEmitente}`);
+        if (distintos.length > 1) obs.push(`CFOPs da nota: ${distintos.map((d) => `${d.cfop} (R$ ${moedaBR(d.valor)})`).join(", ")}`);
 
         const novoDoc: DocFiscal = {
           id: novoDocId(prefixoId),
           empresaId: empresa.id,
           competencia: competenciaDaData(dataFormatada) || competencia,
-          numero: nNF || "0",
-          serie: serie,
-          chave: chave,
+          numero: nfe.numero || "0",
+          serie: nfe.serie,
+          chave,
           data: dataFormatada,
-          participante: nomePart,
-          cnpj: cnpjPart,
-          valor: moedaBR(Number(vNF)),
-          baseIcms: moedaBR(Number(vBC)),
-          icms: moedaBR(Number(vICMS)),
-          cfop: cfopXml,
-          tipo: natOp || "Importação XML",
-          status: statusOk,
-          observacao: `Importado em ${new Date().toLocaleDateString()} - Chave: ${chave}`,
+          participante: participante.nome || "Participante Desconhecido",
+          cnpj: participante.cnpj,
+          valor: moedaBR(nfe.valorNF),
+          baseIcms: moedaBR(nfe.baseIcms),
+          icms: moedaBR(nfe.valorIcms),
+          cfop,
+          tipo: nfe.naturezaOperacao || "Importação XML",
+          status,
+          observacao: obs.join(" · "),
         };
 
         // Salva no banco de dados fiscal
         saveDoc(slug, novoDoc);
 
-        // Integração com o módulo financeiro/tributário
-        if (slug === "entradas" || slug === "saidas") {
+        // Integração com o módulo financeiro/tributário — só notas autorizadas entram no motor tributário.
+        if ((slug === "entradas" || slug === "saidas") && nfe.situacao === "autorizada") {
           try {
             const { salvarDocumento, processarDocumento, novoId: novoIdTributario } = await import("@/lib/tributarioStore");
-            
-            const grupo = slug === "entradas" ? "demais" : "faturamento";
-            const tipo = slug === "entradas" ? "Nota de entrada" : "NF-e";
-            
+
+            const ufEmpresa = String(getEmpresa(empresa.id)?.raw?.uf ?? "").toUpperCase();
+            const ufOrigem = (nfe.emitente.uf || ufEmpresa || "SP") as any;
+            const ufDestino = (nfe.destinatario.uf || ufEmpresa || ufOrigem) as any;
+            const itens = nfe.itens.map((it, i) => ({
+              id: `item-${i + 1}`,
+              descricao: it.descricao || `Item ${i + 1} da nota ${nfe.numero}`,
+              tipo: "produto" as const,
+              quantidade: it.quantidade,
+              unitario: it.unitario,
+              cfop: isEntrada ? cfopDeEntrada(it.cfop) : it.cfop,
+              ncm: it.ncm,
+              cst: it.cst || undefined,
+              aliqIcms: it.aliqIcms,
+            }));
+
             const docTributario = processarDocumento({
               id: novoIdTributario("xml"),
               empresaId: empresa.id,
               competencia: novoDoc.competencia,
-              grupo: grupo as any,
-              tipo: tipo as any,
+              grupo: (isEntrada ? "demais" : "faturamento") as any,
+              tipo: (isEntrada ? "Nota de entrada" : "NF-e") as any,
               numero: novoDoc.numero,
               serie: novoDoc.serie,
               emissao: novoDoc.data.split("/").reverse().join("-"),
               participante: novoDoc.participante,
               participanteDoc: novoDoc.cnpj || "",
-              ufOrigem: (isEntrada ? "EX" : "SP") as any, 
-              ufDestino: (isEntrada ? "SP" : "EX") as any,
-              contribuinte: true,
-              consumidorFinal: false,
+              ufOrigem,
+              ufDestino,
+              contribuinte: nfe.destinatario.contribuinteIcms,
+              consumidorFinal: nfe.consumidorFinal,
               regime: empresa.regime || "Lucro Presumido",
-              itens: [{
-                id: "item-1",
-                descricao: `Produto(s) da Nota ${novoDoc.numero}`,
-                tipo: "produto",
-                quantidade: 1,
-                unitario: Number(vNF),
-                cfop: cfopXml,
-                ncm: ncmXml
-              }],
-              valorProdutos: Number(vNF),
-              valorTotal: Number(vNF),
+              itens,
+              valorProdutos: itens.reduce((t, it) => t + it.quantidade * it.unitario, 0),
+              valorTotal: nfe.valorNF,
               status: "Autorizado",
               chave: novoDoc.chave,
-              tributos: {
-                icms: Number(vICMS),
-                icmsSt: 0,
-                difal: 0,
-                fcp: 0,
-                ipi: 0,
-                pis: 0,
-                cofins: 0,
-                iss: 0,
-                irrf: 0,
-                inss: 0,
-                csll: 0,
-                retencoes: 0,
-                total: Number(vICMS)
-              },
+              tributos: { icms: 0, icmsSt: 0, difal: 0, fcp: 0, ipi: 0, pis: 0, cofins: 0, iss: 0, irrf: 0, inss: 0, csll: 0, retencoes: 0, total: 0 },
               memoria: [],
               regrasAplicadas: ["Importação XML"],
               alertas: [],
-              eventos: [{
-                id: "ev-1",
-                data: new Date().toISOString(),
-                usuario: "Sistema",
-                acao: "Importação XML"
-              }]
+              eventos: [{ id: "ev-1", data: new Date().toISOString(), usuario: usuarioAtual(), acao: "Importação XML" }],
             }, empresa.id);
 
             salvarDocumento(empresa.id, docTributario, "Importado via XML Fiscal");
@@ -316,12 +297,18 @@ export default function CrudDocumentosFiscais({
           }
         }
 
+        // Avisos ao usuário: o que foi gravado e o que merece conferência
         const compNota = novoDoc.competencia;
-        if (compNota !== competencia) {
-          toast.warning(`Nota ${novoDoc.numero} importada para a competência ${formatCompetencia(compNota)}. Troque o período para visualizá-la.`, {
-            duration: 6000,
-            description: "A nota não aparece na lista atual porque pertence a outro mês/ano."
-          });
+        const avisos: string[] = [];
+        if (nfe.situacao !== "autorizada") {
+          const motivo = nfe.situacao === "sem-protocolo" ? "XML sem protocolo de autorização" : `protocolo informa cStat ${nfe.cStat}${nfe.xMotivo ? ` — ${nfe.xMotivo}` : ""}`;
+          avisos.push(`Nota não autorizada (${motivo}): registrada como «${status}» e fora dos totais.`);
+        }
+        if (distintos.length > 1) avisos.push(`A nota tem ${distintos.length} CFOPs (${distintos.map((d) => d.cfop).join(", ")}): gravada com o de maior valor (${cfop}). Confira a segregação.`);
+        if (compNota !== competencia) avisos.push(`Pertence à competência ${formatCompetencia(compNota)} — troque o período para visualizá-la.`);
+
+        if (avisos.length) {
+          toast.warning(`Nota ${novoDoc.numero} importada com ressalvas`, { duration: 9000, description: avisos.join(" ") });
         } else {
           toast.success(`Nota ${novoDoc.numero} importada com sucesso!`);
         }
@@ -339,6 +326,7 @@ export default function CrudDocumentosFiscais({
 
   const limpar = () => {
     if (!empresa) return;
+    if (!confirmarLimpeza(`TODOS os documentos de ${formatCompetencia(competencia)} desta empresa`, `${docs.length} documento(s) serão removidos. Esta ação não pode ser desfeita.`)) return;
     limparPeriodo(slug, empresa.id, competencia);
     toast.success("Documentos da competência removidos.");
   };
@@ -543,7 +531,7 @@ export default function CrudDocumentosFiscais({
                           variant="ghost"
                           size="icon"
                           className="rounded-full"
-                          onClick={() => { removeDoc(slug, d.id); toast.success("Documento removido."); }}
+                          onClick={() => { if (!confirmarExclusao("este documento")) return; removeDoc(slug, d.id); toast.success("Documento removido."); }}
                           aria-label="Excluir"
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />

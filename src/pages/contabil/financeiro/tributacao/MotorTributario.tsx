@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
+import { confirmarExclusao } from "@/lib/confirmar";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import AssistenteCampos, { type CampoAjuda } from "@/components/contabil/AssistenteCampos";
 import {
@@ -197,6 +198,7 @@ export default function MotorTributario() {
                       </Button>
                       {!r.nativa && (
                         <Button size="icon" variant="ghost" className="rounded-full" onClick={() => {
+                          if (!confirmarExclusao("esta regra")) return;
                           removerRegra(empresaId, r.id);
                           toast.success("Regra removida.");
                         }}>

@@ -2,11 +2,19 @@
 @import "./design-system/mj-design-system-db98fa/styles/theme.css";
 
 /* ============================================================
-   Project-level theme override (user-requested deviation).
-   Adopts the "Field Marketing Hub" visual language:
-   near-white canvas, cream cards, ink #1B1B1B, blue #4B73FF,
-   Outfit display + Figtree body. Keeps DS tokens semantic so
-   all components rewire automatically.
+   Tema do Use Contábil — visual "índigo" (atualização visual).
+
+   Paleta: índigo/violeta como cor principal, azul-céu, rosa, violeta,
+   verde-água e âmbar como apoio. Sombras coloridas, gradientes e
+   animações leves (todas desligadas com "reduzir movimento").
+
+   Os componentes usam tokens semânticos: trocar os valores abaixo
+   reestiliza o sistema inteiro.
+
+   NOMES HISTÓRICOS: `brand-orange` é o "acento principal" do sistema
+   (788 usos em classes como bg-/text-/border-brand-orange) e agora vale
+   índigo. Não renomear sem varrer o projeto. Avisos e modo prática usam
+   o âmbar (`warn`).
    ============================================================ */
 
 @theme inline {
@@ -14,105 +22,178 @@
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
   --color-ink: var(--ink);
   --color-cream: var(--cream);
+  --color-brand-teal: var(--brand-teal);
+  --color-brand-amber: var(--brand-amber);
+
+  --animate-page-enter: page-enter 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-blob: blob 20s ease-in-out infinite;
+  --animate-pop-in: pop-in 0.35s cubic-bezier(0.2, 1.2, 0.3, 1) backwards;
+  --animate-gradient-pan: gradient-pan 8s ease-in-out infinite;
 }
 
 :root {
-  --radius: 0.5rem; /* Tighter corners — brand reads more editorial than playful */
+  --radius: 0.75rem;
 
-  /* Core surface + ink — light cream canvas, white cards.
-     Dark "ink" surfaces are an accent only — opt in with .bg-ink. */
-  --background: hsl(40 43% 95%);
-  --foreground: hsl(0 0% 11%);
-  --ink: hsl(0 0% 11%);
-  --cream: hsl(40 43% 95%);
+  /* Superfícies e texto — canvas frio, cartões brancos, tinta azul-marinho */
+  --background: hsl(232 50% 97.5%);
+  --foreground: hsl(233 38% 14%);
+  --ink: hsl(233 38% 14%);
+  --cream: hsl(232 50% 97.5%);
 
   --card: hsl(0 0% 100%);
-  --card-foreground: hsl(0 0% 11%);
+  --card-foreground: hsl(233 38% 14%);
   --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(0 0% 11%);
+  --popover-foreground: hsl(233 38% 14%);
 
-  /* Primary = ink (for text/structural); CTA-blue lives on .bg-brand-blue */
-  --primary: hsl(0 0% 11%);
-  --primary-foreground: hsl(40 30% 97%);
+  --primary: hsl(245 78% 60%);
+  --primary-foreground: hsl(0 0% 100%);
 
-  --secondary: hsl(44 35% 90%);
-  --secondary-foreground: hsl(0 0% 11%);
-  --muted: hsl(44 35% 92%);
-  --muted-foreground: hsl(0 0% 40%);
-  --accent: hsl(26 100% 94%);
-  --accent-foreground: hsl(0 0% 11%);
-  --destructive: hsl(357 93% 51%);
+  --secondary: hsl(232 45% 94%);
+  --secondary-foreground: hsl(233 38% 20%);
+  --muted: hsl(232 40% 95%);
+  --muted-foreground: hsl(232 14% 40%);
+  --accent: hsl(245 100% 96.5%);
+  --accent-foreground: hsl(245 60% 32%);
+  --destructive: hsl(352 84% 54%);
   --destructive-foreground: hsl(0 0% 100%);
 
-  --border: hsl(0 0% 11% / 0.28);
-  --input: hsl(0 0% 11% / 0.18);
-  --ring: hsl(24 95% 53%);
+  --border: hsl(232 32% 89%);
+  --input: hsl(232 26% 83%);
+  --ring: hsl(245 78% 60%);
 
-  /* Brand pops — orange is the signature accent, blue stays as a secondary pop */
-  --brand-blue: hsl(226 100% 65%);    /* #4B73FF — secondary accent */
-  --brand-orange: hsl(24 95% 53%);    /* #F97316 — signature accent */
-  --brand-pink: hsl(332 100% 50%);    /* #FF0178 */
-  --brand-purple: hsl(235 100% 75%);
-  --brand-red: hsl(357 93% 51%);
+  /* Cores de apoio (nomes históricos — ver nota no topo) */
+  --brand-orange: hsl(245 78% 60%);   /* ACENTO PRINCIPAL (índigo) */
+  --brand-blue: hsl(203 92% 40%);     /* azul-céu */
+  --brand-purple: hsl(282 72% 56%);   /* violeta */
+  --brand-pink: hsl(336 82% 56%);     /* rosa */
+  --brand-red: hsl(352 84% 54%);
+  --brand-teal: hsl(170 72% 34%);     /* verde-água */
+  --brand-amber: hsl(36 96% 50%);     /* âmbar */
 
-  --gradient-brand: linear-gradient(135deg, hsl(24 95% 53%) 0%, hsl(35 100% 60%) 55%, hsl(332 100% 50%) 100%);
-  --gradient-soft: linear-gradient(135deg, hsl(28 100% 95%) 0%, hsl(40 43% 97%) 100%);
+  --gradient-brand: linear-gradient(135deg, hsl(222 92% 60%) 0%, hsl(250 84% 62%) 48%, hsl(286 78% 60%) 100%);
+  --gradient-soft: linear-gradient(135deg, hsl(245 100% 97%) 0%, hsl(200 100% 97%) 100%);
 
-  --success: hsl(150 60% 40%);
-  --warn: hsl(37 100% 55%);
-  --surface: hsl(0 0% 100%);
+  --success: hsl(152 62% 38%);
+  --warn: hsl(36 96% 50%);
+  --surface: hsl(232 45% 96%);
 
-  --shadow-card: 0 1px 2px hsl(0 0% 11% / 0.04), 0 4px 16px -8px hsl(0 0% 11% / 0.06);
-  --shadow-elevated: 0 8px 32px -16px hsl(24 95% 53% / 0.10), 0 8px 32px -16px hsl(0 0% 11% / 0.12);
-  --shadow-glow: 0 0 0 1px hsl(24 95% 53% / 0.18), 0 12px 40px -8px hsl(24 95% 53% / 0.28);
+  --shadow-card: 0 1px 2px hsl(233 40% 20% / 0.05), 0 8px 24px -12px hsl(240 50% 30% / 0.14);
+  --shadow-elevated: 0 2px 6px hsl(233 40% 20% / 0.06), 0 24px 48px -20px hsl(245 60% 35% / 0.30);
+  --shadow-glow: 0 0 0 1px hsl(245 78% 60% / 0.20), 0 14px 40px -10px hsl(245 78% 60% / 0.42);
+
+  /* Sombras dos botões (brilho interno no topo + halo colorido) */
+  --shadow-btn: inset 0 1px 0 hsl(0 0% 100% / 0.22), 0 6px 16px -6px hsl(245 80% 52% / 0.6);
+  --shadow-btn-hover: inset 0 1px 0 hsl(0 0% 100% / 0.28), 0 12px 26px -8px hsl(245 80% 52% / 0.7);
+  --shadow-btn-danger: inset 0 1px 0 hsl(0 0% 100% / 0.2), 0 6px 16px -6px hsl(352 84% 48% / 0.55);
+  --shadow-btn-danger-hover: inset 0 1px 0 hsl(0 0% 100% / 0.25), 0 12px 26px -8px hsl(352 84% 48% / 0.65);
+  --shadow-btn-success: inset 0 1px 0 hsl(0 0% 100% / 0.2), 0 6px 16px -6px hsl(152 62% 32% / 0.55);
+  --shadow-btn-success-hover: inset 0 1px 0 hsl(0 0% 100% / 0.25), 0 12px 26px -8px hsl(152 62% 32% / 0.65);
 }
 
 .dark {
-  /* The product currently runs in light; keep dark as a graceful fallback. */
-  --background: hsl(0 0% 7%);
-  --foreground: hsl(40 30% 95%);
-  --card: hsl(0 0% 10%);
-  --card-foreground: hsl(40 30% 95%);
-  --border: hsl(40 30% 95% / 0.1);
-  --ink: hsl(40 30% 95%);
-  --cream: hsl(0 0% 12%);
-  --surface: hsl(0 0% 10%);
+  /* Escuro "azul-noite". Também é aplicado ao menu lateral (classe `dark` no <aside>). */
+  --background: hsl(236 40% 8%);
+  --foreground: hsl(230 40% 96%);
+  --ink: hsl(230 40% 96%);
+  --cream: hsl(236 34% 11%);
+  --card: hsl(236 34% 12%);
+  --card-foreground: hsl(230 40% 96%);
+  --surface: hsl(236 34% 12%);
 
-  --popover: hsl(0 0% 10%);
-  --popover-foreground: hsl(40 30% 95%);
-  --primary: hsl(40 30% 95%);
-  --primary-foreground: hsl(0 0% 11%);
-  --secondary: hsl(0 0% 15%);
-  --secondary-foreground: hsl(40 30% 95%);
-  --muted: hsl(0 0% 16%);
-  --muted-foreground: hsl(40 12% 68%);
-  --accent: hsl(24 40% 18%);
-  --accent-foreground: hsl(40 30% 95%);
-  --input: hsl(40 30% 95% / 0.16);
+  --popover: hsl(236 34% 12%);
+  --popover-foreground: hsl(230 40% 96%);
+  --primary: hsl(245 90% 68%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(236 28% 18%);
+  --secondary-foreground: hsl(230 40% 96%);
+  --muted: hsl(236 28% 16%);
+  --muted-foreground: hsl(232 18% 70%);
+  --accent: hsl(245 40% 22%);
+  --accent-foreground: hsl(230 40% 96%);
+  --destructive: hsl(352 85% 62%);
+
+  --border: hsl(0 0% 100% / 0.10);
+  --input: hsl(0 0% 100% / 0.14);
+  --ring: hsl(245 90% 68%);
+
+  --brand-orange: hsl(245 92% 74%);
+  --brand-blue: hsl(200 92% 62%);
+  --brand-purple: hsl(282 80% 70%);
+  --brand-pink: hsl(336 88% 68%);
+  --brand-teal: hsl(170 70% 50%);
+  --brand-amber: hsl(38 96% 60%);
+
+  --shadow-card: 0 1px 2px hsl(0 0% 0% / 0.3), 0 8px 24px -12px hsl(0 0% 0% / 0.5);
+  --shadow-elevated: 0 2px 6px hsl(0 0% 0% / 0.35), 0 24px 48px -20px hsl(245 80% 40% / 0.45);
+  --shadow-glow: 0 0 0 1px hsl(245 90% 68% / 0.30), 0 14px 40px -10px hsl(245 90% 68% / 0.45);
 }
 
-
-/* Headings use Outfit; tighten tracking per spec */
+/* ---------------------------------------------------------------
+   Base
+   --------------------------------------------------------------- */
 @layer base {
+  html { scroll-behavior: smooth; }
+
   h1, h2, h3, h4, h5 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
     font-weight: 600;
   }
   body { font-family: var(--font-sans); }
+
+  ::selection { background: hsl(245 90% 70% / 0.28); }
+
+  /* Barras de rolagem finas e discretas */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(245 25% 60% / 0.45) transparent;
+  }
 }
 
-/* Override the aurora utility to a quiet near-white wash so existing
-   pages stop rendering the orange/pink gradient. */
+/* ---------------------------------------------------------------
+   Utilitários de visual
+   --------------------------------------------------------------- */
 @layer utilities {
+  /* Fundos "aurora": lavanda com brilhos índigo e ciano */
   .bg-aurora {
-    background-color: hsl(40 43% 95%);
-    background-image: radial-gradient(60rem 28rem at 88% -10%, hsl(24 95% 53% / 0.10), transparent 70%);
+    background-color: var(--background);
+    background-image:
+      radial-gradient(52rem 30rem at 92% -8%, hsl(250 90% 68% / 0.22), transparent 70%),
+      radial-gradient(44rem 28rem at -6% 106%, hsl(195 92% 58% / 0.18), transparent 65%),
+      radial-gradient(30rem 20rem at 50% 50%, hsl(286 80% 70% / 0.08), transparent 70%);
   }
   .bg-aurora-soft {
-    background-color: hsl(40 43% 95%);
-    background-image: radial-gradient(40rem 20rem at 100% 0%, hsl(24 95% 53% / 0.07), transparent 70%);
+    background-color: var(--background);
+    background-image:
+      radial-gradient(40rem 20rem at 100% 0%, hsl(250 90% 68% / 0.12), transparent 70%),
+      radial-gradient(32rem 18rem at 0% 100%, hsl(195 92% 58% / 0.09), transparent 70%);
   }
+  /* Fundo do aplicativo (fica parado enquanto a página rola) */
+  .bg-app {
+    background-color: var(--background);
+    background-image:
+      radial-gradient(56rem 28rem at 100% -6%, hsl(250 90% 68% / 0.13), transparent 68%),
+      radial-gradient(46rem 26rem at -8% 104%, hsl(195 92% 58% / 0.10), transparent 66%);
+    background-attachment: fixed;
+  }
+  .dark .bg-app {
+    background-image:
+      radial-gradient(56rem 28rem at 100% -6%, hsl(250 90% 60% / 0.18), transparent 68%),
+      radial-gradient(46rem 26rem at -8% 104%, hsl(200 90% 50% / 0.10), transparent 66%);
+  }
+  /* Menu lateral: azul-noite com leve toque violeta */
+  .bg-sidebar {
+    background-image: linear-gradient(180deg, hsl(238 52% 13%) 0%, hsl(250 48% 16%) 55%, hsl(264 48% 19%) 100%);
+    background-color: hsl(244 50% 15%);
+  }
+  .glass {
+    background-color: hsl(0 0% 100% / 0.72);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  }
+  .dark .glass { background-color: hsl(236 34% 14% / 0.72); }
+
   .font-display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em; }
   .bg-brand-blue { background-color: var(--brand-blue); }
   .text-brand-blue { color: var(--brand-blue); }
@@ -127,8 +208,101 @@
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);
   }
+
+  /* Cartão que "sobe" ao passar o mouse (KPIs, atalhos de módulos) */
+  .lift {
+    transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+  }
+  .lift:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-elevated);
+    border-color: hsl(245 78% 60% / 0.38);
+  }
+  .lift:active { transform: translateY(-1px) scale(0.995); }
+
+  /* Entrada escalonada dos filhos diretos (grades de cartões) */
+  .stagger > * { animation: fade-in-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+  .stagger > :nth-child(1) { animation-delay: 0.02s; }
+  .stagger > :nth-child(2) { animation-delay: 0.07s; }
+  .stagger > :nth-child(3) { animation-delay: 0.12s; }
+  .stagger > :nth-child(4) { animation-delay: 0.17s; }
+  .stagger > :nth-child(5) { animation-delay: 0.22s; }
+  .stagger > :nth-child(6) { animation-delay: 0.27s; }
+  .stagger > :nth-child(7) { animation-delay: 0.32s; }
+  .stagger > :nth-child(8) { animation-delay: 0.37s; }
+  .stagger > :nth-child(9) { animation-delay: 0.42s; }
+  .stagger > :nth-child(10) { animation-delay: 0.47s; }
+  .stagger > :nth-child(n + 11) { animation-delay: 0.5s; }
+
+  /* Gradiente animado (textos/realces de destaque) */
+  .bg-gradient-animated {
+    background-image: var(--gradient-brand);
+    background-size: 200% 200%;
+    animation: gradient-pan 8s ease-in-out infinite;
+  }
 }
 
+/* ---------------------------------------------------------------
+   Botões com brilho (usado pelo Button do design system)
+   --------------------------------------------------------------- */
+@layer components {
+  .btn-sheen {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  /* brilho estático: dá ar de gradiente a qualquer cor de fundo */
+  .btn-sheen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(135deg, hsl(0 0% 100% / 0.26) 0%, hsl(0 0% 100% / 0) 48%, hsl(270 90% 30% / 0.2) 100%);
+  }
+  /* faixa de luz que atravessa o botão no hover */
+  .btn-sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, hsl(0 0% 100% / 0.42) 50%, transparent 65%);
+    transform: translateX(-130%);
+    transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .btn-sheen:hover::after { transform: translateX(130%); }
+  .btn-sheen:disabled::after { transform: translateX(-130%); }
+}
+
+/* ---------------------------------------------------------------
+   Animações
+   --------------------------------------------------------------- */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(34px, -24px) scale(1.08); }
+  66% { transform: translate(-24px, 22px) scale(0.94); }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes bar-in {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes gradient-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
 @keyframes wave-bar {
   0%, 100% { transform: scaleY(0.25); }
   50% { transform: scaleY(1); }
@@ -140,6 +314,20 @@
 }
 .animate-ticker { animation: ticker-scroll 40s linear infinite; }
 
+/* Quem prefere menos movimento não recebe animações (exceto o "carregando") */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-spin {
+    animation-duration: 1s !important;
+    animation-iteration-count: infinite !important;
+  }
+}
 
 /* Densidade compacta (preferência da conta) */
 [data-densidade="compacta"] main { padding-top: 1rem; padding-bottom: 1rem; }

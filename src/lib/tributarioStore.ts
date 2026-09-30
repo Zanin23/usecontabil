@@ -450,6 +450,8 @@ function avaliaCondicao(fato: string, operador: OperadorRegra, valor: string) {
   }
 }
 
+const CAMPOS_POR_ITEM = new Set(["ncm", "cfop", "cst"]);
+
 export function aplicarRegras(doc: DocumentoFiscal, regras: Regra[]) {
   const fatos = fatosDoc(doc);
   const alertas: DocumentoFiscal["alertas"] = [];
@@ -457,8 +459,14 @@ export function aplicarRegras(doc: DocumentoFiscal, regras: Regra[]) {
 
   for (const r of regras) {
     if (r.uf !== "TODAS" && r.uf !== doc.ufDestino) continue;
-    const fato = fatos[r.campo] ?? "";
-    if (!avaliaCondicao(fato, r.operador, r.valor)) continue;
+    // NCM, CFOP e CST são atributos de ITEM DE PRODUTO: a regra vale se QUALQUER item de produto
+    // a satisfizer. Antes os itens eram unidos numa string única, e o serviço (que não tem NCM nem
+    // CFOP) contava como "vazio": toda NFS-e era bloqueada. A regra de CST ("igual 10") também só
+    // casava quando a lista inteira fosse exatamente "10".
+    const casou = CAMPOS_POR_ITEM.has(r.campo)
+      ? doc.itens.filter((i) => i.tipo !== "servico").some((i) => avaliaCondicao(String((i as Record<string, unknown>)[r.campo] ?? ""), r.operador, r.valor))
+      : avaliaCondicao(fatos[r.campo] ?? "", r.operador, r.valor);
+    if (!casou) continue;
     aplicadas.push(`${r.nome} (v${r.versao})`);
     if (r.resultado === "bloquear")
       alertas.push({ regra: r.nome, mensagem: r.mensagem, nivel: "bloqueio", correcao: r.correcao });

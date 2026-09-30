@@ -7,6 +7,7 @@ import {
 import { toast } from "sonner";
 import { Pencil, Plus, Search, Sparkles, Trash2, type LucideIcon } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
+import { confirmarExclusao } from "@/lib/confirmar";
 import {
   novoId, removeRegistro, saveRegistro, useRegistros,
   type Colecao, type Registro,
@@ -94,6 +95,7 @@ export default function CrudEmpresa({
   };
 
   const excluir = (r: Registro) => {
+    if (!confirmarExclusao("este registro")) return;
     removeRegistro(colecao, r.id);
     toast.success("Registro removido.");
   };

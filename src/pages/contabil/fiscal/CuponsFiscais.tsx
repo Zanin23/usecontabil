@@ -2,6 +2,7 @@ import { Barcode } from "lucide-react";
 import CrudDocumentosFiscais from "@/components/contabil/CrudDocumentosFiscais";
 import { diaDaCompetencia, valorSeq } from "@/lib/fiscalDocMocks";
 import { moedaBR, valorBR } from "@/lib/fiscalStore";
+import { parseNumeroBR } from "@/lib/numeros";
 
 export default function CuponsFiscais() {
   return (
@@ -12,7 +13,7 @@ export default function CuponsFiscais() {
       slug="cupons"
       prefixoId="NFCE"
       labelNovo="Nova redução Z"
-      labelImportar="Importar movimento"
+      labelImportar="Importar XML (NF-e)"
       dataKey="data"
       statusKey="status"
       statusOk="Consolidado"
@@ -51,7 +52,7 @@ export default function CuponsFiscais() {
       indicadoresExtras={(docs) => [
         {
           label: "Cupons emitidos",
-          valor: String(docs.reduce((s, d) => s + Number(d.cupons || 0), 0)),
+          valor: String(docs.reduce((s, d) => s + (parseNumeroBR(d.cupons) ?? 0), 0)),
         },
       ]}
       dicas={[

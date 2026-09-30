@@ -4,12 +4,12 @@ import { toast } from "sonner";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import {
-  Card, CardContent, Badge, Button, Progress,
+  Card, CardContent, Badge, Button, Progress, cn,
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/design-system/mj-design-system-db98fa";
 import {
   ArrowUpRight, ArrowDownRight, RefreshCw, PlayCircle, AlertTriangle, Info,
-  AlertOctagon, TrendingUp, ChevronDown, Building2, FileStack,
+  AlertOctagon, TrendingUp, ChevronDown, Building2, FileStack, Wallet, Landmark, ShieldAlert,
 } from "lucide-react";
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line,
@@ -17,6 +17,7 @@ import {
 } from "recharts";
 import { brl, empresaDB, useTributario, type DocumentoFiscal, processarDocumento } from "@/lib/tributarioStore";
 import { usePratica } from "@/lib/praticaStore";
+import AvisoRegime from "@/components/contabil/AvisoRegime";
 import { useDocsFiscais, valorBR } from "@/lib/fiscalStore";
 
 const toneMap = {
@@ -27,6 +28,26 @@ const toneMap = {
 
 const alertIcon = { erro: AlertOctagon, aviso: AlertTriangle, info: Info } as const;
 const alertColor = { erro: "text-destructive", aviso: "text-warn", info: "text-brand-blue" } as const;
+
+/** Ícone e cor de cada indicador do topo do painel. */
+const KPI_VISUAL: Record<string, { icon: typeof Wallet; chip: string; barra: string }> = {
+  "Receita da competência": { icon: Wallet, chip: "bg-primary/12 text-primary", barra: "from-primary to-brand-purple" },
+  "Tributos apurados": {
+    icon: Landmark,
+    chip: "bg-brand-amber/15 text-[hsl(30_90%_36%)] dark:text-brand-amber",
+    barra: "from-brand-amber to-brand-pink",
+  },
+  "Documentos na competência": { icon: FileStack, chip: "bg-brand-blue/12 text-brand-blue", barra: "from-brand-blue to-primary" },
+  "Documentos com bloqueio": { icon: ShieldAlert, chip: "bg-destructive/10 text-destructive", barra: "from-destructive to-brand-pink" },
+};
+
+function kpiVisual(label: string, tone: keyof typeof toneMap) {
+  // "Documentos com bloqueio" fica verde quando não há nenhum bloqueio
+  if (label === "Documentos com bloqueio" && tone === "success") {
+    return { icon: ShieldAlert, chip: "bg-success/12 text-success", barra: "from-success to-brand-teal" };
+  }
+  return KPI_VISUAL[label] ?? KPI_VISUAL["Receita da competência"];
+}
 
 const C = {
   orange: "var(--brand-orange)",
@@ -437,25 +458,32 @@ export default function Dashboard() {
     <div className="space-y-6">
       {header}
 
+      <AvisoRegime />
+
       {/* KPIs expansíveis */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
+      <div className="stagger grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
         {kpis.map((k) => {
           const open = openKpi === k.label;
+          const visual = kpiVisual(k.label, k.tone);
+          const KpiIcon = visual.icon;
           return (
             <Card
               key={k.label}
               onClick={() => setOpenKpi(open ? null : k.label)}
-              className={`rounded-xl border bg-card cursor-pointer transition ${
-                open
-                  ? "border-brand-orange/50 shadow-glow"
-                  : "border-border shadow-card hover:border-brand-orange/40"
-              }`}
+              className={cn(
+                "lift relative overflow-hidden rounded-xl border bg-card cursor-pointer",
+                open ? "border-brand-orange/50 shadow-glow" : "border-border shadow-card",
+              )}
             >
+              <div className={cn("absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r opacity-90", visual.barra)} />
               <CardContent className="p-5">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="text-xs uppercase tracking-widest text-muted-foreground">{k.label}</div>
+                <div className="flex items-start gap-3">
+                  <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-xl", visual.chip)}>
+                    <KpiIcon className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1 pt-0.5 text-xs uppercase tracking-widest text-muted-foreground">{k.label}</div>
                   <ChevronDown
-                    className={`h-4 w-4 shrink-0 transition ${open ? "rotate-180 text-brand-orange" : "text-muted-foreground/60"}`}
+                    className={`h-4 w-4 shrink-0 transition-transform duration-300 ${open ? "rotate-180 text-brand-orange" : "text-muted-foreground/60"}`}
                   />
                 </div>
                 <div className="font-display text-3xl mt-3 break-words">{k.value}</div>
@@ -484,7 +512,7 @@ export default function Dashboard() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+      <div className="stagger grid grid-cols-1 xl:grid-cols-12 gap-6">
         <Card className="rounded-xl border border-border bg-card shadow-card xl:col-span-8">
           <CardContent className="p-6">
             <div className="flex items-start justify-between mb-4 gap-4">

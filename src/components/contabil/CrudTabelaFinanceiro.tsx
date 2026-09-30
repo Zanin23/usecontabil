@@ -7,6 +7,7 @@ import {
 import { toast } from "sonner";
 import { Download, Pencil, Plus, Search, Trash2, type LucideIcon } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
+import { confirmarExclusao } from "@/lib/confirmar";
 import {
   novoId, removeLinha, replaceLinhas, saveLinha, useLinhas,
   type LinhaTabela, type TabelaSlug,
@@ -218,7 +219,7 @@ export default function CrudTabelaFinanceiro({
                           variant="ghost"
                           size="icon"
                           className="rounded-full"
-                          onClick={() => { removeLinha(tabela, l.id); toast.success("Linha removida."); }}
+                          onClick={() => { if (!confirmarExclusao("este registro")) return; removeLinha(tabela, l.id); toast.success("Linha removida."); }}
                           aria-label="Excluir"
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />

@@ -76,7 +76,7 @@ export default function DashboardExecutivo() {
         <Kpi label="Bancos / contas" valor={String(bancos.length)} hint={brl(totalCampo(bancos, "saldo"))} to="/administrativo/cadastros/bancos" />
         <Kpi label="Plano gerencial" valor={String(DOMINIOS[4].registros.length)} hint="contas gerenciais" to="/administrativo/cadastros/plano-gerencial" />
         <Kpi label="Condições de pagamento" valor={String(DOMINIOS[5].registros.length)} hint="condições ativas e inativas" to="/administrativo/cadastros/condicoes-pagamento" />
-        <Kpi label="Cadastros alterados na sync" valor={String(alterados)} hint={`última sync ${LOG_SYNC[0].em}`} />
+        <Kpi label="Cadastros alterados na sync (simulada)" valor={String(alterados)} hint={`última sync simulada ${LOG_SYNC[0].em}`} />
         <Kpi label="Pendências cadastrais" valor={String(achados.length)} hint={`${crit[0].total} críticas`} to="/administrativo/auditoria" />
       </div>
 

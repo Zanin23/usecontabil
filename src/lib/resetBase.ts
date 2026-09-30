@@ -1,32 +1,23 @@
 import { migrarBaseRealParaPratica, deletarTudoGeral } from "./migrationPratica";
-import { supabase } from "@/integrations/supabase/client";
-
-const FLAG = "usecontabil.reset.base.v1";
 
 /**
- * Função para resetar a base de dados local na primeira execução (ou via comando).
- * Agora migra os dados reais para o modo prática para evitar perda total de dados
- * caso o usuário já tenha cadastrado algo importante.
+ * ATENÇÃO — não existe (e não deve existir) reset automático da base.
+ *
+ * Antes, o ContabilShell chamava uma rotina de "limpeza única" a cada abertura do sistema,
+ * controlada por uma flag no localStorage. Como a flag era por NAVEGADOR (e não por usuário),
+ * qualquer primeiro acesso em outro navegador/dispositivo, em aba anônima ou depois de limpar
+ * os dados do navegador apagava as empresas do usuário na nuvem (tabela `empresas`) e ligava
+ * o modo prática sozinho — contrariando a promessa da tela de login de que os cadastros
+ * ficam salvos na nuvem, em qualquer dispositivo.
+ *
+ * As funções abaixo só podem ser chamadas por uma ação EXPLÍCITA do usuário, sempre atrás de
+ * uma caixa de confirmação (Aprender → Prática e Configurações → Zona de Perigo).
+ * Teste de regressão (cobre o ContabilShell, onde isso acontecia): src/test/primeiroAcesso.test.tsx.
  */
-export async function limparBaseLocalUmaVez() {
-  if (typeof window === "undefined") return;
-  
-  const resetDone = localStorage.getItem(FLAG);
-  
-  if (!resetDone) {
-    console.log("[ResetBase] Iniciando limpeza da base de dados real...");
-    
-    // Migra o que existe hoje para a sandbox (prática) antes de limpar a real
-    await migrarBaseRealParaPratica();
-    
-    // Marca como feito
-    localStorage.setItem(FLAG, "done");
-    console.log("[ResetBase] Base real limpa. Dados preservados no Modo Prática.");
-  }
-}
 
 /**
- * Força a limpeza imediata da base real movendo para prática.
+ * Move a base real (local + nuvem) para o modo prática e limpa a base real.
+ * Ação manual: "Isolar dados (Real → Prática)".
  */
 export async function forcarLimpezaBaseReal() {
   const ok = await migrarBaseRealParaPratica();
@@ -37,14 +28,8 @@ export async function forcarLimpezaBaseReal() {
 
 /**
  * Limpa TUDO da base de dados (Real e Prática) sem migração.
- * Esta função deve ser usada com cautela.
+ * Ação manual da "Zona de Perigo". Deve ser usada com cautela.
  */
 export async function resetAbsoluto() {
-  const ok = await deletarTudoGeral();
-  if (ok) {
-    localStorage.setItem(FLAG, "done");
-    return true;
-  }
-  return false;
+  return deletarTudoGeral();
 }
-

@@ -1,4 +1,5 @@
 import { read, write } from "./storeUtils";
+import { usuarioAtual } from "@/lib/usuarioAtual";
 import { useEmpresaAtual, getEmpresa } from "./empresaAtual";
 import { motorFederal, motorEstadualMunicipal, MotorBase } from "./guiasMotores";
 import { hojeISO, diffDias, round, moedaBR, brl } from "./utils";
@@ -222,7 +223,7 @@ export function listarGuias(empresaId?: string | null, competencia?: string | st
   return list.sort((a, b) => a.vencimento.localeCompare(b.vencimento));
 }
 
-export function emitirGuia(g: Guia, responsavel = "Sistema") {
+export function emitirGuia(g: Guia, responsavel = usuarioAtual()) {
   const db = loadDB();
   const ov = db.overrides[g.id] ?? {};
   ov.emitida = true;
@@ -234,7 +235,7 @@ export function emitirGuia(g: Guia, responsavel = "Sistema") {
 }
 
 export function reemitirGuia(g: Guia, obs?: string) {
-  emitirGuia(g, "Sistema");
+  emitirGuia(g);
 }
 
 export function registrarPagamento(g: Guia, p: { data: string; valor: number; meio: string; banco: string }) {
@@ -252,7 +253,7 @@ export function registrarPagamento(g: Guia, p: { data: string; valor: number; me
     origem: "Manual"
   });
   ov.pagamentos = pags;
-  ov.log = [{ id: `log-${Date.now()}`, em: new Date().toISOString(), usuario: "Sistema", acao: "Pagamento registrado", detalhe: `Valor ${brl(p.valor)} via ${p.meio}` }, ...(ov.log ?? [])];
+  ov.log = [{ id: `log-${Date.now()}`, em: new Date().toISOString(), usuario: usuarioAtual(), acao: "Pagamento registrado", detalhe: `Valor ${brl(p.valor)} via ${p.meio}` }, ...(ov.log ?? [])];
   db.overrides[g.id] = ov;
   saveDB(db);
 }
@@ -267,7 +268,7 @@ export function estornarPagamento(g: Guia, pagId: string) {
   if (!ov?.pagamentos) return;
   const p = ov.pagamentos.find(x => x.id === pagId);
   ov.pagamentos = ov.pagamentos.filter(x => x.id !== pagId);
-  ov.log = [{ id: `log-${Date.now()}`, em: new Date().toISOString(), usuario: "Sistema", acao: "Estorno de pagamento", detalhe: `Valor ${brl(p?.valor || 0)} estornado` }, ...(ov.log ?? [])];
+  ov.log = [{ id: `log-${Date.now()}`, em: new Date().toISOString(), usuario: usuarioAtual(), acao: "Estorno de pagamento", detalhe: `Valor ${brl(p?.valor || 0)} estornado` }, ...(ov.log ?? [])];
   db.overrides[g.id] = ov;
   saveDB(db);
 }
@@ -276,7 +277,7 @@ export function cancelarGuia(g: Guia, motivo: string) {
   const db = loadDB();
   const ov = db.overrides[g.id] ?? {};
   ov.status = "Cancelada";
-  ov.log = [{ id: `log-${Date.now()}`, em: new Date().toISOString(), usuario: "Sistema", acao: "Guia cancelada", detalhe: motivo }, ...(ov.log ?? [])];
+  ov.log = [{ id: `log-${Date.now()}`, em: new Date().toISOString(), usuario: usuarioAtual(), acao: "Guia cancelada", detalhe: motivo }, ...(ov.log ?? [])];
   db.overrides[g.id] = ov;
   saveDB(db);
 }
@@ -285,7 +286,7 @@ export function compensarGuia(g: Guia, motivo: string) {
   const db = loadDB();
   const ov = db.overrides[g.id] ?? {};
   ov.status = "Compensada";
-  ov.log = [{ id: `log-${Date.now()}`, em: new Date().toISOString(), usuario: "Sistema", acao: "Guia compensada", detalhe: motivo }, ...(ov.log ?? [])];
+  ov.log = [{ id: `log-${Date.now()}`, em: new Date().toISOString(), usuario: usuarioAtual(), acao: "Guia compensada", detalhe: motivo }, ...(ov.log ?? [])];
   db.overrides[g.id] = ov;
   saveDB(db);
 }

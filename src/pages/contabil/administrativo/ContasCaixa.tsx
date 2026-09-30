@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { useCompetencia } from "@/lib/competencia";
+import { confirmarExclusao } from "@/lib/confirmar";
 import {
   CONTAS_EVENT, CONTAS_TESOURARIA, REGUA, brl, carteira, contaPorId, dataBR,
   estornarBaixa, excluirMovimento, fluxo, hojeISO, inadimplentes, lancarMovimento,
@@ -582,7 +583,7 @@ function CaixaTesouraria() {
                       </TableCell>
                       <TableCell className="text-right">
                         {m.origem === "Lançamento manual" ? (
-                          <Button size="sm" variant="outline" className="rounded-full" onClick={() => { excluirMovimento(m.id); toast.success("Movimento excluído."); }}>Excluir</Button>
+                          <Button size="sm" variant="outline" className="rounded-full" onClick={() => { if (!confirmarExclusao("este movimento")) return; excluirMovimento(m.id); toast.success("Movimento excluído."); }}>Excluir</Button>
                         ) : <span className="text-[11px] text-muted-foreground">Automático</span>}
                       </TableCell>
                     </TableRow>

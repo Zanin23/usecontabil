@@ -2,7 +2,7 @@
 // Rows are scoped by empresa (selected company) and competência (YYYY-MM).
 // Nada aqui conversa com a Receita — cálculo interno/visual.
 import { useEffect, useState } from "react";
-import { loadDocs, moedaBR, valorBR, type DocFiscal } from "@/lib/fiscalStore";
+import { daEmpresa, loadDocs, moedaBR, valorBR, type DocFiscal } from "@/lib/fiscalStore";
 
 const KEY = "usecontabil.escrituracao.v1";
 
@@ -91,7 +91,7 @@ export function novoEscId(prefixo: string) {
 export function linhasDoPeriodo(slug: EscSlug, empresaId?: string | null, competencia?: string) {
   return loadLinhas(slug).filter(
     (l) =>
-      (!empresaId || l.empresaId === empresaId) &&
+      daEmpresa(l.empresaId, empresaId) &&
       (!competencia || l.competencia === competencia),
   );
 }
@@ -112,7 +112,7 @@ export function useEscrituracao(slug: EscSlug, empresaId?: string | null, compet
 
   return linhas.filter(
     (l) =>
-      (!empresaId || l.empresaId === empresaId) &&
+      daEmpresa(l.empresaId, empresaId) &&
       (!competencia || l.competencia === competencia),
   );
 }

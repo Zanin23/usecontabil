@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Badge, Button } from "@/design-system/mj-design-system-db98fa";
+import { Badge, Button, cn } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange,
   Settings2, Users2, Wallet, ChevronRight, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut, MonitorPlay,
@@ -12,7 +12,6 @@ import { usePratica, setPraticaAtiva } from "@/lib/praticaStore";
 
 
 import { useEmpresaAtual } from "@/lib/empresaAtual";
-import { limparBaseLocalUmaVez } from "@/lib/resetBase";
 import { AREAS } from "@/lib/contabilNav";
 import { useTema } from "@/lib/tema";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +24,28 @@ import ApresentacaoSistema from "@/components/contabil/ApresentacaoSistema";
 
 const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 
+/**
+ * Menu lateral (área azul-noite): item com fundo em degradê e barra indicadora animada quando ativo.
+ * O <aside> recebe a classe `dark`, então os tokens semânticos (text-foreground etc.) valem para o escuro.
+ */
+const navItem = (ativo: boolean, recolhida: boolean) =>
+  cn(
+    "group/nav relative flex w-full items-center gap-3 rounded-xl py-2 text-left text-sm transition-all duration-200",
+    recolhida ? "justify-center px-0" : "px-3",
+    ativo
+      ? "bg-gradient-to-r from-primary/40 via-primary/20 to-transparent text-foreground shadow-[inset_0_0_0_1px_hsl(0_0%_100%/0.07)] before:absolute before:left-0 before:top-1/2 before:h-6 before:w-[3px] before:-translate-y-1/2 before:rounded-r-full before:bg-gradient-brand before:origin-center before:animate-[bar-in_0.35s_ease-out]"
+      : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground",
+  );
+
+/** "Pastilha" do ícone do menu: degradê quando ativo, cresce de leve no hover. */
+const navIcone = (ativo: boolean) =>
+  cn(
+    "grid h-7 w-7 shrink-0 place-items-center rounded-lg transition-all duration-200",
+    ativo
+      ? "bg-gradient-brand text-white shadow-[0_4px_12px_-2px_hsl(250_80%_60%/0.6)]"
+      : "bg-white/[0.06] text-muted-foreground group-hover/nav:scale-110 group-hover/nav:bg-white/10 group-hover/nav:text-foreground",
+  );
+
 
 export default function ContabilShell() {
   const { competencia, setCompetencia, competenciaFim, setCompetenciaFim, isPeriodo } = useCompetencia();
@@ -35,14 +56,8 @@ export default function ContabilShell() {
   const { praticaAtiva: emPratica } = usePratica();
   const [apresentacaoAberta, setApresentacaoAberta] = useState(false);
 
-
-
-  useEffect(() => {
-    limparBaseLocalUmaVez();
-  }, []);
-
-
-
+  // IMPORTANTE: não existe reset automático da base ao abrir o sistema.
+  // Zerar/isolar dados só acontece por ação explícita do usuário (ver lib/resetBase.ts).
 
   const [usuarioNome, setUsuarioNome] = useState("—");
   const [usuarioPerfil, setUsuarioPerfil] = useState("Usuário");
@@ -126,25 +141,28 @@ export default function ContabilShell() {
   })();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-app text-foreground">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 border-r border-border bg-card lg:bg-card/60 backdrop-blur flex flex-col transition-[width,transform] duration-300 ease-in-out ${
+        className={`dark bg-sidebar text-foreground fixed inset-y-0 left-0 z-50 border-r border-white/5 shadow-[4px_0_24px_-12px_hsl(245_60%_20%/0.5)] flex flex-col transition-[width,transform] duration-300 ease-in-out ${
           recolhida ? "lg:w-20" : "lg:w-64"
         } w-[280px] sm:w-64 ${menuAberto ? "translate-x-0 shadow-2xl" : "-translate-x-full"} lg:translate-x-0 ${
-          emPratica ? "ring-2 ring-inset ring-brand-orange/40" : ""
+          emPratica ? "ring-2 ring-inset ring-warn/60" : ""
         }`}
       >
-        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-brand z-10" />
+        <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-animated z-10" />
         <div className={`h-14 flex items-center border-b border-border ${recolhida ? "px-3" : "px-5"}`}>
           <div className="flex items-center gap-2 min-w-0">
-            <div className="h-8 w-8 shrink-0 rounded-lg bg-brand-orange grid place-items-center shadow-glow">
-              <span className="text-primary-foreground font-display text-lg leading-none">U</span>
+            <div className="h-9 w-9 shrink-0 rounded-xl bg-gradient-brand grid place-items-center shadow-glow ring-1 ring-white/20 transition-transform duration-300 hover:rotate-6 hover:scale-105">
+              <span className="text-white font-display text-lg leading-none">U</span>
             </div>
             {!recolhida && (
               <div className="min-w-0 leading-tight">
                 <div className="font-display text-base leading-none truncate">
-                  Use <span className="text-brand-orange">Contábil</span>
+                  Use{" "}
+                  <span className="bg-gradient-to-r from-[hsl(205_100%_78%)] via-[hsl(250_100%_82%)] to-[hsl(300_90%_80%)] bg-clip-text text-transparent">
+                    Contábil
+                  </span>
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-0.5">
                   v2.4 · corporate
@@ -160,21 +178,19 @@ export default function ContabilShell() {
           <NavLink
             to="/dashboard"
             title="Dashboard"
-            className={({ isActive }) =>
-              `flex items-center gap-3 rounded-lg py-2 text-sm border transition ${
-                recolhida ? "justify-center px-0" : "px-3"
-              } ${
-                isActive
-                  ? "bg-brand-orange/15 text-foreground border-brand-orange/30"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground border-transparent"
-              }`
-            }
+            className={({ isActive }) => navItem(isActive, recolhida)}
           >
-            {!recolhida && (
-              <span className="text-[10px] font-mono text-muted-foreground/70 w-5">01</span>
+            {({ isActive }) => (
+              <>
+                {!recolhida && (
+                  <span className="text-[10px] font-mono text-muted-foreground/60 w-5">01</span>
+                )}
+                <span className={navIcone(isActive)}>
+                  <LayoutDashboard className="h-4 w-4" />
+                </span>
+                {!recolhida && <span className={isActive ? "font-medium" : ""}>Dashboard</span>}
+              </>
             )}
-            <LayoutDashboard className="h-4 w-4 shrink-0" />
-            {!recolhida && <span>Dashboard</span>}
           </NavLink>
 
           {/* Areas */}
@@ -195,40 +211,36 @@ export default function ContabilShell() {
                     }
                     setOpenArea(isOpen ? null : area.slug);
                   }}
-                  className={`w-full flex items-center gap-3 rounded-lg py-2 text-sm border transition text-left ${
-                    recolhida ? "justify-center px-0" : "px-3"
-                  } ${
-                    isActive
-                      ? "bg-brand-orange/15 text-foreground border-brand-orange/30"
-                      : "text-muted-foreground hover:bg-accent hover:text-foreground border-transparent"
-                  }`}
+                  className={navItem(isActive, recolhida)}
                 >
                   {!recolhida && (
-                    <span className="text-[10px] font-mono text-muted-foreground/70 w-5">
+                    <span className="text-[10px] font-mono text-muted-foreground/60 w-5">
                       {area.code}
                     </span>
                   )}
-                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-brand-orange" : ""}`} />
+                  <span className={navIcone(isActive)}>
+                    <Icon className="h-4 w-4" />
+                  </span>
                   {!recolhida && (
                     <>
-                      <span className="flex-1">{area.title}</span>
+                      <span className={cn("flex-1", isActive && "font-medium")}>{area.title}</span>
                       <ChevronRight
-                        className={`h-3 w-3 transition ${isOpen ? "rotate-90 text-brand-orange" : "text-muted-foreground/60"}`}
+                        className={`h-3 w-3 transition-transform duration-200 ${isOpen ? "rotate-90 text-foreground" : "text-muted-foreground/60"}`}
                       />
                     </>
                   )}
                 </button>
 
                 {isOpen && (
-                  <div className="pl-8 space-y-0.5 border-l border-brand-orange/30 ml-4">
+                  <div className="pl-8 space-y-0.5 border-l border-white/10 ml-4 animate-in fade-in slide-in-from-top-1 duration-200">
                     <NavLink
                       to={`/${area.slug}`}
                       end
                       className={({ isActive: linkActive }) =>
-                        `block rounded-md px-3 py-1.5 text-xs transition ${
+                        `block rounded-md px-3 py-1.5 text-xs transition-all duration-150 ${
                           linkActive
-                            ? "text-foreground bg-brand-orange/10 border-l-2 border-brand-orange -ml-px"
-                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                            ? "text-foreground font-medium bg-primary/25 border-l-2 border-primary -ml-px"
+                            : "text-muted-foreground hover:text-foreground hover:bg-white/[0.06] hover:translate-x-0.5"
                         }`
                       }
                     >
@@ -239,10 +251,10 @@ export default function ContabilShell() {
                         key={cat.slug}
                         to={`/${area.slug}/${cat.slug}`}
                         className={({ isActive }) =>
-                          `block rounded-md px-3 py-1.5 text-xs transition ${
+                          `block rounded-md px-3 py-1.5 text-xs transition-all duration-150 ${
                             isActive || currentCategory?.slug === cat.slug
-                              ? "text-foreground bg-brand-orange/10 border-l-2 border-brand-orange -ml-px"
-                              : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                              ? "text-foreground font-medium bg-primary/25 border-l-2 border-primary -ml-px"
+                              : "text-muted-foreground hover:text-foreground hover:bg-white/[0.06] hover:translate-x-0.5"
                           }`
                         }
                       >
@@ -258,21 +270,19 @@ export default function ContabilShell() {
           <NavLink
             to="/aprender"
             title="Central de Aprendizado"
-            className={({ isActive }) =>
-              `flex items-center gap-3 rounded-lg py-2 text-sm border transition ${
-                recolhida ? "justify-center px-0" : "px-3"
-              } ${
-                isActive
-                  ? "bg-brand-orange/15 text-foreground border-brand-orange/30"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground border-transparent"
-              }`
-            }
+            className={({ isActive }) => navItem(isActive, recolhida)}
           >
-            {!recolhida && (
-              <span className="text-[10px] font-mono text-muted-foreground/70 w-5">06</span>
+            {({ isActive }) => (
+              <>
+                {!recolhida && (
+                  <span className="text-[10px] font-mono text-muted-foreground/60 w-5">06</span>
+                )}
+                <span className={navIcone(isActive)}>
+                  <GraduationCap className="h-4 w-4" />
+                </span>
+                {!recolhida && <span className={isActive ? "font-medium" : ""}>Aprender</span>}
+              </>
             )}
-            <GraduationCap className="h-4 w-4 shrink-0" />
-            {!recolhida && <span>Aprender</span>}
           </NavLink>
 
           {/* O botão de Modo Prática foi removido da barra lateral conforme solicitado. */}
@@ -313,7 +323,7 @@ export default function ContabilShell() {
               <button
                 type="button"
                 onClick={() => setApresentacaoAberta(true)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-brand-orange text-white shadow-lg shadow-brand-orange/20 hover:bg-brand-orange/90 transition group"
+                className="btn-sheen bg-gradient-brand w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-white shadow-[var(--shadow-btn)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-btn-hover)] active:scale-[0.98] transition-all duration-200 group"
               >
                 <MonitorPlay className="h-4 w-4 shrink-0 group-hover:scale-110 transition-transform" />
                 <span className="font-medium text-sm">Apresentação</span>
@@ -350,7 +360,7 @@ export default function ContabilShell() {
       {/* Main */}
       {menuAberto && (
         <div
-          className="fixed inset-0 z-40 bg-foreground/40 lg:hidden"
+          className="fixed inset-0 z-40 bg-foreground/40 backdrop-blur-sm animate-in fade-in duration-200 lg:hidden"
           onClick={() => setMenuAberto(false)}
           aria-hidden
         />
@@ -358,12 +368,13 @@ export default function ContabilShell() {
 
       <div className={`transition-[padding] duration-300 ease-in-out pl-0 ${recolhida ? "lg:pl-20" : "lg:pl-64"}`}>
 
-        <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur safe-top">
-          <div className="px-4 lg:px-8 h-16 lg:h-14 flex items-center gap-2 lg:gap-4">
+        <header className="sticky top-0 z-30 border-b border-border/70 bg-background/70 backdrop-blur-xl safe-top">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+          <div className="px-4 lg:px-8 h-16 lg:h-14 flex items-center gap-2 lg:gap-4 max-lg:overflow-x-auto max-lg:[scrollbar-width:none]">
             <Button
               variant="outline"
               size="sm"
-              className="rounded-md h-9 w-9 p-0 shrink-0 lg:hidden"
+              className="rounded-lg h-9 w-9 p-0 shrink-0 lg:hidden"
               aria-label={menuAberto ? "Fechar menu" : "Abrir menu"}
               onClick={() => setMenuAberto((v) => !v)}
             >
@@ -372,7 +383,7 @@ export default function ContabilShell() {
             <Button
               variant="outline"
               size="sm"
-              className="rounded-md h-9 w-9 p-0 shrink-0"
+              className="rounded-lg h-9 w-9 p-0 shrink-0"
               aria-label="Voltar para a tela anterior"
               title="Voltar"
               disabled={pathname === "/"}
@@ -404,8 +415,8 @@ export default function ContabilShell() {
 
             <div className="flex-1" />
 
-            <div className="hidden xl:flex items-center gap-2 rounded-md border border-border bg-card px-3 h-9 text-sm min-w-[280px]">
-              <Building2 className="h-4 w-4 text-muted-foreground" />
+            <div className="hidden xl:flex items-center gap-2 rounded-lg border border-border bg-card/80 px-3 h-9 text-sm min-w-[220px] 2xl:min-w-[280px] shadow-sm transition-all hover:border-primary/40 hover:shadow-card focus-within:border-primary/60 focus-within:ring-4 focus-within:ring-ring/10">
+              <Building2 className="h-4 w-4 text-primary" />
               {empresas.length === 0 ? (
                 <NavLink
                   to="/preparativos/cadastros/empresas/novo"
@@ -429,8 +440,8 @@ export default function ContabilShell() {
             </div>
 
 
-            <div className="flex items-center gap-2 rounded-md border border-border bg-card px-2 lg:px-3 h-9 text-sm shrink-0">
-              <CalendarRange className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-card/80 px-2 lg:px-3 h-9 text-sm shrink-0 shadow-sm transition-all hover:border-primary/40 hover:shadow-card focus-within:border-primary/60 focus-within:ring-4 focus-within:ring-ring/10">
+              <CalendarRange className="h-4 w-4 text-primary" />
               <div className="flex items-center gap-1">
                 <select
                   value={competencia}
@@ -464,7 +475,7 @@ export default function ContabilShell() {
 
             <button
               onClick={() => setBuscaAberta(true)}
-              className="hidden lg:flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-card text-sm text-muted-foreground hover:text-foreground transition">
+              className="hidden lg:flex items-center gap-2 h-9 px-3 rounded-lg border border-border bg-card/80 text-sm text-muted-foreground shadow-sm transition-all hover:border-primary/40 hover:text-foreground hover:shadow-card">
               <Search className="h-4 w-4" />
               <span>Buscar…</span>
               <kbd className="ml-2 inline-flex items-center gap-1 rounded border border-border px-1.5 py-0.5 text-[10px] font-mono">
@@ -472,14 +483,14 @@ export default function ContabilShell() {
               </kbd>
             </button>
              <Button
-               variant="outline"
+               variant="soft"
                size="sm"
-               className="rounded-md h-9 gap-2 text-brand-orange border-brand-orange/20 hover:bg-brand-orange/5"
+               className="rounded-lg h-9 gap-2"
                onClick={() => setApresentacaoAberta(true)}
                title="Ver apresentação do sistema"
              >
                <MonitorPlay className="h-4 w-4" />
-               <span className="hidden sm:inline">Apresentação</span>
+               <span className="hidden 2xl:inline">Apresentação</span>
              </Button>
 
              <AjudaTela />
@@ -488,7 +499,7 @@ export default function ContabilShell() {
             <Button
               variant="outline"
               size="sm"
-              className="rounded-md h-9"
+              className="rounded-lg h-9"
               onClick={() => setConfigAberta(true)}
               aria-label="Configurações da conta"
               title="Configurações da conta"
@@ -503,7 +514,7 @@ export default function ContabilShell() {
             <Button
               variant="outline"
               size="sm"
-              className="rounded-md h-9"
+              className="rounded-lg h-9"
               onClick={sair}
               aria-label="Sair da conta"
               title="Sair"
@@ -515,9 +526,9 @@ export default function ContabilShell() {
         </header>
 
         {emPratica && (
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-brand-orange/40 bg-brand-orange/10 px-4 py-2 text-xs lg:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-warn/40 bg-warn/10 px-4 py-2 text-xs lg:px-8">
             <span className="flex items-center gap-2">
-              <FlaskConical className="h-3.5 w-3.5 text-brand-orange" />
+              <FlaskConical className="h-3.5 w-3.5 text-warn" />
               <strong>Modo prática ativo</strong> — laboratórios de estudo com dados fictícios; nada
               é gravado na competência real.
             </span>
@@ -541,7 +552,7 @@ export default function ContabilShell() {
           <ApresentacaoSistema onFinish={() => setApresentacaoAberta(false)} />
         )}
 
-        <main className="px-4 lg:px-8 py-6 lg:py-8">
+        <main key={pathname} className="animate-page-enter px-4 lg:px-8 py-6 lg:py-8">
 
           <Outlet />
         </main>

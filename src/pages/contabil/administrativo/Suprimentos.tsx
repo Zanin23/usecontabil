@@ -13,6 +13,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { toast } from "sonner";
 import AssistenteCampos, { type CampoAjuda } from "@/components/contabil/AssistenteCampos";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
+import { confirmarExclusao } from "@/lib/confirmar";
 import {
   CENTROS_CUSTO, COMPRAS_EVENT, CONDICOES_PAGAMENTO, SETORES, TIPOS_FRETE, UNIDADES,
   abrirCotacao, adjudicarCotacao, aprovarRequisicao, brl, cancelarCotacao, cancelarPedido,
@@ -481,7 +482,7 @@ function Requisicoes() {
                             </Button>
                           )}
                           <Button size="icon" variant="ghost" onClick={() => setEdicao(r)}><Pencil className="h-4 w-4" /></Button>
-                          <Button size="icon" variant="ghost" onClick={() => acao(() => excluirRequisicao(r.id), "Requisição excluída.")}>
+                          <Button size="icon" variant="ghost" onClick={() => confirmarExclusao("esta requisição") && acao(() => excluirRequisicao(r.id), "Requisição excluída.")}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
@@ -768,6 +769,7 @@ function MapaComparativo({ cotacao }: { cotacao: Cotacao }) {
                       <>
                         <Button size="icon" variant="ghost" onClick={() => setProposta(a.proposta)}><Pencil className="h-4 w-4" /></Button>
                         <Button size="icon" variant="ghost" onClick={() => {
+                          if (!confirmarExclusao("esta proposta")) return;
                           try { excluirProposta(cotacao.id, a.proposta.id); toast.success("Proposta removida."); }
                           catch (e) { toast.error((e as Error).message); }
                         }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -1097,7 +1099,7 @@ function Pedidos() {
                                 <PackageCheck className="mr-1 h-3.5 w-3.5" />Receber
                               </Button>
                             )}
-                            <Button size="icon" variant="ghost" onClick={() => acao(() => excluirPedido(p.id), "Pedido excluído.")}>
+                            <Button size="icon" variant="ghost" onClick={() => confirmarExclusao("este pedido") && acao(() => excluirPedido(p.id), "Pedido excluído.")}>
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                           </div>

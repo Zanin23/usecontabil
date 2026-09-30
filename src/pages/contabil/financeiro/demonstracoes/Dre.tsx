@@ -12,6 +12,7 @@ import { ArrowRight, Plus, Trash2, TrendingDown, TrendingUp } from "lucide-react
 import { toast } from "sonner";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
+import { confirmarExclusao } from "@/lib/confirmar";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import ExportarMenu from "@/components/contabil/ExportarMenu";
 import {
@@ -299,6 +300,7 @@ export default function Dre() {
                           variant="ghost"
                           className="rounded-full"
                           onClick={() => {
+                            if (!confirmarExclusao("este ajuste")) return;
                             removerAjuste(a.id);
                             toast.success("Ajuste removido");
                           }}

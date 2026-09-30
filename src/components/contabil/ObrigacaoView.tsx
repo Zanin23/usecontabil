@@ -5,6 +5,7 @@ import {
   FileText, Loader2, Play, RefreshCw, Search, Send, ShieldCheck, Info,
 } from "lucide-react";
 import { toast } from "sonner";
+import AvisoSimulacao from "@/components/contabil/AvisoSimulacao";
 import {
   Badge, Button, Card, CardContent, Input, Label, Progress, Select, SelectContent, SelectItem,
   SelectTrigger, SelectValue, Sheet, SheetContent, SheetHeader, SheetTitle, Table, TableBody,
@@ -268,6 +269,11 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
       </Card>
 
       {/* abas */}
+      <AvisoSimulacao>
+        Arquivos, recibos, protocolos, assinaturas e transmissões desta tela são simulados: nada é enviado à Receita, à SEFAZ ou às
+        prefeituras e nenhum arquivo SPED/EFD/DCTF real é gerado para download. Use o programa oficial de cada obrigação.
+      </AvisoSimulacao>
+
       <Tabs defaultValue="resumo">
         <TabsList className="flex h-auto flex-wrap justify-start gap-1 rounded-2xl p-1">
           {[

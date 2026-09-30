@@ -6,6 +6,7 @@ import {
 } from "@/design-system/mj-design-system-db98fa";
 import { toast } from "sonner";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
+import { confirmarExclusao } from "@/lib/confirmar";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import {
   CATEGORIAS, certidoes as lerCertidoes, consultarCertidao, diasParaVencer,
@@ -145,6 +146,7 @@ export default function AuditoriaCertidoes() {
                           aria-label={`Remover certidão ${x.certidao}`}
                           onClick={() => {
                             if (!empresa) return toast.error("Selecione uma empresa.");
+                            if (!confirmarExclusao(`a certidão ${x.certidao}`, "Ela deixa de ser monitorada.")) return;
                             removerCertidao(empresa.id, x.id);
                             toast.success("Certidão removida do monitoramento.");
                           }}

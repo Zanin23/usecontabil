@@ -11,6 +11,11 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
   },
   resolve: {
-    alias: { "@": path.resolve(__dirname, "./src") },
+    alias: [
+      // Funções de borda importam pelo especificador do Deno ("npm:…"); nos testes apontam para stubs.
+      { find: /^npm:@supabase\/supabase-js@2\/cors$/, replacement: path.resolve(__dirname, "./src/test/stubs/cors.ts") },
+      { find: /^npm:@supabase\/supabase-js@2$/, replacement: path.resolve(__dirname, "./src/test/stubs/supabaseJs.ts") },
+      { find: "@", replacement: path.resolve(__dirname, "./src") },
+    ],
   },
 });

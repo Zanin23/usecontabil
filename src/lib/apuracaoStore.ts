@@ -5,7 +5,8 @@
 // Tudo é interno/visual: nenhuma comunicação real com Receita/Prefeituras.
 // ============================================================================
 import { useEffect, useState } from "react";
-import { loadDocs, moedaBR, valorBR, type DocFiscal, type DocSlug } from "@/lib/fiscalStore";
+import { usuarioAtual } from "@/lib/usuarioAtual";
+import { daEmpresa, loadDocs, moedaBR, valorBR, type DocFiscal, type DocSlug } from "@/lib/fiscalStore";
 import { getEmpresa } from "@/lib/empresasStore";
 
 const KEY = "usecontabil.apuracoes.v1";
@@ -55,7 +56,6 @@ export type ApuracaoEstado = {
 
 type DB = Record<string, ApuracaoEstado>;
 
-const USUARIO = "M. Andrade";
 
 export const chave = (motor: MotorSlug, empresaId: string, competencia: string) =>
   `${motor}::${empresaId}::${competencia}`;
@@ -81,7 +81,7 @@ function persist(db: DB) {
 export function estadoPadrao(): ApuracaoEstado {
   return {
     status: "Aberta",
-    responsavel: USUARIO,
+    responsavel: usuarioAtual(),
     atualizadoEm: new Date().toISOString(),
     ajustes: [],
     parametros: {},
@@ -109,7 +109,7 @@ export function setEstado(
         {
           id: novoId("log"),
           em: new Date().toISOString(),
-          usuario: USUARIO,
+          usuario: usuarioAtual(),
           acao: logAcao.acao,
           detalhe: logAcao.detalhe,
         },
@@ -176,7 +176,7 @@ export function docsDoPeriodo(slug: DocSlug, empresaId?: string | null, competen
   const comps = Array.isArray(competencia) ? competencia : [competencia];
   return loadDocs(slug).filter(
     (d) =>
-      (!empresaId || d.empresaId === empresaId) &&
+      daEmpresa(d.empresaId, empresaId) &&
       (!competencia || comps.includes(d.competencia)),
   );
 }
