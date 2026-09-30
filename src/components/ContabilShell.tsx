@@ -370,7 +370,7 @@ export default function ContabilShell() {
 
         <header className="sticky top-0 z-30 border-b border-border/70 bg-background/70 backdrop-blur-xl safe-top">
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-          <div className="px-4 lg:px-8 h-16 lg:h-14 flex items-center gap-2 lg:gap-4">
+          <div className="px-4 lg:px-8 h-16 lg:h-14 flex items-center gap-2 lg:gap-4 max-lg:overflow-x-auto max-lg:[scrollbar-width:none]">
             <Button
               variant="outline"
               size="sm"
@@ -415,7 +415,7 @@ export default function ContabilShell() {
 
             <div className="flex-1" />
 
-            <div className="hidden xl:flex items-center gap-2 rounded-lg border border-border bg-card/80 px-3 h-9 text-sm min-w-[280px] shadow-sm transition-all hover:border-primary/40 hover:shadow-card focus-within:border-primary/60 focus-within:ring-4 focus-within:ring-ring/10">
+            <div className="hidden xl:flex items-center gap-2 rounded-lg border border-border bg-card/80 px-3 h-9 text-sm min-w-[220px] 2xl:min-w-[280px] shadow-sm transition-all hover:border-primary/40 hover:shadow-card focus-within:border-primary/60 focus-within:ring-4 focus-within:ring-ring/10">
               <Building2 className="h-4 w-4 text-primary" />
               {empresas.length === 0 ? (
                 <NavLink

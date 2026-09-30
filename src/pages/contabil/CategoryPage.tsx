@@ -49,7 +49,7 @@ export default function CategoryPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="stagger grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {category.modules.map((m) => {
           const Icon = m.icon;
           return (
@@ -58,13 +58,13 @@ export default function CategoryPage() {
               to={`/${area.slug}/${category.slug}/${m.slug}`}
               className="group"
             >
-              <Card className="h-full rounded-2xl border-border/70 hover:border-foreground/30 hover:shadow-elevated transition">
+              <Card className="lift h-full rounded-2xl border-border/70">
                 <CardContent className="p-5 space-y-4">
                   <div className="flex items-start justify-between">
-                    <div className={`h-10 w-10 rounded-xl grid place-items-center ${accentBg[area.accent]}`}>
+                    <div className={`h-10 w-10 rounded-xl grid place-items-center transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110 ${accentBg[area.accent]}`}>
                       <Icon className={`h-5 w-5 ${accentText[area.accent]}`} />
                     </div>
-                    <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition" />
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 -translate-x-1 translate-y-1 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:text-primary group-hover:opacity-100" />
                   </div>
                   <div>
                     <div className="font-medium">{m.title}</div>

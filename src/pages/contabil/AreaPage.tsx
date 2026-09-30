@@ -38,7 +38,7 @@ export default function AreaPage() {
       {/* Hero */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         <div className="flex items-start gap-5">
-          <div className={`h-14 w-14 rounded-2xl grid place-items-center ${accentBg[area.accent]}`}>
+          <div className={`h-14 w-14 rounded-2xl grid place-items-center shadow-card animate-float ${accentBg[area.accent]}`}>
             <Icon className={`h-7 w-7 ${accentText[area.accent]}`} />
           </div>
           <div>
@@ -76,14 +76,16 @@ export default function AreaPage() {
                 Ver categoria →
               </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="stagger grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {cat.modules.map((m) => {
                 const MIcon = m.icon;
                 return (
                   <Link key={m.slug} to={`/${area.slug}/${cat.slug}/${m.slug}`} className="group">
-                    <Card className="h-full rounded-xl border-border/70 hover:border-foreground/30 transition">
+                    <Card className="lift h-full rounded-xl border-border/70">
                       <CardContent className="p-4 space-y-3">
-                        <MIcon className={`h-4 w-4 ${accentText[area.accent]}`} />
+                        <span className={`grid h-8 w-8 place-items-center rounded-lg transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110 ${accentBg[area.accent]}`}>
+                          <MIcon className={`h-4 w-4 ${accentText[area.accent]}`} />
+                        </span>
                         <div className="text-sm font-medium leading-snug">{m.title}</div>
                         <div className="text-[11px] text-muted-foreground line-clamp-2">{m.desc}</div>
                       </CardContent>

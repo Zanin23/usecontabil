@@ -5,3 +5,6 @@ Use Contábil é contabilidade **interna** de uma empresa/grupo — NÃO é sist
 Todos os dados fiscais/eSocial/Receita são apenas visuais/mock — sem integração real com órgãos oficiais.
 Competência padrão: 2026 (Fev–Jul/2026).
 Nunca apagar/limpar/resetar dados (nuvem ou localStorage) automaticamente ao abrir o sistema, nem com base em flag guardada no navegador. Ações destrutivas só por clique explícito do usuário, com caixa de confirmação (AlertDialog). Um "reset único" automático já apagou as empresas da nuvem em todo navegador novo; o teste src/test/primeiroAcesso.test.tsx protege contra isso — mantenha-o passando.
+
+## Visual
+Identidade visual "índigo" (atualizada em 2026-09); os tokens ficam em `src/index.css`. `brand-orange` é NOME HISTÓRICO do acento principal e hoje vale ÍNDIGO — não renomear nem voltar para laranja sem varrer os ~790 usos. Avisos e modo prática usam âmbar (`warn`). O menu lateral é uma área escura (classe `dark` no `<aside>` do ContabilShell). Botões: `Button` do design system (variantes default/gradient/success/destructive/outline/soft/ghost/link + prop `loading`). Animações em `src/index.css` (`animate-page-enter`, `.stagger`, `.lift`, `.btn-sheen`), sempre respeitando `prefers-reduced-motion`. Ícones: `lucide-react` 0.462 (conferir se o ícone existe antes de importar).
