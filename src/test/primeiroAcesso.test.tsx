@@ -125,7 +125,8 @@ describe("ação manual 'Isolar dados (Real → Prática)'", () => {
     const ok = await forcarLimpezaBaseReal();
 
     expect(ok).toBe(true);
-    expect(nuvem.apagadas).toEqual(["empresas"]);
+    // Também apaga a cópia na nuvem dos cadastros próprios e lançamentos (a cópia local foi para a prática).
+    expect(nuvem.apagadas).toEqual(["empresas", "contabil_registros"]);
     expect(localStorage.getItem("uc:pratica:ativo")).toBe("1");
   });
 });

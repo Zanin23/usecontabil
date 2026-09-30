@@ -4,6 +4,7 @@ import { limparCacheEmpresas } from "./empresasStore";
 import { registrarLog } from "./auditoriaStore";
 import { FISCAL_EVENT } from "./fiscalStore";
 import { TRIBUTARIO_EVENT } from "./tributarioStore";
+import { apagarRegistrosDaNuvem, limparCacheColecoes } from "./nuvemColecoes";
 
 
 
@@ -80,7 +81,11 @@ export async function migrarBaseRealParaPratica(manterEmpresaId?: string) {
       // Se tivermos um ID de empresa para manter (ex: a que acabamos de popular dados fictícios), 
       // não deletamos tudo indiscriminadamente. Mas aqui o objetivo é limpar a Real.
       await supabase.from("empresas").delete().eq("user_id", userResp.user.id);
+      // Cadastros próprios e lançamentos contábeis (tabela contabil_registros): a cópia local já foi
+      // para o modo prática acima; sem apagar a nuvem, eles voltariam na próxima sincronização.
+      await apagarRegistrosDaNuvem(userResp.user.id);
     }
+    limparCacheColecoes();
     
     // 5. Registrar Log de Auditoria
     const detalheLog = [
@@ -138,7 +143,9 @@ export async function deletarTudoGeral() {
     const { data: userResp } = await supabase.auth.getUser();
     if (userResp.user) {
       await supabase.from("empresas").delete().eq("user_id", userResp.user.id);
+      await apagarRegistrosDaNuvem(userResp.user.id);
     }
+    limparCacheColecoes();
 
     // 3. Limpar caches e resetar estado
     limparCacheEmpresas();
