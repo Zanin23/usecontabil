@@ -3,9 +3,33 @@
 import { soDigitos } from "./documentos";
 import { parseNumeroBR } from "./numeros";
 
-export type NFeParte = { cnpj: string; nome: string; uf: string };
+export type NFeParte = {
+  cnpj: string;
+  nome: string;
+  uf: string;
+  /** Campos opcionais usados para preencher o cadastro de clientes e fornecedores. */
+  ie?: string;
+  fantasia?: string;
+  logradouro?: string;
+  numero?: string;
+  complemento?: string;
+  bairro?: string;
+  codigoMunicipio?: string;
+  municipio?: string;
+  cep?: string;
+  telefone?: string;
+  email?: string;
+};
 
 export type NFeItem = {
+  /** Código do produto no emitente (cProd). */
+  codigo?: string;
+  unidade?: string;
+  cest?: string;
+  /** cEAN, quando informado e diferente de "SEM GTIN". */
+  gtin?: string;
+  /** Origem da mercadoria (0 a 8). */
+  origem?: string;
   descricao: string;
   ncm: string;
   cfop: string;
@@ -56,10 +80,23 @@ export function situacaoPorCStat(cStat: string): SituacaoNFe {
 }
 
 function lerParte(no: Element | undefined, ender: string): NFeParte {
+  const end = primeiro(no, ender);
+  const opcional = (v: string) => v || undefined;
   return {
     cnpj: soDigitos(texto(no, "CNPJ") || texto(no, "CPF")),
     nome: texto(no, "xNome"),
-    uf: texto(primeiro(no, ender), "UF"),
+    uf: texto(end, "UF"),
+    ie: opcional(texto(no, "IE")),
+    fantasia: opcional(texto(no, "xFant")),
+    logradouro: opcional(texto(end, "xLgr")),
+    numero: opcional(texto(end, "nro")),
+    complemento: opcional(texto(end, "xCpl")),
+    bairro: opcional(texto(end, "xBairro")),
+    codigoMunicipio: opcional(texto(end, "cMun")),
+    municipio: opcional(texto(end, "xMun")),
+    cep: opcional(texto(end, "CEP")),
+    telefone: opcional(texto(end, "fone")),
+    email: opcional(texto(no, "email")),
   };
 }
 
@@ -97,7 +134,13 @@ export function lerNFe(xml: string): NFe {
   const itens: NFeItem[] = tags(inf, "det").map((det) => {
     const prod = primeiro(det, "prod");
     const icms = primeiro(det, "ICMS");
+    const ean = texto(prod, "cEAN");
     return {
+      codigo: texto(prod, "cProd") || undefined,
+      unidade: texto(prod, "uCom") || undefined,
+      cest: texto(prod, "CEST") || undefined,
+      gtin: ean && !/sem gtin/i.test(ean) ? ean : undefined,
+      origem: texto(icms, "orig") || undefined,
       descricao: texto(prod, "xProd"),
       ncm: texto(prod, "NCM"),
       cfop: texto(prod, "CFOP"),

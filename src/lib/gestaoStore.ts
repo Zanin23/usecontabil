@@ -256,7 +256,7 @@ export function setExecucao(
 
 export function resetExecucoes(empresaId: string, competencia: string) {
   const list = loadExecucoes().filter((e) => !(e.empresaId === empresaId && e.competencia === competencia));
-  localStorage.setItem(KEY_EXEC, JSON.stringify(list));
+  localStorage.setItem(getStoreKey(KEY_EXEC), JSON.stringify(list));
   notify();
 }
 
@@ -276,13 +276,15 @@ export function fecharPeriodo(rec: Omit<Fechamento, "key" | "fechadoEm">) {
   const idx = list.findIndex((f) => f.key === key);
   if (idx >= 0) list[idx] = next;
   else list.unshift(next);
-  localStorage.setItem(KEY_FECHAMENTO, JSON.stringify(list));
+  // Mesmo sufixo da leitura (modo prática): antes gravava na base real e lia da prática.
+  localStorage.setItem(getStoreKey(KEY_FECHAMENTO), JSON.stringify(list));
   notify();
 }
 
 export function reabrirPeriodo(empresaId: string, competencia: string) {
   const list = loadFechamentos().filter((f) => f.key !== `${empresaId}|${competencia}`);
-  localStorage.setItem(KEY_FECHAMENTO, JSON.stringify(list));
+  // Mesmo sufixo da leitura (modo prática): antes gravava na base real e lia da prática.
+  localStorage.setItem(getStoreKey(KEY_FECHAMENTO), JSON.stringify(list));
   notify();
 }
 

@@ -25,7 +25,6 @@ const EmpresaInscricoes = lazy(() => import("./pages/contabil/EmpresaInscricoes"
 const EmpresaPagamentos = lazy(() => import("./pages/contabil/EmpresaPagamentos"));
 const EmpresaParametros = lazy(() => import("./pages/contabil/EmpresaParametros"));
 const EmpresaCertificados = lazy(() => import("./pages/contabil/EmpresaCertificados"));
-const FinServicos = lazy(() => import("./pages/contabil/financeiro/CadastroServicos"));
 const FinSimei = lazy(() => import("./pages/contabil/financeiro/TabelaSimei"));
 const FinSimples = lazy(() => import("./pages/contabil/financeiro/TabelaSimplesNacional"));
 const FinLucroReal = lazy(() => import("./pages/contabil/financeiro/TabelaLucroReal"));
@@ -33,8 +32,15 @@ const FinLucroPresumido = lazy(() => import("./pages/contabil/financeiro/TabelaL
 const FinAjusteApuracao = lazy(() => import("./pages/contabil/financeiro/TabelaAjusteApuracao"));
 const FinAjusteDoc = lazy(() => import("./pages/contabil/financeiro/TabelaAjusteDocumentoFiscal"));
 const FinPisCofins = lazy(() => import("./pages/contabil/financeiro/TabelaApuracaoPisCofins"));
-const FinProdutos = lazy(() => import("./pages/contabil/financeiro/cadastros/Produtos"));
-const FinParceiros = lazy(() => import("./pages/contabil/financeiro/cadastros/ClientesFornecedores"));
+const Participantes = lazy(() => import("./pages/contabil/preparativos/Participantes"));
+const ProdutosServicos = lazy(() => import("./pages/contabil/preparativos/ProdutosServicos"));
+const PlanoContas = lazy(() => import("./pages/contabil/contabilidade/PlanoContas"));
+const CentrosCusto = lazy(() => import("./pages/contabil/contabilidade/CentrosCusto"));
+const HistoricosPadrao = lazy(() => import("./pages/contabil/contabilidade/HistoricosPadrao"));
+const LancamentosContabeis = lazy(() => import("./pages/contabil/contabilidade/Lancamentos"));
+const Balancete = lazy(() => import("./pages/contabil/contabilidade/Balancete"));
+const Razao = lazy(() => import("./pages/contabil/contabilidade/Razao"));
+const Diario = lazy(() => import("./pages/contabil/contabilidade/Diario"));
 const FinMovServicos = lazy(() => import("./pages/contabil/financeiro/movimentos/Servicos"));
 const FinMovFaturamento = lazy(() => import("./pages/contabil/financeiro/movimentos/Faturamento"));
 const FinMovDemais = lazy(() => import("./pages/contabil/financeiro/movimentos/DemaisDocumentos"));
@@ -131,6 +137,8 @@ const App = () => (
           <Route path="/preparativos/empresa/dados-empresa/novo" element={<EmpresaCadastro />} />
           <Route path="/preparativos/cadastros/empresas/novo" element={<EmpresaCadastro />} />
           <Route path="/preparativos/cadastros/filiais" element={<Filiais />} />
+          <Route path="/preparativos/cadastros/participantes" element={<Participantes />} />
+          <Route path="/preparativos/cadastros/produtos-servicos" element={<ProdutosServicos />} />
           <Route path="/preparativos/cadastros/classe-atividades" element={<ClasseAtividades />} />
           <Route path="/preparativos/cadastros/resumo-classe-atividades" element={<ResumoClasseAtividades />} />
           <Route path="/preparativos/cadastros/empresas/:id" element={<EmpresaCadastro />} />
@@ -144,7 +152,19 @@ const App = () => (
           <Route path="/preparativos/servicos/cadastro-tarefas" element={<CadastroTarefas />} />
           <Route path="/preparativos/servicos/encerramentos" element={<Encerramentos />} />
 
-          <Route path="/financeiro/cadastros/servicos" element={<FinServicos />} />
+          {/* Cadastros que moraram no Financeiro: agora são o cadastro único em Preparativos › Cadastros. */}
+          <Route path="/financeiro/cadastros" element={<Navigate to="/preparativos/cadastros" replace />} />
+          <Route path="/financeiro/cadastros/servicos" element={<Navigate to="/preparativos/cadastros/produtos-servicos" replace />} />
+          <Route path="/financeiro/cadastros/produtos" element={<Navigate to="/preparativos/cadastros/produtos-servicos" replace />} />
+          <Route path="/financeiro/cadastros/clientes-fornecedores" element={<Navigate to="/preparativos/cadastros/participantes" replace />} />
+
+          <Route path="/contabil/cadastros/plano-contas" element={<PlanoContas />} />
+          <Route path="/contabil/cadastros/centros-custo" element={<CentrosCusto />} />
+          <Route path="/contabil/cadastros/historicos" element={<HistoricosPadrao />} />
+          <Route path="/contabil/escrituracao/lancamentos" element={<LancamentosContabeis />} />
+          <Route path="/contabil/relatorios/balancete" element={<Balancete />} />
+          <Route path="/contabil/relatorios/razao" element={<Razao />} />
+          <Route path="/contabil/relatorios/diario" element={<Diario />} />
           <Route path="/financeiro/tabelas/simei" element={<FinSimei />} />
           <Route path="/financeiro/tabelas/simples-nacional" element={<FinSimples />} />
           <Route path="/financeiro/tabelas/lucro-real" element={<FinLucroReal />} />
@@ -153,8 +173,6 @@ const App = () => (
           <Route path="/financeiro/tabelas/ajuste-documento-fiscal" element={<FinAjusteDoc />} />
           <Route path="/financeiro/tabelas/apuracao-pis-cofins" element={<FinPisCofins />} />
 
-          <Route path="/financeiro/cadastros/produtos" element={<FinProdutos />} />
-          <Route path="/financeiro/cadastros/clientes-fornecedores" element={<FinParceiros />} />
           <Route path="/financeiro/movimentos/servicos" element={<FinMovServicos />} />
           <Route path="/financeiro/movimentos/faturamento" element={<FinMovFaturamento />} />
           <Route path="/financeiro/movimentos/demais-documentos" element={<FinMovDemais />} />

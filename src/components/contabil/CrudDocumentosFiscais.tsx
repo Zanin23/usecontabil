@@ -243,6 +243,25 @@ export default function CrudDocumentosFiscais({
         // Salva no banco de dados fiscal
         saveDoc(slug, novoDoc);
 
+        // Alimenta o cadastro único (Preparativos › Cadastros), como o ERP fará depois da integração:
+        // o participante entra (ou é completado) e, nas notas emitidas pela empresa, os itens também.
+        let resumoCadastros = "";
+        if (nfe.situacao === "autorizada") {
+          try {
+            const { registrarParticipanteDaNFe, registrarProdutosDaNFe } = await import("@/lib/cadastrosStore");
+            const papel = participanteEhEmitente ? "Fornecedor" : "Cliente";
+            const r = registrarParticipanteDaNFe(participanteEhEmitente ? nfe.emitente : nfe.destinatario, papel);
+            const novosItens = slug === "saidas" ? registrarProdutosDaNFe(nfe.itens) : 0;
+            const partes: string[] = [];
+            if (r?.criado) partes.push(`${papel === "Cliente" ? "cliente" : "fornecedor"} ${r.participante.nome} cadastrado`);
+            else if (r?.alterado) partes.push(`cadastro de ${r.participante.nome} completado`);
+            if (novosItens) partes.push(`${novosItens} produto(s) cadastrado(s)`);
+            resumoCadastros = partes.join(" · ");
+          } catch (cadErr) {
+            console.warn("Erro ao alimentar os cadastros a partir do XML:", cadErr);
+          }
+        }
+
         // Integração com o módulo financeiro/tributário — só notas autorizadas entram no motor tributário.
         if ((slug === "entradas" || slug === "saidas") && nfe.situacao === "autorizada") {
           try {
@@ -312,6 +331,7 @@ export default function CrudDocumentosFiscais({
         } else {
           toast.success(`Nota ${novoDoc.numero} importada com sucesso!`);
         }
+        if (resumoCadastros) toast.info(`Cadastros atualizados: ${resumoCadastros}.`, { description: "Confira em Preparativos › Cadastros." });
       } catch (err: any) {
         console.error("XML Import Error:", err);
         toast.error(err.message || "Falha ao processar XML: formato inválido.");

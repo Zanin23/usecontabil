@@ -1,3 +1,4 @@
+import AvisoSimulacao from "@/components/contabil/AvisoSimulacao";
 import { Link } from "react-router-dom";
 import {
   Banknote, Boxes, Briefcase, ChevronRight, Landmark, ListTree, Lock, RefreshCw,
@@ -40,6 +41,12 @@ export default function AdministrativoHub() {
           Consulta, indicadores, relatórios e auditoria sobre os cadastros sincronizados do ERP
           principal. {READ_ONLY_MSG}
         </p>
+        <AvisoSimulacao className="mt-4 max-w-3xl">
+          A integração com o ERP ainda não está ativa: estes cadastros são exemplos fixos. Os cadastros reais do sistema ficam em{" "}
+          <Link className="underline" to="/preparativos/cadastros/participantes">Clientes e fornecedores</Link>,{" "}
+          <Link className="underline" to="/preparativos/cadastros/produtos-servicos">Produtos e serviços</Link> e{" "}
+          <Link className="underline" to="/contabil/cadastros/plano-contas">Plano de contas</Link>.
+        </AvisoSimulacao>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">

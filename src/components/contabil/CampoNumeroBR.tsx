@@ -6,6 +6,8 @@ type Props = Omit<ComponentProps<typeof Input>, "value" | "onChange" | "type"> &
   value: number | undefined;
   /** Chamado a cada alteração; `undefined` quando o texto está vazio ou não é número. */
   onChange: (valor: number | undefined) => void;
+  /** Casas decimais fixas ao exibir (ex.: 2 para valores em reais: "89,90"). Sem ela, mostra como digitado. */
+  casasDecimais?: number;
 };
 
 /**
@@ -13,14 +15,19 @@ type Props = Omit<ComponentProps<typeof Input>, "value" | "onChange" | "type"> &
  * e só reformata ao sair do campo. O padrão antigo `value={numero}` + `Number(texto)` no onChange
  * apagava a vírgula a cada tecla: digitar "42,90" resultava em 4290.
  */
-export default function CampoNumeroBR({ value, onChange, onBlur, onFocus, ...resto }: Props) {
-  const [texto, setTexto] = useState(() => formatarNumeroBR(value));
+export default function CampoNumeroBR({ value, onChange, onBlur, onFocus, casasDecimais, ...resto }: Props) {
+  const formatar = (n: number | undefined | null) =>
+    casasDecimais === undefined || n === undefined || n === null || !Number.isFinite(n)
+      ? formatarNumeroBR(n)
+      : n.toFixed(casasDecimais).replace(".", ",");
+  const [texto, setTexto] = useState(() => formatar(value));
   const digitando = useRef(false);
 
   // Acompanha mudanças vindas de fora (ex.: limpar/trocar item) enquanto a pessoa não está digitando.
   useEffect(() => {
-    if (!digitando.current) setTexto(formatarNumeroBR(value));
-  }, [value]);
+    if (!digitando.current) setTexto(formatar(value));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, casasDecimais]);
 
   const numero = parseNumeroBR(texto);
   return (
@@ -32,7 +39,7 @@ export default function CampoNumeroBR({ value, onChange, onBlur, onFocus, ...res
       onFocus={(e) => { digitando.current = true; onFocus?.(e); }}
       onBlur={(e) => {
         digitando.current = false;
-        setTexto(formatarNumeroBR(parseNumeroBR(texto)));
+        setTexto(formatar(parseNumeroBR(texto)));
         onBlur?.(e);
       }}
       onChange={(e) => {
