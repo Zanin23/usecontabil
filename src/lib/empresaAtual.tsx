@@ -81,14 +81,14 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
     const currentKey = SELECTED_KEY + suf;
 
     if (empresas.length === 0) {
-      if (empresaId !== null) {
-        setEmpresaIdState(null);
-        localStorage.removeItem(currentKey);
-      }
+      // Lista vazia (ex.: navegador novo ainda carregando da nuvem): mantém a seleção salva — antes ela
+      // era apagada aqui e a empresa escolhida nunca voltava, caindo sempre na primeira da lista.
+      if (empresaId !== null) setEmpresaIdState(null);
       return;
     }
     if (!empresaId || !empresas.some((e) => e.id === empresaId)) {
-      const next = empresas[0].id;
+      const salvo = localStorage.getItem(currentKey);
+      const next = (empresas.find((e) => e.id === salvo) ?? empresas[0]).id;
       setEmpresaIdState(next);
       localStorage.setItem(currentKey, next);
     }

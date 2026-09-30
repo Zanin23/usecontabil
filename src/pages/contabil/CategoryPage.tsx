@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { Badge, Card, CardContent } from "@/design-system/mj-design-system-db98fa";
+import { Card, CardContent } from "@/design-system/mj-design-system-db98fa";
 import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { findCategory } from "@/lib/contabilNav";
 
@@ -70,9 +70,6 @@ export default function CategoryPage() {
                     <div className="font-medium">{m.title}</div>
                     <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{m.desc}</p>
                   </div>
-                  <Badge variant="outline" className="rounded-full text-[10px]">
-                    {m.rows.length} registros
-                  </Badge>
                 </CardContent>
               </Card>
             </Link>

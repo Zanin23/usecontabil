@@ -9,6 +9,7 @@
  */
 
 export const CONCILIACAO_EVENT = "usecontabil:conciliacao-changed";
+import { usuarioAtual } from "@/lib/usuarioAtual";
 
 const moedaBR = (n: number) =>
   n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -222,7 +223,7 @@ export function conciliarManual(
     id: `VIN-${Date.now()}-${Math.floor(Math.random() * 999)}`,
     contaId, competencia, extratoIds, contabilIds,
     metodo: "Manual", confianca: 100,
-    criadoEm: new Date().toISOString(), usuario: "Você", observacao,
+    criadoEm: new Date().toISOString(), usuario: usuarioAtual(), observacao,
   });
 }
 
@@ -342,7 +343,7 @@ export function resultado(
 
 export function fechar(contaId: string, competencia: string) {
   const e = ler();
-  e.fechamentos[`${contaId}|${competencia}`] = { fechadoEm: new Date().toISOString(), usuario: "Você" };
+  e.fechamentos[`${contaId}|${competencia}`] = { fechadoEm: new Date().toISOString(), usuario: usuarioAtual() };
   gravar(e);
 }
 

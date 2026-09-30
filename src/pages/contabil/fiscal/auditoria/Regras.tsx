@@ -12,6 +12,7 @@ import {
   config, expressaoDe, novoAudId, removerRegra, salvarConfig, salvarRegra, useRegras,
   type CatSlug, type Condicao, type Criticidade, type Regra,
 } from "@/lib/auditoriaStore";
+import { confirmarExclusao } from "@/lib/confirmar";
 
 const GRUPOS: { slug: CatSlug; titulo: string }[] = [
   { slug: "xml-escrituracao", titulo: "XML × Escrituração" },
@@ -174,6 +175,7 @@ export default function AuditoriaRegras() {
                     variant="outline"
                     className="rounded-full"
                     onClick={() => {
+                      if (!confirmarExclusao("esta regra")) return;
                       removerRegra(x.id);
                       toast.success("Regra removida.");
                     }}

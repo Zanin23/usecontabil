@@ -60,7 +60,10 @@ Deno.serve(async (req) => {
     const body: Corpo = req.method === "POST" ? await req.json().catch(() => ({})) : {};
     const action = body.action ?? "sync";
 
-    if (action !== "sync" && !ehAdmin) {
+    // Nenhuma ação é permitida a quem não é admin — nem a listagem ("sync"): ela usa a chave de serviço
+    // e devolve nome, e-mail, perfil e permissões de TODOS os usuários, contornando o RLS de `usuarios`.
+    // (Quem abre o primeiro acesso já virou admin acima, então o bootstrap continua funcionando.)
+    if (!ehAdmin) {
       return json({ error: "Apenas administradores podem gerenciar usuários." }, 403);
     }
 

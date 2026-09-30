@@ -118,7 +118,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
       <Card className="rounded-3xl border-border/70 bg-muted/30">
         <CardContent className="flex flex-wrap items-center gap-3 p-4 text-xs text-muted-foreground">
           <RefreshCw className="h-4 w-4 shrink-0 text-brand-orange" />
-          <span>Sincronizado de <strong className="text-foreground">{dominio.sistemaOrigem}</strong> em {dominio.sincronizadoEm}.</span>
+          <span><strong className="text-foreground">Dados de exemplo (simulação)</strong> — não há integração com ERP; os registros abaixo são fictícios.</span>
           <span className="break-words">{READ_ONLY_MSG}</span>
         </CardContent>
       </Card>

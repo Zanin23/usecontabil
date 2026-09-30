@@ -7,6 +7,7 @@ import {
   Separator, Tabs, TabsContent, TabsList, TabsTrigger,
 } from "@/design-system/mj-design-system-db98fa";
 import { toast } from "sonner";
+import AvisoSimulacao from "@/components/contabil/AvisoSimulacao";
 import {
   brl, dataBR, registrarPagamento, estornarPagamento, conciliarPagamento,
   emitirGuia, reemitirGuia, cancelarGuia, compensarGuia, hojeISO, definirResponsavel,
@@ -192,6 +193,10 @@ export default function GuiaPainel({
           </TabsContent>
 
           <TabsContent value="pagamento" className="mt-4 space-y-3">
+            <AvisoSimulacao>
+              O código de barras, a linha digitável e o PIX abaixo são ilustrativos: não correspondem a uma guia oficial e
+              <b> não devem ser usados para pagamento</b>. Emita a guia no portal do órgão (PGDAS-D/DAS, e-CAC, SEFAZ ou prefeitura).
+            </AvisoSimulacao>
             <div className="rounded-2xl border border-border/70 p-4 space-y-3">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Barcode className="h-4 w-4" /> Código de barras
@@ -207,7 +212,7 @@ export default function GuiaPainel({
                 ))}
               </div>
               <Button size="sm" variant="outline" className="rounded-full" onClick={() => copiar(guia.linhaDigitavel, "Linha digitável")}>
-                <Copy className="mr-1.5 h-3.5 w-3.5" /> Linha digitável
+                <Copy className="mr-1.5 h-3.5 w-3.5" /> Copiar linha digitável (simulada)
               </Button>
               <div className="font-mono text-xs break-all text-muted-foreground">{guia.linhaDigitavel}</div>
             </div>

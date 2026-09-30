@@ -12,7 +12,10 @@ import {
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
+import { confirmarDemonstracao, confirmarExclusao } from "@/lib/confirmar";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
+import AvisoRegime from "@/components/contabil/AvisoRegime";
+import CampoNumeroBR from "@/components/contabil/CampoNumeroBR";
 import {
   brl, carregarDemonstracao, dataBR, documentosDaCompetencia, novoId, processarDocumento,
   removerDocumento, resumoDocumentos, salvarDocumento, transitarDocumento, TIPOS_POR_GRUPO,
@@ -156,6 +159,7 @@ export default function MovimentoView({
 
   return (
     <div className="space-y-6 pb-16">
+      <AvisoRegime />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
           <div className="h-11 w-11 rounded-2xl bg-brand-orange/15 grid place-items-center shrink-0">
@@ -175,7 +179,7 @@ export default function MovimentoView({
             <Button
               variant="outline"
               className="rounded-full"
-              onClick={() => { carregarDemonstracao(empresaId, competencia, empresa?.regime); toast.success("Base de demonstração carregada."); }}
+              onClick={() => { if (!confirmarDemonstracao(empresa?.razao)) return; carregarDemonstracao(empresaId, competencia, empresa?.regime); toast.success("Base de demonstração carregada."); }}
             >
               <Database className="mr-2 h-4 w-4" /> Carregar demonstração
             </Button>
@@ -264,7 +268,7 @@ export default function MovimentoView({
                           </Button>
                         ) : null}
                         <Button variant="ghost" size="icon" className="rounded-full" aria-label="Excluir"
-                          onClick={() => { removerDocumento(empresaId, d.id); toast.success("Documento removido."); }}>
+                          onClick={() => { if (!confirmarExclusao("este documento")) return; removerDocumento(empresaId, d.id); toast.success("Documento removido."); }}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </TableCell>
@@ -378,22 +382,22 @@ export default function MovimentoView({
                         </div>
                         <div className="sm:col-span-1">
                           <Label className="text-[11px]">MVA %</Label>
-                          <Input className="rounded-xl font-mono text-xs" value={it.mva ?? ""} onChange={(e) => setItem(it.id, { mva: Number(e.target.value) || undefined })} />
+                          <CampoNumeroBR className="rounded-xl font-mono text-xs" value={it.mva} onChange={(n) => setItem(it.id, { mva: n || undefined })} />
                         </div>
                       </>
                     ) : (
                       <div className="sm:col-span-3">
                         <Label className="text-[11px]">Alíquota ISS %</Label>
-                        <Input className="rounded-xl font-mono text-xs" value={it.aliqIss ?? ""} onChange={(e) => setItem(it.id, { aliqIss: Number(e.target.value) || 0 })} />
+                        <CampoNumeroBR className="rounded-xl font-mono text-xs" value={it.aliqIss} onChange={(n) => setItem(it.id, { aliqIss: n ?? 0 })} />
                       </div>
                     )}
                     <div className="sm:col-span-1">
                       <Label className="text-[11px]">Qtd.</Label>
-                      <Input className="rounded-xl font-mono text-xs" value={it.quantidade} onChange={(e) => setItem(it.id, { quantidade: Number(e.target.value.replace(",", ".")) || 0 })} />
+                      <CampoNumeroBR className="rounded-xl font-mono text-xs" value={it.quantidade} onChange={(n) => setItem(it.id, { quantidade: n ?? 0 })} />
                     </div>
                     <div className="sm:col-span-2">
                       <Label className="text-[11px]">Valor unitário</Label>
-                      <Input className="rounded-xl font-mono text-xs" value={it.unitario} onChange={(e) => setItem(it.id, { unitario: Number(e.target.value.replace(",", ".")) || 0 })} />
+                      <CampoNumeroBR className="rounded-xl font-mono text-xs" value={it.unitario} onChange={(n) => setItem(it.id, { unitario: n ?? 0 })} />
                     </div>
                     <div className="flex items-end justify-end sm:col-span-12">
                       <span className="mr-auto font-mono text-xs text-muted-foreground">Total do item: {brl(it.quantidade * it.unitario)}</span>

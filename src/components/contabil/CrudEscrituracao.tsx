@@ -13,6 +13,7 @@ import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import { moedaBR, valorBR } from "@/lib/fiscalStore";
+import { confirmarExclusao, confirmarLimpeza } from "@/lib/confirmar";
 import {
   limparPeriodoEsc, novoEscId, removeLinha, saveLinha, somar, substituirPeriodo,
   useEscrituracao, type EscLinha, type EscSlug,
@@ -140,6 +141,7 @@ export default function CrudEscrituracao({
 
   const limpar = () => {
     if (!empresa) return;
+    if (!confirmarLimpeza(`TODOS os lançamentos de ${formatCompetencia(competencia)} desta empresa`)) return;
     limparPeriodoEsc(slug, empresa.id, competencia);
     toast.success("Competência limpa.");
   };
@@ -297,7 +299,7 @@ export default function CrudEscrituracao({
                           variant="ghost"
                           size="icon"
                           className="rounded-full"
-                          onClick={() => { removeLinha(slug, l.id); toast.success("Registro removido."); }}
+                          onClick={() => { if (!confirmarExclusao("este registro")) return; removeLinha(slug, l.id); toast.success("Registro removido."); }}
                           aria-label="Excluir"
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />

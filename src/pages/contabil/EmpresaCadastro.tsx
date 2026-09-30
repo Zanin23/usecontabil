@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { saveEmpresa, getEmpresa, loadEmpresas, findEmpresaPorCnpj, sincronizarEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
+import { validarCadastroEmpresa } from "@/lib/empresaValidacao";
+import { REGIMES_TRIBUTARIOS, regimeDefinido } from "@/lib/regime";
 import { formatAtividade, loadAtividades, useAtividades } from "@/lib/atividadesStore";
 
 import {
@@ -46,6 +48,7 @@ type FormState = {
   respNome: string; respCpf: string; respCnpj: string; respTipo: string;
   aberturaRF: string; inicioContrato: string;
   classeAtividadeId: string;
+  regime: string;
 };
 
 const EMPTY_FORM: FormState = {
@@ -59,6 +62,7 @@ const EMPTY_FORM: FormState = {
   respNome: "", respCpf: "", respCnpj: "", respTipo: "cpf",
   aberturaRF: "", inicioContrato: "",
   classeAtividadeId: "",
+  regime: "",
 };
 
 /* --------------------------- assistant tips ---------------------------- */
@@ -255,6 +259,16 @@ function Field({
         </div>
       </div>
       {hint && <p className="text-[10px] text-muted-foreground/80 leading-tight italic px-1">{hint}</p>}
+    </div>
+  );
+}
+
+/** Aviso nas abas cujos campos ainda não estão ligados ao cadastro (não gravam). */
+function AvisoAbaIlustrativa({ children }: { children: React.ReactNode }) {
+  return (
+    <div role="note" className="rounded-xl border border-warn/20 bg-warn/10 p-3 text-xs text-foreground/80 flex items-start gap-2">
+      <CircleAlert className="h-4 w-4 text-warn shrink-0 mt-0.5" />
+      <span>{children}</span>
     </div>
   );
 }
@@ -616,7 +630,7 @@ export default function EmpresaCadastro() {
       if (cancelado) return;
       setRecordId(rec.id);
       setCreatedAt(rec.createdAt);
-      setForm({ ...EMPTY_FORM, ...(rec.raw as Partial<FormState>) });
+      setForm({ ...EMPTY_FORM, ...(rec.raw as Partial<FormState>), regime: regimeDefinido(rec.regime) ? rec.regime : "" });
     };
     const rec = getEmpresa(routeId);
     if (rec) {
@@ -643,17 +657,15 @@ export default function EmpresaCadastro() {
 
 
   const handleSalvar = async () => {
-    const cnpjDigits = form.cnpj.replace(/\D/g, "");
-    if (cnpjDigits.length !== 14) {
-      toast.error("Informe um CNPJ válido (14 dígitos)");
+    const problema = validarCadastroEmpresa(form);
+    if (problema) {
+      toast.error(problema);
       setSection("dados");
       return;
     }
-    if (!form.razao.trim()) {
-      toast.error("Informe a razão social");
-      setSection("dados");
-      return;
-    }
+    // Um cadastro novo com CNPJ já existente sobrescrevia a empresa ("atualizada") sem avisar.
+    const duplicada = recordId ? null : findEmpresaPorCnpj(form.cnpj);
+    if (duplicada && !window.confirm(`Já existe uma empresa com este CNPJ: «${duplicada.razao}».\nAtualizar o cadastro existente com os dados informados?`)) return;
     setSaving(true);
     try {
       const existente = recordId ? null : findEmpresaPorCnpj(form.cnpj);
@@ -661,7 +673,7 @@ export default function EmpresaCadastro() {
         id: recordId ?? existente?.id ?? `EMP-${Date.now()}`,
         cnpj: form.cnpj,
         razao: form.razao,
-        regime: "A definir",
+        regime: form.regime,
         atividade:
           (form.classeAtividadeId
             ? loadAtividades().find((a) => a.id === form.classeAtividadeId)?.descricao
@@ -958,6 +970,22 @@ function DadosSection({
               Bloquear lançamentos em atraso
             </label>
           </div>
+
+          <Field
+            label="Regime Tributário" required className="col-span-6"
+            hint="Define as tabelas de apuração (DAS, IRPJ/CSLL, PIS/COFINS) e o checklist de fechamento da empresa."
+          >
+            <Select value={form.regime} onValueChange={(v) => set({ regime: v })}>
+              <SelectTrigger className={inp} aria-label="Regime tributário">
+                <SelectValue placeholder="Selecione o regime…" />
+              </SelectTrigger>
+              <SelectContent>
+                {REGIMES_TRIBUTARIOS.map((r) => (
+                  <SelectItem key={r} value={r}>{r}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
         </div>
 
         <InlineDivider>Endereço</InlineDivider>
@@ -1057,6 +1085,9 @@ function DadosSection({
 function SenhasSection({ onTip }: { onTip: (k: string) => void }) {
   return (
     <>
+      <AvisoAbaIlustrativa>
+        Os campos desta aba são <b>ilustrativos</b>: nenhuma senha ou código digitado aqui é gravado pelo sistema.
+      </AvisoAbaIlustrativa>
       <SectionCard title="Geral">
         <div className="grid grid-cols-2 gap-3" onFocus={() => onTip("senhas")}>
           <Field label="Senha Previdência"><Input type="password" className={INPUT_CLASS} /></Field>
@@ -1097,6 +1128,9 @@ function SenhasSection({ onTip }: { onTip: (k: string) => void }) {
 function FiscalSection() {
   return (
     <>
+      <AvisoAbaIlustrativa>
+        Os campos desta aba são <b>ilustrativos</b> e ainda não são gravados no cadastro da empresa.
+      </AvisoAbaIlustrativa>
       <SectionCard title="Livro">
         <div className="grid grid-cols-2 gap-3">
           <Field label="Registro de Entradas"><Input className={INPUT_CLASS} /></Field>
@@ -1142,6 +1176,9 @@ function SocietarioSection({
         ))}
       </div>
 
+      <AvisoAbaIlustrativa>
+        Nesta aba só a <b>Classe de atividade</b> é gravada; os demais campos são <b>ilustrativos</b> e ainda não são salvos.
+      </AvisoAbaIlustrativa>
       <SectionCard title="Geral">
         <div className="grid grid-cols-12 gap-3">
           <Field label="Núm. do Alvará" className="col-span-4"><Input className={INPUT_CLASS} /></Field>
@@ -1152,7 +1189,7 @@ function SocietarioSection({
               <SelectContent><SelectItem value="5">EMPRESA - 5</SelectItem></SelectContent>
             </Select>
           </Field>
-          <Field label="Natureza Jurídica" required className="col-span-12" tipKey="natureza" onFocusTip={onTip}>
+          <Field label="Natureza Jurídica" className="col-span-12" tipKey="natureza" onFocusTip={onTip}>
             <Input placeholder="Ex.: 213-5 - Empresário (Individual)" className={INPUT_CLASS} />
           </Field>
         </div>
@@ -1211,7 +1248,7 @@ function SocietarioSection({
               <SelectContent><SelectItem value="nao">Não</SelectItem></SelectContent>
             </Select>
           </Field>
-          <Field label="Documento" required className="col-span-3">
+          <Field label="Documento" className="col-span-3">
             <Select><SelectTrigger className={INPUT_CLASS}><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent><SelectItem value="recibo">Recibo</SelectItem></SelectContent>
             </Select>

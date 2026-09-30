@@ -17,6 +17,7 @@ import {
 } from "recharts";
 import { brl, empresaDB, useTributario, type DocumentoFiscal, processarDocumento } from "@/lib/tributarioStore";
 import { usePratica } from "@/lib/praticaStore";
+import AvisoRegime from "@/components/contabil/AvisoRegime";
 import { useDocsFiscais, valorBR } from "@/lib/fiscalStore";
 
 const toneMap = {
@@ -436,6 +437,8 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {header}
+
+      <AvisoRegime />
 
       {/* KPIs expansíveis */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-start">

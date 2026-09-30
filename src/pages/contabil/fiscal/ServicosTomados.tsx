@@ -14,7 +14,7 @@ export default function ServicosTomados() {
       slug="servicos-tomados"
       prefixoId="NFST"
       labelNovo="Nova NFS-e tomada"
-      labelImportar="Importar lote"
+      labelImportar="Importar XML (NF-e)"
       dataKey="data"
       statusKey="status"
       statusOk="Escriturado"

@@ -7,9 +7,10 @@
 // prefeituras. Protocolos, recibos e tempos de processamento são simulados.
 // ============================================================================
 import { useEffect, useState } from "react";
+import { usuarioAtual } from "@/lib/usuarioAtual";
 import { docsValidos, docsDoPeriodo, apurar, getEstado as getApEstado, regimeDaEmpresa, rs } from "@/lib/apuracaoStore";
 import { linhasDoPeriodo, somar } from "@/lib/escrituracaoStore";
-import { moedaBR, valorBR } from "@/lib/fiscalStore";
+import { daEmpresa, moedaBR, valorBR } from "@/lib/fiscalStore";
 import { getEmpresa } from "@/lib/empresasStore";
 import { loadFiliais } from "@/lib/filiaisStore";
 import { loadRegistros } from "@/lib/empresaDadosStore";
@@ -19,7 +20,6 @@ const KEY_BASE = "usecontabil.obrigacoes.v1";
 const KEY = () => KEY_BASE + getStorageSuffix();
 export const OBRIGACOES_EVENT = "usecontabil:obrigacoes-changed";
 
-const USUARIO = "M. Andrade";
 
 export type ObrSlug =
   | "sped-fiscal"
@@ -159,7 +159,7 @@ export function setObrEstado(
         {
           id: novoObrId("log"),
           em: new Date().toISOString(),
-          usuario: USUARIO,
+          usuario: usuarioAtual(),
           acao: evento.acao,
           detalhe: evento.detalhe,
         },
@@ -1414,7 +1414,7 @@ function gerarReinf(empresaId: string | null, competencia: string, estado: ObrEs
 
 function gerarEstaduais(empresaId: string | null, competencia: string, estado: ObrEstado): Geracao {
   seqLinha = 0;
-  const filiais = loadFiliais().filter((f) => !empresaId || f.empresaId === empresaId);
+  const filiais = loadFiliais().filter((f) => daEmpresa(f.empresaId, empresaId));
   const ufs = Array.from(new Set(filiais.map((f) => f.uf).filter(Boolean)));
   const municipios = Array.from(new Set(filiais.map((f) => f.cidade).filter(Boolean)));
   const icms = linhasDoPeriodo("apuracao-icms", empresaId, competencia);
@@ -1635,7 +1635,7 @@ export function assinarArquivo(obr: ObrSlug, empresaId: string, competencia: str
     titular: cert.titular ?? "—",
     validade: cert.validade ?? "—",
     em: new Date().toISOString(),
-    usuario: USUARIO,
+    usuario: usuarioAtual(),
   };
 
   setObrEstado(

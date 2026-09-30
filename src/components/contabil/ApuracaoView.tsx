@@ -12,6 +12,8 @@ import {
   TableHeader, TableRow, Tabs, TabsContent, TabsList, TabsTrigger, Textarea,
 } from "@/design-system/mj-design-system-db98fa";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
+import AvisoRegime from "@/components/contabil/AvisoRegime";
+import { regimeDefinido } from "@/lib/regime";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
@@ -20,6 +22,7 @@ import {
   type Ajuste, type LinhaDoc, type Memoria, type MotorSlug,
 } from "@/lib/apuracaoStore";
 import { moedaBR } from "@/lib/fiscalStore";
+import { confirmarExclusao } from "@/lib/confirmar";
 
 const TIPOS_AJUSTE: Ajuste["tipo"][] = [
   "Adição", "Exclusão", "Crédito extemporâneo", "Compensação", "Outros",
@@ -103,6 +106,7 @@ export default function ApuracaoView({
 
   function excluirAjuste(a: Ajuste) {
     if (!empresa) return;
+    if (!confirmarExclusao(`o ajuste «${a.descricao}»`)) return;
     setEstado(
       motor, empresa.id, competencia,
       { ajustes: estado.ajustes.filter((x) => x.id !== a.id) },
@@ -172,7 +176,9 @@ export default function ApuracaoView({
             <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <Badge variant="secondary" className="rounded-full">{formatCompetencia(competencia)}</Badge>
               <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa"}</Badge>
-              <Badge variant="secondary" className="rounded-full">Regime: {ap.regime}</Badge>
+              <Badge variant="secondary" className="rounded-full">
+                {regimeDefinido(empresa?.regime) ? `Regime: ${ap.regime}` : `Regime não definido (usando ${ap.regime})`}
+              </Badge>
               <Badge
                 className={`rounded-full ${fechada ? "bg-success/15 text-success" : "bg-brand-orange/15 text-brand-orange"}`}
               >
@@ -198,6 +204,8 @@ export default function ApuracaoView({
           )}
         </div>
       </div>
+
+      <AvisoRegime />
 
       {!empresa && (
         <Card className="rounded-2xl border-border/70">
@@ -582,8 +590,12 @@ export default function ApuracaoView({
                 </div>
               )}
               <div className="rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground">
-                Regime reconhecido automaticamente pelo cadastro da empresa: <strong>{ap.regime}</strong>.
-                Altere em Preparativos › Empresa › Dados da empresa.
+                {regimeDefinido(empresa?.regime) ? (
+                  <>Regime reconhecido automaticamente pelo cadastro da empresa: <strong>{ap.regime}</strong>.</>
+                ) : (
+                  <>Regime <strong>não definido</strong> no cadastro da empresa — usando <strong>{ap.regime}</strong> por padrão.</>
+                )}{" "}
+                Altere em Preparativos › Cadastros › Empresas (lápis da empresa).
               </div>
             </CardContent>
           </Card>

@@ -18,6 +18,7 @@ import {
   pendenciasCadastro, reabrirPeriodo, resumoFases, useGestao,
 } from "@/lib/gestaoStore";
 import { pendenciasGuias } from "@/lib/guiasStore";
+import AvisoRegime from "@/components/contabil/AvisoRegime";
 
 export default function Encerramentos() {
   const { empresa, empresas } = useEmpresaAtual();
@@ -137,6 +138,8 @@ export default function Encerramentos() {
         <ChevronRight className="h-3 w-3" />
         <span className="text-foreground">Encerramentos</span>
       </nav>
+
+      <AvisoRegime />
 
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="flex items-start gap-4">

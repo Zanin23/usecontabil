@@ -7,6 +7,9 @@ import {
 import { toast } from "sonner";
 import { Database, Pencil, Plus, Search, Trash2, type LucideIcon } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
+import { parseNumeroBR } from "@/lib/numeros";
+import { confirmarDemonstracao } from "@/lib/confirmar";
+import { confirmarExclusao } from "@/lib/confirmar";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 
@@ -88,7 +91,7 @@ export default function CrudTributario({
     campos.forEach((c) => {
       const v = draft[c.key] ?? "";
       registro[c.key] =
-        c.type === "number" ? Number(v.replace(",", ".")) || 0
+        c.type === "number" ? parseNumeroBR(v) ?? 0
         : c.type === "switch" ? v === "sim"
         : v;
     });
@@ -123,7 +126,7 @@ export default function CrudTributario({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {onDemonstracao && registros.length === 0 ? (
-            <Button variant="outline" className="rounded-full" onClick={onDemonstracao}>
+            <Button variant="outline" className="rounded-full" onClick={() => { if (confirmarDemonstracao(empresa?.razao)) onDemonstracao(); }}>
               <Database className="mr-2 h-4 w-4" /> Carregar demonstração
             </Button>
           ) : null}
@@ -191,7 +194,7 @@ export default function CrudTributario({
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="rounded-full" aria-label="Excluir"
-                          onClick={() => { onRemover(r.id); toast.success("Registro removido."); }}>
+                          onClick={() => { if (!confirmarExclusao("este registro")) return; onRemover(r.id); toast.success("Registro removido."); }}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </TableCell>

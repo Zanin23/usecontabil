@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { getEmpresa } from "@/lib/empresasStore";
+import { regimeDefinido } from "@/lib/regime";
 import { useRegistros } from "@/lib/empresaDadosStore";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 
@@ -25,7 +26,7 @@ export default function EmpresaDados() {
     { label: "Razão social", valor: registro?.razao },
     { label: "Nome fantasia", valor: raw.fantasia },
     { label: "CNPJ", valor: registro?.cnpj },
-    { label: "Regime tributário", valor: registro?.regime },
+    { label: "Regime tributário", valor: regimeDefinido(registro?.regime) ? registro?.regime : "Não definido" },
     { label: "CNAE principal", valor: raw.cnae ? `${raw.cnae} — ${raw.cnaeDesc ?? ""}` : "" },
     { label: "Endereço", valor: [raw.endereco, raw.numero, raw.bairro].filter(Boolean).join(", ") },
     { label: "Município / UF", valor: [raw.municipio, raw.uf].filter(Boolean).join(" / ") },
@@ -39,7 +40,7 @@ export default function EmpresaDados() {
   const checklist = useMemo(
     () => [
       { ok: !!registro?.cnpj, label: "CNPJ informado", onde: "Cadastro da empresa" },
-      { ok: !!registro?.regime, label: "Regime tributário definido", onde: "Cadastro da empresa" },
+      { ok: regimeDefinido(registro?.regime), label: "Regime tributário definido", onde: "Cadastro da empresa" },
       { ok: !!raw.cnae, label: "CNAE principal informado", onde: "Cadastro da empresa" },
       { ok: !!raw.municipio, label: "Endereço completo", onde: "Cadastro da empresa" },
       { ok: inscricoes.length > 0, label: "Inscrições cadastradas", onde: "Empresa › Inscrições" },

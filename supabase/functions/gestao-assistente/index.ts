@@ -1,4 +1,11 @@
+import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+const json = (body: unknown, status: number) =>
+  new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
 const SYSTEM = `Você é a IA assistente do "Use Contábil", um sistema de contabilidade INTERNA de um grupo empresarial (não é escritório de contabilidade).
 Sua função é ajudar o usuário a concluir os passos do fechamento da competência.
@@ -16,6 +23,16 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    // Só usuário autenticado E liberado (com papel) usa a IA. Antes a função não validava ninguém:
+    // qualquer chamada com a chave pública consumia créditos de IA.
+    const userClient = createClient(SUPABASE_URL, ANON_KEY, {
+      global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } },
+    });
+    const { data: userData } = await userClient.auth.getUser();
+    if (!userData?.user) return json({ error: "Não autenticado." }, 401);
+    const { data: papeis } = await userClient.from("user_roles").select("role").eq("user_id", userData.user.id).limit(1);
+    if (!papeis?.length) return json({ error: "Acesso ainda não liberado." }, 403);
+
     const { messages, contexto } = await req.json();
     if (!Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "messages required" }), {

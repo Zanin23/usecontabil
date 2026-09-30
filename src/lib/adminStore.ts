@@ -8,10 +8,11 @@
 // Nenhuma escrita é exposta: não há create/update/delete.
 // ============================================================================
 import { useEffect, useMemo, useState } from "react";
+import { cnpjValido, cpfValido, documentoValido } from "./documentos";
 
 export const ORIGEM_ERP = "ERP Principal · Protheus/Sync";
 export const READ_ONLY_MSG =
-  "Cadastro sincronizado do ERP de origem. Alterações devem ser feitas no ERP principal.";
+  "Cadastro somente leitura. Ainda não há integração com um ERP: estes dados são de exemplo.";
 
 const ACESSO_KEY = "usecontabil.admin.acessos.v1";
 export const ADMIN_EVENT = "usecontabil:admin-changed";
@@ -102,35 +103,7 @@ function rnd(seed: number) {
 
 const digitos = (v: unknown) => String(v ?? "").replace(/\D/g, "");
 
-export function cnpjValido(v: unknown) {
-  const c = digitos(v);
-  if (c.length !== 14 || /^(\d)\1+$/.test(c)) return false;
-  const calc = (base: string, pesos: number[]) => {
-    const soma = base.split("").reduce((acc, d, i) => acc + Number(d) * pesos[i], 0);
-    const r = soma % 11;
-    return r < 2 ? 0 : 11 - r;
-  };
-  const d1 = calc(c.slice(0, 12), [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
-  const d2 = calc(c.slice(0, 13), [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
-  return d1 === Number(c[12]) && d2 === Number(c[13]);
-}
-
-export function cpfValido(v: unknown) {
-  const c = digitos(v);
-  if (c.length !== 11 || /^(\d)\1+$/.test(c)) return false;
-  const calc = (len: number) => {
-    let soma = 0;
-    for (let i = 0; i < len; i++) soma += Number(c[i]) * (len + 1 - i);
-    const r = (soma * 10) % 11;
-    return r === 10 ? 0 : r;
-  };
-  return calc(9) === Number(c[9]) && calc(10) === Number(c[10]);
-}
-
-export function documentoValido(v: unknown) {
-  const c = digitos(v);
-  return c.length === 14 ? cnpjValido(c) : c.length === 11 ? cpfValido(c) : false;
-}
+export { cnpjValido, cpfValido, documentoValido };
 
 export function gtinValido(v: unknown) {
   const c = digitos(v);

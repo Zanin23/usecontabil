@@ -18,7 +18,7 @@ export default function ManifestacaoDestinatario() {
       slug="manifestacao"
       prefixoId="MDE"
       labelNovo="Nova manifestação"
-      labelImportar="Buscar notas destinadas"
+      labelImportar="Importar XML da nota"
       dataKey="data"
       statusKey="status"
       statusOk="Registrado"

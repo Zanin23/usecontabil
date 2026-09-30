@@ -34,7 +34,8 @@ function persist(db: DB) {
 
 export function loadRegistros(colecao: Colecao, empresaId?: string | null): Registro[] {
   const list = loadDB()[colecao] ?? [];
-  return empresaId ? list.filter((r) => r.empresaId === empresaId) : list;
+  // Sem empresa selecionada nada casa (antes devolvia os registros de TODAS as empresas).
+  return empresaId ? list.filter((r) => r.empresaId === empresaId) : [];
 }
 
 export function saveRegistro(colecao: Colecao, rec: Registro) {

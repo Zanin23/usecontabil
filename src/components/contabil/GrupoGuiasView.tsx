@@ -98,8 +98,8 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
           <Button
             className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
             onClick={() => {
-              guias.filter((g) => !g.emitida).forEach((g) => emitirGuia(g, "Sistema"));
-              toast.success("Guias emitidas com código de barras e PIX");
+              guias.filter((g) => !g.emitida).forEach((g) => emitirGuia(g));
+              toast.success("Guias simuladas emitidas", { description: "Código de barras e PIX são ilustrativos — não use para pagamento." });
             }}
           >
             <Banknote className="mr-1.5 h-4 w-4" /> Emitir todas

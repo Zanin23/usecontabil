@@ -15,7 +15,7 @@ export default function ServicosPrestados() {
       slug="servicos-prestados"
       prefixoId="NFSP"
       labelNovo="Nova NFS-e"
-      labelImportar="Importar lote"
+      labelImportar="Importar XML (NF-e)"
       dataKey="data"
       statusKey="status"
       statusOk="Emitida"

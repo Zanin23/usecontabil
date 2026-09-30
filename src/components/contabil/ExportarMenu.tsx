@@ -29,7 +29,9 @@ export default function ExportarMenu({ nome, colunas, linhas, label = "Exportar"
 
   const agendar = (frequencia: "Diária" | "Semanal" | "Mensal") => {
     agendarExportacao({ nome, recurso: nome, formato: "excel", frequencia, destino: "E-mail do responsável" });
-    toast.success(`Exportação ${frequencia.toLowerCase()} agendada`, { description: nome });
+    toast.success(`Agendamento ${frequencia.toLowerCase()} registrado (simulação)`, {
+      description: `${nome} — o envio automático ainda não está disponível: nenhuma exportação será enviada por e-mail.`,
+    });
   };
 
   return (
@@ -50,7 +52,7 @@ export default function ExportarMenu({ nome, colunas, linhas, label = "Exportar"
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-          Agendar automática
+          Agendar automática (simulado)
         </DropdownMenuLabel>
         {(["Diária", "Semanal", "Mensal"] as const).map((f) => (
           <DropdownMenuItem key={f} onSelect={() => agendar(f)} className="rounded-xl">

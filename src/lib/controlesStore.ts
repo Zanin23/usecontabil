@@ -24,6 +24,7 @@
 // ============================================================================
 
 import { supabase } from "@/integrations/supabase/client";
+import { usuarioAtual } from "@/lib/usuarioAtual";
 
 export const CONTROLES_EVENT = "usecontabil:controles-changed";
 
@@ -105,6 +106,8 @@ export type Usuario = {
   observacao?: string;
   /** true quando existe conta de acesso real (login) vinculada. */
   contaDeAcesso?: boolean;
+  /** id da conta de acesso (auth.users / profiles), quando existir. */
+  authUserId?: string;
 };
 
 
@@ -301,6 +304,7 @@ function mapear(l: LinhaUsuario): Usuario {
     criadoEm: (l.criado_em || "").slice(0, 10),
     observacao: l.observacao || undefined,
     contaDeAcesso: !!l.auth_user_id,
+    authUserId: l.auth_user_id || undefined,
   };
 }
 
@@ -336,7 +340,7 @@ export async function convidarUsuario(dados: {
   if (!dados.permissoes.filter((p) => p.acoes.length).length) throw new Error("Libere ao menos uma área para o usuário.");
   const resp = await chamar<{ usuario: LinhaUsuario; senhaTemporaria: string }>({ action: "convidar", ...dados });
   registrarLog({
-    usuario: "Controladoria", categoria: "Usuários", acao: "Cadastrou usuário",
+    usuario: usuarioAtual(), categoria: "Usuários", acao: "Cadastrou usuário",
     registro: dados.nome, criticidade: "Relevante",
     detalhe: `Conta de acesso criada · perfil ${dados.perfil}`,
   });
@@ -360,14 +364,14 @@ export async function atualizarUsuario(id: string, dados: {
   }).eq("id", id);
   if (error) throw new Error("Sem permissão para alterar usuários (apenas administradores).");
   registrarLog({
-    usuario: "Controladoria", categoria: "Usuários", acao: "Alterou usuário",
+    usuario: usuarioAtual(), categoria: "Usuários", acao: "Alterou usuário",
     registro: dados.nome, criticidade: "Relevante",
     detalhe: `Perfil ${dados.perfil} · áreas: ${dados.permissoes.filter((p) => p.acoes.length).map((p) => p.area).join(", ")}`,
   });
   await sincronizarUsuarios();
 }
 
-export async function alternarUsuario(id: string, autor = "Controladoria") {
+export async function alternarUsuario(id: string, autor = usuarioAtual()) {
   const u = CACHE_USR.find((x) => x.id === id);
   const resp = await chamar<{ ativo: boolean }>({ action: "bloquear", id });
   registrarLog({
@@ -377,14 +381,14 @@ export async function alternarUsuario(id: string, autor = "Controladoria") {
   await sincronizarUsuarios();
 }
 
-export async function excluirUsuario(id: string, autor = "Controladoria") {
+export async function excluirUsuario(id: string, autor = usuarioAtual()) {
   const u = CACHE_USR.find((x) => x.id === id);
   await chamar({ action: "excluir", id });
   registrarLog({ usuario: autor, categoria: "Usuários", acao: "Excluiu usuário", registro: u?.nome || id, criticidade: "Crítico" });
   await sincronizarUsuarios();
 }
 
-export async function redefinirSenhaUsuario(id: string, autor = "Controladoria") {
+export async function redefinirSenhaUsuario(id: string, autor = usuarioAtual()) {
   const u = CACHE_USR.find((x) => x.id === id);
   const resp = await chamar<{ senhaTemporaria: string }>({ action: "redefinir-senha", id });
   registrarLog({ usuario: autor, categoria: "Usuários", acao: "Redefiniu senha de acesso", registro: u?.nome || id, criticidade: "Crítico" });
@@ -410,7 +414,7 @@ export function resumoUsuarios() {
 export const totalRateio = (lista = listarCentros()) =>
   round(lista.filter((c) => c.ativo).reduce((s, c) => s + c.percentual, 0));
 
-export function salvarCentro(dados: Omit<CentroCusto, "id"> & { id?: string }, autor = "Controladoria") {
+export function salvarCentro(dados: Omit<CentroCusto, "id"> & { id?: string }, autor = usuarioAtual()) {
   const lista = listarCentros();
   if (!dados.codigo.trim() || !dados.nome.trim()) throw new Error("Informe código e nome do centro de custo.");
   if (dados.percentual < 0 || dados.percentual > 100) throw new Error("O percentual de rateio deve ficar entre 0 e 100.");
@@ -431,7 +435,7 @@ export function salvarCentro(dados: Omit<CentroCusto, "id"> & { id?: string }, a
 }
 
 /** R6 — inativar centro com rateio exige zerar o percentual antes. */
-export function alternarCentro(id: string, autor = "Controladoria") {
+export function alternarCentro(id: string, autor = usuarioAtual()) {
   const lista = listarCentros();
   const c = lista.find((x) => x.id === id);
   if (!c) return;
@@ -441,7 +445,7 @@ export function alternarCentro(id: string, autor = "Controladoria") {
   registrarLog({ usuario: autor, categoria: "Centros de custo", acao: c.ativo ? "Reativou centro de custo" : "Inativou centro de custo", registro: `${c.codigo} · ${c.nome}`, criticidade: "Relevante" });
 }
 
-export function excluirCentro(id: string, autor = "Controladoria") {
+export function excluirCentro(id: string, autor = usuarioAtual()) {
   const lista = listarCentros();
   const c = lista.find((x) => x.id === id);
   gravar(KEY_CC, lista.filter((x) => x.id !== id));
@@ -449,7 +453,7 @@ export function excluirCentro(id: string, autor = "Controladoria") {
 }
 
 /** Distribui automaticamente a diferença até fechar 100% (proporcional). */
-export function equalizarRateio(autor = "Controladoria") {
+export function equalizarRateio(autor = usuarioAtual()) {
   const lista = listarCentros();
   const ativos = lista.filter((c) => c.ativo);
   if (!ativos.length) throw new Error("Nenhum centro de custo ativo para ratear.");
@@ -478,7 +482,7 @@ export function simularRateio(valor: number) {
 
 /* ============================== parâmetros =============================== */
 
-export function salvarParametro(dados: Omit<Parametro, "atualizadoEm" | "atualizadoPor" | "id"> & { id?: string }, autor = "Controladoria") {
+export function salvarParametro(dados: Omit<Parametro, "atualizadoEm" | "atualizadoPor" | "id"> & { id?: string }, autor = usuarioAtual()) {
   const lista = listarParametros();
   if (!dados.nome.trim()) throw new Error("Informe o nome do parâmetro.");
   if (dados.sensivel && !dados.justificativa?.trim()) throw new Error("Parâmetro sensível exige justificativa da alteração.");
@@ -501,7 +505,7 @@ export function salvarParametro(dados: Omit<Parametro, "atualizadoEm" | "atualiz
   return novo;
 }
 
-export function excluirParametro(id: string, autor = "Controladoria") {
+export function excluirParametro(id: string, autor = usuarioAtual()) {
   const lista = listarParametros();
   const p = lista.find((x) => x.id === id);
   if (p?.sensivel) throw new Error("Parâmetro sensível não pode ser excluído — ajuste o valor.");
@@ -511,7 +515,7 @@ export function excluirParametro(id: string, autor = "Controladoria") {
 
 /* =============================== políticas =============================== */
 
-export function salvarPolitica(dados: Omit<Politica, "id"> & { id?: string }, autor = "Controladoria") {
+export function salvarPolitica(dados: Omit<Politica, "id"> & { id?: string }, autor = usuarioAtual()) {
   const lista = listarPoliticas();
   if (!dados.nome.trim() || !dados.aprovador.trim()) throw new Error("Informe a política e o aprovador.");
   if (dados.ate !== null && dados.ate <= dados.de) throw new Error("O valor final da faixa deve ser maior que o inicial.");
@@ -529,7 +533,7 @@ export function salvarPolitica(dados: Omit<Politica, "id"> & { id?: string }, au
   return nova;
 }
 
-export function alternarPolitica(id: string, autor = "Controladoria") {
+export function alternarPolitica(id: string, autor = usuarioAtual()) {
   const lista = listarPoliticas();
   const p = lista.find((x) => x.id === id);
   if (!p) return;
@@ -538,7 +542,7 @@ export function alternarPolitica(id: string, autor = "Controladoria") {
   registrarLog({ usuario: autor, categoria: "Políticas", acao: p.ativa ? "Reativou alçada" : "Suspendeu alçada", registro: `${p.nome} · ${faixaLabel(p)}`, criticidade: "Crítico" });
 }
 
-export function excluirPolitica(id: string, autor = "Controladoria") {
+export function excluirPolitica(id: string, autor = usuarioAtual()) {
   const lista = listarPoliticas();
   const p = lista.find((x) => x.id === id);
   gravar(KEY_POL, lista.filter((x) => x.id !== id));

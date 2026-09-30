@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { useCompetencia } from "@/lib/competencia";
+import { confirmarExclusao } from "@/lib/confirmar";
 import {
   CATEGORIAS, CHECKLIST_MENSAL, CONTRATOS_EVENT, INDICES, TIPOS_DOCUMENTO,
   agendaConsolidada, alternarConclusao, aplicarReajuste, brl, certificadosCalculados,
@@ -1237,7 +1238,7 @@ function Agenda() {
                           <CheckCircle2 className={`h-4 w-4 ${e.concluido ? "text-emerald-500" : ""}`} />
                         </Button>
                         {e.origem === "Manual" && (
-                          <Button size="sm" variant="ghost" className="rounded-full text-destructive" onClick={() => { excluirEvento(e.id); toast.success("Compromisso removido."); }}>
+                          <Button size="sm" variant="ghost" className="rounded-full text-destructive" onClick={() => { if (!confirmarExclusao("este compromisso")) return; excluirEvento(e.id); toast.success("Compromisso removido."); }}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         )}
