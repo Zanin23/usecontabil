@@ -715,20 +715,42 @@ export function documentosDaCompetencia(empresaId?: string | null, competencia?:
   });
 }
 
+/**
+ * Documento de entrada (compra, devolução recebida, importação…): é dívida/custo, nunca faturamento.
+ * Uma nota de compra importada pelo XML entra no grupo "demais" e, sem esta distinção, aparecia como
+ * receita na DRE e no resumo do faturamento.
+ */
+export function ehDocumentoDeEntrada(d: Pick<DocumentoFiscal, "tipo">): boolean {
+  return d.tipo === "Nota de entrada";
+}
+
+/** Documentos que representam receita da empresa (notas emitidas). */
+export function ehDocumentoDeReceita(d: Pick<DocumentoFiscal, "tipo">): boolean {
+  return !ehDocumentoDeEntrada(d);
+}
+
+const round2 = (v: number) => Math.round(v * 100) / 100;
+
 export function resumoDocumentos(docs: DocumentoFiscal[]) {
   const autorizados = docs.filter((d) => d.status === "Autorizado");
-  const faturado = autorizados.reduce((s, d) => s + d.valorTotal, 0);
-  const tributos = autorizados.reduce((s, d) => s + d.tributos.total, 0);
+  // Faturamento é só o que a empresa emitiu: compras e demais entradas ficam de fora (antes, uma
+  // nota de compra de R$ 10.000 entrava como faturamento).
+  const receitas = autorizados.filter(ehDocumentoDeReceita);
+  const entradas = autorizados.filter(ehDocumentoDeEntrada);
+  const faturado = round2(receitas.reduce((s, d) => s + d.valorTotal, 0));
+  const tributos = round2(receitas.reduce((s, d) => s + d.tributos.total, 0));
   return {
     total: docs.length,
     autorizados: autorizados.length,
     cancelados: docs.filter((d) => d.status === "Cancelado").length,
     pendentes: docs.filter((d) => ["Rascunho", "Processando", "Rejeitado"].includes(d.status)).length,
     faturado,
+    /** Compras e entradas autorizadas na competência (não entram no faturamento). */
+    compras: round2(entradas.reduce((s, d) => s + d.valorTotal, 0)),
     tributos,
-    retencoes: autorizados.reduce((s, d) => s + d.tributos.retencoes, 0),
-    cargaEfetiva: faturado > 0 ? (tributos / faturado) * 100 : 0,
-    margem: faturado - tributos,
+    retencoes: round2(receitas.reduce((s, d) => s + d.tributos.retencoes, 0)),
+    cargaEfetiva: faturado > 0 ? round2((tributos / faturado) * 100) : 0,
+    margem: round2(faturado - tributos),
     bloqueios: docs.filter((d) => d.alertas.some((a) => a.nivel === "bloqueio")).length,
   };
 }

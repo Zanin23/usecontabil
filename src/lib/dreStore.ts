@@ -3,19 +3,32 @@
 // fiscais (receita e tributos sobre vendas), da carteira de contas a pagar
 // (custos e despesas), do patrimônio (depreciação) e das baixas financeiras
 // (juros/multas). Ajustes manuais de encerramento são persistidos localmente.
+//
+// Regras de origem (correções de 01/10/2026):
+// - só documentos emitidos pela empresa são receita: nota de entrada (compra) não é faturamento;
+// - devolução de vendas é identificada pelo CFOP (12xx/22xx), não por nota cancelada — cancelamento
+//   não produz efeito;
+// - a carteira de títulos do ERP ainda é simulada (origem "ERP Principal · Sync") e por isso só
+//   entra no modo prática: fora dele a DRE não mostra custo/despesa fictícios;
+// - a depreciação é sempre da empresa selecionada.
 
 import { useEffect, useState } from "react";
 import {
   documentosDaCompetencia,
+  ehDocumentoDeEntrada,
+  ehDocumentoDeReceita,
   empresaDB,
   type DocumentoFiscal,
 } from "@/lib/tributarioStore";
 import { baixas, titulos } from "@/lib/contasCaixaStore";
 import { resumoPatrimonio } from "@/lib/patrimonioStore";
+import { getStorageSuffix, isPraticaAtiva } from "@/lib/praticaStore";
 
 export const DRE_EVENT = "usecontabil:dre-changed";
 
 const KEY_AJUSTES = "usecontabil.dre.ajustes.v1";
+/** Chave no modo atual: o modo prática grava com o sufixo `.pratica`. */
+const chaveAjustes = () => KEY_AJUSTES + getStorageSuffix();
 
 export const brl = (v: number) =>
   (v < 0 ? "-R$ " : "R$ ") +
@@ -41,7 +54,7 @@ export type AjusteDRE = {
 
 function readAjustes(): AjusteDRE[] {
   try {
-    const raw = localStorage.getItem(KEY_AJUSTES);
+    const raw = localStorage.getItem(chaveAjustes());
     return raw ? (JSON.parse(raw) as AjusteDRE[]) : [];
   } catch {
     return [];
@@ -49,7 +62,7 @@ function readAjustes(): AjusteDRE[] {
 }
 
 function writeAjustes(lista: AjusteDRE[]) {
-  localStorage.setItem(KEY_AJUSTES, JSON.stringify(lista));
+  localStorage.setItem(chaveAjustes(), JSON.stringify(lista));
   window.dispatchEvent(new Event(DRE_EVENT));
 }
 
@@ -102,7 +115,7 @@ export const LINHAS_AJUSTAVEIS: { chave: LinhaChave; rotulo: string }[] = [
   { chave: "receitaMercadorias", rotulo: "Receita de mercadorias" },
   { chave: "receitaServicos", rotulo: "Receita de serviços" },
   { chave: "outrasReceitas", rotulo: "Outras receitas operacionais" },
-  { chave: "devolucoes", rotulo: "Devoluções e cancelamentos" },
+  { chave: "devolucoes", rotulo: "Devoluções de vendas" },
   { chave: "tributosVendas", rotulo: "Tributos sobre vendas" },
   { chave: "cmv", rotulo: "CMV — custo das mercadorias vendidas" },
   { chave: "csp", rotulo: "CSP — custo dos serviços prestados" },
@@ -161,6 +174,20 @@ export function competenciaAnterior(competencia: string) {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
+/**
+ * CFOPs de devolução: 1201–1209 (venda de produção/mercadoria, ST, imobilizado…) e 2201–2209 (compra),
+ * mais os códigos 1503/1553 e 2503/2553 (mercadoria sujeita a ST e bem do ativo imobilizado).
+ * Uma nota cancelada não é devolução: cancelamento simplesmente não produz efeito.
+ */
+const CFOP_DEVOLUCAO = /^(12|22)0[1-9]$|^1(503|553)$|^2(503|553)$/;
+
+export function ehNotaDeDevolucao(d: DocumentoFiscal): boolean {
+  if (d.status !== "Autorizado") return false;
+  // A devolução de venda entra na empresa como documento de entrada (CFOP 1xxx/2xxx).
+  if (!ehDocumentoDeEntrada(d)) return false;
+  return d.itens.some((i) => (i.cfop ? CFOP_DEVOLUCAO.test(String(i.cfop)) : false));
+}
+
 function tributosSobreVendas(docs: DocumentoFiscal[]) {
   return round(
     docs
@@ -194,27 +221,33 @@ type Base = {
 function baseCompetencia(empresaId: string, competencia: string | string[]): Base {
   const docs = documentosDaCompetencia(empresaId, competencia);
   const autorizados = docs.filter((d) => d.status === "Autorizado");
+  // Compra não é receita: só documentos emitidos pela empresa entram no faturamento e nos tributos
+  // sobre vendas. A nota de entrada é custo/estoque e será contabilizada pelo razão (próxima etapa).
+  const receitas = autorizados.filter(ehDocumentoDeReceita);
 
   const receitaServicos = round(
-    autorizados.filter((d) => d.grupo === "servicos").reduce((s, d) => s + d.valorTotal, 0),
+    receitas.filter((d) => d.grupo === "servicos").reduce((s, d) => s + d.valorTotal, 0),
   );
   const receitaMercadorias = round(
-    autorizados.filter((d) => d.grupo === "faturamento").reduce((s, d) => s + d.valorTotal, 0),
+    receitas.filter((d) => d.grupo === "faturamento").reduce((s, d) => s + d.valorTotal, 0),
   );
   const outrasReceitas = round(
-    autorizados.filter((d) => d.grupo === "demais").reduce((s, d) => s + d.valorTotal, 0),
+    receitas.filter((d) => d.grupo === "demais").reduce((s, d) => s + d.valorTotal, 0),
   );
   const devolucoes = round(
-    docs.filter((d) => d.status === "Cancelado").reduce((s, d) => s + d.valorTotal, 0),
+    docs.filter(ehNotaDeDevolucao).reduce((s, d) => s + d.valorTotal, 0),
   );
 
-  const pagar = titulos("pagar", empresaId || "geral", competencia);
+  // Carteira de títulos do ERP: ainda simulada. Fora do modo prática ela não entra na DRE para não
+  // gerar custo, despesa e resultado financeiro fictícios (Fase 0 do roteiro da análise).
+  const usarCarteiraSimulada = isPraticaAtiva();
+  const pagar = usarCarteiraSimulada ? titulos("pagar", empresaId || "geral", competencia) : [];
   const somaCat = (cats: string[]) =>
     round(pagar.filter((t) => cats.includes(t.categoria)).reduce((s, t) => s + t.valor, 0));
 
   const todasBaixas = baixas();
   const idsPagar = new Set(pagar.map((t) => t.id));
-  const receber = titulos("receber", empresaId || "geral", competencia);
+  const receber = usarCarteiraSimulada ? titulos("receber", empresaId || "geral", competencia) : [];
   const idsReceber = new Set(receber.map((t) => t.id));
 
   const despesasFinanceiras = round(
@@ -228,10 +261,12 @@ function baseCompetencia(empresaId: string, competencia: string | string[]): Bas
       .reduce((s, b) => s + b.juros + b.multa, 0),
   );
 
-  const depreciacao = round(resumoPatrimonio(competencia).despesaCompetencia);
+  // Depreciação só dos bens da empresa selecionada (antes, os bens de exemplo entravam na DRE de
+  // qualquer empresa).
+  const depreciacao = round(resumoPatrimonio(competencia, empresaId).despesaCompetencia);
 
   const irpjCsll = round(
-    autorizados.reduce(
+    receitas.reduce(
       (s, d) =>
         s +
         d.memoria
@@ -246,7 +281,7 @@ function baseCompetencia(empresaId: string, competencia: string | string[]): Bas
     receitaServicos,
     outrasReceitas,
     devolucoes,
-    tributosVendas: tributosSobreVendas(docs),
+    tributosVendas: tributosSobreVendas(receitas),
     cmv: somaCat(CUSTO_CATEGORIAS),
     csp: 0,
     despesasAdministrativas: somaCat(ADMIN_CATEGORIAS),
@@ -334,8 +369,8 @@ export function montarDRE(empresaId: string, competencia: string | string[]): DR
     L("receitaServicos", "Prestação de serviços", "receita", 1, b.receitaServicos, p.receitaServicos, "Movimentos › Serviços", aj("receitaServicos")),
     L("outrasReceitas", "Outras receitas operacionais", "receita", 1, b.outrasReceitas, p.outrasReceitas, "Movimentos › Demais documentos", aj("outrasReceitas")),
 
-    L("deducoes", "(-) Deduções da receita bruta", "subtotal", 0, -c.deducoes, -cp.deducoes, "Tributos e cancelamentos"),
-    L("devolucoes", "Devoluções e cancelamentos", "deducao", 1, -b.devolucoes, -p.devolucoes, "Documentos cancelados", aj("devolucoes")),
+    L("deducoes", "(-) Deduções da receita bruta", "subtotal", 0, -c.deducoes, -cp.deducoes, "Tributos e devoluções"),
+    L("devolucoes", "Devoluções de vendas", "deducao", 1, -b.devolucoes, -p.devolucoes, "Notas de devolução (CFOP 1201/1202/1203/1503/1553 e 2201/2202/2203/2503/2553)", aj("devolucoes")),
     L("tributosVendas", "Tributos sobre vendas (ICMS, IPI, ISS, PIS/COFINS)", "deducao", 1, -b.tributosVendas, -p.tributosVendas, "Memória de cálculo dos documentos", aj("tributosVendas")),
 
     L("receitaLiquida", "= Receita operacional líquida", "resultado", 0, c.receitaLiquida, cp.receitaLiquida, "Bruta menos deduções"),
@@ -415,13 +450,19 @@ export function evolucao(empresaId: string, competencia: string | string[], mese
 /** Quantidade de documentos e títulos que sustentam a DRE — usado no rodapé de rastreabilidade. */
 export function rastreabilidade(empresaId: string, competencia: string | string[]) {
   const docs = documentosDaCompetencia(empresaId, competencia);
-  const pagar = titulos("pagar", empresaId || "geral", competencia);
+  const simulados = isPraticaAtiva();
+  const pagar = simulados ? titulos("pagar", empresaId || "geral", competencia) : [];
+  const receitas = docs.filter((d) => d.status === "Autorizado" && ehDocumentoDeReceita(d));
+  const autorizados = docs.filter((d) => d.status === "Autorizado");
   return {
     documentos: docs.length,
-    autorizados: docs.filter((d) => d.status === "Autorizado").length,
+    autorizados: receitas.length,
+    entradas: autorizados.filter(ehDocumentoDeEntrada).length,
     titulosPagar: pagar.length,
-    bens: resumoPatrimonio(competencia).qtdAtivos,
+    bens: resumoPatrimonio(competencia, empresaId).qtdAtivos,
     regras: empresaDB(empresaId).auditoria.length,
+    /** true quando a DRE ainda usa dados de exemplo (modo prática). */
+    dadosSimulados: simulados,
   };
 }
 

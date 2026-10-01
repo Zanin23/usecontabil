@@ -251,11 +251,17 @@ export default function Dre() {
             </Table>
           </div>
           <div className="flex flex-wrap items-center gap-3 border-t px-5 py-3 text-[11px] text-muted-foreground">
-            <span>{rastro.autorizados} de {rastro.documentos} documentos autorizados</span>
+            <span>{rastro.autorizados} documento(s) de receita · {rastro.entradas} de entrada</span>
             <span>·</span>
             <span>{rastro.titulosPagar} títulos a pagar</span>
             <span>·</span>
             <span>{rastro.bens} bens em depreciação</span>
+            {rastro.dadosSimulados ? (
+              <>
+                <span>·</span>
+                <span className="text-warn">dados de exemplo (modo prática)</span>
+              </>
+            ) : null}
             <Link to="/financeiro/movimentos/conclusao-fiscal" className="ml-auto inline-flex items-center gap-1 text-brand-orange">
               Conclusão fiscal <ArrowRight className="h-3 w-3" />
             </Link>
