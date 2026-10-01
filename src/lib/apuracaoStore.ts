@@ -6,7 +6,7 @@
 // ============================================================================
 import { useEffect, useState } from "react";
 import { usuarioAtual } from "@/lib/usuarioAtual";
-import { daEmpresa, loadDocs, moedaBR, valorBR, type DocFiscal, type DocSlug } from "@/lib/fiscalStore";
+import { daEmpresa, FISCAL_EVENT, loadDocs, moedaBR, valorBR, type DocFiscal, type DocSlug } from "@/lib/fiscalStore";
 import { getEmpresa } from "@/lib/empresasStore";
 import { getStorageSuffix } from "./praticaStore";
 
@@ -141,9 +141,11 @@ export function useApuracaoEstado(
     const refresh = () => setLocal(getEstado(motor, empresaId, competencia));
     refresh();
     window.addEventListener(APURACAO_EVENT, refresh);
+    window.addEventListener(FISCAL_EVENT, refresh);
     window.addEventListener("storage", refresh);
     return () => {
       window.removeEventListener(APURACAO_EVENT, refresh);
+      window.removeEventListener(FISCAL_EVENT, refresh);
       window.removeEventListener("storage", refresh);
     };
   }, [motor, empresaId, competencia]);

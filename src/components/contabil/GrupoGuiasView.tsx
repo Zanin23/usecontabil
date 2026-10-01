@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   AlertTriangle, Banknote, CalendarClock, CheckCircle2, Landmark, RefreshCw,
   Search, Sparkles, Wallet2,
@@ -21,6 +21,8 @@ import {
   validarGrupo, pendenciasGuias, type Guia, type GrupoSlug,
 } from "@/lib/guiasStore";
 import { getConfig, setConfig } from "@/lib/apuracaoStore";
+import { lerParametrosRotaDados, tituloDoMotor } from "@/lib/rotasDados";
+import { useAplicarContextoRotaDados } from "@/lib/useAplicarContextoRotaDados";
 
 const ABAS: [string, string][] = [
   ["resumo", "Resumo"], ["guias", "Guias"], ["pagamentos", "Pagamentos"],
@@ -41,11 +43,21 @@ function Kpi({ label, valor, hint, destaque }: { label: string; valor: string; h
 }
 
 export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  useAplicarContextoRotaDados();
+  const origem = lerParametrosRotaDados(searchParams);
+  const motorFiltro = origem.motor;
   const def = grupoDe(grupo);
   const { empresa } = useEmpresaAtual();
   const { competencia } = useCompetencia();
   const todas = useGuias(empresa?.id, competencia);
-  const guias = useMemo(() => todas.filter((g) => g.grupo === grupo), [todas, grupo]);
+  const guias = useMemo(
+    () => todas.filter((g) => {
+      const motores = g.origemMotores?.length ? g.origemMotores : g.origemMotor ? [g.origemMotor] : [];
+      return g.grupo === grupo && (!motorFiltro || motores.includes(motorFiltro));
+    }),
+    [todas, grupo, motorFiltro],
+  );
 
   const [aba, setAba] = useState("resumo");
   const [busca, setBusca] = useState("");
@@ -116,6 +128,26 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
           </Button>
         </div>
       </div>
+
+      {motorFiltro && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-brand-orange/30 bg-brand-orange/5 px-4 py-3">
+          <p className="text-sm">
+            Guias originadas em <strong>{tituloDoMotor(motorFiltro)}</strong>
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full"
+            onClick={() => {
+              const params = new URLSearchParams(searchParams);
+              params.delete("motor");
+              setSearchParams(params, { replace: true });
+            }}
+          >
+            Mostrar todas as guias
+          </Button>
+        </div>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-9">
         {kpis.map((k) => <Kpi key={k.label} {...k} />)}

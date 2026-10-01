@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   AlertTriangle, ArrowUpRight, CheckCircle2, FileDown, History, Lock, Plus,
   RefreshCw, Search, ShieldCheck, Trash2, Unlock, type LucideIcon,
@@ -23,6 +23,8 @@ import {
 } from "@/lib/apuracaoStore";
 import { moedaBR } from "@/lib/fiscalStore";
 import { confirmarExclusao } from "@/lib/confirmar";
+import { rotaDasGuiasDaApuracao } from "@/lib/rotasDados";
+import { useAplicarContextoRotaDados } from "@/lib/useAplicarContextoRotaDados";
 
 const TIPOS_AJUSTE: Ajuste["tipo"][] = [
   "Adição", "Exclusão", "Crédito extemporâneo", "Compensação", "Outros",
@@ -47,6 +49,8 @@ export default function ApuracaoView({
   parametros?: ParametroDef[];
   regras: { se: string; entao: string; base: string }[];
 }) {
+  useAplicarContextoRotaDados();
+  const navigate = useNavigate();
   const { empresa } = useEmpresaAtual();
   const { competencia } = useCompetencia();
   const estado = useApuracaoEstado(motor, empresa?.id, competencia);
@@ -145,6 +149,17 @@ export default function ApuracaoView({
       detalhe: `${ap.documentos.length} documento(s) processados — total ${rs(ap.totalImposto)}.`,
     });
     toast.success("Motor executado sobre os documentos da competência.");
+  }
+
+  function abrirGuiasGeradas() {
+    if (requerEmpresa() || !empresa) return;
+    const quantidade = ap.guias.filter((guia) => Number.isFinite(guia.valor) && guia.valor > 0.009).length;
+    if (quantidade === 0) {
+      toast.info("Esta apuração não gerou valores a recolher nesta competência.");
+      return;
+    }
+    navigate(rotaDasGuiasDaApuracao(motor, { empresaId: empresa.id, competencia }));
+    toast.success(`${quantidade} guia(s) calculada(s) a partir desta apuração. A emissão é apenas ilustrativa.`);
   }
 
   function salvarParametros() {
@@ -486,7 +501,7 @@ export default function ApuracaoView({
                 <h2 className="font-display text-xl">Guias de recolhimento</h2>
                 <Button
                   variant="outline" className="rounded-full"
-                  onClick={() => toast.success("Guias geradas internamente — sem transmissão a órgãos externos.")}
+                  onClick={abrirGuiasGeradas}
                 >
                   <FileDown className="h-4 w-4 mr-2" /> Gerar guias
                 </Button>

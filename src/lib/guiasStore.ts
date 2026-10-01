@@ -1,9 +1,11 @@
 import { read, write } from "./storeUtils";
 import { usuarioAtual } from "@/lib/usuarioAtual";
 import { useEmpresaAtual, getEmpresa } from "./empresaAtual";
-import { motorFederal, motorEstadualMunicipal, MotorBase } from "./guiasMotores";
+import { guiasDaApuracao, type MotorBase } from "./guiasMotores";
 import { hojeISO, diffDias, round, moedaBR, brl } from "./utils";
-import { getConfig } from "./apuracaoStore";
+import { APURACAO_EVENT, getConfig } from "./apuracaoStore";
+import type { MotorSlug } from "./apuracaoStore";
+import { FISCAL_EVENT } from "./fiscalStore";
 import { loadFiliais } from "./filiaisStore";
 import { useState, useEffect, useMemo } from "react";
 
@@ -56,7 +58,9 @@ export type Guia = {
   responsavel: string;
   status: StatusGuia;
   origem: string;
-  origemMotor?: string;
+  origemMotor?: MotorSlug;
+  /** Motores que alimentaram a mesma obrigação, quando compartilhada entre apurações. */
+  origemMotores?: MotorSlug[];
   barras: string;
   linhaDigitavel: string;
   pix: string;
@@ -168,14 +172,16 @@ export function listarGuias(empresaId?: string | null, competencia?: string | st
   const filiais = loadFiliais().filter((f) => f.empresaId === empresaId);
   const list: Guia[] = [];
 
-  comps.forEach(c => {
-    const bases = [...motorFederal(empresaId, c), ...motorEstadualMunicipal(empresaId, c)];
+  comps.forEach((c) => {
+    const bases = guiasDaApuracao(empresaId, c);
     const gs = bases
       .filter((b) => b.valor > 0.009)
       .map((b, i) => {
-        const id = `${empresaId}::${c}::${b.codigo}::${i}`;
+        // A identidade não depende da posição na lista: novos tributos não movem
+        // pagamentos, emissões e demais ajustes já vinculados à guia.
+        const id = `${empresaId}::${c}::${b.id}`;
         const ov = db.overrides[id] ?? {};
-        const vencimento = vencimentoDe(c, b.dia, cfg.antecipaFimDeSemana);
+        const vencimento = b.vencimento || vencimentoDe(c, b.dia, cfg.antecipaFimDeSemana);
         const pagamentos = ov.pagamentos ?? [];
         const pago = round(pagamentos.reduce((s, p) => s + p.valor, 0));
         const refPagamento = pagamentos[0]?.data;
@@ -206,6 +212,7 @@ export function listarGuias(empresaId?: string | null, competencia?: string | st
           responsavel: ov.responsavel ?? "Equipe fiscal",
           origem: b.origem,
           origemMotor: b.motor,
+          origemMotores: b.motoresOrigem,
           barras: `${seed.slice(0, 11)} ${seed.slice(11, 22)} ${seed.slice(22, 33)} ${seed.slice(33, 44)}`,
           linhaDigitavel: `${seed.slice(0, 5)}.${seed.slice(5, 10)} ${seed.slice(10, 15)}.${seed.slice(15, 21)} ${seed.slice(21, 26)}.${seed.slice(26, 32)} ${seed.slice(32, 33)} ${seed.slice(33, 47)}`,
           pix: `00020126580014BR.GOV.BCB.PIX0136${seed.slice(0, 32)}5204000053039865802BR`,
@@ -408,9 +415,17 @@ export type EventoCalendario = { id: string; data: string; label: string; priori
 export function useGuias(empresaId?: string | null, competencia?: string | string[]) {
   const [tick, setTick] = useState(0);
   useEffect(() => {
-    const sync = () => setTick(t => t + 1);
+    const sync = () => setTick((t) => t + 1);
     window.addEventListener(GUIAS_EVENT, sync);
-    return () => window.removeEventListener(GUIAS_EVENT, sync);
+    window.addEventListener(APURACAO_EVENT, sync);
+    window.addEventListener(FISCAL_EVENT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(GUIAS_EVENT, sync);
+      window.removeEventListener(APURACAO_EVENT, sync);
+      window.removeEventListener(FISCAL_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
   }, []);
   return useMemo(() => listarGuias(empresaId, competencia), [empresaId, competencia, tick]);
 }
