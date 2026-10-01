@@ -16,6 +16,7 @@ import { AREAS } from "@/lib/contabilNav";
 import { useTema } from "@/lib/tema";
 import { supabase } from "@/integrations/supabase/client";
 import { limparCacheEmpresas } from "@/lib/empresasStore";
+import { iniciarSincronizacaoNuvem } from "@/lib/nuvemColecoes";
 import { COMPETENCIAS, formatCompetencia, useCompetencia } from "@/lib/competencia";
 import BuscaTelas from "@/components/contabil/BuscaTelas";
 import ConfiguracoesConta from "@/components/contabil/ConfiguracoesConta";
@@ -58,6 +59,9 @@ export default function ContabilShell() {
 
   // IMPORTANTE: não existe reset automático da base ao abrir o sistema.
   // Zerar/isolar dados só acontece por ação explícita do usuário (ver lib/resetBase.ts).
+
+  // Cadastros próprios e lançamentos contábeis: gravam no navegador e sincronizam com a nuvem.
+  useEffect(() => iniciarSincronizacaoNuvem(), []);
 
   const [usuarioNome, setUsuarioNome] = useState("—");
   const [usuarioPerfil, setUsuarioPerfil] = useState("Usuário");
@@ -275,7 +279,9 @@ export default function ContabilShell() {
             {({ isActive }) => (
               <>
                 {!recolhida && (
-                  <span className="text-[10px] font-mono text-muted-foreground/60 w-5">06</span>
+                  <span className="text-[10px] font-mono text-muted-foreground/60 w-5">
+                    {String(AREAS.length + 2).padStart(2, "0")}
+                  </span>
                 )}
                 <span className={navIcone(isActive)}>
                   <GraduationCap className="h-4 w-4" />

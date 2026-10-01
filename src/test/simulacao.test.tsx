@@ -75,9 +75,10 @@ describe("Carregar demonstração", () => {
   const produtos = () => JSON.parse(localStorage.getItem("usecontabil.tributario.v1") ?? "{}")[EMPRESA.id]?.produtos ?? [];
 
   it("pede confirmação e só grava dados fictícios se a pessoa aceitar", async () => {
-    const { default: Produtos } = await import("@/pages/contabil/financeiro/cadastros/Produtos");
+    // Antes era a tela Financeiro › Produtos (agora cadastro único em Preparativos); o botão continua no Faturamento.
+    const { default: Faturamento } = await import("@/pages/contabil/financeiro/movimentos/Faturamento");
     const confirmar = vi.spyOn(window, "confirm").mockReturnValue(false);
-    await comProvedores(<Produtos />);
+    await comProvedores(<Faturamento />);
     const botao = await screen.findByRole("button", { name: /carregar demonstração/i });
     fireEvent.click(botao);
     expect(confirmar).toHaveBeenCalledWith(expect.stringMatching(/DEMONSTRAÇÃO[\s\S]*FICTÍCIOS/));

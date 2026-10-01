@@ -162,6 +162,30 @@ const preparativos: Category[] = [
         primaryAction: "Nova empresa",
       },
       {
+        slug: "participantes",
+        title: "Clientes e fornecedores",
+        icon: Users2,
+        desc: "Cadastro único de clientes, fornecedores e transportadoras (CNPJ/CPF conferido, IE, endereço, conta contábil).",
+        columns: [
+          C.codigo,
+          { key: "nome", label: "Nome / razão social" },
+          { key: "documento", label: "CNPJ/CPF", mono: true },
+          { key: "uf", label: "UF" },
+          C.status,
+        ],
+        rows: [],
+        primaryAction: "Novo cadastro",
+      },
+      {
+        slug: "produtos-servicos",
+        title: "Produtos e serviços",
+        icon: Package,
+        desc: "Itens com NCM, CEST, CFOP, CST, LC 116, IBS/CBS (cClassTrib) e contas contábeis padrão.",
+        columns: [C.codigo, { key: "descricao", label: "Descrição" }, { key: "ncm", label: "NCM / LC 116", mono: true }, C.status],
+        rows: [],
+        primaryAction: "Novo item",
+      },
+      {
         slug: "classe-atividades",
         title: "Classe de atividades",
         icon: Layers,
@@ -412,49 +436,7 @@ const preparativos: Category[] = [
 // FINANCEIRO
 // ------------------------------------------------------------
 const financeiro: Category[] = [
-  {
-    slug: "cadastros",
-    title: "Cadastros",
-    modules: [
-      {
-        slug: "servicos",
-        title: "Serviços",
-        icon: Briefcase,
-        desc: "Catálogo de serviços faturáveis.",
-        columns: [
-          C.codigo,
-          { key: "servico", label: "Serviço" },
-          { key: "cnae", label: "CNAE", mono: true },
-          { key: "iss", label: "Alíq. ISS", align: "right", mono: true },
-          { key: "valor", label: "Preço base", align: "right", mono: true },
-        ],
-        rows: [
-          { codigo: "SVC-001", servico: "Consultoria contábil mensal", cnae: "6920-6/01", iss: "5,00%", valor: brl(4_200) },
-          { codigo: "SVC-002", servico: "Escrituração fiscal", cnae: "6920-6/01", iss: "5,00%", valor: brl(1_800) },
-          { codigo: "SVC-003", servico: "Folha de pagamento (por colab.)", cnae: "6920-6/01", iss: "5,00%", valor: brl(38) },
-          { codigo: "SVC-004", servico: "Abertura de empresa", cnae: "6920-6/01", iss: "5,00%", valor: brl(1_400) },
-          { codigo: "SVC-005", servico: "Planejamento tributário", cnae: "7020-4/00", iss: "2,50%", valor: brl(12_000) },
-        ],
-      },
-      {
-        slug: "produtos",
-        title: "Produtos",
-        icon: Package,
-        desc: "Cadastro fiscal com NCM, CEST, CFOP e tributação.",
-        columns: [C.codigo, { key: "descricao", label: "Produto" }, { key: "ncm", label: "NCM", mono: true }],
-        rows: [],
-      },
-      {
-        slug: "clientes-fornecedores",
-        title: "Clientes e fornecedores",
-        icon: Users2,
-        desc: "Parceiros com regime, inscrições e retenções.",
-        columns: [{ key: "nome", label: "Parceiro" }, { key: "documento", label: "CNPJ/CPF", mono: true }, { key: "uf", label: "UF" }],
-        rows: [],
-      },
-    ],
-  },
-
+  // Clientes/fornecedores, produtos e serviços ficam em Preparativos › Cadastros (cadastro único do grupo).
   {
     slug: "tabelas",
     title: "Tabelas",
@@ -784,6 +766,90 @@ function tabelasFaixas(
 // ------------------------------------------------------------
 // AREAS export
 // ------------------------------------------------------------
+// ------------------------------------------------------------
+// CONTÁBIL — núcleo contábil (plano de contas, lançamentos, razão, balancete)
+// ------------------------------------------------------------
+const contabil: Category[] = [
+  {
+    slug: "cadastros",
+    title: "Cadastros",
+    modules: [
+      {
+        slug: "plano-contas",
+        title: "Plano de contas",
+        icon: ListTree,
+        desc: "Plano único do grupo: contas sintéticas e analíticas, natureza, reduzido e vínculo com o referencial da RFB.",
+        columns: [C.codigo, C.descricao],
+        rows: [],
+        primaryAction: "Nova conta",
+      },
+      {
+        slug: "centros-custo",
+        title: "Centros de custo",
+        icon: Split,
+        desc: "Áreas que recebem custos e despesas (ECD, registro I100).",
+        columns: [C.codigo, C.descricao],
+        rows: [],
+        primaryAction: "Novo centro",
+      },
+      {
+        slug: "historicos",
+        title: "Históricos padrão",
+        icon: ScrollText,
+        desc: "Textos prontos para os lançamentos, com marcadores de documento, participante e competência.",
+        columns: [C.codigo, C.descricao],
+        rows: [],
+        primaryAction: "Novo histórico",
+      },
+    ],
+  },
+  {
+    slug: "escrituracao",
+    title: "Escrituração",
+    modules: [
+      {
+        slug: "lancamentos",
+        title: "Lançamentos contábeis",
+        icon: FileSpreadsheet,
+        desc: "Partidas dobradas por empresa, com numeração, histórico, centro de custo, estorno e bloqueio da competência encerrada.",
+        columns: [C.codigo, C.descricao],
+        rows: [],
+        primaryAction: "Novo lançamento",
+      },
+    ],
+  },
+  {
+    slug: "relatorios",
+    title: "Relatórios",
+    modules: [
+      {
+        slug: "balancete",
+        title: "Balancete de verificação",
+        icon: Scale,
+        desc: "Saldo anterior, débitos, créditos e saldo atual por conta, com conferência débito = crédito.",
+        columns: [C.codigo, C.descricao],
+        rows: [],
+      },
+      {
+        slug: "razao",
+        title: "Razão",
+        icon: FileBarChart2,
+        desc: "Movimento de uma conta com saldo anterior, contrapartida e saldo linha a linha.",
+        columns: [C.codigo, C.descricao],
+        rows: [],
+      },
+      {
+        slug: "diario",
+        title: "Diário",
+        icon: FileText,
+        desc: "Lançamentos em ordem cronológica com todas as partidas.",
+        columns: [C.codigo, C.descricao],
+        rows: [],
+      },
+    ],
+  },
+];
+
 export const AREAS: Area[] = [
   {
     slug: "preparativos",
@@ -792,7 +858,7 @@ export const AREAS: Area[] = [
     icon: Settings2,
     accent: "blue",
     eyebrow: "Setup corporativo",
-    blurb: "Cadastros base do grupo: matriz, filiais, empresas do grupo e catálogo de serviços internos.",
+    blurb: "Cadastros base do grupo: empresas, filiais, clientes e fornecedores, produtos e serviços.",
     categories: preparativos,
   },
   {
@@ -806,9 +872,19 @@ export const AREAS: Area[] = [
     categories: fiscal,
   },
   {
+    slug: "contabil",
+    title: "Contábil",
+    code: "04",
+    icon: Calculator,
+    accent: "purple",
+    eyebrow: "Escrituração contábil",
+    blurb: "Plano de contas, centros de custo, lançamentos em partidas dobradas, balancete, razão e diário.",
+    categories: contabil,
+  },
+  {
     slug: "financeiro",
     title: "Financeiro",
-    code: "04",
+    code: "05",
     icon: Wallet,
     accent: "orange",
     eyebrow: "Tributário",
@@ -818,7 +894,7 @@ export const AREAS: Area[] = [
   {
     slug: "administrativo",
     title: "Administrativo",
-    code: "05",
+    code: "06",
     icon: Briefcase,
     accent: "purple",
     eyebrow: "Rotina corporativa",

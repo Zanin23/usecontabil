@@ -11,9 +11,10 @@ Central **contábil, fiscal e administrativa interna** de um grupo de empresas: 
 | Área | O que tem |
 |---|---|
 | **Dashboard** | Visão geral contábil da empresa e da competência selecionadas. |
-| **Preparativos** | Cadastro de empresas, filiais e classes de atividade; inscrições, pagamentos, parâmetros e certificados; gestão do fechamento (fases, tarefas e encerramentos). |
+| **Preparativos** | Cadastro de empresas e filiais; **cadastro único de clientes e fornecedores e de produtos e serviços** (alimentado à mão, pela importação de XML de NF-e ou pelos cadastros antigos); classes de atividade; inscrições, pagamentos, parâmetros e certificados; gestão do fechamento (fases, tarefas e encerramentos). |
 | **Fiscal** | Documentos fiscais, escrituração (livros, ICMS, IPI, inventário, CIAP), apurações (PIS/COFINS, ISS, IRPJ/CSLL, Simples Nacional, retenções), obrigações (SPED Fiscal, EFD-Contribuições, ECD/ECF, DCTFWeb, REINF, estaduais), guias e auditoria fiscal. |
-| **Financeiro** | Serviços, produtos e parceiros comerciais (clientes/fornecedores), tabelas por regime, movimentos, tributação (DIFAL, ST, DEFIS, motor tributário), conciliação bancária e DRE. |
+| **Contábil** | Plano de contas do grupo (com modelo pronto e vínculo com o referencial da RFB), centros de custo, históricos padrão, **lançamentos em partidas dobradas** (estorno e bloqueio da competência encerrada), balancete de verificação, razão e diário. |
+| **Financeiro** | Tabelas por regime, movimentos, tributação (DIFAL, ST, DEFIS, motor tributário), conciliação bancária e DRE. |
 | **Administrativo** | Contas e caixa, contratos e documentos, patrimônio, suprimentos, controles internos (usuários, perfis e permissões), auditoria cadastral, pesquisa global e dashboard executivo. |
 | **Aprender** | Central de aprendizado (trilhas, lições e glossário) e **modo prática**, com dados fictícios. |
 
@@ -39,7 +40,8 @@ npm run lint    # ESLint (ainda acusa pendências antigas, principalmente `any` 
 | Onde | O quê |
 |---|---|
 | **Nuvem** (Lovable Cloud / Supabase) | Autenticação, papéis de acesso (`user_roles`), perfis (`profiles`), cadastro de usuários (`usuarios`), **empresas** (`empresas`, isoladas por usuário via RLS) e progresso de estudo (`learning_progress`). |
-| **Navegador** (`localStorage`) | **Todo o restante**: documentos fiscais, escrituração, apurações, obrigações, guias, contratos, patrimônio, compras etc. (chaves `usecontabil.*` e `uc:*`), além das preferências de tema, som e ambiente. |
+| **Navegador + nuvem** (`contabil_registros`) | **Cadastros próprios e contabilidade**: clientes e fornecedores, produtos e serviços, plano de contas, centros de custo, históricos padrão e lançamentos contábeis. Gravam na hora no navegador (chaves `usecontabil.col.*`, separadas por usuário) e sincronizam com a tabela `contabil_registros` (isolada por usuário via RLS) — ver `src/lib/nuvemColecoes.ts`. Sem a tabela, ficam só no navegador e sobem sozinhos quando ela existir; o selo "Salvo na nuvem / Salvo só neste navegador" das telas mostra a situação. |
+| **Navegador** (`localStorage`) | **Todo o restante**: documentos fiscais, escrituração fiscal, apurações, obrigações, guias, contratos, patrimônio, compras etc. (chaves `usecontabil.*` e `uc:*`), além das preferências de tema, som e ambiente. |
 
 Consequência importante: o que não está na lista da nuvem **fica só no navegador em que foi criado** — não acompanha o usuário em outro dispositivo e se perde se os dados do navegador forem limpos.
 
@@ -56,7 +58,7 @@ O **modo prática** guarda seus dados com o sufixo `.pratica` nas mesmas chaves,
 
 ```text
 src/
-  pages/contabil/     telas por área (preparativos, fiscal, financeiro, administrativo, aprender)
+  pages/contabil/     telas por área (preparativos, contabilidade, fiscal, financeiro, administrativo, aprender)
   components/         shell do app (ContabilShell), RequireAuth e componentes contábeis reutilizáveis
   lib/                stores por domínio (regras e motores de cálculo) e a navegação (contabilNav*.tsx)
   lib/aprendizado/    conteúdo da camada de aprendizado: lições, trilhas, glossário e laboratórios
@@ -84,8 +86,11 @@ Este repositório é mantido junto com um projeto do Lovable: todos os commits d
 
 Mudanças de banco (`supabase/migrations`) e de edge functions (`supabase/functions`) precisam ser aplicadas/publicadas no backend — depois de um merge, confirme no Lovable que foram aplicadas.
 
+**Migração pendente mais recente:** `supabase/migrations/20260930150000_contabil_registros.sql` (tabela da nuvem dos cadastros próprios e dos lançamentos contábeis). O Lovable só enxerga a branch conectada (a `main`): primeiro faça o merge do pull request; depois, no chat do Lovable, peça para executar o SQL desse arquivo. O SQL pode ser executado mais de uma vez sem erro. Enquanto não for aplicada, as telas mostram "Salvo só neste navegador" e nada se perde; depois de aplicada, o selo passa a "Salvo na nuvem".
+
 ## Limitações conhecidas
 
 - Sem integração real com Receita Federal, SEFAZ ou prefeituras; os arquivos gerados não têm validade legal.
-- A maior parte dos dados fica só no navegador (veja "Como os dados são guardados").
+- A maior parte dos dados fica só no navegador (veja "Como os dados são guardados"). Na nuvem, cada usuário só vê os próprios registros: ainda não há organização/equipe compartilhando as mesmas empresas.
+- Os lançamentos contábeis ainda são manuais: a contabilização automática dos documentos fiscais e a integração com o ERP (Use Sistemas) são as próximas etapas (ver `docs/analise-sistema-contabil.md`).
 - Cobertura de testes automatizados ainda baixa (veja `src/test`).

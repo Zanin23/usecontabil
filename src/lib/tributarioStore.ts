@@ -14,6 +14,7 @@
 
 import { useEffect, useState } from "react";
 import { getStorageSuffix } from "./praticaStore";
+import { pendenciasDeCadastro } from "./cadastrosStore";
 
 const KEY_BASE = "usecontabil.tributario.v1";
 const getStoreKey = () => KEY_BASE + getStorageSuffix();
@@ -800,7 +801,7 @@ export type EtapaFechamento = {
 
 export const ETAPAS_FECHAMENTO: EtapaFechamento[] = [
   { slug: "validar-documentos", titulo: "Validar documentos", descricao: "Nenhum documento em rascunho, rejeitado ou com bloqueio de regra.", automatica: true },
-  { slug: "validar-cadastros", titulo: "Validar cadastros", descricao: "Produtos com NCM/CFOP e parceiros com documento válido.", automatica: true },
+  { slug: "validar-cadastros", titulo: "Validar cadastros", descricao: "Clientes, fornecedores e produtos do cadastro único (Preparativos › Cadastros) completos e válidos.", automatica: true },
   { slug: "auditoria", titulo: "Executar auditoria", descricao: "Motor de regras aplicado a todos os documentos da competência.", automatica: false },
   { slug: "apuracao", titulo: "Executar apuração", descricao: "Consolidação dos tributos calculados no período.", automatica: false },
   { slug: "guias", titulo: "Gerar guias", descricao: "Guias de recolhimento geradas a partir da apuração.", automatica: false },
@@ -824,12 +825,11 @@ export function fechamentoAtual(empresaId?: string | null, competencia?: string 
 }
 
 export function validacoesAutomaticas(empresaId?: string | null, competencia?: string | string[]) {
-  const db = empresaDB(empresaId);
   const docs = documentosDaCompetencia(empresaId, competencia);
   const docsPendentes = docs.filter((d) => ["Rascunho", "Processando", "Rejeitado"].includes(d.status));
   const bloqueios = docs.filter((d) => d.alertas.some((a) => a.nivel === "bloqueio"));
-  const prodInvalidos = db.produtos.filter((p) => !p.ncm || !p.cfopPadrao);
-  const parcInvalidos = db.parceiros.filter((p) => p.documento.replace(/\D/g, "").length < 11);
+  // Cadastro único do grupo (antes: cadastros do Financeiro por empresa, hoje substituídos).
+  const { produtosInvalidos: prodInvalidos, participantesInvalidos: parcInvalidos } = pendenciasDeCadastro();
   return {
     "validar-documentos": {
       ok: docs.length > 0 && docsPendentes.length === 0 && bloqueios.length === 0,
@@ -839,7 +839,7 @@ export function validacoesAutomaticas(empresaId?: string | null, competencia?: s
     },
     "validar-cadastros": {
       ok: prodInvalidos.length === 0 && parcInvalidos.length === 0,
-      detalhe: `${prodInvalidos.length} produto(s) e ${parcInvalidos.length} parceiro(s) com cadastro incompleto.`,
+      detalhe: `${prodInvalidos.length} produto(s)/serviço(s) e ${parcInvalidos.length} cliente(s)/fornecedor(es) com cadastro incompleto em Preparativos › Cadastros.`,
     },
   } as Record<string, { ok: boolean; detalhe: string }>;
 }
