@@ -257,7 +257,7 @@ export const CATALOGO: ObrigacaoDef[] = [
   },
   {
     slug: "dctfweb",
-    titulo: "DCTF / DCTFWeb",
+    titulo: "DCTFWeb",
     sigla: "DCTFWeb",
     descricao: "Confissão dos débitos federais, vinculações de crédito e emissão do DARF.",
     orgao: "Receita Federal",
@@ -290,14 +290,14 @@ export const CATALOGO: ObrigacaoDef[] = [
   {
     slug: "estaduais",
     titulo: "Obrigações estaduais e municipais",
-    sigla: "GIA / DeSTDA / ISS",
-    descricao: "GIA, Sintegra, DeSTDA, DES, DECLAN, NFTS e declarações municipais do ISS.",
+    sigla: "Sintegra / DeSTDA / ISS",
+    descricao: "Sintegra, DeSTDA, DES, DECLAN, NFTS e declarações municipais do ISS. A GIA-SP foi dispensada para todo o RPA desde jan/2026 (Portaria SRE 02/2025) e a GIA-ST deixou de ser exigida (Portaria SRE 06/2025).",
     orgao: "SEFAZ estaduais e prefeituras",
     periodicidade: "Mensal",
-    submodulos: ["GIA", "Sintegra", "DeSTDA", "DES", "DECLAN", "ISS", "NFTS", "Declarações municipais"],
+    submodulos: ["Sintegra", "DeSTDA", "DES", "DECLAN", "ISS", "NFTS", "Declarações municipais"],
     layoutVigente: "Pacote UF 2026.07",
     layouts: [
-      { versao: "Pacote UF 2026.07", vigencia: "a partir de 07/2026", nota: "Atualização de alíquotas e novos campos da GIA-SP." },
+      { versao: "Pacote UF 2026.07", vigencia: "a partir de 07/2026", nota: "Atualização de alíquotas e obrigações estaduais do 2º semestre, sem a GIA." },
       { versao: "Pacote UF 2025.12", vigencia: "até 06/2026", nota: "Versão anterior." },
     ],
     prazo: { dia: 16, meses: 1 },
@@ -1257,7 +1257,7 @@ function gerarDctfWeb(empresaId: string | null, competencia: string, estado: Obr
   if (!debitos.length)
     validacoes.push({
       id: "v-dctf-vazio",
-      codigo: "DCTF-601",
+      codigo: "DCTFWEB-601",
       tipo: "pendência",
       titulo: "Nenhum débito apurado na competência",
       detalhe: "Feche as apurações fiscais para que os débitos sejam confessados.",
@@ -1424,25 +1424,9 @@ function gerarEstaduais(empresaId: string | null, competencia: string, estado: O
   const tomados = docsValidos("servicos-tomados", empresaId, competencia);
 
   const blocos: BlocoSped[] = [
-    {
-      codigo: "GIA",
-      nome: "GIA — Guia de Informação e Apuração do ICMS",
-      obrigatorio: true,
-      registros: [
-        reg("GIA-Mestre", "Identificação e apuração da GIA", Math.max(1, ufs.length),
-          [{ campo: "UFs", valor: ufs.join(", ") || "SP" }, { campo: "Saldo do ICMS", valor: rs(Math.abs(saldoIcms)) }],
-          { tabela: "escrituracao.apuracao-icms", documento: "Apuração de ICMS", campo: "saldo" },
-          mem("Transporte da apuração para a GIA", "Portaria CAT 92/98", "saldo apurado do ICMS por UF", [
-            { label: "Saldo", valor: rs(Math.abs(saldoIcms)) },
-          ]),
-        ),
-        reg("GIA-CFOP", "Detalhe por CFOP", icms.length,
-          [{ campo: "Linhas", valor: String(icms.length) }],
-          { tabela: "escrituracao.apuracao-icms", documento: "Apuração", campo: "cfop" },
-          mem("Detalhamento por CFOP", "Portaria CAT 92/98 anexo IV", "agrupamento por CFOP", []),
-        ),
-      ],
-    },
+    // A GIA-SP não é mais gerada: dispensada para todo o RPA desde jan/2026 (Portaria SRE 02/2025),
+    // assim como a GIA-ST (Portaria SRE 06/2025). O ICMS apurado continua indo para as obrigações
+    // que existem (Sintegra, DeSTDA quando aplicável e a apuração interna).
     {
       codigo: "SINTEGRA",
       nome: "Sintegra — arquivo magnético",

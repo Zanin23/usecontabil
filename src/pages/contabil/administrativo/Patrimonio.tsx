@@ -508,6 +508,7 @@ function DialogBenfeitoria({ bem, onClose }: { bem: BemCalculado; onClose: () =>
 
 function Bens() {
   useRefresh();
+  const { empresa } = useEmpresaAtual();
   const { competencia, competenciasNoPeriodo, isPeriodo, competenciaFim } = useCompetencia();
   const [busca, setBusca] = useState("");
   const [grupo, setGrupo] = useState("todos");
@@ -518,9 +519,9 @@ function Bens() {
   const [benfeitoria, setBenfeitoria] = useState<BemCalculado | null>(null);
   const [aberto, setAberto] = useState<string | null>(null);
 
-  const lista = useMemo(() => bensCalculados(competenciasNoPeriodo), [competenciasNoPeriodo]);
-  const resumo = useMemo(() => resumoPatrimonio(competenciasNoPeriodo), [competenciasNoPeriodo]);
-  const grupos = useMemo(() => porGrupo(competenciasNoPeriodo), [competenciasNoPeriodo]);
+  const lista = useMemo(() => bensCalculados(competenciasNoPeriodo, empresa?.id), [competenciasNoPeriodo, empresa?.id]);
+  const resumo = useMemo(() => resumoPatrimonio(competenciasNoPeriodo, empresa?.id), [competenciasNoPeriodo, empresa?.id]);
+  const grupos = useMemo(() => porGrupo(competenciasNoPeriodo, empresa?.id), [competenciasNoPeriodo, empresa?.id]);
 
   const filtrados = lista.filter((b) => {
     if (grupo !== "todos" && b.grupo !== grupo) return false;
@@ -542,6 +543,13 @@ function Bens() {
         <Kpi label={`Despesa ${formatCompetencia(competencia)}`} valor={brl(resumo.despesaCompetencia)} />
         <Kpi label="Totalmente depreciados" valor={String(resumo.totalmenteDepreciados)} tom={resumo.totalmenteDepreciados ? "alerta" : undefined} hint="Revisar vida útil" />
       </div>
+
+      <Card className="rounded-3xl border-border">
+        <CardContent className="p-4 text-xs text-muted-foreground">
+          A depreciação entra na DRE de <strong>{empresa?.razao ?? "cada empresa"}</strong> apenas pelos bens vinculados a ela. Bens da carga de
+          exemplo, sem empresa definida, não são apropriados em nenhuma empresa — edite o bem e informe a empresa para que a despesa apareça na DRE.
+        </CardContent>
+      </Card>
 
       <Card className="rounded-3xl shadow-card">
         <CardContent className="p-6">
@@ -699,12 +707,16 @@ function Bens() {
 
 function Depreciacao() {
   useRefresh();
+  const { empresa } = useEmpresaAtual();
   const { competencia } = useCompetencia();
   const [aberto, setAberto] = useState<string | null>(null);
-  const lista = useMemo(() => bensCalculados(competencia).filter((b) => b.situacao !== "Baixado"), [competencia]);
-  const resumo = useMemo(() => resumoPatrimonio(competencia), [competencia]);
-  const centros = useMemo(() => porCentroCusto(competencia), [competencia]);
-  const projecao = useMemo(() => projecaoDepreciacao(competencia), [competencia]);
+  const lista = useMemo(
+    () => bensCalculados(competencia, empresa?.id).filter((b) => b.situacao !== "Baixado"),
+    [competencia, empresa?.id],
+  );
+  const resumo = useMemo(() => resumoPatrimonio(competencia, empresa?.id), [competencia, empresa?.id]);
+  const centros = useMemo(() => porCentroCusto(competencia, empresa?.id), [competencia, empresa?.id]);
+  const projecao = useMemo(() => projecaoDepreciacao(competencia, empresa?.id), [competencia, empresa?.id]);
 
   return (
     <div className="space-y-6">
@@ -848,11 +860,14 @@ function Depreciacao() {
 
 function Movimentacoes() {
   useRefresh();
+  const { empresa } = useEmpresaAtual();
   const { competencia } = useCompetencia();
   const [tipo, setTipo] = useState("todos");
   const [busca, setBusca] = useState("");
-  const movimentos = useMemo(() => listarMovimentos(), []);
-  const bens = useMemo(() => bensCalculados(competencia), [competencia]);
+  const listaBens = useMemo(() => bensCalculados(competencia, empresa?.id), [competencia, empresa?.id]);
+  const ids = useMemo(() => new Set(listaBens.map((b) => b.id)), [listaBens]);
+  const movimentos = useMemo(() => listarMovimentos().filter((m) => ids.has(m.bemId)), [ids]);
+  const bens = listaBens;
   const baixados = bens.filter((b) => b.situacao === "Baixado");
 
   const filtrados = movimentos.filter((m) => {
@@ -893,7 +908,7 @@ function Movimentacoes() {
                   <SelectItem value="Transferência">Transferência</SelectItem>
                   <SelectItem value="Benfeitoria">Benfeitoria</SelectItem>
                   <SelectItem value="Baixa">Baixa</SelectItem>
-                  <SelectItem value="Reavaliação">Reavaliação</SelectItem>
+                  <SelectItem value="Estorno de baixa">Estorno de baixa</SelectItem>
                 </SelectContent>
               </Select>
               <Button variant="outline" className="rounded-full" onClick={() => exportarCSV("movimentacoes-patrimonio", filtrados.map((m) => ({
@@ -981,13 +996,14 @@ function Movimentacoes() {
 
 function Inventario() {
   useRefresh();
+  const { empresa } = useEmpresaAtual();
   const { competencia } = useCompetencia();
   const [local, setLocal] = useState("todos");
   const [situacao, setSituacao] = useState("todos");
   const [busca, setBusca] = useState("");
 
-  const linhas = useMemo(() => inventarioCompetencia(competencia), [competencia]);
-  const resumo = useMemo(() => resumoInventario(competencia), [competencia]);
+  const linhas = useMemo(() => inventarioCompetencia(competencia, empresa?.id), [competencia, empresa?.id]);
+  const resumo = useMemo(() => resumoInventario(competencia, empresa?.id), [competencia, empresa?.id]);
 
   const filtradas = linhas.filter((l) => {
     if (local !== "todos" && l.localizacao !== local) return false;

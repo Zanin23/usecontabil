@@ -536,7 +536,7 @@ export const LICOES: Licao[] = [
     nivel: "Intermediário",
     comoUsar: [
       "Cadastre o bem com custo de aquisição, data e vida útil; a depreciação mensal é calculada a partir daí.",
-      "Movimentações registram transferência, baixa e reavaliação; o inventário confirma a existência física.",
+      "Movimentações registram aquisição, transferência, benfeitoria e baixa; o inventário confirma a existência física.",
     ],
     conceito: [
       "Depreciação linear = (custo − valor residual) ÷ vida útil em meses.",

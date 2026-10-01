@@ -1,6 +1,10 @@
 // localStorage-backed store for the "Financeiro" tables.
 // Tax/parameter tables are shared by the whole group (global scope).
-const KEY = "usecontabil.financeiro.v1";
+import { getStorageSuffix } from "./praticaStore";
+
+const KEY_BASE = "usecontabil.financeiro.v1";
+/** Chave no modo atual: o modo prática grava com o sufixo `.pratica`. */
+const KEY = () => KEY_BASE + getStorageSuffix();
 
 export const FINANCEIRO_EVENT = "usecontabil:financeiro-changed";
 
@@ -24,7 +28,7 @@ function notify() {
 
 export function loadDB(): DB {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY());
     return raw ? (JSON.parse(raw) as DB) : {};
   } catch {
     return {};
@@ -32,7 +36,7 @@ export function loadDB(): DB {
 }
 
 function persist(db: DB) {
-  localStorage.setItem(KEY, JSON.stringify(db));
+  localStorage.setItem(KEY(), JSON.stringify(db));
   notify();
 }
 

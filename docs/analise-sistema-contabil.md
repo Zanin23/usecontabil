@@ -10,7 +10,7 @@
 
 ---
 
-## Andamento (atualizado em 30/09/2026)
+## Andamento (atualizado em 01/10/2026)
 
 Decisão tomada: **o Use Contábil é o dono do razão** (opção A da seção 2). A integração será com o ERP da **Use Sistemas**, que ainda não existe; até lá os cadastros são alimentados no próprio sistema.
 
@@ -23,7 +23,9 @@ Decisão tomada: **o Use Contábil é o dono do razão** (opção A da seção 2
 | Vínculo de cada conta com o plano referencial da RFB | 🟡 Campo pronto; códigos a preencher |
 | Contabilização automática de notas, baixas, folha e depreciação (regras da seção 5.3) | ⏭️ Próxima etapa |
 | Organização/equipe compartilhando empresas, permissões aplicadas, demais telas na nuvem | ⏭️ Pendente |
-| Correções de conceito da seção 6 (DRE, PIS/COFINS, IRPJ/CSLL etc.) | ⏭️ Pendente |
+| Correções de conceito da seção 6 — **itens 1, 2, 4, 5, 13, 14 e 16** | ✅ Feito em 01/10/2026 (PR desta branch): compra não é receita, DRE sem a carteira simulada, devolução pelo CFOP (cancelada fora), depreciação por empresa, `getStorageSuffix()` nos 11 stores, \"Estorno de baixa\" no lugar de \"Reavaliação\" e GIA fora / DCTFWeb no lugar da DCTF |
+| Importação do plano de contas e do balancete de abertura por planilha (CSV ou Excel .xlsx), com o balancete virando lançamento do tipo \"Abertura\" | ✅ Feito em 01/10/2026 |
+| Demais itens da seção 6 (3, 6 a 12, 15) e PIS/COFINS, IRPJ/CSLL | ⏭️ Pendente (fase 3 do roteiro) |
 
 ---
 
@@ -240,6 +242,8 @@ Os itens 1 a 4 foram reproduzidos com testes automatizados temporários (empresa
 | 15 | **Parâmetros da empresa não fazem nada.** Exemplo: "Regime PIS/COFINS: Não cumulativo" é ignorado, porque o cálculo decide só por `regime === "Lucro Real"`. | `src/pages/contabil/EmpresaParametros.tsx` L26-31; `apuracaoStore.ts` L321 | Configuração enganosa |
 | 16 | **Obrigações desatualizadas** | A GIA-SP ainda é gerada (`obrigacoesStore.ts` L1428), inclusive com um pacote de "novos campos da GIA-SP" para 2026.07 (L300). "DCTF mensal" e "DCTF" aparecem nos dados de exemplo e no calendário de guias (`contabilNavAreas.tsx` L198; `guiasStore.ts` L394). O gerador principal já usa DCTFWeb, o que está certo. | Ver seção 8 |
 
+**Corrigidos em 01/10/2026 (PR desta branch):** itens **1, 2, 4, 5, 13, 14 e 16**. Os itens 3, 6 a 12 e 15 continuam abertos (dependem do razão e da fase 3 do roteiro). Testes de regressão em `src/test/dre.test.ts`, `src/test/isolamentoPratica.test.ts`, `src/test/patrimonioEObrigacoes.test.ts` e `src/test/importacaoPlanilha*.test.tsx`.
+
 ---
 
 ## 7. Lacuna nº 4: plataforma (dados, multiusuário e auditoria)
@@ -264,8 +268,8 @@ Os itens 1 a 4 foram reproduzidos com testes automatizados temporários (empresa
 | Tema | Situação legal (set/2026) | No sistema |
 |---|---|---|
 | **IBS/CBS** | 2026 é ano de teste: CBS 0,9% + IBS 0,1%, sem recolhimento para quem cumpre as obrigações acessórias. Desde 03/08/2026, documento sem os campos de IBS/CBS é rejeitado (regime regular). A NF-e exige CST e cClassTrib por item (NT 2025.002). Em 2027 vêm a CBS plena, o fim de PIS/COFINS e o Imposto Seletivo. | ❌ Nenhuma menção a IBS, CBS, IS ou cClassTrib no código |
-| **DCTF** | Substituída pela DCTFWeb (via MIT) para fatos geradores desde 01/01/2025 | 🟡 O gerador usa DCTFWeb, mas "DCTF" ainda aparece em dados de exemplo e no calendário |
-| **GIA-SP** | Dispensada para todo o RPA a partir de jan/2026 (Portaria SRE 02/2025). A GIA-ST também deixou de ser exigida (Portaria SRE 06/2025). | ❌ Ainda gera GIA-SP e prevê "novos campos 2026.07"; a GIA-ST aparece nos exemplos |
+| **DCTF** | Substituída pela DCTFWeb (via MIT) para fatos geradores desde 01/01/2025 | ✅ Feito em 01/10/2026: DCTFWeb no gerador, nos catálogos, nos dados de exemplo e no calendário de guias |
+| **GIA-SP** | Dispensada para todo o RPA a partir de jan/2026 (Portaria SRE 02/2025). A GIA-ST também deixou de ser exigida (Portaria SRE 06/2025). | ✅ Feito em 01/10/2026: GIA fora do gerador e dos exemplos; as obrigações estaduais ficam com Sintegra, DeSTDA e declarações do ISS |
 
 **O que a reforma exige de um sistema contábil:**
 - campos por item: CST e cClassTrib de IBS/CBS, base, alíquota, valor, redução;
@@ -289,10 +293,12 @@ A ordem evita construir em cima de areia: primeiro a base de dados, depois o nú
 | **4. Obrigações reais** | ECD gerada do Diário; ECF (ECD + Lalur); EFD ICMS/IPI e Contribuições com C170; Reinf; DCTFWeb; retirada de DCTF e GIA-SP | Depende das fases 1 a 3 |
 | **5. Gestão e grupo** | DFC, DMPL, notas explicativas, consolidação com eliminações, orçamento × realizado, indicadores | Valor gerencial |
 
-**Correções rápidas, que independem das fases:**
-- itens 1, 4, 5, 7, 9, 14 e 16 da seção 6;
-- sufixo do modo prática nos 11 stores;
-- esconder da DRE os títulos simulados até existir integração real.
+**Correções rápidas, que independem das fases (feitas em 01/10/2026, exceto onde indicado):**
+- itens 1, 4, 5, 14 e 16 da seção 6 ✅;
+- sufixo do modo prática nos 11 stores (item 13) ✅;
+- esconder da DRE os títulos simulados até existir integração real (item 2) ✅;
+- itens 7 e 9 (PIS/COFINS e IRPJ/CSLL) ⏭️ pendentes — dependem de CST por item e do lucro contábil.
+- importação do plano de contas e do balancete de abertura por planilha (CSV/Excel) ✅.
 
 ---
 

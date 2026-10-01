@@ -3,8 +3,11 @@
 // Nada aqui conversa com a Receita — cálculo interno/visual.
 import { useEffect, useState } from "react";
 import { daEmpresa, loadDocs, moedaBR, valorBR, type DocFiscal } from "@/lib/fiscalStore";
+import { getStorageSuffix } from "./praticaStore";
 
-const KEY = "usecontabil.escrituracao.v1";
+const KEY_BASE = "usecontabil.escrituracao.v1";
+/** Chave no modo atual: o modo prática grava com o sufixo `.pratica`. */
+const KEY = () => KEY_BASE + getStorageSuffix();
 
 export const ESCRITURACAO_EVENT = "usecontabil:escrituracao-changed";
 
@@ -30,7 +33,7 @@ function notify() {
 
 export function loadDB(): DB {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY());
     return raw ? (JSON.parse(raw) as DB) : {};
   } catch {
     return {};
@@ -38,7 +41,7 @@ export function loadDB(): DB {
 }
 
 function persist(db: DB) {
-  localStorage.setItem(KEY, JSON.stringify(db));
+  localStorage.setItem(KEY(), JSON.stringify(db));
   notify();
 }
 

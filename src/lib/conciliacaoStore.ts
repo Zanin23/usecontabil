@@ -10,6 +10,7 @@
 
 export const CONCILIACAO_EVENT = "usecontabil:conciliacao-changed";
 import { usuarioAtual } from "@/lib/usuarioAtual";
+import { getStorageSuffix } from "./praticaStore";
 
 const moedaBR = (n: number) =>
   n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -64,18 +65,20 @@ export type Estado = {
   ignorados: string[];
 };
 
-const KEY = "usecontabil:conciliacao";
+const KEY_BASE = "usecontabil:conciliacao";
+/** Chave no modo atual: o modo prática grava com o sufixo `.pratica`. */
+const KEY = () => KEY_BASE + getStorageSuffix();
 
 function ler(): Estado {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY());
     if (raw) return { vinculos: [], fechamentos: {}, ignorados: [], ...JSON.parse(raw) };
   } catch { /* ignora storage corrompido */ }
   return { vinculos: [], fechamentos: {}, ignorados: [] };
 }
 
 function gravar(e: Estado) {
-  localStorage.setItem(KEY, JSON.stringify(e));
+  localStorage.setItem(KEY(), JSON.stringify(e));
   window.dispatchEvent(new CustomEvent(CONCILIACAO_EVENT));
 }
 

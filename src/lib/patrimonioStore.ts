@@ -3,10 +3,10 @@
 // ----------------------------------------------------------------------------
 // Motor de controle patrimonial inspirado em Domínio, Alterdata, Questor, SCI,
 // Fortes e TOTVS: cadastro de bens, depreciação, movimentações (transferência,
-// baixa, reavaliação) e inventário físico.
+// benfeitoria, baixa) e inventário físico.
 //
 // Regras implementadas:
-//  R1  Base depreciável = valor de aquisição (+ benfeitorias/reavaliações)
+//  R1  Base depreciável = valor de aquisição (+ benfeitorias capitalizadas)
 //      − valor residual estimado (% informado sobre o valor corrigido).
 //  R2  Depreciação linear mensal = base depreciável ÷ vida útil (meses).
 //      A quota nunca ultrapassa o saldo ainda não depreciado.
@@ -28,11 +28,17 @@
 //      atualizar as telas abertas.
 // ============================================================================
 
+import { empresaSelecionadaId } from "./empresasStore";
+import { getStorageSuffix } from "./praticaStore";
+
 export const PATRIMONIO_EVENT = "usecontabil:patrimonio-changed";
 
 const KEY_BENS = "usecontabil.adm.patrimonio.bens.v1";
 const KEY_MOVS = "usecontabil.adm.patrimonio.movs.v1";
 const KEY_INVENTARIO = "usecontabil.adm.patrimonio.inventario.v1";
+
+/** Chave da coleção no modo atual (o modo prática usa o mesmo nome com o sufixo `.pratica`). */
+const chaveDe = (base: string) => base + getStorageSuffix();
 
 /* ================================ utils ================================== */
 
@@ -64,9 +70,9 @@ const compDe = (iso: string) => iso.slice(0, 7);
 function ler<T>(key: string, fallback: T[]): T[] {
   if (typeof window === "undefined") return fallback;
   try {
-    const raw = window.localStorage.getItem(key);
+    const raw = window.localStorage.getItem(chaveDe(key));
     if (!raw) {
-      window.localStorage.setItem(key, JSON.stringify(fallback));
+      window.localStorage.setItem(chaveDe(key), JSON.stringify(fallback));
       return fallback;
     }
     const dados = JSON.parse(raw);
@@ -78,7 +84,7 @@ function ler<T>(key: string, fallback: T[]): T[] {
 
 function gravar<T>(key: string, dados: T[]) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(key, JSON.stringify(dados));
+  window.localStorage.setItem(chaveDe(key), JSON.stringify(dados));
   window.dispatchEvent(new CustomEvent(PATRIMONIO_EVENT));
 }
 
@@ -125,7 +131,8 @@ export type Bem = {
   baixaDocumento?: string;
 };
 
-export type TipoMovimento = "Aquisição" | "Transferência" | "Benfeitoria" | "Baixa" | "Reavaliação";
+/** "Reavaliação" não existe: desde a Lei 11.638/2007 não se reavalia ativo por decisão da empresa. */
+export type TipoMovimento = "Aquisição" | "Transferência" | "Benfeitoria" | "Baixa" | "Estorno de baixa";
 
 export type Movimento = {
   id: string;
@@ -224,8 +231,12 @@ const FORNECEDORES = [
 ];
 
 function sementeBens(): Bem[] {
+  // A carga de exemplo fica vinculada à empresa escolhida no momento em que é criada; sem empresa
+  // selecionada os bens ficam sem vínculo e não entram na depreciação de nenhuma empresa.
+  const empresaId = empresaSelecionadaId() ?? undefined;
   return SEMENTE.map(([patrimonio, descricao, grupo, valor, vida, aquisicao, centro, local, turnos], i) => ({
     id: `bem-seed-${patrimonio}`,
+    empresaId,
     patrimonio,
     descricao,
     grupo,
@@ -405,8 +416,13 @@ function addMesesISO(iso: string, n: number) {
   return d.toISOString().slice(0, 10);
 }
 
-export function bensCalculados(competencia: string | string[]): BemCalculado[] {
+/**
+ * Bens calculados na competência. Com `empresaId`, considera só os bens dessa empresa (bens sem
+ * empresa — da carga de exemplo — não entram em nenhuma empresa: antes eles apareciam na DRE de todas).
+ */
+export function bensCalculados(competencia: string | string[], empresaId?: string): BemCalculado[] {
   return listarBens()
+    .filter((b) => !empresaId || b.empresaId === empresaId)
     .map((b) => calcularBem(b, competencia))
     .sort((a, b) => a.patrimonio.localeCompare(b.patrimonio));
 }
@@ -422,8 +438,9 @@ export type ResumoPatrimonio = {
   resultadoBaixasAno: number;
 };
 
-export function resumoPatrimonio(competencia: string | string[]): ResumoPatrimonio {
-  const lista = bensCalculados(competencia);
+/** Resumo do patrimônio. Com `empresaId`, considera só os bens daquela empresa. */
+export function resumoPatrimonio(competencia: string | string[], empresaId?: string): ResumoPatrimonio {
+  const lista = bensCalculados(competencia, empresaId);
   const compRef = Array.isArray(competencia) ? competencia[competencia.length - 1] : competencia;
   const ativos = lista.filter((b) => b.situacao !== "Baixado");
   const ano = compRef.slice(0, 4);
@@ -443,9 +460,9 @@ export function resumoPatrimonio(competencia: string | string[]): ResumoPatrimon
   };
 }
 
-export function porGrupo(competencia: string | string[]) {
+export function porGrupo(competencia: string | string[], empresaId?: string) {
   const mapa = new Map<string, { grupo: string; aquisicao: number; contabil: number; depreciacao: number; qtd: number }>();
-  for (const b of bensCalculados(competencia)) {
+  for (const b of bensCalculados(competencia, empresaId)) {
     if (b.situacao === "Baixado") continue;
     const atual = mapa.get(b.grupo) || { grupo: b.grupo, aquisicao: 0, contabil: 0, depreciacao: 0, qtd: 0 };
     atual.aquisicao = round(atual.aquisicao + b.valorCorrigido);
@@ -457,9 +474,9 @@ export function porGrupo(competencia: string | string[]) {
   return [...mapa.values()].sort((a, b) => b.aquisicao - a.aquisicao);
 }
 
-export function porCentroCusto(competencia: string) {
+export function porCentroCusto(competencia: string, empresaId?: string) {
   const mapa = new Map<string, { centro: string; contabil: number; depreciacao: number; qtd: number }>();
-  for (const b of bensCalculados(competencia)) {
+  for (const b of bensCalculados(competencia, empresaId)) {
     if (b.situacao === "Baixado") continue;
     const c = b.centroCusto || "Não informado";
     const atual = mapa.get(c) || { centro: c, contabil: 0, depreciacao: 0, qtd: 0 };
@@ -472,14 +489,15 @@ export function porCentroCusto(competencia: string) {
 }
 
 /** Projeção da despesa de depreciação nos próximos 12 meses. */
-export function projecaoDepreciacao(competencia: string) {
+export function projecaoDepreciacao(competencia: string, empresaId?: string) {
   const meses: { mes: string; despesa: number }[] = [];
   const [ano, mes] = competencia.split("-").map(Number);
+  const bens = empresaId ? listarBens().filter((b) => b.empresaId === empresaId) : listarBens();
   for (let i = 0; i < 12; i++) {
     const d = new Date(ano, mes - 1 + i, 1);
     const comp = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     const despesa = round(
-      listarBens().reduce((s, b) => s + calcularBem(b, comp).depreciacaoCompetencia, 0),
+      bens.reduce((s, b) => s + calcularBem(b, comp).depreciacaoCompetencia, 0),
     );
     meses.push({ mes: comp.slice(5) + "/" + comp.slice(2, 4), despesa });
   }
@@ -650,7 +668,7 @@ export function estornarBaixa(id: string) {
   const atualizado: Bem = { ...bem, baixaData: undefined, baixaMotivo: undefined, baixaValor: undefined, baixaDocumento: undefined };
   gravar(KEY_BENS, bens.map((b) => (b.id === id ? atualizado : b)));
   registrarMovimento({
-    bemId: id, patrimonio: bem.patrimonio, data: hojeISO(), tipo: "Reavaliação",
+    bemId: id, patrimonio: bem.patrimonio, data: hojeISO(), tipo: "Estorno de baixa",
     descricao: "Estorno da baixa — bem retornou ao imobilizado", autor: "Controladoria",
   });
 }
@@ -667,9 +685,9 @@ export type LinhaInventario = BemCalculado & {
 };
 
 /** R9 — confronto físico × contábil da competência. */
-export function inventarioCompetencia(competencia: string): LinhaInventario[] {
+export function inventarioCompetencia(competencia: string, empresaId?: string): LinhaInventario[] {
   const contagens = listarContagens().filter((c) => c.competencia === competencia);
-  return bensCalculados(competencia)
+  return bensCalculados(competencia, empresaId)
     .filter((b) => b.situacao !== "Baixado")
     .map((b) => {
       const contagem = contagens.find((c) => c.bemId === b.id);
@@ -682,8 +700,8 @@ export function inventarioCompetencia(competencia: string): LinhaInventario[] {
     });
 }
 
-export function resumoInventario(competencia: string) {
-  const linhas = inventarioCompetencia(competencia);
+export function resumoInventario(competencia: string, empresaId?: string) {
+  const linhas = inventarioCompetencia(competencia, empresaId);
   const conta = (s: SituacaoContagem) => linhas.filter((l) => l.situacaoInventario === s).length;
   const conferidos = conta("Localizado");
   return {

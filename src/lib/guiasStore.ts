@@ -391,7 +391,7 @@ export const GRUPOS = [
   { slug: "darf" as GrupoSlug, label: "Federal (DARF)", submodulos: ["PIS", "COFINS", "IRPJ", "CSLL", "IPI", "Simples Nacional", "INSS Patronal", "IRRF Folha"] },
   { slug: "estaduais" as GrupoSlug, label: "Estadual", submodulos: ["ICMS Próprio", "ICMS ST", "DIFAL", "Taxas de Fiscalização", "IPVA", "ITCMD"] },
   { slug: "parcelamentos" as GrupoSlug, label: "Parcelamentos", submodulos: ["PERT", "PRT", "REFIS", "Transação Tributária", "Parcelamentos Ordinários"] },
-  { slug: "calendario" as GrupoSlug, label: "Calendário Fiscal", submodulos: ["SPED Fiscal", "EFD Contribuições", "DCTF", "REINF", "GIA", "Destda"] },
+  { slug: "calendario" as GrupoSlug, label: "Calendário Fiscal", submodulos: ["SPED Fiscal", "EFD-Contribuições", "DCTFWeb", "EFD-Reinf", "DeSTDA", "ISS"] },
 ];
 
 

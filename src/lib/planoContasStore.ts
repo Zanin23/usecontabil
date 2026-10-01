@@ -32,7 +32,7 @@ export type Conta = RegistroBase & {
   exigeCentroCusto: boolean;
   situacao: "Ativa" | "Inativa";
   observacao?: string;
-  origem: "Modelo padrão" | "Manual";
+  origem: "Modelo padrão" | "Manual" | "Importação";
 };
 
 export const TIPOS_CENTRO = ["Administrativo", "Comercial", "Produtivo", "Apoio", "Outro"] as const;

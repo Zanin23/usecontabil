@@ -575,7 +575,7 @@ export function candidatosDeCadastrosAntigos(): CandidatosImportacao {
   const sufixo = getStorageSuffix();
   const trib = lerJson<BaseTributaria>(`usecontabil.tributario.v1${sufixo}`, {});
   const fiscal = lerJson<Record<string, Record<string, string>[]>>(`usecontabil.fiscal.docs.v1${sufixo}`, {});
-  const financeiro = lerJson<{ servicos?: Record<string, string>[] }>("usecontabil.financeiro.v1", {});
+  const financeiro = lerJson<{ servicos?: Record<string, string>[] }>(`usecontabil.financeiro.v1${sufixo}`, {});
 
   const participantesAtuais = listarParticipantes();
   const produtosAtuais = listarProdutos();

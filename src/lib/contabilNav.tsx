@@ -247,7 +247,7 @@ const preparativos: Category[] = [
           { empresa: "Andrade Comércio — Filial Sul", obrigacao: "DAS Simples Nacional", vencimento: "20/07/2026", responsavel: "C. Mendes", status: "Pendente" },
           { empresa: "TechCore — Unidade TI", obrigacao: "EFD Contribuições", vencimento: "14/07/2026", responsavel: "J. Reis", status: "Concluído" },
           { empresa: "Transportes Litoral — Filial NE", obrigacao: "SPED Fiscal", vencimento: "25/07/2026", responsavel: "R. Prado", status: "Pendente" },
-          { empresa: "Andrade Distribuição — CD Sul", obrigacao: "GIA-ST", vencimento: "10/07/2026", responsavel: "M. Costa", status: "Atrasado" },
+          { empresa: "Andrade Distribuição — CD Sul", obrigacao: "DeSTDA", vencimento: "10/07/2026", responsavel: "M. Costa", status: "Atrasado" },
         ],
       },
       {
@@ -424,7 +424,7 @@ const preparativos: Category[] = [
           { titular: "ANDRADE METALURGICA:12345678000190", tipo: "A3", ac: "AC Serasa RFB v5", emissao: "08/03/2023", validade: "08/03/2026", uso: "e-CAC · Procurações", situacao: "Ativo" },
           { titular: "MARCOS ANDRADE:12847092104", tipo: "A1", ac: "AC Certisign PF G5", emissao: "01/04/2024", validade: "01/04/2025", uso: "Assinatura contratos", situacao: "Ativo" },
           { titular: "ANDRADE FILIAL SUL:12345678000271", tipo: "A1", ac: "AC Soluti RFB G5", emissao: "15/08/2023", validade: "15/08/2024", uso: "NF-e filial", situacao: "Vencido" },
-          { titular: "ELISA NOGUEIRA:04812029410", tipo: "A3", ac: "AC OAB", emissao: "22/02/2024", validade: "22/02/2027", uso: "Assinatura DCTF", situacao: "Ativo" },
+          { titular: "ELISA NOGUEIRA:04812029410", tipo: "A3", ac: "AC OAB", emissao: "22/02/2024", validade: "22/02/2027", uso: "Assinatura DCTFWeb", situacao: "Ativo" },
         ],
       },
     ],
