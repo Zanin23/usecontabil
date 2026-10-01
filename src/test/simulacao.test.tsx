@@ -55,7 +55,7 @@ describe("Obrigações acessórias", () => {
     await comProvedores(<SpedFiscal />);
     const aviso = await screen.findByRole("note");
     expect(aviso).toHaveTextContent(/Simulação interna/);
-    expect(aviso).toHaveTextContent(/nenhum arquivo SPED\/EFD\/DCTF real/);
+    expect(aviso).toHaveTextContent(/nenhum arquivo SPED\/EFD\/DCTFWeb real/);
   });
 });
 

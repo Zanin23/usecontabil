@@ -271,7 +271,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
       {/* abas */}
       <AvisoSimulacao>
         Arquivos, recibos, protocolos, assinaturas e transmissões desta tela são simulados: nada é enviado à Receita, à SEFAZ ou às
-        prefeituras e nenhum arquivo SPED/EFD/DCTF real é gerado para download. Use o programa oficial de cada obrigação.
+        prefeituras e nenhum arquivo SPED/EFD/DCTFWeb real é gerado para download. Use o programa oficial de cada obrigação.
       </AvisoSimulacao>
 
       <Tabs defaultValue="resumo">

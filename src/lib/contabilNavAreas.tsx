@@ -193,16 +193,16 @@ export const fiscal: Category[] = [
         { obrigacao: "ECD — ano-base 2025", competencia: "2025", prazo: "31/05/2026", responsavel: "Contabilidade", status: "Transmitida" },
         { obrigacao: "ECF — ano-base 2025", competencia: "2025", prazo: "31/07/2026", responsavel: "Contabilidade", status: "Em revisão" },
       ]),
-      mod("dctfweb", "DCTF / DCTFWeb", Send, "Confissão de débitos federais.", COLS_OBRIG, [
-        { obrigacao: "DCTFWeb mensal", competencia: "07/2026", prazo: "15/08/2026", responsavel: "Equipe fiscal", status: "Pendente" },
-        { obrigacao: "DCTF mensal", competencia: "06/2026", prazo: "15/07/2026", responsavel: "Equipe fiscal", status: "Transmitida" },
+      mod("dctfweb", "DCTFWeb", Send, "Confissão de débitos federais (a DCTF mensal foi substituída pela DCTFWeb).", COLS_OBRIG, [
+        { obrigacao: "DCTFWeb — matriz", competencia: "07/2026", prazo: "15/08/2026", responsavel: "Equipe fiscal", status: "Pendente" },
+        { obrigacao: "DCTFWeb — matriz", competencia: "06/2026", prazo: "15/07/2026", responsavel: "Equipe fiscal", status: "Transmitida" },
       ]),
       mod("reinf", "EFD-Reinf", Radio, "Retenções e informações de terceiros.", COLS_OBRIG, [
         { obrigacao: "EFD-Reinf — eventos R-2010", competencia: "07/2026", prazo: "15/08/2026", responsavel: "Equipe fiscal", status: "Em geração" },
         { obrigacao: "EFD-Reinf — fechamento R-2099", competencia: "06/2026", prazo: "15/07/2026", responsavel: "Equipe fiscal", status: "Transmitida" },
       ]),
-      mod("estaduais", "Obrigações estaduais e municipais", Table2, "GIA, Sintegra, DeSTDA e declarações do ISS.", COLS_OBRIG, [
-        { obrigacao: "GIA — SP", competencia: "07/2026", prazo: "16/08/2026", responsavel: "Equipe fiscal", status: "Pendente" },
+      mod("estaduais", "Obrigações estaduais e municipais", Table2, "Sintegra, DeSTDA e declarações do ISS — a GIA-SP está dispensada desde jan/2026.", COLS_OBRIG, [
+        { obrigacao: "Sintegra — SP", competencia: "07/2026", prazo: "16/08/2026", responsavel: "Equipe fiscal", status: "Pendente" },
         { obrigacao: "DeSTDA — RS", competencia: "07/2026", prazo: "28/08/2026", responsavel: "Equipe fiscal", status: "Pendente" },
         { obrigacao: "Declaração de ISS — SP", competencia: "07/2026", prazo: "10/08/2026", responsavel: "Equipe fiscal", status: "Em geração" },
       ]),
