@@ -14,6 +14,7 @@ import { SeletorCentro, SeletorConta, SeletorParticipante } from "@/components/c
 import { normalizarBusca } from "@/lib/busca";
 import CampoNumeroBR from "@/components/contabil/CampoNumeroBR";
 import ExportarMenu from "@/components/contabil/ExportarMenu";
+import { BotaoImportarBalanceteAbertura } from "@/components/contabil/ImportacaoPlanilha";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { competenciaBR, formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { contasAnaliticasAtivas, montarHistorico, useCentros, useContas, useHistoricos, type Conta } from "@/lib/planoContasStore";
@@ -235,6 +236,7 @@ export default function Lancamentos() {
               ]}
               linhas={linhasExportacao}
             />
+            <BotaoImportarBalanceteAbertura />
             <Button className="rounded-full" onClick={abrirNovo} disabled={!empresaId || !analiticas.length}>
               <Plus className="mr-2 h-4 w-4" /> Novo lançamento
             </Button>

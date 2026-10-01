@@ -13,6 +13,7 @@ import ListaErros from "@/components/contabil/cadastros/ListaErros";
 import { Campo, CampoAreaTexto, CampoSelecao, CampoTexto } from "@/components/contabil/cadastros/Campos";
 import { normalizarBusca } from "@/lib/busca";
 import ExportarMenu from "@/components/contabil/ExportarMenu";
+import { BotaoImportarPlanoContas } from "@/components/contabil/ImportacaoPlanilha";
 import {
   carregarPlanoModelo, codigoPai, contasDoModelo, excluirConta, GRUPOS_CONTA, impedimentoExclusaoConta, naturezaEcd,
   naturezaPadrao, nivelDaConta, salvarConta, sugestaoSubconta, useContas, type Conta,
@@ -146,6 +147,7 @@ export default function PlanoContas() {
             <Button variant="outline" className="rounded-full" onClick={carregarModelo}>
               <Sparkles className="mr-2 h-4 w-4" /> {contas.length ? "Completar com o modelo" : "Carregar plano modelo"}
             </Button>
+            <BotaoImportarPlanoContas />
             <ExportarMenu nome="Plano de contas" colunas={COLUNAS_EXPORTACAO} linhas={linhasExportacao} />
             <Button className="rounded-full" onClick={() => abrirNova()}>
               <Plus className="mr-2 h-4 w-4" /> Nova conta
@@ -179,6 +181,7 @@ export default function PlanoContas() {
                 <Sparkles className="mr-2 h-4 w-4" /> Carregar plano modelo ({contasDoModelo().length} contas)
               </Button>
               <Button variant="outline" className="rounded-full" onClick={() => abrirNova()}>Criar do zero</Button>
+              <BotaoImportarPlanoContas />
             </div>
           </CardContent>
         </Card>
