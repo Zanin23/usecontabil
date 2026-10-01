@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Banknote, Copy, QrCode, Barcode, FileClock, ShieldCheck, ArrowUpRight,
 } from "lucide-react";
@@ -13,6 +14,7 @@ import {
   emitirGuia, reemitirGuia, cancelarGuia, compensarGuia, hojeISO, definirResponsavel,
   type Guia,
 } from "@/lib/guiasStore";
+import { rotaDaApuracao, tituloDoMotor } from "@/lib/rotasDados";
 
 function Linha({ label, valor, mono }: { label: string; valor: string; mono?: boolean }) {
   return (
@@ -48,6 +50,9 @@ export default function GuiaPainel({
   };
   const memoria = useMemo(() => guia?.memoria ?? [], [guia]);
   if (!guia) return null;
+  const motoresOrigem = guia.origemMotores?.length
+    ? guia.origemMotores
+    : guia.origemMotor ? [guia.origemMotor] : [];
 
   return (
     <Sheet open={aberto} onOpenChange={(v) => !v && onClose()}>
@@ -189,6 +194,22 @@ export default function GuiaPainel({
                 </Button>
               </div>
               <Linha label="Origem da apuração" valor={guia.origem} />
+              {motoresOrigem.length > 0 && (
+                <div className="mt-2 space-y-2 border-t border-border/60 pt-3">
+                  <p className="text-xs text-muted-foreground">Abrir a apuração que alimentou esta guia:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {motoresOrigem.map((motor) => (
+                      <Link
+                        key={motor}
+                        to={rotaDaApuracao(motor, { empresaId: guia.empresaId, competencia: guia.competencia })}
+                        className="rounded-full border border-border px-3 py-1.5 text-xs text-brand-orange transition-colors hover:bg-brand-orange/10"
+                      >
+                        {tituloDoMotor(motor)}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </TabsContent>
 
