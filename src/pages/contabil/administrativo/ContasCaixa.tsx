@@ -197,7 +197,7 @@ function DialogBaixa({
           />
           <div className="flex gap-2">
             <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>
               Confirmar baixa
             </Button>
           </div>
@@ -283,7 +283,7 @@ function Carteira({ tipo }: { tipo: TipoTitulo }) {
             </Button>
           </div>
 
-          <Card className="rounded-3xl shadow-card">
+          <Card className="rounded-xl shadow-card">
             <CardContent className="overflow-x-auto p-0">
               <Table>
                 <TableHeader>
@@ -322,7 +322,7 @@ function Carteira({ tipo }: { tipo: TipoTitulo }) {
                       </TableCell>
                       <TableCell className="text-right">
                         {t.saldo > 0 ? (
-                          <Button size="sm" className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setAlvo(t)}>
+                          <Button size="sm" className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setAlvo(t)}>
                             <Banknote className="mr-1.5 h-3.5 w-3.5" />Baixar
                           </Button>
                         ) : (
@@ -341,7 +341,7 @@ function Carteira({ tipo }: { tipo: TipoTitulo }) {
         </TabsContent>
 
         <TabsContent value="aging" className="mt-4 space-y-4">
-          <Card className="rounded-3xl shadow-card">
+          <Card className="rounded-xl shadow-card">
             <CardContent className="space-y-4 p-6">
               <div>
                 <h3 className="font-display text-xl">Aging da carteira</h3>
@@ -375,7 +375,7 @@ function Carteira({ tipo }: { tipo: TipoTitulo }) {
           {[{ t: "Concentração por categoria", d: r.porCategoria }, { t: tipo === "pagar" ? "Maiores fornecedores" : "Maiores clientes", d: r.porParceiro }].map((bloco) => {
             const maior = Math.max(1, ...bloco.d.map((x) => x.valor));
             return (
-              <Card key={bloco.t} className="rounded-3xl shadow-card">
+              <Card key={bloco.t} className="rounded-xl shadow-card">
                 <CardContent className="space-y-4 p-6">
                   <h3 className="font-display text-xl">{bloco.t}</h3>
                   <div className="space-y-3">
@@ -397,7 +397,7 @@ function Carteira({ tipo }: { tipo: TipoTitulo }) {
         </TabsContent>
 
         <TabsContent value="historico" className="mt-4">
-          <Card className="rounded-3xl shadow-card">
+          <Card className="rounded-xl shadow-card">
             <CardContent className="overflow-x-auto p-0">
               <Table>
                 <TableHeader>
@@ -485,7 +485,7 @@ function CaixaTesouraria() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[340px_1fr]">
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="space-y-2 p-4">
             <div className="px-2 pb-1 text-xs uppercase tracking-[0.12em] text-muted-foreground">Contas</div>
             {contas.map((c) => (
@@ -508,7 +508,7 @@ function CaixaTesouraria() {
         </Card>
 
         <div className="space-y-4">
-          <Card className="rounded-3xl shadow-card">
+          <Card className="rounded-xl shadow-card">
             <CardContent className="space-y-4 p-6">
               <div className="flex flex-wrap items-end justify-between gap-3">
                 <div>
@@ -553,14 +553,14 @@ function CaixaTesouraria() {
                   </Select>
                   <div className="flex gap-2">
                     <Input className="font-mono" placeholder="0,00" value={novo.valor} onChange={(e) => setNovo({ ...novo, valor: e.target.value })} />
-                    <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={lancar}><Plus className="h-4 w-4" /></Button>
+                    <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={lancar}><Plus className="h-4 w-4" /></Button>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-3xl shadow-card">
+          <Card className="rounded-xl shadow-card">
             <CardContent className="overflow-x-auto p-0">
               <Table>
                 <TableHeader>
@@ -651,7 +651,7 @@ function FluxoCaixa() {
         </div>
       )}
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -697,7 +697,7 @@ function FluxoCaixa() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="overflow-x-auto p-0">
           <Table>
             <TableHeader>
@@ -781,7 +781,7 @@ function Cobranca() {
 
         <TabsContent value="clientes" className="mt-4 space-y-3">
           {lista.map((i) => (
-            <Card key={i.parceiro} className="rounded-3xl shadow-card">
+            <Card key={i.parceiro} className="rounded-xl shadow-card">
               <CardContent className="space-y-3 p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -802,7 +802,7 @@ function Cobranca() {
                   <div className="text-right">
                     <div className="font-mono text-lg text-destructive">{brl(i.saldo)}</div>
                     <div className="text-[11px] text-muted-foreground">{i.titulos.length} título(s) · maior atraso {i.maiorAtraso} d.</div>
-                    <Button size="sm" className="mt-2 rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setAlvo(i.parceiro)}>
+                    <Button size="sm" className="mt-2 rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setAlvo(i.parceiro)}>
                       Registrar ação
                     </Button>
                   </div>
@@ -821,7 +821,7 @@ function Cobranca() {
             </Card>
           ))}
           {lista.length === 0 && (
-            <Card className="rounded-3xl shadow-card">
+            <Card className="rounded-xl shadow-card">
               <CardContent className="py-16 text-center text-sm text-muted-foreground">
                 Nenhum recebível vencido nesta competência. Carteira em dia.
               </CardContent>
@@ -830,7 +830,7 @@ function Cobranca() {
         </TabsContent>
 
         <TabsContent value="regua" className="mt-4">
-          <Card className="rounded-3xl shadow-card">
+          <Card className="rounded-xl shadow-card">
             <CardContent className="overflow-x-auto p-0">
               <Table>
                 <TableHeader>
@@ -886,7 +886,7 @@ function Cobranca() {
                 />
                 <div className="flex gap-2">
                   <Button variant="outline" className="rounded-full" onClick={() => setAlvo(null)}>Cancelar</Button>
-                  <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={registrar}>Registrar</Button>
+                  <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={registrar}>Registrar</Button>
                 </div>
               </div>
             </div>

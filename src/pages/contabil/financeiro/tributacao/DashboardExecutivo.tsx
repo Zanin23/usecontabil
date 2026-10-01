@@ -94,14 +94,14 @@ export default function DashboardExecutivo() {
             <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
           </div>
         </div>
-        <Button asChild className="rounded-full bg-brand-orange hover:bg-brand-orange/90">
+        <Button asChild className="rounded-lg bg-brand-orange hover:bg-brand-orange/90">
           <Link to="/financeiro/movimentos/conclusao-fiscal">Conclusão fiscal <ArrowRight className="ml-2 h-4 w-4" /></Link>
         </Button>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((k) => (
-          <Card key={k.label} className="rounded-3xl shadow-card">
+          <Card key={k.label} className="rounded-xl shadow-card">
             <CardContent className="p-4">
               <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">{k.label}</div>
               <div className="mt-1 break-words font-display text-xl">{k.valor}</div>
@@ -112,7 +112,7 @@ export default function DashboardExecutivo() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="p-5">
             <div className="mb-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">Composição dos tributos</div>
             {porTributo.length === 0 ? (
@@ -142,7 +142,7 @@ export default function DashboardExecutivo() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="p-5">
             <div className="mb-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">Faturamento por documento</div>
             {porTipo.length === 0 ? (
@@ -164,7 +164,7 @@ export default function DashboardExecutivo() {
         </Card>
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-3 p-5">
           <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
             <TrendingUp className="h-3.5 w-3.5 text-brand-orange" /> Timeline da operação

@@ -31,7 +31,7 @@ function compacto(v: number) {
 
 function Kpi({ label, valor, hint }: { label: string; valor: string; hint?: string }) {
   return (
-    <Card className="rounded-3xl border-border/70">
+    <Card className="rounded-xl border-border/70">
       <CardContent className="space-y-1 p-5">
         <div className="text-[10px] uppercase leading-tight tracking-[0.08em] text-muted-foreground break-words">{label}</div>
         <div className="font-display text-3xl break-words">{valor}</div>
@@ -115,7 +115,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
         </div>
       </div>
 
-      <Card className="rounded-3xl border-border/70 bg-muted/30">
+      <Card className="rounded-xl border-border/70 bg-muted/30">
         <CardContent className="flex flex-wrap items-center gap-3 p-4 text-xs text-muted-foreground">
           <RefreshCw className="h-4 w-4 shrink-0 text-brand-orange" />
           <span><strong className="text-foreground">Dados de exemplo (simulação)</strong> — não há integração com ERP; os registros abaixo são fictícios.</span>
@@ -144,7 +144,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
         {/* ------------------------------ visão ------------------------------ */}
         <TabsContent value="visao" className="mt-6 space-y-6">
           <div className="grid gap-4 lg:grid-cols-2">
-            <Card className="rounded-3xl border-border/70">
+            <Card className="rounded-xl border-border/70">
               <CardContent className="p-5">
                 <div className="mb-4 text-sm font-medium">
                   Distribuição por {dominio.facetas.find((f) => f.key === facetaPrincipal)?.label}
@@ -162,7 +162,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-border/70">
+            <Card className="rounded-xl border-border/70">
               <CardContent className="p-5">
                 <div className="mb-4 text-sm font-medium">
                   Composição por {dominio.facetas[dominio.facetas.length - 1].label}
@@ -190,7 +190,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
           </div>
 
           {!!topValor.length && (
-            <Card className="rounded-3xl border-border/70">
+            <Card className="rounded-xl border-border/70">
               <CardContent className="p-5">
                 <div className="flex flex-wrap items-end justify-between gap-3">
                   <div>
@@ -292,7 +292,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
             )}
           </div>
 
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-0">
               <ScrollArea className="max-h-[560px]">
                 <Table>
@@ -340,7 +340,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
                 <button
                   key={rel.slug}
                   onClick={() => setRelatorio(ativo ? null : rel.slug)}
-                  className={`rounded-3xl border p-4 text-left transition-colors ${ativo ? "border-brand-orange bg-brand-orange/5" : "border-border/70 hover:bg-muted/50"}`}
+                  className={`rounded-xl border p-4 text-left transition-colors ${ativo ? "border-brand-orange bg-brand-orange/5" : "border-border/70 hover:bg-muted/50"}`}
                 >
                   <div className="text-sm font-medium">{rel.titulo}</div>
                   <div className="mt-1 text-xs text-muted-foreground">{rel.desc}</div>
@@ -360,7 +360,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
           </div>
 
           {relSelecionado && (
-            <Card className="rounded-3xl border-border/70">
+            <Card className="rounded-xl border-border/70">
               <CardContent className="space-y-4 p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
@@ -410,7 +410,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
 
         {/* ---------------------------- auditoria ---------------------------- */}
         <TabsContent value="auditoria" className="mt-6 space-y-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="space-y-3 p-5">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium">Índice de qualidade cadastral</span>
@@ -431,7 +431,7 @@ export default function CadastroAnaliticoView({ dominio }: { dominio: Dominio })
             </CardContent>
           </Card>
 
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="space-y-3 p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2 text-sm font-medium">

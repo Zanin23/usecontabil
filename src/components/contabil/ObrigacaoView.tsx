@@ -192,7 +192,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
             </SelectContent>
           </Select>
 
-          <Button onClick={acaoGerar} disabled={!!processando} className="rounded-full bg-brand-orange hover:bg-brand-orange/90">
+          <Button onClick={acaoGerar} disabled={!!processando} className="rounded-lg bg-brand-orange hover:bg-brand-orange/90">
             <Play className="h-4 w-4 mr-2" /> Gerar arquivo
           </Button>
           <Button onClick={acaoValidar} disabled={!!processando} variant="outline" className="rounded-full">
@@ -233,7 +233,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
       </div>
 
       {/* fluxo operacional */}
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="p-5 space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-2xl">Fluxo operacional</h2>
@@ -289,7 +289,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
         {/* Resumo */}
         <TabsContent value="resumo" className="mt-4 space-y-4">
           <div className="grid gap-4 lg:grid-cols-2">
-            <Card className="rounded-3xl border-border/70">
+            <Card className="rounded-xl border-border/70">
               <CardContent className="p-5 space-y-3">
                 <h3 className="font-display text-xl">Resumo da obrigação</h3>
                 {g.resumo.map((r) => (
@@ -305,7 +305,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-border/70">
+            <Card className="rounded-xl border-border/70">
               <CardContent className="p-5 space-y-3">
                 <h3 className="font-display text-xl">Cruzamentos inteligentes</h3>
                 <p className="text-xs text-muted-foreground">
@@ -329,7 +329,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
             </Card>
           </div>
 
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-5 space-y-2">
               <h3 className="font-display text-xl">Submódulos</h3>
               <div className="flex flex-wrap gap-1.5">
@@ -343,7 +343,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
 
         {/* Dados */}
         <TabsContent value="dados" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-5">
               <h3 className="font-display text-xl mb-3">Dados utilizados na geração</h3>
               <Table>
@@ -427,7 +427,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
 
         {/* Transmissões */}
         <TabsContent value="transmissoes" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-5">
               <h3 className="font-display text-xl mb-3">Histórico de transmissões</h3>
               {estado.transmissoes.length ? (
@@ -466,7 +466,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
 
         {/* Protocolos */}
         <TabsContent value="protocolos" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-5 space-y-3">
               <h3 className="font-display text-xl">Protocolos e recibos</h3>
               {estado.transmissoes.filter((t) => t.protocolo).length ? (
@@ -494,7 +494,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
 
         {/* Arquivos */}
         <TabsContent value="arquivos" className="mt-4 space-y-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-5">
               <h3 className="font-display text-xl mb-3">Versões geradas</h3>
               {estado.arquivos.length ? (
@@ -538,7 +538,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
             </CardContent>
           </Card>
 
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-5 space-y-2">
               <h3 className="font-display text-xl">Assinaturas digitais</h3>
               {estado.assinaturas.length ? (
@@ -567,7 +567,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
 
         {/* Auditoria */}
         <TabsContent value="auditoria" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-5">
               <h3 className="font-display text-xl mb-3">Log de auditoria</h3>
               {estado.log.length ? (
@@ -591,7 +591,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
 
         {/* Configurações */}
         <TabsContent value="config" className="mt-4 space-y-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-5 space-y-4">
               <h3 className="font-display text-xl">Parametrização</h3>
               <div className="grid gap-4 md:grid-cols-2">
@@ -747,7 +747,7 @@ export default function ObrigacaoView({ obr }: { obr: ObrSlug }) {
 function ListaValidacoes({ itens, vazio }: { itens: Validacao[]; vazio: string }) {
   if (!itens.length)
     return (
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="p-5 flex items-center gap-2 text-sm text-muted-foreground">
           <CheckCircle2 className="h-4 w-4 text-success" /> {vazio}
         </CardContent>

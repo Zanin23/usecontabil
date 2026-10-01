@@ -1,7 +1,8 @@
 import { Link, useParams } from "react-router-dom";
 import { Card, CardContent } from "@/design-system/mj-design-system-db98fa";
-import { ArrowUpRight, ChevronRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { findCategory } from "@/lib/contabilNav";
+import PageHeader from "@/components/contabil/PageHeader";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
@@ -10,10 +11,10 @@ const accentText: Record<string, string> = {
   pink: "text-brand-pink",
 };
 const accentBg: Record<string, string> = {
-  orange: "bg-brand-orange/15",
-  blue: "bg-brand-blue/15",
-  purple: "bg-brand-purple/15",
-  pink: "bg-brand-pink/15",
+  orange: "bg-brand-orange/12",
+  blue: "bg-brand-blue/12",
+  purple: "bg-brand-purple/12",
+  pink: "bg-brand-pink/12",
 };
 
 export default function CategoryPage() {
@@ -28,26 +29,12 @@ export default function CategoryPage() {
 
   return (
     <div className="space-y-8">
-      <nav className="flex items-center gap-2 text-xs text-muted-foreground">
-        <Link to="/dashboard" className="hover:text-foreground">Início</Link>
-        <ChevronRight className="h-3 w-3" />
-        <Link to={`/${area.slug}`} className="hover:text-foreground">{area.title}</Link>
-        <ChevronRight className="h-3 w-3" />
-        <span className="text-foreground">{category.title}</span>
-      </nav>
-
-      <div>
-        <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          {area.title}
-        </div>
-        <h1 className="font-display text-4xl mt-2">
-          {category.title}{" "}
-          <span className={accentText[area.accent]}>·</span>
-        </h1>
-        <p className="text-sm text-muted-foreground mt-2 max-w-2xl">
-          {category.modules.length} módulos disponíveis nesta categoria.
-        </p>
-      </div>
+      <PageHeader
+        trail={[{ label: area.title, to: `/${area.slug}` }]}
+        eyebrow={area.title}
+        title={category.title}
+        description={`${category.modules.length} módulos disponíveis nesta categoria.`}
+      />
 
       <div className="stagger grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {category.modules.map((m) => {
@@ -58,7 +45,7 @@ export default function CategoryPage() {
               to={`/${area.slug}/${category.slug}/${m.slug}`}
               className="group"
             >
-              <Card className="lift h-full rounded-2xl border-border/70">
+              <Card className="lift h-full rounded-xl border-border/70">
                 <CardContent className="p-5 space-y-4">
                   <div className="flex items-start justify-between">
                     <div className={`h-10 w-10 rounded-xl grid place-items-center transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110 ${accentBg[area.accent]}`}>

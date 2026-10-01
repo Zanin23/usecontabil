@@ -48,7 +48,7 @@ export default function PesquisaGlobalPage() {
 
       <div className="space-y-5">
         {porDominio.map(({ dominio, itens }) => (
-          <Card key={dominio.slug} className="rounded-3xl border-border/70">
+          <Card key={dominio.slug} className="rounded-xl border-border/70">
             <CardContent className="space-y-2 p-5">
               <div className="flex items-center justify-between">
                 <div className="text-sm font-medium">{dominio.titulo}</div>

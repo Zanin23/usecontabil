@@ -94,7 +94,7 @@ export default function Defis() {
     <div className="space-y-6 pb-16">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-brand-orange/15">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-orange/12">
             <FileSpreadsheet className="h-5 w-5 text-brand-orange" />
           </div>
           <div>
@@ -109,7 +109,7 @@ export default function Defis() {
             </div>
           </div>
         </div>
-        <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={gerar}>
+        <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={gerar}>
           <RefreshCw className="mr-2 h-4 w-4" /> Gerar DEFIS
         </Button>
       </div>
@@ -121,7 +121,7 @@ export default function Defis() {
           { label: "Tributos do período", valor: brl(r.tributos) },
           { label: "Receitas de exportação", valor: brl(Number(ficha.exportacoes.replace(",", ".")) || 0) },
         ].map((k) => (
-          <Card key={k.label} className="rounded-3xl shadow-card">
+          <Card key={k.label} className="rounded-xl shadow-card">
             <CardContent className="p-4">
               <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">{k.label}</div>
               <div className="mt-1 font-display text-xl">{k.valor}</div>
@@ -130,7 +130,7 @@ export default function Defis() {
         ))}
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-5">
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Ficha socioeconômica</div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -146,7 +146,7 @@ export default function Defis() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-3 p-5">
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Eventos da declaração</div>
           {historico.length === 0 ? (

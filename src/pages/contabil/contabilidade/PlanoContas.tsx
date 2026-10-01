@@ -166,7 +166,7 @@ export default function PlanoContas() {
       />
 
       {contas.length === 0 ? (
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="space-y-4 p-8 text-center">
             <ListTree className="mx-auto h-10 w-10 text-brand-orange" />
             <div>
@@ -186,7 +186,7 @@ export default function PlanoContas() {
           </CardContent>
         </Card>
       ) : (
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="space-y-4 p-4">
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative min-w-[220px] flex-1">

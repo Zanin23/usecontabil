@@ -53,7 +53,7 @@ export default function FasesProcessos() {
             </p>
           </div>
         </div>
-        <Button asChild className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90">
+        <Button asChild className="rounded-lg bg-brand-orange text-primary-foreground hover:bg-brand-orange/90">
           <Link to="/preparativos/servicos/gestao">Ir para a gestão</Link>
         </Button>
       </div>

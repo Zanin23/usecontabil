@@ -114,7 +114,7 @@ export default function MotorTributario() {
             <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
           </div>
         </div>
-        <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdit(vazia())}>
+        <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdit(vazia())}>
           <Plus className="mr-2 h-4 w-4" /> Nova regra
         </Button>
       </div>
@@ -126,7 +126,7 @@ export default function MotorTributario() {
           { label: "Bloqueantes", valor: String(regras.filter((r) => r.resultado === "bloquear").length) },
           { label: "Categorias", valor: String(new Set(regras.map((r) => r.categoria)).size) },
         ].map((k) => (
-          <Card key={k.label} className="rounded-3xl shadow-card">
+          <Card key={k.label} className="rounded-xl shadow-card">
             <CardContent className="p-4">
               <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">{k.label}</div>
               <div className="mt-1 font-display text-xl">{k.valor}</div>
@@ -135,7 +135,7 @@ export default function MotorTributario() {
         ))}
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-4">
           <div className="flex flex-wrap gap-2">
             <div className="relative min-w-[220px] flex-1">
@@ -215,7 +215,7 @@ export default function MotorTributario() {
       </Card>
 
       <Dialog open={!!edit} onOpenChange={(o) => !o && setEdit(null)}>
-        <DialogContent className="max-h-[88vh] max-w-3xl overflow-y-auto rounded-3xl">
+        <DialogContent className="max-h-[88vh] max-w-3xl overflow-y-auto rounded-xl">
           <DialogHeader>
             <DialogTitle className="font-display text-xl">
               {edit?.nativa ? "Regra nativa" : edit && regras.some((r) => r.id === edit.id) ? "Editar regra" : "Nova regra"}
@@ -328,7 +328,7 @@ export default function MotorTributario() {
               draft={edit ? { Nome: edit.nome, Categoria: edit.categoria, Condição: `${edit.campo} ${edit.operador} ${edit.valor}` } : {}}
             />
             <Button variant="outline" className="rounded-full" onClick={() => setEdit(null)}>Cancelar</Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar regra</Button>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar regra</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

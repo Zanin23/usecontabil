@@ -65,7 +65,7 @@ export default function EmpresaDados() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="h-11 w-11 rounded-2xl bg-brand-orange/15 grid place-items-center shrink-0">
+          <div className="h-11 w-11 rounded-xl bg-brand-orange/12 grid place-items-center shrink-0">
             <Building2 className="h-5 w-5 text-brand-orange" />
           </div>
           <div>
@@ -79,13 +79,13 @@ export default function EmpresaDados() {
           </div>
         </div>
         {empresa ? (
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" asChild>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" asChild>
             <Link to={`/preparativos/cadastros/empresas/${empresa.id}`}>
               <Pencil className="h-4 w-4 mr-2" /> Editar cadastro
             </Link>
           </Button>
         ) : (
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" asChild>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" asChild>
             <Link to="/preparativos/cadastros/empresas/novo">Cadastrar empresa</Link>
           </Button>
         )}
@@ -94,9 +94,9 @@ export default function EmpresaDados() {
       <div className="grid gap-4 md:grid-cols-4">
         {atalhos.map((a) => (
           <Link key={a.to} to={a.to}>
-            <Card className="rounded-3xl shadow-card h-full hover:border-brand-orange/60 transition-colors">
+            <Card className="rounded-xl shadow-card h-full hover:border-brand-orange/60 transition-colors">
               <CardContent className="p-5 space-y-2">
-                <div className="h-9 w-9 rounded-full bg-brand-orange/15 grid place-items-center">
+                <div className="h-9 w-9 rounded-lg bg-brand-orange/15 grid place-items-center">
                   <a.icon className="h-4 w-4 text-brand-orange" />
                 </div>
                 <div className="text-sm font-medium">{a.titulo}</div>
@@ -109,7 +109,7 @@ export default function EmpresaDados() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="rounded-3xl shadow-card lg:col-span-2">
+        <Card className="rounded-xl shadow-card lg:col-span-2">
           <CardContent className="p-5">
             <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">Ficha cadastral</div>
             {registro ? (
@@ -129,7 +129,7 @@ export default function EmpresaDados() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="p-5 space-y-4">
             <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Completude do cadastro</div>
             <div className="flex items-center gap-3">

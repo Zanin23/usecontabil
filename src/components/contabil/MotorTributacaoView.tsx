@@ -72,7 +72,7 @@ export default function MotorTributacaoView({ config }: { config: MotorConfig })
       <AvisoRegime />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-brand-orange/15">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-orange/12">
             <Icone className="h-5 w-5 text-brand-orange" />
           </div>
           <div>
@@ -98,7 +98,7 @@ export default function MotorTributacaoView({ config }: { config: MotorConfig })
           { label: "Documentos afetados", valor: String(docsAfetados) },
           { label: "Lançamentos", valor: String(linhas.length) },
         ].map((k) => (
-          <Card key={k.label} className="rounded-3xl shadow-card">
+          <Card key={k.label} className="rounded-xl shadow-card">
             <CardContent className="p-4">
               <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">{k.label}</div>
               <div className="mt-1 font-display text-xl">{k.valor}</div>
@@ -108,7 +108,7 @@ export default function MotorTributacaoView({ config }: { config: MotorConfig })
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="rounded-3xl shadow-card lg:col-span-1">
+        <Card className="rounded-xl shadow-card lg:col-span-1">
           <CardContent className="space-y-3 p-5">
             <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Parâmetros do motor</div>
             {config.parametros.map((p) => (
@@ -121,7 +121,7 @@ export default function MotorTributacaoView({ config }: { config: MotorConfig })
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl shadow-card lg:col-span-2">
+        <Card className="rounded-xl shadow-card lg:col-span-2">
           <CardContent className="space-y-3 p-5">
             <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Distribuição por UF de destino</div>
             {porUf.length === 0 ? (
@@ -135,7 +135,7 @@ export default function MotorTributacaoView({ config }: { config: MotorConfig })
                   <span className="font-mono">{brl(valor)}</span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-brand-orange" style={{ width: `${total ? (valor / total) * 100 : 0}%` }} />
+                  <div className="h-full rounded-lg bg-brand-orange" style={{ width: `${total ? (valor / total) * 100 : 0}%` }} />
                 </div>
               </div>
             ))}
@@ -143,7 +143,7 @@ export default function MotorTributacaoView({ config }: { config: MotorConfig })
         </Card>
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-4">
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Memória de cálculo consolidada</div>
           {linhas.length === 0 ? (
@@ -181,7 +181,7 @@ export default function MotorTributacaoView({ config }: { config: MotorConfig })
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="mb-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">Regras aplicadas por este motor</div>
           <ul className="list-disc space-y-1.5 pl-4 text-sm text-muted-foreground">

@@ -54,7 +54,7 @@ export default function AuditoriaCertidoes() {
             {empresa?.razao ?? "Nenhuma empresa selecionada"}
           </Badge>
         </div>
-        <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={consultarTodas}>
+        <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={consultarTodas}>
           <RefreshCw className="mr-1.5 h-4 w-4" /> Consultar todas
         </Button>
       </div>
@@ -67,7 +67,7 @@ export default function AuditoriaCertidoes() {
           { label: "Vencem em 30 dias", valor: String(r.aVencer) },
           { label: "Com pendências", valor: String(r.pendencias) },
         ].map((k) => (
-          <Card key={k.label} className="rounded-3xl border-border/70">
+          <Card key={k.label} className="rounded-xl border-border/70">
             <CardContent className="space-y-1 p-5">
               <div className="text-[10px] uppercase leading-tight tracking-[0.06em] break-words text-muted-foreground">{k.label}</div>
               <div className="font-display text-2xl">{k.valor}</div>
@@ -86,7 +86,7 @@ export default function AuditoriaCertidoes() {
         />
       </div>
 
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="overflow-x-auto p-0">
           <Table>
             <TableHeader>
@@ -163,7 +163,7 @@ export default function AuditoriaCertidoes() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="space-y-3 p-5">
           <h2 className="font-display text-xl">Plano de regularização</h2>
           <Textarea
@@ -172,7 +172,7 @@ export default function AuditoriaCertidoes() {
             onChange={(e) => setNota(e.target.value)}
           />
           <Button
-            className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+            className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
             onClick={() => {
               if (!empresa) return toast.error("Selecione uma empresa.");
               const pendente = lista.find((x) => x.pendencias.trim() !== "");

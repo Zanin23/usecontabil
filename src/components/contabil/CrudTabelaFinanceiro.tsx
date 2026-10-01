@@ -111,7 +111,7 @@ export default function CrudTabelaFinanceiro({
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="h-11 w-11 rounded-2xl bg-brand-orange/15 grid place-items-center shrink-0">
+          <div className="h-11 w-11 rounded-xl bg-brand-orange/12 grid place-items-center shrink-0">
             <Icone className="h-5 w-5 text-brand-orange" />
           </div>
           <div>
@@ -130,7 +130,7 @@ export default function CrudTabelaFinanceiro({
               <Download className="h-4 w-4 mr-2" /> Carregar tabela vigente
             </Button>
           ) : null}
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
             <Plus className="h-4 w-4 mr-2" /> {labelNovo}
           </Button>
         </div>
@@ -139,7 +139,7 @@ export default function CrudTabelaFinanceiro({
       {kpis.length ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {kpis.map((k) => (
-            <Card key={k.label} className="rounded-3xl shadow-card">
+            <Card key={k.label} className="rounded-xl shadow-card">
               <CardContent className="p-4">
                 <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{k.label}</div>
                 <div className="font-display text-2xl mt-1">{k.valor}</div>
@@ -149,7 +149,7 @@ export default function CrudTabelaFinanceiro({
         </div>
       ) : null}
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-4 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative flex-1 min-w-[220px]">
@@ -175,7 +175,7 @@ export default function CrudTabelaFinanceiro({
                     <Download className="h-4 w-4 mr-2" /> Carregar tabela vigente
                   </Button>
                 ) : null}
-                <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
+                <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
                   <Plus className="h-4 w-4 mr-2" /> {labelNovo}
                 </Button>
               </div>
@@ -234,7 +234,7 @@ export default function CrudTabelaFinanceiro({
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">Como usar esta tabela</div>
           <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-4">
@@ -311,7 +311,7 @@ export default function CrudTabelaFinanceiro({
             <Button variant="outline" className="rounded-full px-6 h-11 border-muted-foreground/20 hover:bg-muted/50 transition-colors" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90 px-8 h-11 shadow-glow transition-all active:scale-95" onClick={salvar}>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90 px-8 h-11 shadow-glow transition-all active:scale-95" onClick={salvar}>
               Salvar Registro
             </Button>
           </DialogFooter>

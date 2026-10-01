@@ -60,7 +60,7 @@ export default function AuditoriaCadastral() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="rounded-3xl border-border/70 lg:col-span-1">
+        <Card className="rounded-xl border-border/70 lg:col-span-1">
           <CardContent className="space-y-3 p-5">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium">Qualidade cadastral</span>
@@ -81,7 +81,7 @@ export default function AuditoriaCadastral() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-border/70 lg:col-span-2">
+        <Card className="rounded-xl border-border/70 lg:col-span-2">
           <CardContent className="p-5">
             <div className="mb-4 text-sm font-medium">Inconsistências por cadastro</div>
             <div className="h-56">
@@ -126,7 +126,7 @@ export default function AuditoriaCadastral() {
         )}
       </div>
 
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="space-y-3 p-5">
           <div className="flex items-center gap-2 text-sm font-medium">
             {filtrados.length ? <AlertTriangle className="h-4 w-4 text-brand-orange" /> : <ShieldCheck className="h-4 w-4 text-brand-blue" />}

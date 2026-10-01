@@ -82,7 +82,7 @@ export default function LicaoAprendizado() {
         </div>
       </header>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-display text-xl">
             <Info className="h-4 w-4 text-brand-orange" /> Como usar esta tela
@@ -97,7 +97,7 @@ export default function LicaoAprendizado() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-display text-xl">
             <BookOpen className="h-4 w-4 text-brand-orange" /> O conceito contábil/fiscal
@@ -140,7 +140,7 @@ export default function LicaoAprendizado() {
         </section>
       )}
 
-      <p className="rounded-3xl border border-border bg-muted p-4 text-xs text-muted-foreground">
+      <p className="rounded-xl border border-border bg-muted p-4 text-xs text-muted-foreground">
         {AVISO_SIMULACAO}
       </p>
     </div>

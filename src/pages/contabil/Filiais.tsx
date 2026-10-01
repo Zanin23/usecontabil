@@ -125,7 +125,7 @@ export default function Filiais() {
             <Link to="/preparativos/cadastros/empresas">Empresas do grupo</Link>
           </Button>
           <Button
-            className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
+            className="rounded-lg bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
             onClick={openNew}
             disabled={empresas.length === 0}
           >
@@ -384,7 +384,7 @@ export default function Filiais() {
           <DialogFooter>
             <Button variant="outline" className="rounded-full" onClick={() => setOpen(false)}>Cancelar</Button>
             <Button
-              className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
+              className="rounded-lg bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
               onClick={handleSave}
             >
               Salvar

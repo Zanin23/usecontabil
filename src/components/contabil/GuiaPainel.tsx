@@ -86,7 +86,7 @@ export default function GuiaPainel({
         <div className="mt-4 flex flex-wrap gap-2">
           <Button
             size="sm"
-            className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+            className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
             onClick={() => {
               emitirGuia(guia);
               toast.success("Guia emitida e disponibilizada para pagamento");

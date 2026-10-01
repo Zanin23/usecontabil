@@ -33,7 +33,7 @@ const CORES_GRAFICO: Record<string, string> = {
 
 function Kpi({ label, valor, hint, tom }: { label: string; valor: string; hint?: string; tom?: "risco" | "ok" }) {
   return (
-    <Card className="rounded-3xl border-border/70">
+    <Card className="rounded-xl border-border/70">
       <CardContent className="space-y-1 p-5">
         <div className="text-[10px] uppercase leading-tight tracking-[0.06em] break-words text-muted-foreground">{label}</div>
         <div className={`break-words font-display text-3xl ${tom === "risco" ? "text-destructive" : tom === "ok" ? "text-brand-orange" : ""}`}>
@@ -117,13 +117,13 @@ export default function AuditoriaHub() {
           <Button variant="outline" className="rounded-full" onClick={() => navigate("/fiscal/auditoria/regras")}>
             <ScrollText className="mr-1.5 h-4 w-4" /> Motor de regras
           </Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={executar}>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={executar}>
             <RefreshCw className="mr-1.5 h-4 w-4" /> Executar auditoria
           </Button>
         </div>
       </div>
 
-      <Card className="rounded-3xl border-border/70 shadow-card">
+      <Card className="rounded-xl border-border/70 shadow-card">
         <CardContent className="grid gap-6 p-6 lg:grid-cols-[minmax(0,300px)_1fr]">
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs uppercase tracking-[0.06em] text-muted-foreground">
@@ -138,13 +138,13 @@ export default function AuditoriaHub() {
             <Progress value={r.score} />
             <p className="text-xs text-muted-foreground">{diagnostico.texto}</p>
             <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-2xl border border-border/70 p-3">
+              <div className="rounded-xl border border-border/70 p-3">
                 <div className="text-[10px] uppercase tracking-[0.06em] text-muted-foreground">Valor em risco</div>
                 <div className={`font-mono text-sm ${r.valorEmRisco > 0 ? "text-destructive" : "text-muted-foreground"}`}>
                   {brlAud(r.valorEmRisco)}
                 </div>
               </div>
-              <div className="rounded-2xl border border-border/70 p-3">
+              <div className="rounded-xl border border-border/70 p-3">
                 <div className="text-[10px] uppercase tracking-[0.06em] text-muted-foreground">Recuperável</div>
                 <div className={`font-mono text-sm ${rc.recuperavel > 0 ? "text-brand-orange" : "text-muted-foreground"}`}>
                   {brlAud(rc.recuperavel)}
@@ -164,7 +164,7 @@ export default function AuditoriaHub() {
             </div>
 
             {r.total === 0 ? (
-              <div className="flex h-full min-h-[200px] flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border/70 p-6 text-center">
+              <div className="flex h-full min-h-[200px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 p-6 text-center">
                 <ShieldCheck className="h-8 w-8 text-brand-orange" />
                 <p className="font-display text-xl">Nenhuma inconsistência nesta competência</p>
                 <p className="max-w-md text-sm text-muted-foreground">
@@ -172,7 +172,7 @@ export default function AuditoriaHub() {
                     ? "Importe documentos fiscais e execute a auditoria para cruzar XML, escrituração, apurações e obrigações."
                     : "Selecione uma empresa no topo da tela para auditar a competência."}
                 </p>
-                <Button size="sm" className="mt-1 rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={executar}>
+                <Button size="sm" className="mt-1 rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={executar}>
                   <RefreshCw className="mr-1.5 h-4 w-4" /> Executar auditoria
                 </Button>
               </div>
@@ -200,7 +200,7 @@ export default function AuditoriaHub() {
                     { label: "Corrigidas", v: r.corrigidos },
                     { label: "Ignoradas", v: r.ignorados },
                   ].map((t) => (
-                    <div key={t.label} className="rounded-2xl border border-border/70 p-3">
+                    <div key={t.label} className="rounded-xl border border-border/70 p-3">
                       <div className="text-[10px] uppercase tracking-[0.06em] text-muted-foreground">{t.label}</div>
                       <div className="font-display text-2xl">{t.v}</div>
                     </div>
@@ -226,7 +226,7 @@ export default function AuditoriaHub() {
           return (
             <Card
               key={c.slug}
-              className="cursor-pointer rounded-3xl border-border/70 transition-shadow hover:shadow-elevated"
+              className="cursor-pointer rounded-xl border-border/70 transition-shadow hover:shadow-elevated"
               onClick={() => navigate(c.rota)}
             >
               <CardContent className="space-y-3 p-5">
@@ -255,7 +255,7 @@ export default function AuditoriaHub() {
         })}
       </div>
 
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="space-y-3 p-5">
           <h2 className="flex items-center gap-2 font-display text-xl">
             <ShieldCheck className="h-5 w-5 text-brand-orange" /> Fluxo operacional da auditoria
@@ -271,11 +271,11 @@ export default function AuditoriaHub() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="space-y-2 p-5">
           <h2 className="font-display text-xl">Trilha de auditoria</h2>
           {log.map((l) => (
-            <div key={l.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/70 p-3 text-sm">
+            <div key={l.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-border/70 p-3 text-sm">
               <span className="font-mono text-xs text-muted-foreground">{new Date(l.data).toLocaleString("pt-BR")}</span>
               <Badge variant="secondary" className="rounded-full text-[10px]">{l.acao}</Badge>
               <span className="min-w-0 flex-1 break-words">{l.detalhe}</span>

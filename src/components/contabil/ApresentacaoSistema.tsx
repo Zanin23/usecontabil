@@ -316,7 +316,7 @@ export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => voi
                     transition={{ delay: 0.2 + i * 0.1 }}
                     className="flex items-center gap-3 p-3 rounded-2xl bg-card border border-border/60 shadow-card"
                   >
-                    <div className="h-2 w-2 rounded-full bg-brand-orange shadow-glow" />
+                    <div className="h-2 w-2 rounded-lg bg-brand-orange shadow-glow" />
                     <span className="text-sm font-medium">{point}</span>
                   </motion.div>
                 ))}
@@ -331,7 +331,7 @@ export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => voi
               className="relative w-full aspect-[4/3] lg:aspect-auto lg:h-[520px] flex items-center justify-center"
             >
               <div className="absolute inset-0 bg-gradient-brand opacity-10 blur-[100px] rounded-full" />
-              <Card className="relative z-10 w-full h-full rounded-3xl border-border/40 shadow-elevated bg-card/90 backdrop-blur-md overflow-hidden flex flex-col border-2 border-brand-orange/20">
+              <Card className="relative z-10 w-full h-full rounded-xl border-border/40 shadow-elevated bg-card/90 backdrop-blur-md overflow-hidden flex flex-col border-2 border-brand-orange/20">
                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-brand" />
                 
                 {slide.previewType === "image" && (
@@ -436,9 +436,9 @@ export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => voi
                       Clique no botão de pré-visualização para ver este módulo em funcionamento real dentro do sistema.
                     </p>
                     <div className="mt-8 flex gap-3">
-                      <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
-                      <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
-                      <div className="h-1.5 w-12 rounded-full bg-brand-orange/20" />
+                      <div className="h-1.5 w-12 rounded-lg bg-brand-orange/20" />
+                      <div className="h-1.5 w-12 rounded-lg bg-brand-orange/20" />
+                      <div className="h-1.5 w-12 rounded-lg bg-brand-orange/20" />
                     </div>
                   </div>
                 )}

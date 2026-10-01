@@ -117,7 +117,7 @@ export default function Dre() {
             ]}
             linhas={linhasExport}
           />
-          <Button onClick={() => setDialogo(true)} className="rounded-full bg-brand-orange hover:bg-brand-orange/90">
+          <Button onClick={() => setDialogo(true)} className="rounded-lg bg-brand-orange hover:bg-brand-orange/90">
             <Plus className="mr-1 h-4 w-4" /> Ajuste de encerramento
           </Button>
         </div>
@@ -125,7 +125,7 @@ export default function Dre() {
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((k) => (
-          <Card key={k.label} className="rounded-3xl shadow-card">
+          <Card key={k.label} className="rounded-xl shadow-card">
             <CardContent className="p-4">
               <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">{k.label}</div>
               <div className="mt-1 break-words font-display text-xl">{k.valor}</div>
@@ -135,7 +135,7 @@ export default function Dre() {
         ))}
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
@@ -165,7 +165,7 @@ export default function Dre() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-0">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b px-5 py-4">
             <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
@@ -177,7 +177,7 @@ export default function Dre() {
                   key={m}
                   size="sm"
                   variant={modo === m ? "default" : "outline"}
-                  className={modo === m ? "rounded-full bg-brand-orange hover:bg-brand-orange/90" : "rounded-full"}
+                  className={modo === m ? "rounded-lg bg-brand-orange hover:bg-brand-orange/90" : "rounded-full"}
                   onClick={() => setModo(m)}
                 >
                   {m === "gerencial" ? "Gerencial" : "Comparativo"}
@@ -269,7 +269,7 @@ export default function Dre() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="mb-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">
             Ajustes de encerramento da competência
@@ -364,7 +364,7 @@ export default function Dre() {
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-full" onClick={() => setDialogo(false)}>Cancelar</Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Lançar ajuste</Button>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Lançar ajuste</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -16,7 +16,7 @@ import {
 
 function Kpi({ label, valor, hint, to }: { label: string; valor: string; hint?: string; to?: string }) {
   const body = (
-    <Card className="h-full rounded-3xl border-border/70 transition-colors hover:border-brand-orange/60">
+    <Card className="h-full rounded-xl border-border/70 transition-colors hover:border-brand-orange/60">
       <CardContent className="space-y-1 p-5">
         <div className="text-[10px] uppercase leading-tight tracking-[0.08em] text-muted-foreground break-words">{label}</div>
         <div className="font-display text-3xl break-words">{valor}</div>
@@ -80,7 +80,7 @@ export default function DashboardExecutivo() {
         <Kpi label="Pendências cadastrais" valor={String(achados.length)} hint={`${crit[0].total} críticas`} to="/administrativo/auditoria" />
       </div>
 
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="space-y-3 p-5">
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium">Qualidade cadastral consolidada</span>
@@ -99,7 +99,7 @@ export default function DashboardExecutivo() {
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="rounded-3xl border-border/70">
+        <Card className="rounded-xl border-border/70">
           <CardContent className="p-5">
             <div className="mb-4 text-sm font-medium">Volume por cadastro</div>
             <div className="h-64">
@@ -115,7 +115,7 @@ export default function DashboardExecutivo() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-border/70">
+        <Card className="rounded-xl border-border/70">
           <CardContent className="p-5">
             <div className="mb-4 text-sm font-medium">Inconsistências por criticidade</div>
             <div className="h-64">
@@ -133,7 +133,7 @@ export default function DashboardExecutivo() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="rounded-3xl border-border/70">
+        <Card className="rounded-xl border-border/70">
           <CardContent className="space-y-3 p-5">
             <div className="flex items-center gap-2 text-sm font-medium">
               <RefreshCw className="h-4 w-4 text-brand-orange" /> Log de sincronizações
@@ -147,7 +147,7 @@ export default function DashboardExecutivo() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-border/70">
+        <Card className="rounded-xl border-border/70">
           <CardContent className="space-y-3 p-5">
             <div className="flex items-center gap-2 text-sm font-medium">
               <Lock className="h-4 w-4 text-brand-orange" /> Log de acessos e exportações
@@ -171,7 +171,7 @@ export default function DashboardExecutivo() {
       </div>
 
       {!!agendamentos.length && (
-        <Card className="rounded-3xl border-border/70">
+        <Card className="rounded-xl border-border/70">
           <CardContent className="space-y-2 p-5">
             <div className="text-sm font-medium">Exportações agendadas</div>
             {agendamentos.map((a) => (

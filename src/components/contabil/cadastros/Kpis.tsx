@@ -5,7 +5,7 @@ export default function Kpis({ itens }: { itens: { rotulo: string; valor: string
   return (
     <div className="stagger grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
       {itens.map((k) => (
-        <Card key={k.rotulo} className="rounded-3xl shadow-card">
+        <Card key={k.rotulo} className="rounded-xl shadow-card">
           <CardContent className="p-4">
             <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">{k.rotulo}</div>
             <div className="mt-1 font-display text-xl">{k.valor}</div>

@@ -174,7 +174,7 @@ export default function Encerramentos() {
             linhas={exportLinhas}
           />
           <Button
-            className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
+            className="rounded-lg bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
             onClick={() => {
               if (!empresaId) return toast.error("Selecione uma empresa do grupo.");
               setFecharAlvo(competencia);
@@ -187,7 +187,7 @@ export default function Encerramentos() {
       </div>
 
       {empresas.length === 0 && (
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="p-5 text-sm text-muted-foreground">
             Cadastre uma empresa do grupo para acompanhar os encerramentos.
           </CardContent>
@@ -196,7 +196,7 @@ export default function Encerramentos() {
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((k) => (
-          <Card key={k.label} className="rounded-3xl shadow-card">
+          <Card key={k.label} className="rounded-xl shadow-card">
             <CardContent className="p-4">
               <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">{k.label}</div>
               <div className="mt-1 font-display text-xl">{k.valor}</div>
@@ -206,7 +206,7 @@ export default function Encerramentos() {
       </div>
 
       {pend.length > 0 && (
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 text-sm font-medium">
               <TriangleAlert className="h-4 w-4 text-brand-orange" /> Bloqueios de cadastro
@@ -222,7 +222,7 @@ export default function Encerramentos() {
         </Card>
       )}
 
-      <Card className="overflow-hidden rounded-3xl shadow-card">
+      <Card className="overflow-hidden rounded-xl shadow-card">
         <div className="w-full overflow-x-auto">
           <Table>
             <TableHeader>
@@ -303,7 +303,7 @@ export default function Encerramentos() {
                         ) : (
                           <Button
                             size="sm"
-                            className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+                            className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
                             onClick={() => {
                               if (!empresaId) return toast.error("Selecione uma empresa do grupo.");
                               setFecharAlvo(l.competencia);
@@ -424,7 +424,7 @@ export default function Encerramentos() {
               Cancelar
             </Button>
             <Button
-              className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+              className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
               onClick={() => confirmarFechamento(bloqueios.length > 0)}
             >
               {bloqueios.length > 0 ? "Encerrar mesmo assim" : "Confirmar encerramento"}
@@ -452,7 +452,7 @@ export default function Encerramentos() {
               Cancelar
             </Button>
             <Button
-              className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+              className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
               onClick={() => {
                 if (!motivo.trim()) return toast.error("Informe o motivo da reabertura.");
                 reabrirPeriodo(empresaId, reabrirAlvo!);

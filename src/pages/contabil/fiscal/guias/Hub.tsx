@@ -8,6 +8,7 @@ import { Badge, Button, Card, CardContent, Separator } from "@/design-system/mj-
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
+import PageHeader from "@/components/contabil/PageHeader";
 import {
   GRUPOS, alertas, brl, calendario, dataBR, diasEntre, economiaCompensacoes,
   hojeISO, resumoGuias, resumoParcelamentos, useGuias, type GrupoSlug, type EventoCalendario,
@@ -22,7 +23,7 @@ const ICONES: Partial<Record<GrupoSlug, LucideIcon>> = {
 
 function Indicador({ label, valor, hint, destaque }: { label: string; valor: string; hint?: string; destaque?: boolean }) {
   return (
-    <div className={`min-w-0 rounded-2xl border p-3 ${destaque ? "border-destructive/40 bg-destructive/5" : "border-border/70"}`}>
+    <div className={`min-w-0 rounded-xl border p-3 ${destaque ? "border-destructive/40 bg-destructive/5" : "border-border/70"}`}>
       <div className="text-[10px] uppercase tracking-[0.06em] leading-tight break-words text-muted-foreground">{label}</div>
       <div className={`mt-0.5 font-mono text-sm break-words ${destaque ? "text-destructive" : ""}`}>{valor}</div>
       {hint && <div className="text-[10px] break-words text-muted-foreground">{hint}</div>}
@@ -105,23 +106,30 @@ export default function GuiasHub() {
 
   return (
     <div className="space-y-6 pb-16">
-      <div>
-        <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Fiscal</div>
-        <h1 className="font-display text-3xl sm:text-4xl">Guias e Tributos</h1>
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-          <Badge variant="secondary" className="rounded-full">{formatCompetencia(competencia)}</Badge>
-          <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
-        </div>
-      </div>
+      <PageHeader
+        trail={[{ label: "Fiscal", to: "/fiscal" }]}
+        eyebrow="Fiscal · Guias e recolhimentos"
+        title="Guias e"
+        titleAccent="Tributos"
+        description="Emissão, controle e pagamento de guias federais, estaduais e parcelamentos ativos."
+        icon={Wallet2}
+        badges={
+          <>
+            <Badge variant="outline" className="rounded-md">{formatCompetencia(competencia)}</Badge>
+            <Badge variant="outline" className="rounded-md">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
+          </>
+        }
+        compact
+      />
 
       <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6 xl:grid-cols-9">
         {kpis.map((k) => <Indicador key={k.label} {...k} />)}
       </div>
 
-      <Card className="rounded-3xl border-border/70 bg-brand-orange/5">
+      <Card className="rounded-xl border-border/70 bg-brand-orange/5">
         <CardContent className="flex flex-wrap items-center justify-between gap-4 p-6">
           <div className="flex items-center gap-3">
-            <div className="rounded-full bg-brand-orange/20 p-2 text-brand-orange">
+            <div className="rounded-lg bg-brand-orange/20 p-2 text-brand-orange">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
@@ -129,7 +137,7 @@ export default function GuiasHub() {
               <p className="text-sm text-muted-foreground">O fechamento da competência atual está com 65% de progresso.</p>
             </div>
           </div>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90">
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90">
             Ver plano de ação <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </CardContent>
@@ -141,10 +149,10 @@ export default function GuiasHub() {
           const Icone = ICONES[g.slug as GrupoSlug] || Banknote;
           const inds = indicadoresPorGrupo[g.slug as GrupoSlug] || [];
           return (
-            <Card key={g.slug} className="rounded-3xl border-border/70 transition-shadow hover:shadow-card">
+            <Card key={g.slug} className="rounded-xl border-border/70 transition-shadow hover:shadow-card">
               <CardContent className="space-y-4 p-6">
                 <div className="flex items-start gap-3">
-                  <div className="rounded-2xl bg-brand-orange/10 p-3">
+                  <div className="rounded-xl bg-brand-orange/12 p-2.5">
                     <Icone className="h-6 w-6 text-brand-orange" />
                   </div>
                   <div className="min-w-0">
@@ -158,7 +166,7 @@ export default function GuiasHub() {
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
                   <div className="flex flex-wrap gap-1.5">
                     {g.submodulos.slice(0, 3).map((s: string) => (
-                      <Badge key={s} variant="secondary" className="rounded-full text-[10px]">{s}</Badge>
+                      <Badge key={s} variant="secondary" className="rounded-md text-[10px]">{s}</Badge>
                     ))}
                   </div>
                   <Link to={rota} className="text-muted-foreground transition-colors hover:text-brand-orange">
@@ -174,7 +182,7 @@ export default function GuiasHub() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="rounded-3xl border-border/70 lg:col-span-2">
+        <Card className="rounded-xl border-border/70 lg:col-span-2">
           <CardContent className="p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="font-display text-xl">Alertas e Pendências</h3>
@@ -182,12 +190,12 @@ export default function GuiasHub() {
             </div>
             <div className="space-y-4">
               {avisos.length > 0 ? avisos.map((a, i) => (
-                <div key={i} className="flex items-start gap-3 rounded-2xl border border-border/50 p-3">
+                <div key={i} className="flex items-start gap-3 rounded-xl border border-border/50 p-3">
                   <AlertTriangle className="mt-0.5 h-4 w-4 text-brand-orange" />
                   <div className="text-sm leading-relaxed">{a}</div>
                 </div>
               )) : (
-                <div className="flex h-24 flex-col items-center justify-center rounded-2xl border border-dashed border-border/70 text-sm text-muted-foreground">
+                <div className="flex h-24 flex-col items-center justify-center rounded-xl border border-dashed border-border/70 text-sm text-muted-foreground">
                   Nenhuma pendência crítica identificada.
                 </div>
               )}
@@ -195,7 +203,7 @@ export default function GuiasHub() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-border/70">
+        <Card className="rounded-xl border-border/70">
           <CardContent className="p-6">
             <h3 className="mb-4 font-display text-xl">Meios de Pagamento</h3>
             <div className="space-y-4">

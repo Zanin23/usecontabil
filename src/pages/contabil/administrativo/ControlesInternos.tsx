@@ -302,7 +302,7 @@ function DialogUsuario({ usuario, onClose, onSenha }: {
 
         <div className="mt-2 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button disabled={salvando} className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>
+          <Button disabled={salvando} className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>
             {salvando ? "Salvando…" : base ? "Salvar usuário" : "Criar acesso"}
           </Button>
         </div>
@@ -345,7 +345,7 @@ function DialogSenha({ dados, onClose }: {
           >
             Copiar
           </Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={onClose}>Concluir</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={onClose}>Concluir</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -397,7 +397,7 @@ function Usuarios() {
         <Kpi label="Perfis em uso" valor={String(porPerfil.length)} />
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative min-w-[220px] flex-1">
@@ -421,7 +421,7 @@ function Usuarios() {
             })))}>
               <Download className="mr-1 h-4 w-4" />Exportar
             </Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
               <Plus className="mr-1 h-4 w-4" />Novo usuário
             </Button>
           </div>
@@ -594,7 +594,7 @@ function LogAuditoria() {
       </div>
 
       {porCategoria.length > 0 && (
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="p-5">
             <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">Eventos por categoria</div>
             <div className="mt-4 h-56">
@@ -612,7 +612,7 @@ function LogAuditoria() {
         </Card>
       )}
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative min-w-[220px] flex-1">
@@ -758,7 +758,7 @@ function DialogCentro({ centro, onClose }: { centro: CentroCusto | "novo"; onClo
         </div>
         <div className="mt-2 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar centro</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar centro</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -784,7 +784,7 @@ function CentrosCusto() {
         <Kpi label="Centros produtivos" valor={String(lista.filter((c) => c.natureza === "Produtivo" && c.ativo).length)} tom="destaque" />
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -804,7 +804,7 @@ function CentrosCusto() {
               })))}>
                 <Download className="mr-1 h-4 w-4" />Exportar
               </Button>
-              <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
                 <Plus className="mr-1 h-4 w-4" />Novo centro
               </Button>
             </div>
@@ -861,7 +861,7 @@ function CentrosCusto() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="flex flex-wrap items-end gap-3">
             <div>
@@ -961,7 +961,7 @@ function DialogParametro({ parametro, onClose }: { parametro: Parametro | "novo"
         </div>
         <div className="mt-2 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar parâmetro</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar parâmetro</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -994,7 +994,7 @@ function Parametros() {
         <Kpi label="Alterados em 2026" valor={String(todos.filter((p) => p.atualizadoEm.startsWith("2026")).length)} />
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative min-w-[220px] flex-1">
@@ -1015,7 +1015,7 @@ function Parametros() {
             })))}>
               <Download className="mr-1 h-4 w-4" />Exportar
             </Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
               <Plus className="mr-1 h-4 w-4" />Novo parâmetro
             </Button>
           </div>
@@ -1037,7 +1037,7 @@ function Parametros() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{p.nome}</span>
-                        {p.sensivel && <Badge className="rounded-full bg-brand-orange/15 text-brand-orange">Sensível</Badge>}
+                        {p.sensivel && <Badge className="rounded-lg bg-brand-orange/15 text-brand-orange">Sensível</Badge>}
                       </div>
                       <div className="max-w-xl text-xs text-muted-foreground">{p.descricao}</div>
                     </TableCell>
@@ -1142,7 +1142,7 @@ function DialogPolitica({ politica, onClose }: { politica: Politica | "novo"; on
         </div>
         <div className="mt-2 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar alçada</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar alçada</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -1173,7 +1173,7 @@ function Politicas() {
       </div>
 
       {achados.length > 0 && (
-        <Card className="rounded-3xl border-destructive/40 shadow-card">
+        <Card className="rounded-xl border-destructive/40 shadow-card">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 text-sm text-destructive">
               <AlertTriangle className="h-4 w-4" />Faixas com problema de cobertura
@@ -1192,7 +1192,7 @@ function Politicas() {
         </Card>
       )}
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="flex flex-wrap items-end gap-3">
@@ -1222,7 +1222,7 @@ function Politicas() {
               })))}>
                 <Download className="mr-1 h-4 w-4" />Exportar
               </Button>
-              <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
                 <Plus className="mr-1 h-4 w-4" />Nova alçada
               </Button>
             </div>
@@ -1240,7 +1240,7 @@ function Politicas() {
                 <span className="font-mono">{resultado.faixa}</span>
                 <span className="text-muted-foreground"> → aprovação por </span>
                 <span className="font-medium text-brand-orange">{resultado.aprovador}</span>
-                {resultado.dupla && <Badge className="ml-2 rounded-full bg-brand-orange/15 text-brand-orange">Dupla aprovação</Badge>}
+                {resultado.dupla && <Badge className="ml-2 rounded-lg bg-brand-orange/15 text-brand-orange">Dupla aprovação</Badge>}
               </div>
             ) : (
               <div className="mt-2 text-sm text-destructive">
@@ -1408,7 +1408,7 @@ function DialogAviso({ aviso, onClose }: { aviso: Aviso | "novo"; onClose: () =>
         </div>
         <div className="flex flex-wrap justify-end gap-2 pt-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>
             {novo ? "Publicar aviso" : "Salvar"}
           </Button>
         </div>
@@ -1452,7 +1452,7 @@ function Avisos() {
         <Kpi label="Críticos ativos" valor={String(criticos.length)} tom={criticos.length ? "alerta" : undefined} />
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-5">
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative min-w-[200px] flex-1">
@@ -1469,7 +1469,7 @@ function Avisos() {
             >
               <Download className="h-4 w-4" /> Exportar
             </Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
               <Plus className="h-4 w-4" /> Novo aviso
             </Button>
           </div>

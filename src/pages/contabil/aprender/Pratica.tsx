@@ -145,7 +145,7 @@ export default function PraticaAprendizado() {
             <h1 className="font-display text-4xl">
               Modo <span className="text-brand-orange">prática.</span>
             </h1>
-            <Badge className="rounded-full bg-brand-orange text-primary-foreground">
+            <Badge className="rounded-lg bg-brand-orange text-primary-foreground">
               <FlaskConical className="mr-1 h-3 w-3" /> Sandbox
             </Badge>
           </div>
@@ -190,7 +190,7 @@ export default function PraticaAprendizado() {
                   Isolar dados (Real → Prática)
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="rounded-3xl">
+              <AlertDialogContent className="rounded-xl">
                 <AlertDialogHeader>
                   <AlertDialogTitle className="font-display text-2xl">Mover dados reais para prática?</AlertDialogTitle>
                   <AlertDialogDescription>
@@ -202,7 +202,7 @@ export default function PraticaAprendizado() {
                 <AlertDialogFooter>
                   <AlertDialogCancel className="rounded-full">Cancelar</AlertDialogCancel>
                   <AlertDialogAction 
-                    className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+                    className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
                     onClick={async () => {
                       const ok = await forcarLimpezaBaseReal();
                       if (ok) {
@@ -223,7 +223,7 @@ export default function PraticaAprendizado() {
             </AlertDialog>
 
             <Button 
-              className="rounded-full bg-brand-orange hover:bg-brand-orange/90 gap-2"
+              className="rounded-lg bg-brand-orange hover:bg-brand-orange/90 gap-2"
               onClick={async () => {
                 if (!empresaId) {
                   toast.error("Selecione ou cadastre uma empresa primeiro.");
@@ -255,7 +255,7 @@ export default function PraticaAprendizado() {
         </p>
       </header>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-brand-orange/40 bg-brand-orange/10 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-brand-orange/40 bg-brand-orange/10 p-4">
         <div className="flex items-start gap-2 text-sm">
           <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-brand-orange" />
           <span>
@@ -280,7 +280,7 @@ export default function PraticaAprendizado() {
 
         <TabsContent value="simples" className="mt-4">
           <div className="grid gap-4 lg:grid-cols-2">
-            <Card className="rounded-3xl shadow-card">
+            <Card className="rounded-xl shadow-card">
               <CardHeader>
                 <CardTitle className="font-display text-xl">{LABS[0].titulo}</CardTitle>
                 <CardDescription>{LABS[0].descricao}</CardDescription>
@@ -335,7 +335,7 @@ export default function PraticaAprendizado() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl shadow-elevated">
+            <Card className="rounded-xl shadow-elevated">
               <CardHeader>
                 <CardDescription>Memória de cálculo</CardDescription>
                 <CardTitle className="font-display text-2xl">{rs(resSimples.total)}</CardTitle>
@@ -362,7 +362,7 @@ export default function PraticaAprendizado() {
 
         <TabsContent value="icms-difal" className="mt-4">
           <div className="grid gap-4 lg:grid-cols-2">
-            <Card className="rounded-3xl shadow-card">
+            <Card className="rounded-xl shadow-card">
               <CardHeader>
                 <CardTitle className="font-display text-xl">{LABS[1].titulo}</CardTitle>
                 <CardDescription>{LABS[1].descricao}</CardDescription>
@@ -454,7 +454,7 @@ export default function PraticaAprendizado() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl shadow-elevated">
+            <Card className="rounded-xl shadow-elevated">
               <CardHeader>
                 <CardDescription>Memória de cálculo</CardDescription>
                 <CardTitle className="font-display text-2xl">{rs(resDifal.total)}</CardTitle>
@@ -468,7 +468,7 @@ export default function PraticaAprendizado() {
 
         <TabsContent value="pis-cofins" className="mt-4">
           <div className="grid gap-4 lg:grid-cols-2">
-            <Card className="rounded-3xl shadow-card">
+            <Card className="rounded-xl shadow-card">
               <CardHeader>
                 <CardTitle className="font-display text-xl">{LABS[2].titulo}</CardTitle>
                 <CardDescription>{LABS[2].descricao}</CardDescription>
@@ -541,7 +541,7 @@ export default function PraticaAprendizado() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl shadow-elevated">
+            <Card className="rounded-xl shadow-elevated">
               <CardHeader>
                 <CardDescription>Memória de cálculo</CardDescription>
                 <CardTitle className="font-display text-2xl">{rs(resPis.total)}</CardTitle>
@@ -568,7 +568,7 @@ export default function PraticaAprendizado() {
 
         <TabsContent value="retencoes" className="mt-4">
           <div className="grid gap-4 lg:grid-cols-2">
-            <Card className="rounded-3xl shadow-card">
+            <Card className="rounded-xl shadow-card">
               <CardHeader>
                 <CardTitle className="font-display text-xl">{LABS[3].titulo}</CardTitle>
                 <CardDescription>{LABS[3].descricao}</CardDescription>
@@ -636,7 +636,7 @@ export default function PraticaAprendizado() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl shadow-elevated">
+            <Card className="rounded-xl shadow-elevated">
               <CardHeader>
                 <CardDescription>Total retido</CardDescription>
                 <CardTitle className="font-display text-2xl">{rs(resRet.total)}</CardTitle>
@@ -650,7 +650,7 @@ export default function PraticaAprendizado() {
       </Tabs>
 
       <div className="grid gap-6 md:grid-cols-2 mt-8">
-        <Card className="rounded-3xl border-dashed">
+        <Card className="rounded-xl border-dashed">
           <CardHeader>
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-brand-orange" />
@@ -669,7 +669,7 @@ export default function PraticaAprendizado() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl border-dashed">
+        <Card className="rounded-xl border-dashed">
           <CardHeader>
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-brand-orange" />

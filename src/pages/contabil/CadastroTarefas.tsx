@@ -73,7 +73,7 @@ export default function CadastroTarefas() {
             <Link to="/preparativos/servicos/gestao">Ver gestão</Link>
           </Button>
           <Button
-            className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
+            className="rounded-lg bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
             onClick={openNew}
           >
             <Plus className="h-4 w-4 mr-2" /> Nova tarefa
@@ -224,7 +224,7 @@ export default function CadastroTarefas() {
           <DialogFooter>
             <Button variant="outline" className="rounded-full" onClick={() => setOpen(false)}>Cancelar</Button>
             <Button
-              className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
+              className="rounded-lg bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
               onClick={handleSave}
             >
               Salvar

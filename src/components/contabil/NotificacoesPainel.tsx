@@ -96,7 +96,7 @@ export default function NotificacoesPainel() {
                             {n.titulo}
                           </span>
                           {!n.lida && (
-                            <span className="h-1.5 w-1.5 rounded-full bg-brand-orange shrink-0" />
+                            <span className="h-1.5 w-1.5 rounded-lg bg-brand-orange shrink-0" />
                           )}
                         </span>
                         <span className="block text-xs text-muted-foreground mt-0.5 line-clamp-2">

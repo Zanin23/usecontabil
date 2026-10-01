@@ -89,7 +89,7 @@ export default function ConclusaoFiscal() {
           { label: "Faturamento", valor: brl(r.faturado) },
           { label: "Tributos apurados", valor: brl(r.tributos) },
         ].map((k) => (
-          <Card key={k.label} className="rounded-3xl shadow-card">
+          <Card key={k.label} className="rounded-xl shadow-card">
             <CardContent className="p-4">
               <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">{k.label}</div>
               <div className="mt-1 font-display text-xl">{k.valor}</div>
@@ -99,10 +99,10 @@ export default function ConclusaoFiscal() {
         ))}
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-brand-orange transition-all" style={{ width: `${progresso}%` }} />
+            <div className="h-full rounded-lg bg-brand-orange transition-all" style={{ width: `${progresso}%` }} />
           </div>
           <ol className="space-y-3">
             {ETAPAS_FECHAMENTO.map((etapa, i) => {
@@ -144,7 +144,7 @@ export default function ConclusaoFiscal() {
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="space-y-3 p-5">
             <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
               {fechamento.status === "Fechada" ? <Lock className="h-3.5 w-3.5 text-brand-orange" /> : <LockOpen className="h-3.5 w-3.5" />}
@@ -173,7 +173,7 @@ export default function ConclusaoFiscal() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="space-y-3 p-5">
             <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5 text-brand-orange" /> Log da competência
@@ -203,7 +203,7 @@ export default function ConclusaoFiscal() {
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-full" onClick={() => setReabrirOpen(false)}>Cancelar</Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
               onClick={() => {
                 if (!motivo.trim()) return toast.error("Informe o motivo da reabertura.");
                 reabrirCompetencia(empresaId, competencia, motivo.trim());

@@ -247,7 +247,7 @@ function DialogContrato({ registro, onClose }: { registro: ContratoCalculado | n
 
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar contrato</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar contrato</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -338,7 +338,7 @@ function DialogAditivo({ contrato, onClose }: { contrato: ContratoCalculado; onC
 
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Registrar aditivo</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Registrar aditivo</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -387,7 +387,7 @@ function Contratos() {
       </div>
 
       {alertas.length > 0 && (
-        <Card className="rounded-3xl border-brand-orange/30 shadow-card">
+        <Card className="rounded-xl border-brand-orange/30 shadow-card">
           <CardContent className="space-y-2 p-5">
             <div className="flex items-center gap-2 text-sm font-medium text-brand-orange">
               <AlertTriangle className="h-4 w-4" />Painel de alertas contratuais ({alertas.length})
@@ -405,7 +405,7 @@ function Contratos() {
       )}
 
       <div className="grid gap-4 lg:grid-cols-5">
-        <Card className="rounded-3xl shadow-card lg:col-span-3">
+        <Card className="rounded-xl shadow-card lg:col-span-3">
           <CardContent className="space-y-3 p-6">
             <div>
               <h3 className="font-display text-xl">Projeção contratual · 12 meses</h3>
@@ -427,7 +427,7 @@ function Contratos() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl shadow-card lg:col-span-2">
+        <Card className="rounded-xl shadow-card lg:col-span-2">
           <CardContent className="space-y-3 p-6">
             <div>
               <h3 className="font-display text-xl">Gasto por categoria</h3>
@@ -452,7 +452,7 @@ function Contratos() {
         </Card>
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
@@ -484,7 +484,7 @@ function Contratos() {
               })))}>
                 <Download className="mr-2 h-4 w-4" />Exportar
               </Button>
-              <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
                 <Plus className="mr-2 h-4 w-4" />Novo contrato
               </Button>
             </div>
@@ -707,7 +707,7 @@ function DialogCertificado({ registro, onClose }: { registro: Certificado | "nov
 
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -745,7 +745,7 @@ function Certificados() {
         </div>
       )}
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -759,7 +759,7 @@ function Certificados() {
               })))}>
                 <Download className="mr-2 h-4 w-4" />Exportar
               </Button>
-              <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
                 <Plus className="mr-2 h-4 w-4" />Novo certificado
               </Button>
             </div>
@@ -961,7 +961,7 @@ function DialogDocumento({ registro, competencia, onClose }: { registro: Documen
 
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar documento</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar documento</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -1003,7 +1003,7 @@ function Documentos() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-5">
-        <Card className="rounded-3xl shadow-card lg:col-span-3">
+        <Card className="rounded-xl shadow-card lg:col-span-3">
           <CardContent className="space-y-3 p-6">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
@@ -1038,7 +1038,7 @@ function Documentos() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl shadow-card lg:col-span-2">
+        <Card className="rounded-xl shadow-card lg:col-span-2">
           <CardContent className="space-y-3 p-6">
             <div>
               <h3 className="font-display text-xl">Acervo por tipo</h3>
@@ -1061,7 +1061,7 @@ function Documentos() {
         </Card>
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
@@ -1084,7 +1084,7 @@ function Documentos() {
               })))}>
                 <Download className="mr-2 h-4 w-4" />Exportar
               </Button>
-              <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
                 <Plus className="mr-2 h-4 w-4" />Enviar documento
               </Button>
             </div>
@@ -1187,7 +1187,7 @@ function Agenda() {
         <Kpi label="Concluídos" valor={String(eventos.filter((e) => e.concluido).length)} tom="ok" />
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -1206,7 +1206,7 @@ function Agenda() {
               <Button variant="outline" className="rounded-full" onClick={() => setMostrarConcluidos((v) => !v)}>
                 {mostrarConcluidos ? "Ocultar concluídos" : "Mostrar concluídos"}
               </Button>
-              <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setNovo(true)}>
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setNovo(true)}>
                 <Plus className="mr-2 h-4 w-4" />Novo compromisso
               </Button>
             </div>
@@ -1292,7 +1292,7 @@ function Agenda() {
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" className="rounded-full" onClick={() => setNovo(false)}>Cancelar</Button>
-              <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Adicionar</Button>
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Adicionar</Button>
             </div>
           </DialogContent>
         </Dialog>

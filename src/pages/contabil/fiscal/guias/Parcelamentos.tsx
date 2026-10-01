@@ -25,7 +25,7 @@ function Bloco({ p }: { p: Parcelamento }) {
   const d = detalharParcelamento(p);
   const [novas, setNovas] = useState(String(p.parcelas));
   return (
-    <Card className="rounded-3xl border-border/70">
+    <Card className="rounded-xl border-border/70">
       <CardContent className="space-y-4 p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
@@ -60,7 +60,7 @@ function Bloco({ p }: { p: Parcelamento }) {
           />
           <Button
             size="sm"
-            className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+            className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
             onClick={() => {
               renegociar(p, Math.max(1, Number(novas) || p.parcelas));
               toast.success("Parcelamento renegociado e saldo recalculado");
@@ -139,7 +139,7 @@ export default function GuiasParcelamentos() {
       <div>
         <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Fiscal · Guias e recolhimentos</div>
         <h1 className="font-display text-3xl sm:text-4xl flex items-center gap-3">
-          <span className="rounded-2xl bg-brand-orange/10 p-2"><HandCoins className="h-6 w-6 text-brand-orange" /></span>
+          <span className="rounded-xl bg-brand-orange/12 p-2"><HandCoins className="h-6 w-6 text-brand-orange" /></span>
           Parcelamentos
         </h1>
         <p className="max-w-2xl text-sm text-muted-foreground">

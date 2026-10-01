@@ -147,7 +147,7 @@ export default function Participantes() {
         ]}
       />
 
-      <Card className="rounded-3xl border-dashed shadow-none">
+      <Card className="rounded-xl border-dashed shadow-none">
         <CardContent className="p-4 text-sm text-muted-foreground">
           Enquanto a integração com o ERP não existe, cadastre aqui. Ao importar o XML de uma NF-e em{" "}
           <strong className="text-foreground">Fiscal › Documentos</strong>, o emitente ou destinatário entra (ou é completado) automaticamente.
@@ -155,7 +155,7 @@ export default function Participantes() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative min-w-[220px] flex-1">

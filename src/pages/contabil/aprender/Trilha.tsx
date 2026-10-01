@@ -60,7 +60,7 @@ export default function TrilhaAprendizado() {
           const temLab = !!licao.praticaId && LABS.some((l) => l.id === licao.praticaId);
           const concluida = progresso[licao.slug] === "concluida";
           return (
-            <Card key={licao.slug} className="rounded-3xl shadow-card">
+            <Card key={licao.slug} className="rounded-xl shadow-card">
               <CardHeader>
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge variant="outline" className="rounded-full text-[10px] uppercase tracking-widest">
@@ -97,7 +97,7 @@ export default function TrilhaAprendizado() {
         })}
       </div>
 
-      <p className="rounded-3xl border border-border bg-muted p-4 text-xs text-muted-foreground">
+      <p className="rounded-xl border border-border bg-muted p-4 text-xs text-muted-foreground">
         {AVISO_SIMULACAO}
       </p>
     </div>

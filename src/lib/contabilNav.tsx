@@ -886,9 +886,9 @@ export const AREAS: Area[] = [
     title: "Financeiro",
     code: "05",
     icon: Wallet,
-    accent: "orange",
-    eyebrow: "Tributário",
-    blurb: "Faturamento, apurações e regimes tributários das empresas do grupo.",
+    accent: "pink",
+    eyebrow: "Fluxo de caixa & tributos",
+    blurb: "Movimentação financeira, regimes de apuração, demonstrações e conciliação bancária.",
     categories: financeiro,
   },
   {

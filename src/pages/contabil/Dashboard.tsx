@@ -10,6 +10,7 @@ import {
 import {
   ArrowUpRight, ArrowDownRight, RefreshCw, PlayCircle, AlertTriangle, Info,
   AlertOctagon, TrendingUp, ChevronDown, Building2, FileStack, Wallet, Landmark, ShieldAlert,
+  LayoutDashboard,
 } from "lucide-react";
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line,
@@ -368,21 +369,28 @@ export default function Dashboard() {
 
 
   const header = (
-    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 lg:gap-6">
+    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 lg:gap-6">
       <div className="flex-1 min-w-0">
-        <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Painel de controle</div>
-        <h1 className="font-display text-3xl md:text-4xl mt-2">
-          Visão geral <span className="text-brand-orange">contábil</span>
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1.5">
-          Competência {isPeriodo ? `${formatCompetencia(competencia)} até ${formatCompetencia(competenciaFim!)}` : formatCompetencia(competencia)} — {empresa ? empresa.razao : "nenhuma empresa cadastrada"}
-        </p>
+        <div className="flex items-start gap-4">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-border/80 bg-brand-orange/12 shadow-sm">
+            <LayoutDashboard className="h-6 w-6 text-brand-orange" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">01 · Painel de controle</div>
+            <h1 className="font-display text-3xl sm:text-4xl tracking-tight mt-1">
+              Visão geral <span className="text-brand-orange">contábil</span>
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+              Competência {isPeriodo ? `${formatCompetencia(competencia)} até ${formatCompetencia(competenciaFim!)}` : formatCompetencia(competencia)} — {empresa ? empresa.razao : "nenhuma empresa cadastrada"}
+            </p>
+          </div>
+        </div>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 lg:pt-1">
         <Button
           variant="outline"
           size="sm"
-          className="rounded-md h-9"
+          className="rounded-lg h-9"
           onClick={() => {
             window.dispatchEvent(new Event("storage"));
             toast.success("Dados recarregados", {
@@ -394,7 +402,7 @@ export default function Dashboard() {
         </Button>
         <Button
           size="sm"
-          className="rounded-md h-9 bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground"
+          className="rounded-lg h-9 bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground"
           onClick={() => navigate("/preparativos/servicos/gestao")}
         >
           <PlayCircle className="h-4 w-4 mr-1.5" /> Iniciar fechamento
