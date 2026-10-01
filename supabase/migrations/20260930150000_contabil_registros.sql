@@ -7,6 +7,9 @@
 -- (src/lib/nuvemColecoes.ts): enquanto ela não existir, tudo fica só no navegador e sobe sozinho
 -- depois que a migração for aplicada.
 -- Exclusões são marcas (excluido = true) para chegarem aos outros navegadores do mesmo usuário.
+--
+-- Pode ser executada mais de uma vez sem erro (por exemplo, se o Lovable recriar esta migração com
+-- outro nome): nada é apagado, só garante que tabela, permissões, políticas, gatilho e índices existam.
 
 CREATE TABLE IF NOT EXISTS public.contabil_registros (
   user_id uuid NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -25,16 +28,22 @@ GRANT ALL ON public.contabil_registros TO service_role;
 
 ALTER TABLE public.contabil_registros ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Contabil registros select own" ON public.contabil_registros;
 CREATE POLICY "Contabil registros select own" ON public.contabil_registros
   FOR SELECT TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Contabil registros insert own" ON public.contabil_registros;
 CREATE POLICY "Contabil registros insert own" ON public.contabil_registros
   FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+DROP POLICY IF EXISTS "Contabil registros update own" ON public.contabil_registros;
 CREATE POLICY "Contabil registros update own" ON public.contabil_registros
   FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+DROP POLICY IF EXISTS "Contabil registros delete own" ON public.contabil_registros;
 CREATE POLICY "Contabil registros delete own" ON public.contabil_registros
   FOR DELETE TO authenticated USING (user_id = auth.uid());
 
 -- updated_at marca a versão no servidor: é por ele que cada navegador baixa só o que mudou.
+-- public.set_updated_at() já existe (migração 20260519132956) e é a mesma usada pelas outras tabelas.
+DROP TRIGGER IF EXISTS contabil_registros_set_updated_at ON public.contabil_registros;
 CREATE TRIGGER contabil_registros_set_updated_at
   BEFORE UPDATE ON public.contabil_registros
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();

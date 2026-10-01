@@ -19,7 +19,7 @@ Decisão tomada: **o Use Contábil é o dono do razão** (opção A da seção 2
 | Cadastro único de clientes/fornecedores e produtos/serviços (Preparativos › Cadastros), alimentado também pelo XML da NF-e e pelos cadastros antigos | ✅ Feito |
 | Plano de contas do grupo com modelo pronto (225 contas, com IBS/CBS), centros de custo e históricos padrão | ✅ Feito |
 | Lançamentos em partidas dobradas, estorno, bloqueio da competência encerrada, balancete, razão e diário | ✅ Feito |
-| Gravação na nuvem desses dados (tabela `contabil_registros`, com cópia local e sincronização) | ✅ Feito — falta aplicar a migração no Lovable |
+| Gravação na nuvem desses dados (tabela `contabil_registros`, com cópia local e sincronização) | ✅ Feito — falta fazer o merge do PR e, depois, aplicar a migração no Lovable |
 | Vínculo de cada conta com o plano referencial da RFB | 🟡 Campo pronto; códigos a preencher |
 | Contabilização automática de notas, baixas, folha e depreciação (regras da seção 5.3) | ⏭️ Próxima etapa |
 | Organização/equipe compartilhando empresas, permissões aplicadas, demais telas na nuvem | ⏭️ Pendente |

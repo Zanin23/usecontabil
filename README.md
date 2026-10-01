@@ -86,7 +86,7 @@ Este repositório é mantido junto com um projeto do Lovable: todos os commits d
 
 Mudanças de banco (`supabase/migrations`) e de edge functions (`supabase/functions`) precisam ser aplicadas/publicadas no backend — depois de um merge, confirme no Lovable que foram aplicadas.
 
-**Migração pendente mais recente:** `supabase/migrations/20260930150000_contabil_registros.sql` (tabela da nuvem dos cadastros próprios e dos lançamentos contábeis). No chat do Lovable, peça para executar o SQL desse arquivo. Enquanto não for aplicada, as telas mostram "Salvo só neste navegador" e nada se perde.
+**Migração pendente mais recente:** `supabase/migrations/20260930150000_contabil_registros.sql` (tabela da nuvem dos cadastros próprios e dos lançamentos contábeis). O Lovable só enxerga a branch conectada (a `main`): primeiro faça o merge do pull request; depois, no chat do Lovable, peça para executar o SQL desse arquivo. O SQL pode ser executado mais de uma vez sem erro. Enquanto não for aplicada, as telas mostram "Salvo só neste navegador" e nada se perde; depois de aplicada, o selo passa a "Salvo na nuvem".
 
 ## Limitações conhecidas
 
