@@ -13,7 +13,7 @@ Central **contábil, fiscal e administrativa interna** de um grupo de empresas: 
 | **Dashboard** | Visão geral contábil da empresa e da competência selecionadas. |
 | **Preparativos** | Cadastro de empresas e filiais; **cadastro único de clientes e fornecedores e de produtos e serviços** (alimentado à mão, pela importação de XML de NF-e ou pelos cadastros antigos); classes de atividade; inscrições, pagamentos, parâmetros e certificados; gestão do fechamento (fases, tarefas e encerramentos). |
 | **Fiscal** | Documentos fiscais, escrituração (livros, ICMS, IPI, inventário, CIAP), apurações (PIS/COFINS, ISS, IRPJ/CSLL, Simples Nacional, retenções), obrigações (SPED Fiscal, EFD-Contribuições, ECD/ECF, DCTFWeb, REINF, estaduais), guias e auditoria fiscal. |
-| **Contábil** | Plano de contas do grupo (com modelo pronto e vínculo com o referencial da RFB), centros de custo, históricos padrão, **lançamentos em partidas dobradas** (estorno e bloqueio da competência encerrada), balancete de verificação, razão e diário. |
+| **Contábil** | Plano de contas do grupo (com modelo pronto, vínculo com o referencial da RFB e **importação por planilha CSV/Excel**), centros de custo, históricos padrão, **lançamentos em partidas dobradas** (estorno e bloqueio da competência encerrada), **balancete de abertura importado de planilha** (gera lançamento do tipo "Abertura"), balancete de verificação, razão e diário. |
 | **Financeiro** | Tabelas por regime, movimentos, tributação (DIFAL, ST, DEFIS, motor tributário), conciliação bancária e DRE. |
 | **Administrativo** | Contas e caixa, contratos e documentos, patrimônio, suprimentos, controles internos (usuários, perfis e permissões), auditoria cadastral, pesquisa global e dashboard executivo. |
 | **Aprender** | Central de aprendizado (trilhas, lições e glossário) e **modo prática**, com dados fictícios. |
@@ -92,5 +92,5 @@ Mudanças de banco (`supabase/migrations`) e de edge functions (`supabase/functi
 
 - Sem integração real com Receita Federal, SEFAZ ou prefeituras; os arquivos gerados não têm validade legal.
 - A maior parte dos dados fica só no navegador (veja "Como os dados são guardados"). Na nuvem, cada usuário só vê os próprios registros: ainda não há organização/equipe compartilhando as mesmas empresas.
-- Os lançamentos contábeis ainda são manuais: a contabilização automática dos documentos fiscais e a integração com o ERP (Use Sistemas) são as próximas etapas (ver `docs/analise-sistema-contabil.md`).
+- Os lançamentos contábeis ainda são manuais (o plano de contas e o balancete de abertura já podem ser importados de planilha): a contabilização automática dos documentos fiscais e a integração com o ERP (Use Sistemas) são as próximas etapas (ver `docs/analise-sistema-contabil.md`).
 - Cobertura de testes automatizados ainda baixa (veja `src/test`).
