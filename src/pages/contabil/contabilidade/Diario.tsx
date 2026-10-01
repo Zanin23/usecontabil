@@ -62,7 +62,7 @@ export default function Diario() {
         <Badge variant="secondary" className="rounded-full">{periodo}</Badge>
       </CabecalhoPagina>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-4">
           {!empresaId ? (
             <p className="py-12 text-center text-sm text-muted-foreground">Selecione uma empresa no topo da tela.</p>

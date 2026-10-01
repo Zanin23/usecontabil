@@ -125,7 +125,7 @@ export default function CrudEmpresa({
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="h-11 w-11 rounded-2xl bg-brand-orange/15 grid place-items-center shrink-0">
+          <div className="h-11 w-11 rounded-xl bg-brand-orange/12 grid place-items-center shrink-0">
             <Icone className="h-5 w-5 text-brand-orange" />
           </div>
           <div>
@@ -142,13 +142,13 @@ export default function CrudEmpresa({
               <Sparkles className="h-4 w-4 mr-2" /> Modelos sugeridos
             </Button>
           ) : null}
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
             <Plus className="h-4 w-4 mr-2" /> {labelNovo}
           </Button>
         </div>
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-4 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative flex-1 min-w-[220px]">
@@ -172,7 +172,7 @@ export default function CrudEmpresa({
                   ? "Nenhum registro cadastrado para esta empresa."
                   : "Cadastre uma empresa do grupo para começar."}
               </p>
-              <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
                 <Plus className="h-4 w-4 mr-2" /> {labelNovo}
               </Button>
             </div>
@@ -216,7 +216,7 @@ export default function CrudEmpresa({
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">Como preencher</div>
           <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-4">
@@ -266,7 +266,7 @@ export default function CrudEmpresa({
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-full" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar</Button>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

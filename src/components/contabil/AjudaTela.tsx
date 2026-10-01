@@ -323,7 +323,7 @@ export default function AjudaTela() {
                 <Button
                   type="submit"
                   size="sm"
-                  className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+                  className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
                   disabled={carregando || !pergunta.trim()}
                   aria-label="Enviar pergunta"
                 >

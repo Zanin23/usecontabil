@@ -148,7 +148,7 @@ export default function InconsistenciaPainel({
                   </p>
                 )}
                 <div className="flex flex-wrap gap-2">
-                  <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => salvar()}>
+                  <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => salvar()}>
                     Salvar tratativa
                   </Button>
                   <Button variant="outline" className="rounded-full" onClick={() => salvar("Corrigida")}>

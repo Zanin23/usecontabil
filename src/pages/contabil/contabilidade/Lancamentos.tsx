@@ -248,10 +248,10 @@ export default function Lancamentos() {
       </CabecalhoPagina>
 
       {!empresaId ? (
-        <Card className="rounded-3xl border-warn/40 bg-warn/5"><CardContent className="p-4 text-sm">Selecione uma empresa no topo da tela para ver e fazer lançamentos.</CardContent></Card>
+        <Card className="rounded-xl border-warn/40 bg-warn/5"><CardContent className="p-4 text-sm">Selecione uma empresa no topo da tela para ver e fazer lançamentos.</CardContent></Card>
       ) : null}
       {empresaId && !analiticas.length ? (
-        <Card className="rounded-3xl border-warn/40 bg-warn/5">
+        <Card className="rounded-xl border-warn/40 bg-warn/5">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
             <span>O plano de contas está vazio. Carregue o plano modelo ou cadastre as contas antes de lançar.</span>
             <Button asChild variant="outline" className="rounded-full"><Link to="/contabil/cadastros/plano-contas">Ir para o plano de contas</Link></Button>
@@ -259,7 +259,7 @@ export default function Lancamentos() {
         </Card>
       ) : null}
       {empresaId && encerrada ? (
-        <Card className="rounded-3xl border-warn/40 bg-warn/5">
+        <Card className="rounded-xl border-warn/40 bg-warn/5">
           <CardContent className="flex items-center gap-2 p-4 text-sm">
             <Lock className="h-4 w-4 text-warn" />
             A competência {formatCompetencia(competencia)} está encerrada: os lançamentos dela ficam só para consulta. Reabra em
@@ -277,7 +277,7 @@ export default function Lancamentos() {
         ]}
       />
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative min-w-[220px] flex-1">

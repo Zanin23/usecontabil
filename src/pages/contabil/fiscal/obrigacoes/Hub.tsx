@@ -8,6 +8,7 @@ import { Badge, Button, Card, CardContent } from "@/design-system/mj-design-syst
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
+import PageHeader from "@/components/contabil/PageHeader";
 import {
   CATALOGO, monitorar, resumoMonitor, useObrEstado, vencimentoBR, diasRestantes,
   type ObrSlug,
@@ -35,20 +36,20 @@ function Cartao({ slug }: { slug: ObrSlug }) {
   const dias = diasRestantes(slug, competencia);
 
   return (
-    <Card className="rounded-3xl border-border/70 transition-shadow hover:shadow-card">
+    <Card className="rounded-xl border-border/70 transition-shadow hover:shadow-card">
       <CardContent className="p-6 space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-brand-orange/10 p-3">
-              <Icone className="h-6 w-6 text-brand-orange" />
+            <div className="rounded-xl bg-brand-orange/12 p-2.5">
+              <Icone className="h-5 w-5 text-brand-orange" />
             </div>
             <div>
-              <h2 className="font-display text-2xl">{def.titulo}</h2>
+              <h2 className="font-display text-xl">{def.titulo}</h2>
               <p className="text-sm text-muted-foreground max-w-md">{def.descricao}</p>
             </div>
           </div>
           <Badge
-            className={`rounded-full ${
+            className={`rounded-md ${
               estado.status === "Transmitida"
                 ? "bg-success/15 text-success"
                 : linha.erros > 0
@@ -75,10 +76,10 @@ function Cartao({ slug }: { slug: ObrSlug }) {
 
         <div className="flex flex-wrap gap-1.5">
           {def.submodulos.slice(0, 6).map((s) => (
-            <Badge key={s} variant="secondary" className="rounded-full text-[10px]">{s}</Badge>
+            <Badge key={s} variant="secondary" className="rounded-md text-[10px]">{s}</Badge>
           ))}
           {def.submodulos.length > 6 && (
-            <Badge variant="secondary" className="rounded-full text-[10px]">+{def.submodulos.length - 6}</Badge>
+            <Badge variant="secondary" className="rounded-md text-[10px]">+{def.submodulos.length - 6}</Badge>
           )}
         </div>
 
@@ -89,7 +90,7 @@ function Cartao({ slug }: { slug: ObrSlug }) {
               ? new Date(estado.transmissoes[0].em).toLocaleString("pt-BR")
               : "nenhuma"}
           </span>
-          <Button asChild className="rounded-full bg-brand-orange hover:bg-brand-orange/90">
+          <Button asChild className="rounded-lg bg-brand-orange hover:bg-brand-orange/90">
             <Link to={`/fiscal/obrigacoes/${slug}`}>
               Abrir obrigação <ArrowRight className="h-4 w-4 ml-2" />
             </Link>
@@ -102,7 +103,7 @@ function Cartao({ slug }: { slug: ObrSlug }) {
 
 function Indicador({ label, valor, hint, destaque }: { label: string; valor: string; hint?: string; destaque?: boolean }) {
   return (
-    <div className={`min-w-0 rounded-2xl border p-3 ${destaque ? "border-destructive/40 bg-destructive/5" : "border-border/70"}`}>
+    <div className={`min-w-0 rounded-lg border p-3 ${destaque ? "border-destructive/40 bg-destructive/5" : "border-border/70"}`}>
       <div className="text-[10px] uppercase tracking-[0.06em] leading-tight break-words hyphens-auto text-muted-foreground">{label}</div>
       <div className={`mt-0.5 font-mono text-sm break-words ${destaque ? "text-destructive" : ""}`}>{valor}</div>
       {hint && <div className="text-[10px] text-muted-foreground break-words">{hint}</div>}
@@ -129,32 +130,35 @@ export default function ObrigacoesHub() {
 
   return (
     <div className="space-y-6 pb-16">
-      <div>
-        <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Fiscal</div>
-        <h1 className="font-display text-3xl sm:text-4xl">
-          Obrigações <span className="text-brand-orange">acessórias</span>
-        </h1>
-        <p className="text-sm text-muted-foreground max-w-2xl">
-          Cada obrigação possui motor próprio de geração, validação e transmissão, sobre uma camada
-          comum de auditoria, versionamento e monitoramento.
-        </p>
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-          <Badge variant="secondary" className="rounded-full">{formatCompetencia(competencia)}</Badge>
-          <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
-          <Button asChild size="sm" variant="outline" className="rounded-full">
+      <PageHeader
+        trail={[{ label: "Fiscal", to: "/fiscal" }]}
+        eyebrow="Fiscal · Obrigações acessórias"
+        title="Obrigações"
+        titleAccent="acessórias"
+        description="Cada obrigação possui motor próprio de geração, validação e transmissão, sobre uma camada comum de auditoria, versionamento e monitoramento."
+        icon={CalendarClock}
+        badges={
+          <>
+            <Badge variant="outline" className="rounded-md">{formatCompetencia(competencia)}</Badge>
+            <Badge variant="outline" className="rounded-md">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
+          </>
+        }
+        actions={
+          <Button asChild size="sm" variant="outline" className="rounded-lg">
             <Link to="/fiscal/obrigacoes/agenda">
               <CalendarClock className="h-3.5 w-3.5 mr-1.5" /> Agenda fiscal
             </Link>
           </Button>
-        </div>
-      </div>
+        }
+        compact
+      />
 
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="p-5 space-y-3">
-          <h2 className="font-display text-2xl">Painel de monitoramento</h2>
+          <h2 className="font-display text-xl">Painel de monitoramento</h2>
           <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-7">
             {monitores.map((m) => (
-              <div key={m.label} className="rounded-2xl border border-border/70 p-3">
+              <div key={m.label} className="rounded-lg border border-border/70 p-3">
                 <m.icone className={`h-4 w-4 ${m.cor}`} />
                 <div className="mt-1 font-mono text-xl">{m.valor}</div>
                 <div className="text-[10px] uppercase tracking-[0.06em] leading-tight break-words text-muted-foreground">{m.label}</div>

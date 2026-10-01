@@ -219,7 +219,7 @@ export default function AssistenteCampos({
             key={i}
             className={
               m.role === "user"
-                ? "ml-auto max-w-[85%] rounded-2xl bg-brand-orange/15 text-foreground px-3 py-2 text-sm"
+                ? "ml-auto max-w-[85%] rounded-xl bg-brand-orange/12 text-foreground px-3 py-2 text-sm"
                 : "max-w-[95%] text-sm text-foreground"
             }
           >
@@ -260,7 +260,7 @@ export default function AssistenteCampos({
           size="icon"
           disabled={loading || !input.trim()}
           onClick={() => enviar(input)}
-          className="rounded-full bg-brand-orange hover:bg-brand-orange/90 shrink-0"
+          className="rounded-lg bg-brand-orange hover:bg-brand-orange/90 shrink-0"
           aria-label="Enviar"
         >
           <Send className="h-4 w-4" />

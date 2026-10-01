@@ -29,7 +29,7 @@ export default function CentralAprendizado() {
       </header>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardHeader className="pb-2">
             <CardDescription>Seu progresso</CardDescription>
             <CardTitle className="font-display text-3xl">
@@ -42,7 +42,7 @@ export default function CentralAprendizado() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardHeader className="pb-2">
             <CardDescription>Glossário técnico</CardDescription>
             <CardTitle className="font-display text-3xl">{GLOSSARIO.length} termos</CardTitle>
@@ -60,7 +60,7 @@ export default function CentralAprendizado() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardHeader className="pb-2">
             <CardDescription>Modo prática</CardDescription>
             <CardTitle className="font-display text-3xl">Sandbox</CardTitle>
@@ -89,7 +89,7 @@ export default function CentralAprendizado() {
               ? Math.round((feitas / trilha.licoes.length) * 100)
               : 0;
             return (
-              <Card key={trilha.slug} className="rounded-3xl shadow-card">
+              <Card key={trilha.slug} className="rounded-xl shadow-card">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
@@ -132,7 +132,7 @@ export default function CentralAprendizado() {
         </div>
       </section>
 
-      <p className="flex items-start gap-2 rounded-3xl border border-border bg-muted p-4 text-xs text-muted-foreground">
+      <p className="flex items-start gap-2 rounded-xl border border-border bg-muted p-4 text-xs text-muted-foreground">
         <GraduationCap className="mt-0.5 h-4 w-4 shrink-0 text-brand-orange" />
         {AVISO_SIMULACAO}
       </p>

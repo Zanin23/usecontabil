@@ -143,7 +143,7 @@ export default function Auth() {
         </section>
 
         {/* Formulário */}
-        <Card className="mx-auto w-full max-w-md animate-pop-in rounded-3xl border-white/70 bg-card/85 shadow-elevated backdrop-blur-xl">
+        <Card className="mx-auto w-full max-w-md animate-pop-in rounded-xl border-white/70 bg-card/85 shadow-elevated backdrop-blur-xl">
           <CardContent className="space-y-6 p-7">
             <div className="flex items-center gap-3">
               <LogoMark className="h-11 w-11 text-xl" />

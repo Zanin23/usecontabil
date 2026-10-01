@@ -201,6 +201,18 @@
   .bg-brand-orange { background-color: var(--brand-orange); }
   .text-brand-orange { color: var(--brand-orange); }
   .border-brand-orange { border-color: var(--brand-orange); }
+  .bg-brand-purple { background-color: var(--brand-purple); }
+  .text-brand-purple { color: var(--brand-purple); }
+  .border-brand-purple { border-color: var(--brand-purple); }
+  .bg-brand-pink { background-color: var(--brand-pink); }
+  .text-brand-pink { color: var(--brand-pink); }
+  .border-brand-pink { border-color: var(--brand-pink); }
+  .bg-brand-teal { background-color: var(--brand-teal); }
+  .text-brand-teal { color: var(--brand-teal); }
+  .border-brand-teal { border-color: var(--brand-teal); }
+  .bg-brand-amber { background-color: var(--brand-amber); }
+  .text-brand-amber { color: var(--brand-amber); }
+  .border-brand-amber { border-color: var(--brand-amber); }
   .bg-gradient-brand { background-image: var(--gradient-brand); }
   .bg-ink { background-color: var(--ink); }
   .text-ink { color: var(--ink); }

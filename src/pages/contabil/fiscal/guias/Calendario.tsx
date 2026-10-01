@@ -119,13 +119,13 @@ export default function CalendarioFiscal() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           {visao === "Calendário" ? (
-            <Card className="rounded-3xl border-border/70">
+            <Card className="rounded-xl border-border/70">
               <CardContent className="p-6">
                 <GradeMes eventos={eventos} competencia={competencia} />
               </CardContent>
             </Card>
           ) : (
-            <Card className="rounded-3xl border-border/70">
+            <Card className="rounded-xl border-border/70">
               <CardContent className="p-2">
                 <Table>
                   <TableHeader>
@@ -182,7 +182,7 @@ export default function CalendarioFiscal() {
         </div>
 
         <div className="space-y-6">
-          <Card className="rounded-3xl border-border/70 bg-brand-orange/5">
+          <Card className="rounded-xl border-border/70 bg-brand-orange/5">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 font-display text-xl text-brand-orange">
                 <Bell className="h-5 w-5" /> Lembretes
@@ -190,7 +190,7 @@ export default function CalendarioFiscal() {
               <div className="mt-4 space-y-4">
                 {avisosLista.length > 0 ? avisosLista.map((a, i) => (
                   <div key={i} className="flex gap-3">
-                    <div className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-orange" />
+                    <div className="mt-1 h-1.5 w-1.5 shrink-0 rounded-lg bg-brand-orange" />
                     <div className="text-xs leading-relaxed">{a}</div>
                   </div>
                 )) : (

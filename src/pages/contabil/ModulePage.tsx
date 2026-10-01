@@ -6,20 +6,14 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/design-system/mj-design-system-db98fa";
 import { toast } from "sonner";
-import { ChevronRight, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { findModule } from "@/lib/contabilNav";
 import { EMPRESAS_EVENT, loadEmpresas, removeEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
 import ExportarMenu from "@/components/contabil/ExportarMenu";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { regimeDefinido } from "@/lib/regime";
-
-const accentText: Record<string, string> = {
-  orange: "text-brand-orange",
-  blue: "text-brand-blue",
-  purple: "text-brand-purple",
-  pink: "text-brand-pink",
-};
+import PageHeader from "@/components/contabil/PageHeader";
 
 const statusClass = (v: string) => {
   const s = v.toLowerCase();
@@ -112,91 +106,83 @@ export default function ModulePage() {
     return okBusca && okStatus;
   });
 
+  const acoes = (
+    <div className="flex items-center gap-2">
+      <ExportarMenu
+        nome={module.title}
+        colunas={module.columns.map((c) => ({ key: c.key, label: c.label }))}
+        linhas={visiveis.map((r: any) =>
+          Object.fromEntries(module.columns.map((c) => [c.key, String(r[c.key] ?? "")])),
+        )}
+      />
+      {module.primaryAction ? (
+        <Button
+          asChild
+          className="rounded-lg bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
+        >
+          <Link to={`/${area.slug}/${category.slug}/${module.slug}/novo`}>
+            <Plus className="h-4 w-4 mr-2" />
+            {module.primaryAction}
+          </Link>
+        </Button>
+      ) : null}
+    </div>
+  );
+
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs text-muted-foreground">
-        <Link to="/dashboard" className="hover:text-foreground">Início</Link>
-        <ChevronRight className="h-3 w-3" />
-        <Link to={`/${area.slug}`} className="hover:text-foreground">{area.title}</Link>
-        <ChevronRight className="h-3 w-3" />
-        <Link to={`/${area.slug}/${category.slug}`} className="hover:text-foreground">{category.title}</Link>
-        <ChevronRight className="h-3 w-3" />
-        <span className="text-foreground">{module.title}</span>
-      </nav>
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-        <div className="flex items-start gap-4">
-          <div className="h-12 w-12 rounded-2xl bg-card border border-border grid place-items-center shadow-card">
-            <Icon className={`h-6 w-6 ${accentText[area.accent]}`} />
-          </div>
-          <div>
-            <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              {area.title} · {category.title}
-            </div>
-            <h1 className="font-display text-4xl mt-1.5">{module.title}</h1>
-            <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{module.desc}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <ExportarMenu
-            nome={module.title}
-            colunas={module.columns.map((c) => ({ key: c.key, label: c.label }))}
-            linhas={visiveis.map((r: any) =>
-              Object.fromEntries(module.columns.map((c) => [c.key, String(r[c.key] ?? "")])),
-            )}
-          />
-          {module.slug === "empresas" || module.slug === "dados-empresa" ? (
-            <Button
-              asChild
-              className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
-            >
-              <Link to={`/${area.slug}/${category.slug}/${module.slug}/novo`}>
-                <Plus className="h-4 w-4 mr-2" />
-                {module.primaryAction ?? "Novo registro"}
-              </Link>
-            </Button>
-          ) : null}
-        </div>
-      </div>
+      <PageHeader
+        trail={[
+          { label: area.title, to: `/${area.slug}` },
+          { label: category.title, to: `/${area.slug}/${category.slug}` },
+        ]}
+        icon={Icon}
+        iconAccent={area.accent as any}
+        eyebrow={`${area.title} · ${category.title}`}
+        title={module.title}
+        description={module.desc}
+        badges={
+          <>
+            <Badge variant="outline" className="rounded-md">
+              Competência {formatCompetencia(competencia)}
+            </Badge>
+            <Badge variant="outline" className="rounded-md">
+              {empresa ? empresa.razao : "Nenhuma empresa selecionada"}
+            </Badge>
+          </>
+        }
+        actions={acoes}
+      />
 
       {/* Filters */}
-      <Card className="rounded-2xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="p-4 flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={`Buscar em ${module.title.toLowerCase()}…`}
-              className="pl-9 rounded-full bg-card"
+              className="pl-9 rounded-lg bg-card"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
             />
           </div>
           {opcoesStatus.length > 0 && (
             <Select value={statusFiltro} onValueChange={setStatusFiltro}>
-              <SelectTrigger className="w-52 rounded-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-52 rounded-lg"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todas as situações</SelectItem>
                 {opcoesStatus.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
               </SelectContent>
             </Select>
           )}
-          <Badge variant="outline" className="rounded-full">
-            Competência {formatCompetencia(competencia)}
-          </Badge>
-          <Badge variant="outline" className="rounded-full">
-            {empresa ? empresa.razao : "Nenhuma empresa selecionada"}
-          </Badge>
+          <span className="text-xs text-muted-foreground ml-auto">
+            {visiveis.length} de {todasLinhas.length} registros
+          </span>
         </CardContent>
       </Card>
 
       {/* Table */}
-      <Card className="rounded-2xl border-border/70 overflow-hidden">
-        <div className="px-4 py-3 border-b border-border flex items-center justify-between text-xs text-muted-foreground">
-          <span>{visiveis.length} de {todasLinhas.length} registros exibidos</span>
-          <span className="font-mono uppercase tracking-widest">Ambiente HOMOLOGAÇÃO</span>
-        </div>
+      <Card className="rounded-xl border-border/70 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>

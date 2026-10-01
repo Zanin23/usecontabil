@@ -148,14 +148,14 @@ export default function ProdutosServicos() {
         ]}
       />
 
-      <Card className="rounded-3xl border-dashed shadow-none">
+      <Card className="rounded-xl border-dashed shadow-none">
         <CardContent className="p-4 text-sm text-muted-foreground">
           Os itens das NF-e <strong className="text-foreground">emitidas</strong> pela empresa entram aqui automaticamente na importação do XML
           (pelo código do item). Itens de notas de fornecedores não são cadastrados, porque o código é do fornecedor.
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative min-w-[220px] flex-1">

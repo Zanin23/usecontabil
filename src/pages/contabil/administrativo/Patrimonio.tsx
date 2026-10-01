@@ -312,7 +312,7 @@ function DialogBem({ registro, onClose }: { registro: BemCalculado | "novo"; onC
 
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar bem</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar bem</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -380,7 +380,7 @@ function DialogTransferencia({ bem, onClose }: { bem: BemCalculado; onClose: () 
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={aplicar}>Transferir</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={aplicar}>Transferir</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -449,7 +449,7 @@ function DialogBaixa({ bem, competencia, onClose }: { bem: BemCalculado; compete
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={aplicar}>Confirmar baixa</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={aplicar}>Confirmar baixa</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -497,7 +497,7 @@ function DialogBenfeitoria({ bem, onClose }: { bem: BemCalculado; onClose: () =>
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={aplicar}>Capitalizar</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={aplicar}>Capitalizar</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -544,14 +544,14 @@ function Bens() {
         <Kpi label="Totalmente depreciados" valor={String(resumo.totalmenteDepreciados)} tom={resumo.totalmenteDepreciados ? "alerta" : undefined} hint="Revisar vida útil" />
       </div>
 
-      <Card className="rounded-3xl border-border">
+      <Card className="rounded-xl border-border">
         <CardContent className="p-4 text-xs text-muted-foreground">
           A depreciação entra na DRE de <strong>{empresa?.razao ?? "cada empresa"}</strong> apenas pelos bens vinculados a ela. Bens da carga de
           exemplo, sem empresa definida, não são apropriados em nenhuma empresa — edite o bem e informe a empresa para que a despesa apareça na DRE.
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -575,7 +575,7 @@ function Bens() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display text-2xl">Ficha patrimonial</h2>
@@ -607,7 +607,7 @@ function Bens() {
               })))}>
                 <Download className="mr-2 h-4 w-4" />Exportar
               </Button>
-              <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
                 <Plus className="mr-2 h-4 w-4" />Novo bem
               </Button>
             </div>
@@ -728,7 +728,7 @@ function Depreciacao() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        <Card className="rounded-3xl shadow-card lg:col-span-3">
+        <Card className="rounded-xl shadow-card lg:col-span-3">
           <CardContent className="p-6">
             <h2 className="font-display text-2xl">Projeção da despesa — 12 meses</h2>
             <p className="mb-4 text-sm text-muted-foreground">Considera o encerramento da vida útil de cada bem, sem novas aquisições.</p>
@@ -746,7 +746,7 @@ function Depreciacao() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl shadow-card lg:col-span-2">
+        <Card className="rounded-xl shadow-card lg:col-span-2">
           <CardContent className="p-6">
             <h2 className="font-display text-2xl">Rateio por centro de custo</h2>
             <p className="mb-4 text-sm text-muted-foreground">Apropriação da despesa da competência.</p>
@@ -771,7 +771,7 @@ function Depreciacao() {
         </Card>
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -888,7 +888,7 @@ function Movimentacoes() {
         <Kpi label="Perda de capital" valor={brl(Math.abs(perdas))} tom={perdas < 0 ? "alerta" : undefined} />
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -955,7 +955,7 @@ function Movimentacoes() {
       </Card>
 
       {baixados.length > 0 && (
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="p-6">
             <h2 className="font-display text-2xl">Apuração de resultado nas baixas</h2>
             <p className="mb-4 text-sm text-muted-foreground">Valor recebido menos o valor contábil na data da baixa.</p>
@@ -1039,7 +1039,7 @@ function Inventario() {
         <Kpi label="Valor não localizado" valor={brl(resumo.valorNaoLocalizado)} tom={resumo.valorNaoLocalizado ? "alerta" : undefined} />
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -1066,7 +1066,7 @@ function Inventario() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display text-2xl">Folha de contagem</h2>

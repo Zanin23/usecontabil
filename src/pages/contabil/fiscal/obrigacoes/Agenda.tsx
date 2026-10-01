@@ -48,7 +48,7 @@ export default function AgendaFiscal() {
       </div>
 
       {alertas.length > 0 && (
-        <Card className="rounded-3xl border-brand-orange/40 bg-brand-orange/5">
+        <Card className="rounded-xl border-brand-orange/40 bg-brand-orange/5">
           <CardContent className="p-5 space-y-2">
             <div className="flex items-center gap-2">
               <Bell className="h-4 w-4 text-brand-orange" />
@@ -69,7 +69,7 @@ export default function AgendaFiscal() {
         </Card>
       )}
 
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="p-5">
           <div className="flex items-center gap-2 mb-3">
             <CalendarClock className="h-4 w-4 text-brand-orange" />

@@ -182,7 +182,7 @@ export default function ApuracaoView({
       {/* cabeçalho */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="rounded-2xl bg-brand-orange/10 p-3">
+          <div className="rounded-xl bg-brand-orange/12 p-3">
             <Icone className="h-6 w-6 text-brand-orange" />
           </div>
           <div>
@@ -213,7 +213,7 @@ export default function ApuracaoView({
               <Unlock className="h-4 w-4 mr-2" /> Reabrir
             </Button>
           ) : (
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={fechar}>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={fechar}>
               <Lock className="h-4 w-4 mr-2" /> Fechar apuração
             </Button>
           )}
@@ -413,7 +413,7 @@ export default function ApuracaoView({
               <div className="flex items-center justify-between gap-3">
                 <h2 className="font-display text-xl">Ajustes da apuração</h2>
                 <Button
-                  className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+                  className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
                   disabled={fechada}
                   onClick={() => { setDraft({ tipo: "Adição" }); setAjusteOpen(true); }}
                 >
@@ -582,7 +582,7 @@ export default function ApuracaoView({
               <div className="flex items-center justify-between">
                 <h2 className="font-display text-xl">Parâmetros do motor</h2>
                 <Button
-                  className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+                  className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
                   disabled={fechada || !parametros.length}
                   onClick={() => { setParamDraft(estado.parametros); setParamOpen(true); }}
                 >
@@ -729,7 +729,7 @@ export default function ApuracaoView({
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-full" onClick={() => setAjusteOpen(false)}>Cancelar</Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvarAjuste}>Aplicar ajuste</Button>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvarAjuste}>Aplicar ajuste</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -762,7 +762,7 @@ export default function ApuracaoView({
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-full" onClick={() => setParamOpen(false)}>Cancelar</Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvarParametros}>Salvar parâmetros</Button>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvarParametros}>Salvar parâmetros</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

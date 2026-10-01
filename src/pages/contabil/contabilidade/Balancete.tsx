@@ -65,7 +65,7 @@ export default function Balancete() {
       </CabecalhoPagina>
 
       <div className="grid gap-3 md:grid-cols-2">
-        <Card className={cn("rounded-3xl", fechaMovimento ? "border-success/30" : "border-destructive/40")}>
+        <Card className={cn("rounded-xl", fechaMovimento ? "border-success/30" : "border-destructive/40")}>
           <CardContent className="flex items-center gap-3 p-4 text-sm">
             {fechaMovimento ? <CheckCircle2 className="h-5 w-5 text-success" /> : <CircleAlert className="h-5 w-5 text-destructive" />}
             <div>
@@ -74,7 +74,7 @@ export default function Balancete() {
             </div>
           </CardContent>
         </Card>
-        <Card className={cn("rounded-3xl", fechaSaldo ? "border-success/30" : "border-destructive/40")}>
+        <Card className={cn("rounded-xl", fechaSaldo ? "border-success/30" : "border-destructive/40")}>
           <CardContent className="flex items-center gap-3 p-4 text-sm">
             {fechaSaldo ? <CheckCircle2 className="h-5 w-5 text-success" /> : <CircleAlert className="h-5 w-5 text-destructive" />}
             <div>
@@ -85,7 +85,7 @@ export default function Balancete() {
         </Card>
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-4">
           <div className="flex flex-wrap items-center gap-3">
             <Select value={nivel} onValueChange={setNivel}>

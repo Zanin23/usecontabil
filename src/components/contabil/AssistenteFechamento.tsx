@@ -113,7 +113,7 @@ export default function AssistenteFechamento({
     return (
       <Button
         onClick={() => setAberto(true)}
-        className="fixed bottom-6 right-6 z-40 rounded-full bg-brand-orange hover:bg-brand-orange/90 shadow-glow"
+        className="fixed bottom-6 right-6 z-40 rounded-lg bg-brand-orange hover:bg-brand-orange/90 shadow-glow"
       >
         <Sparkles className="h-4 w-4 mr-2" /> {rotulo}
       </Button>
@@ -121,10 +121,10 @@ export default function AssistenteFechamento({
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 z-40 w-[380px] max-w-[calc(100vw-2rem)] rounded-3xl shadow-elevated overflow-hidden">
+    <Card className="fixed bottom-6 right-6 z-40 w-[380px] max-w-[calc(100vw-2rem)] rounded-xl shadow-elevated overflow-hidden">
       <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-border bg-card">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="h-8 w-8 rounded-full bg-brand-orange/15 grid place-items-center shrink-0">
+          <div className="h-8 w-8 rounded-lg bg-brand-orange/15 grid place-items-center shrink-0">
             <Bot className="h-4 w-4 text-brand-orange" />
           </div>
           <div className="min-w-0">
@@ -170,7 +170,7 @@ export default function AssistenteFechamento({
               key={i}
               className={
                 m.role === "user"
-                  ? "ml-auto max-w-[85%] rounded-2xl bg-brand-orange/15 text-foreground px-3 py-2 text-sm"
+                  ? "ml-auto max-w-[85%] rounded-xl bg-brand-orange/12 text-foreground px-3 py-2 text-sm"
                   : "max-w-[90%] rounded-2xl bg-muted text-foreground px-3 py-2 text-sm"
               }
             >
@@ -211,7 +211,7 @@ export default function AssistenteFechamento({
             type="submit"
             size="icon"
             disabled={loading || !input.trim()}
-            className="rounded-full bg-brand-orange hover:bg-brand-orange/90 shrink-0"
+            className="rounded-lg bg-brand-orange hover:bg-brand-orange/90 shrink-0"
             aria-label="Enviar"
           >
             <Send className="h-4 w-4" />

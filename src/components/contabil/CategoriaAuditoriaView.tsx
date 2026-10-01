@@ -114,7 +114,7 @@ export default function CategoriaAuditoriaView({
             <Badge variant="secondary" className="rounded-full">Score {r.score}/100</Badge>
           </div>
         </div>
-        <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={executar}>
+        <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={executar}>
           <RefreshCw className="mr-1.5 h-4 w-4" /> Executar auditoria
         </Button>
       </div>
@@ -164,7 +164,7 @@ export default function CategoriaAuditoriaView({
             </Select>
           </div>
 
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="overflow-x-auto p-0">
               <Table>
                 <TableHeader>
@@ -213,7 +213,7 @@ export default function CategoriaAuditoriaView({
         </TabsContent>
 
         <TabsContent value="regras" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="space-y-2 p-5">
               {catalogo.map((x) => {
                 const ocorrencias = achados.filter((a) => a.regraId === x.id).length;
@@ -250,7 +250,7 @@ export default function CategoriaAuditoriaView({
               const qtd = achados.filter((a) => a.criticidade === c).length;
               const valor = achados.filter((a) => a.criticidade === c).reduce((s, a) => s + a.valor, 0);
               return (
-                <Card key={c} className="rounded-3xl border-border/70">
+                <Card key={c} className="rounded-xl border-border/70">
                   <CardContent className="space-y-1 p-5">
                     <Badge className={`rounded-full ${CORES[c]}`}>{c}</Badge>
                     <div className="font-display text-3xl">{qtd}</div>
@@ -263,7 +263,7 @@ export default function CategoriaAuditoriaView({
         </TabsContent>
 
         <TabsContent value="historico" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="space-y-2 p-5">
               {log.map((l) => (
                 <div key={l.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/70 p-3 text-sm">

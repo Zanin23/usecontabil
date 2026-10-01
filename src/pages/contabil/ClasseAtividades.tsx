@@ -101,7 +101,7 @@ export default function ClasseAtividades() {
             <Link to="/preparativos/cadastros/resumo-classe-atividades">Ver resumo</Link>
           </Button>
           <Button
-            className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
+            className="rounded-lg bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
             onClick={openNew}
           >
             <Plus className="h-4 w-4 mr-2" /> Nova classe
@@ -252,7 +252,7 @@ export default function ClasseAtividades() {
           <DialogFooter>
             <Button variant="outline" className="rounded-full" onClick={() => setOpen(false)}>Cancelar</Button>
             <Button
-              className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
+              className="rounded-lg bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
               onClick={handleSave}
             >
               Salvar

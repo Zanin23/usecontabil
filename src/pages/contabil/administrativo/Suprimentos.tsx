@@ -275,7 +275,7 @@ function DialogRequisicao({ registro, onClose }: { registro: Requisicao | "novo"
 
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar requisição</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar requisição</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -320,7 +320,7 @@ function DialogAprovacao({ requisicao, onClose }: { requisicao: Requisicao; onCl
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={reprovar}><ThumbsDown className="mr-1 h-4 w-4" />Reprovar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={aprovar}><CheckCircle2 className="mr-1 h-4 w-4" />Aprovar</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={aprovar}><CheckCircle2 className="mr-1 h-4 w-4" />Aprovar</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -368,7 +368,7 @@ function DialogAbrirCotacao({ requisicao, onClose }: { requisicao: Requisicao; o
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={abrir}>Abrir cotação</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={abrir}>Abrir cotação</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -409,7 +409,7 @@ function Requisicoes() {
         <Kpi label="Valor estimado" valor={brl(resumo.valorEstimado)} />
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-1 items-center gap-2">
@@ -433,7 +433,7 @@ function Requisicoes() {
               })))}>
                 <Download className="mr-1 h-4 w-4" />Exportar
               </Button>
-              <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setEdicao("novo")}>
                 <Plus className="mr-1 h-4 w-4" />Nova requisição
               </Button>
             </div>
@@ -477,7 +477,7 @@ function Requisicoes() {
                             </Button>
                           )}
                           {r.status === "Aprovada" && (
-                            <Button size="sm" className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setCotar(r)}>
+                            <Button size="sm" className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setCotar(r)}>
                               <ShoppingCart className="mr-1 h-3.5 w-3.5" />Cotar
                             </Button>
                           )}
@@ -676,7 +676,7 @@ function DialogProposta({ cotacao, proposta, onClose }: { cotacao: Cotacao; prop
 
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar proposta</Button>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar proposta</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -702,7 +702,7 @@ function MapaComparativo({ cotacao }: { cotacao: Cotacao }) {
           {cotacao.pedidoNumero && <> · Pedido gerado <span className="font-mono text-foreground">{cotacao.pedidoNumero}</span></>}
         </div>
         {cotacao.status !== "Adjudicada" && cotacao.status !== "Cancelada" && (
-          <Button size="sm" className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setProposta("nova")}>
+          <Button size="sm" className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setProposta("nova")}>
             <Plus className="mr-1 h-3.5 w-3.5" />Nova proposta
           </Button>
         )}
@@ -773,7 +773,7 @@ function MapaComparativo({ cotacao }: { cotacao: Cotacao }) {
                           try { excluirProposta(cotacao.id, a.proposta.id); toast.success("Proposta removida."); }
                           catch (e) { toast.error((e as Error).message); }
                         }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                        <Button size="sm" className="rounded-full bg-brand-orange hover:bg-brand-orange/90" disabled={a.desclassificada} onClick={() => adjudicar(a.proposta.id)}>
+                        <Button size="sm" className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" disabled={a.desclassificada} onClick={() => adjudicar(a.proposta.id)}>
                           <Gavel className="mr-1 h-3.5 w-3.5" />Adjudicar
                         </Button>
                       </>
@@ -824,7 +824,7 @@ function Cotacoes() {
         <Kpi label="Economia obtida" valor={brl(resumo.economia)} tom="ok" hint="Versus estimativa das requisições" />
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-1 items-center gap-2">
@@ -969,7 +969,7 @@ function DialogRecebimento({ pedido, onClose }: { pedido: Pedido; onClose: () =>
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <Button variant="outline" className="rounded-full" onClick={onClose}>Cancelar</Button>
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={confirmar}>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={confirmar}>
             <PackageCheck className="mr-1 h-4 w-4" />Confirmar recebimento
           </Button>
         </div>
@@ -1013,7 +1013,7 @@ function Pedidos() {
       </div>
 
       {porFornecedor.length > 0 && (
-        <Card className="rounded-3xl shadow-card">
+        <Card className="rounded-xl shadow-card">
           <CardContent className="p-5">
             <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">Concentração de compras por fornecedor</div>
             <div className="mt-4 h-56">
@@ -1031,7 +1031,7 @@ function Pedidos() {
         </Card>
       )}
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-1 items-center gap-2">
@@ -1095,7 +1095,7 @@ function Pedidos() {
                               </Button>
                             )}
                             {p.status !== "Recebido" && p.status !== "Cancelado" && (
-                              <Button size="sm" className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => setReceber(p)}>
+                              <Button size="sm" className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => setReceber(p)}>
                                 <PackageCheck className="mr-1 h-3.5 w-3.5" />Receber
                               </Button>
                             )}

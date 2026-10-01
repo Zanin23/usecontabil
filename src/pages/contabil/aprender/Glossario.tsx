@@ -78,7 +78,7 @@ export default function GlossarioAprendizado() {
           <Card
             key={t.slug}
             id={t.slug}
-            className={`rounded-3xl shadow-card ${destaque === t.slug ? "shadow-elevated" : ""}`}
+            className={`rounded-xl shadow-card ${destaque === t.slug ? "shadow-elevated" : ""}`}
           >
             <CardContent className="space-y-3 p-5">
               <div className="flex flex-wrap items-center gap-2">
@@ -114,7 +114,7 @@ export default function GlossarioAprendizado() {
         )}
       </div>
 
-      <p className="rounded-3xl border border-border bg-muted p-4 text-xs text-muted-foreground">
+      <p className="rounded-xl border border-border bg-muted p-4 text-xs text-muted-foreground">
         {AVISO_SIMULACAO}
       </p>
     </div>

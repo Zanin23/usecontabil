@@ -249,7 +249,7 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
           <TabsContent value="ambiente" className="space-y-4 pt-4">
             <div className="p-4 rounded-xl border border-border bg-card/50 space-y-4">
               <div className="flex items-start gap-4">
-                <div className="h-10 w-10 shrink-0 rounded-full bg-brand-orange/10 flex items-center justify-center">
+                <div className="h-10 w-10 shrink-0 rounded-lg bg-brand-orange/10 flex items-center justify-center">
                   <FlaskConical className="h-5 w-5 text-brand-orange" />
                 </div>
                 <div className="flex-1 space-y-1">
@@ -347,7 +347,7 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
                 </div>
                 <Button
                   size="sm"
-                  className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+                  className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
                   disabled={gerando}
                   onClick={() => {
                     setGerando(true);
@@ -387,7 +387,7 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
                         <Trash2 className="h-4 w-4" /> {limpando ? "Limpando..." : "Deletar tudo"}
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="rounded-3xl border-destructive">
+                    <AlertDialogContent className="rounded-xl border-destructive">
                       <AlertDialogHeader>
                         <AlertDialogTitle className="font-display text-2xl text-destructive">Confirmar destruição de dados?</AlertDialogTitle>
                         <AlertDialogDescription>

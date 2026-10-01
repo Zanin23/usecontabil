@@ -96,7 +96,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Fiscal · Guias e recolhimentos</div>
           <h1 className="font-display text-3xl sm:text-4xl flex items-center gap-3">
-            <span className="rounded-2xl bg-brand-orange/10 p-2"><Icone className="h-6 w-6 text-brand-orange" /></span>
+            <span className="rounded-xl bg-brand-orange/12 p-2"><Icone className="h-6 w-6 text-brand-orange" /></span>
             {def.titulo}
           </h1>
           <p className="max-w-2xl text-sm text-muted-foreground">{def.descricao}</p>
@@ -108,7 +108,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
         </div>
         <div className="flex gap-2">
           <Button
-            className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+            className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
             onClick={() => {
               guias.filter((g) => !g.emitida).forEach((g) => emitirGuia(g));
               toast.success("Guias simuladas emitidas", { description: "Código de barras e PIX são ilustrativos — não use para pagamento." });
@@ -153,7 +153,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
         {kpis.map((k) => <Kpi key={k.label} {...k} />)}
       </div>
 
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="space-y-2 p-5">
           <div className="flex items-center justify-between gap-3">
             <h2 className="font-display text-xl">Fluxo operacional</h2>
@@ -182,7 +182,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
         </TabsList>
 
         <TabsContent value="resumo" className="mt-4 grid gap-4 xl:grid-cols-2">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="space-y-2 p-5">
               <h3 className="font-display text-xl">Validações</h3>
               {validacoes.map((v) => (
@@ -202,7 +202,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
               ))}
             </CardContent>
           </Card>
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="space-y-2 p-5">
               <h3 className="font-display text-xl">Alertas inteligentes</h3>
               {avisos.length === 0 && <p className="text-sm text-muted-foreground">Nenhum alerta na competência.</p>}
@@ -243,7 +243,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
               </Badge>
             ))}
           </div>
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-2">
               <Table>
                 <TableHeader>
@@ -295,7 +295,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
         </TabsContent>
 
         <TabsContent value="pagamentos" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-2">
               <Table>
                 <TableHeader>
@@ -338,7 +338,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
           {parcelamentos.map((p) => {
             const d = detalharParcelamento(p);
             return (
-              <Card key={p.id} className="rounded-3xl border-border/70">
+              <Card key={p.id} className="rounded-xl border-border/70">
                 <CardContent className="space-y-2 p-5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
@@ -365,7 +365,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
         </TabsContent>
 
         <TabsContent value="calendario" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-2">
               <Table>
                 <TableHeader>
@@ -402,7 +402,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
         </TabsContent>
 
         <TabsContent value="compensacoes" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-2">
               <Table>
                 <TableHeader>
@@ -446,7 +446,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
         </TabsContent>
 
         <TabsContent value="bancos" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="space-y-3 p-5">
               <h3 className="font-display text-xl">Integrações bancárias</h3>
               {[
@@ -465,7 +465,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
               ))}
               <Separator />
               <Button
-                className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+                className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
                 onClick={() => {
                   const n = conciliarRetornoBancario(guias);
                   toast.success(n ? `${n} baixa(s) processadas do retorno CNAB` : "Retorno sem novas ocorrências");
@@ -478,7 +478,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
         </TabsContent>
 
         <TabsContent value="historico" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-2">
               <Table>
                 <TableHeader>
@@ -524,7 +524,7 @@ export default function GrupoGuiasView({ grupo }: { grupo: GrupoSlug }) {
         </TabsContent>
 
         <TabsContent value="config" className="mt-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="grid gap-4 p-5 sm:grid-cols-2">
               {[
                 ["multaDiaria", "Multa diária", "%"],

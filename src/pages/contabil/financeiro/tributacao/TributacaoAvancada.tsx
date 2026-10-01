@@ -89,7 +89,7 @@ export default function TributacaoAvancada() {
           { label: "Tributos calculados", valor: brl(r.tributos) },
           { label: "Carga efetiva", valor: `${r.cargaEfetiva.toFixed(2)}%` },
         ].map((k) => (
-          <Card key={k.label} className="rounded-3xl shadow-card">
+          <Card key={k.label} className="rounded-xl shadow-card">
             <CardContent className="p-4">
               <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground">{k.label}</div>
               <div className="mt-1 font-display text-xl">{k.valor}</div>
@@ -98,7 +98,7 @@ export default function TributacaoAvancada() {
         ))}
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-4">
           <div className="relative min-w-[220px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

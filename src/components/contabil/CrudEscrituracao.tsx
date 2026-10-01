@@ -162,7 +162,7 @@ export default function CrudEscrituracao({
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="h-11 w-11 rounded-2xl bg-brand-orange/15 grid place-items-center shrink-0">
+          <div className="h-11 w-11 rounded-xl bg-brand-orange/12 grid place-items-center shrink-0">
             <Icone className="h-5 w-5 text-brand-orange" />
           </div>
           <div>
@@ -180,14 +180,14 @@ export default function CrudEscrituracao({
               <RefreshCw className="h-4 w-4 mr-2" /> {gerar.label}
             </Button>
           ) : null}
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
             <Plus className="h-4 w-4 mr-2" /> {labelNovo}
           </Button>
         </div>
       </div>
 
       {!empresa ? (
-        <Card className="rounded-3xl shadow-card border-brand-orange/40">
+        <Card className="rounded-xl shadow-card border-brand-orange/40">
           <CardContent className="p-5 text-sm text-muted-foreground">
             Selecione uma empresa no cabeçalho para trabalhar a escrituração.
           </CardContent>
@@ -195,7 +195,7 @@ export default function CrudEscrituracao({
       ) : null}
 
       {aviso ? (
-        <Card className="rounded-3xl shadow-card border-brand-orange/40">
+        <Card className="rounded-xl shadow-card border-brand-orange/40">
           <CardContent className="p-4 flex items-start gap-3">
             <AlertTriangle className="h-4 w-4 text-brand-orange mt-0.5 shrink-0" />
             <p className="text-sm text-muted-foreground">{aviso}</p>
@@ -205,7 +205,7 @@ export default function CrudEscrituracao({
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {indicadores.map((k) => (
-          <Card key={k.label} className="rounded-3xl shadow-card">
+          <Card key={k.label} className="rounded-xl shadow-card">
             <CardContent className="p-4">
               <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{k.label}</div>
               <div className="font-display text-2xl mt-1">{k.valor}</div>
@@ -214,7 +214,7 @@ export default function CrudEscrituracao({
         ))}
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-4 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative flex-1 min-w-[220px]">
@@ -246,7 +246,7 @@ export default function CrudEscrituracao({
                     <RefreshCw className="h-4 w-4 mr-2" /> {gerar.label}
                   </Button>
                 ) : null}
-                <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
+                <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
                   <Plus className="h-4 w-4 mr-2" /> {labelNovo}
                 </Button>
               </div>
@@ -281,7 +281,7 @@ export default function CrudEscrituracao({
                               className={
                                 l[c.key] === statusOk
                                   ? "rounded-full bg-success/15 text-success"
-                                  : "rounded-full bg-brand-orange/15 text-brand-orange"
+                                  : "rounded-lg bg-brand-orange/15 text-brand-orange"
                               }
                             >
                               {l[c.key] || "—"}
@@ -336,7 +336,7 @@ export default function CrudEscrituracao({
 
       {painel ? painel(linhas) : null}
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
             Regras desta escrituração
@@ -390,7 +390,7 @@ export default function CrudEscrituracao({
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-full" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar</Button>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -408,7 +408,7 @@ export default function CrudEscrituracao({
 export function MemoriaCalculo({ linhas }: { linhas: EscLinha[] }) {
   if (!linhas.length) return null;
   return (
-    <Card className="rounded-3xl shadow-card">
+    <Card className="rounded-xl shadow-card">
       <CardContent className="p-5 space-y-4">
         <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
           Memória de cálculo

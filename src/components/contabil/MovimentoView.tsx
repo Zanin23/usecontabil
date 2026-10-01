@@ -35,7 +35,7 @@ const STATUS_CORES: Record<DocStatus, string> = {
 
 function Kpi({ label, valor, hint, destaque }: { label: string; valor: string; hint?: string; destaque?: boolean }) {
   return (
-    <Card className="rounded-3xl shadow-card">
+    <Card className="rounded-xl shadow-card">
       <CardContent className="p-4 min-w-0">
         <div className="text-[10px] uppercase tracking-[0.08em] leading-tight break-words text-muted-foreground">{label}</div>
         <div className={`mt-1 font-display text-xl break-words ${destaque ? "text-destructive" : ""}`}>{valor}</div>
@@ -162,7 +162,7 @@ export default function MovimentoView({
       <AvisoRegime />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="h-11 w-11 rounded-2xl bg-brand-orange/15 grid place-items-center shrink-0">
+          <div className="h-11 w-11 rounded-xl bg-brand-orange/12 grid place-items-center shrink-0">
             <Icone className="h-5 w-5 text-brand-orange" />
           </div>
           <div>
@@ -184,7 +184,7 @@ export default function MovimentoView({
               <Database className="mr-2 h-4 w-4" /> Carregar demonstração
             </Button>
           ) : null}
-          <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
+          <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
             <Plus className="mr-2 h-4 w-4" /> Emitir documento
           </Button>
         </div>
@@ -199,7 +199,7 @@ export default function MovimentoView({
         <Kpi label="Bloqueios de regra" valor={String(r.bloqueios)} destaque={r.bloqueios > 0} />
       </div>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative min-w-[220px] flex-1">
@@ -222,7 +222,7 @@ export default function MovimentoView({
               <p className="text-sm text-muted-foreground">
                 Nenhum documento nesta competência. Emita o primeiro documento ou carregue a base de demonstração.
               </p>
-              <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={abrirNovo}>
                 <Plus className="mr-2 h-4 w-4" /> Emitir documento
               </Button>
             </div>
@@ -281,7 +281,7 @@ export default function MovimentoView({
         </CardContent>
       </Card>
 
-      <Card className="rounded-3xl shadow-card">
+      <Card className="rounded-xl shadow-card">
         <CardContent className="p-5">
           <div className="mb-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">Como operar esta tela</div>
           <ul className="list-disc space-y-1.5 pl-4 text-sm text-muted-foreground">
@@ -448,7 +448,7 @@ export default function MovimentoView({
           ) : null}
           <DialogFooter className="gap-2">
             <Button variant="outline" className="rounded-full" onClick={() => salvar(false)}>Salvar rascunho</Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => salvar(true)}>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => salvar(true)}>
               <FileText className="mr-2 h-4 w-4" /> Emitir e transmitir
             </Button>
           </DialogFooter>
@@ -548,7 +548,7 @@ export default function MovimentoView({
 
                 <div className="flex flex-wrap gap-2">
                   {detalhe.status === "Rascunho" ? (
-                    <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+                    <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
                       onClick={() => { transitarDocumento(empresaId, detalhe.id, "Autorizado", "Autorização simulada"); setDetalhe(null); toast.success("Documento autorizado."); }}>
                       Autorizar
                     </Button>

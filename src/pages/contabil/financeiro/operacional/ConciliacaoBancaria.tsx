@@ -131,7 +131,7 @@ export default function ConciliacaoBancaria() {
       <div>
         <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Financeiro · Operacional</div>
         <h1 className="flex items-center gap-3 font-display text-3xl sm:text-4xl">
-          <span className="rounded-2xl bg-brand-orange/10 p-2"><Landmark className="h-6 w-6 text-brand-orange" /></span>
+          <span className="rounded-xl bg-brand-orange/12 p-2"><Landmark className="h-6 w-6 text-brand-orange" /></span>
           Conciliação bancária
         </h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
@@ -169,7 +169,7 @@ export default function ConciliacaoBancaria() {
 
         {/* ---------------------------------------------------------- contas */}
         <TabsContent value="contas" className="mt-6">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
@@ -217,7 +217,7 @@ export default function ConciliacaoBancaria() {
 
         {/* ------------------------------------------------------- workspace */}
         <TabsContent value="workspace" className="mt-6 space-y-4">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="flex flex-wrap items-center gap-3 p-4">
               <div className="min-w-0 flex-1">
                 <div className="text-sm">{res.conta.banco} · ag {res.conta.agencia} · cc {res.conta.conta}</div>
@@ -231,7 +231,7 @@ export default function ConciliacaoBancaria() {
                 placeholder="Buscar histórico, documento ou valor"
                 className="h-9 w-full rounded-full sm:w-72"
               />
-              <Button size="sm" className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={rodarAuto}>
+              <Button size="sm" className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={rodarAuto}>
                 <Wand2 className="mr-2 h-4 w-4" /> Conciliar automático
               </Button>
               <Button size="sm" variant="outline" className="rounded-full" onClick={vincular}>
@@ -277,7 +277,7 @@ export default function ConciliacaoBancaria() {
           )}
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <Card className="rounded-3xl border-border/70">
+            <Card className="rounded-xl border-border/70">
               <CardContent className="space-y-2 p-4">
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-medium">Extrato bancário</div>
@@ -294,7 +294,7 @@ export default function ConciliacaoBancaria() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-border/70">
+            <Card className="rounded-xl border-border/70">
               <CardContent className="space-y-2 p-4">
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-medium">Razão contábil · {res.conta.contaContabil}</div>
@@ -315,7 +315,7 @@ export default function ConciliacaoBancaria() {
 
         {/* ----------------------------------------------------- divergências */}
         <TabsContent value="divergencias" className="mt-6">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
@@ -358,7 +358,7 @@ export default function ConciliacaoBancaria() {
 
         {/* ------------------------------------------------------ importação */}
         <TabsContent value="importacao" className="mt-6 grid gap-4 lg:grid-cols-2">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="space-y-3 p-5">
               <div className="text-sm font-medium">Importar extrato</div>
               <p className="text-xs text-muted-foreground">
@@ -369,7 +369,7 @@ export default function ConciliacaoBancaria() {
                 Arraste o arquivo OFX/CNAB aqui ou selecione abaixo
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button size="sm" className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={() => toast.success("Extrato reimportado da integração bancária.")}>
+                <Button size="sm" className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => toast.success("Extrato reimportado da integração bancária.")}>
                   <Upload className="mr-2 h-4 w-4" /> Importar extrato
                 </Button>
                 <Button size="sm" variant="outline" className="rounded-full" onClick={() => toast.success("Relatório de conciliação exportado.")}>
@@ -379,7 +379,7 @@ export default function ConciliacaoBancaria() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="space-y-3 p-5">
               <div className="text-sm font-medium">Regras do motor automático</div>
               <ul className="space-y-2 text-xs text-muted-foreground">
@@ -398,7 +398,7 @@ export default function ConciliacaoBancaria() {
 
         {/* -------------------------------------------------------- histórico */}
         <TabsContent value="historico" className="mt-6">
-          <Card className="rounded-3xl border-border/70">
+          <Card className="rounded-xl border-border/70">
             <CardContent className="p-0">
               <Table>
                 <TableHeader>

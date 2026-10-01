@@ -530,7 +530,7 @@ export default function ServicosGestao() {
                   className="flex-1 min-w-[240px] rounded-full bg-card"
                 />
                 <Button
-                  className="rounded-full bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
+                  className="rounded-lg bg-brand-orange text-primary-foreground hover:bg-brand-orange/90"
                   disabled={!podeFechar}
                   onClick={handleFechar}
                 >

@@ -84,14 +84,14 @@ export default function AuditoriaRegras() {
           </p>
         </div>
         <Button
-          className="rounded-full bg-brand-orange hover:bg-brand-orange/90"
+          className="rounded-lg bg-brand-orange hover:bg-brand-orange/90"
           onClick={() => setEdicao(novaRegra())}
         >
           <Plus className="mr-1.5 h-4 w-4" /> Nova regra
         </Button>
       </div>
 
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="grid gap-4 p-5 sm:grid-cols-2 xl:grid-cols-4">
           <div>
             <Label className="text-[11px] uppercase tracking-[0.06em] text-muted-foreground">Tolerância de divergência (R$)</Label>
@@ -148,7 +148,7 @@ export default function AuditoriaRegras() {
 
       <div className="space-y-2">
         {filtradas.map((x) => (
-          <Card key={x.id} className="rounded-3xl border-border/70">
+          <Card key={x.id} className="rounded-xl border-border/70">
             <CardContent className="flex flex-wrap items-start justify-between gap-3 p-4">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -311,7 +311,7 @@ export default function AuditoriaRegras() {
           )}
           <DialogFooter>
             <Button variant="outline" className="rounded-full" onClick={() => setEdicao(null)}>Cancelar</Button>
-            <Button className="rounded-full bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar regra</Button>
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar regra</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

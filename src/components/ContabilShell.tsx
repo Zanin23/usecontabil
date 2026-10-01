@@ -4,7 +4,7 @@ import { Badge, Button, cn } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange,
   Settings2, Users2, Wallet, ChevronRight, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut, MonitorPlay,
-  SlidersHorizontal, GraduationCap, HelpCircle, FlaskConical,
+  SlidersHorizontal, GraduationCap, FlaskConical,
 } from "lucide-react";
 import NotificacoesPainel from "@/components/contabil/NotificacoesPainel";
 import AjudaTela from "@/components/contabil/AjudaTela";
@@ -126,23 +126,11 @@ export default function ContabilShell() {
   const currentArea = AREAS.find((a) => a.slug === currentAreaSlug);
   const currentCategorySlug = seg[1];
   const currentCategory = currentArea?.categories.find((c) => c.slug === currentCategorySlug);
-  const currentModuleSlug = seg[2];
-  const currentModule = currentCategory?.modules.find((m) => m.slug === currentModuleSlug);
 
   const [openArea, setOpenArea] = useState<string | null>(currentArea?.slug ?? null);
   useEffect(() => {
     if (currentArea?.slug) setOpenArea(currentArea.slug);
   }, [currentArea?.slug]);
-
-  const breadcrumbHeader = (() => {
-    if (pathname.startsWith("/dashboard") || pathname === "/") {
-      return { code: "01", label: "Dashboard" };
-    }
-    if (currentArea) {
-      return { code: currentArea.code, label: currentArea.title };
-    }
-    return { code: "—", label: "Use Contábil" };
-  })();
 
   return (
     <div className="min-h-screen bg-app text-foreground">
@@ -280,7 +268,7 @@ export default function ContabilShell() {
               <>
                 {!recolhida && (
                   <span className="text-[10px] font-mono text-muted-foreground/60 w-5">
-                    {String(AREAS.length + 2).padStart(2, "0")}
+                    {String(AREAS.length + 1).padStart(2, "0")}
                   </span>
                 )}
                 <span className={navIcone(isActive)}>
@@ -390,32 +378,27 @@ export default function ContabilShell() {
               variant="outline"
               size="sm"
               className="rounded-lg h-9 w-9 p-0 shrink-0"
-              aria-label="Voltar para a tela anterior"
+              aria-label="Voltar para a página anterior"
               title="Voltar"
-              disabled={pathname === "/"}
-              onClick={() => {
-                const parts = pathname.split("/").filter(Boolean);
-                if (parts.length > 1) navigate("/" + parts.slice(0, -1).join("/"));
-                else if (parts.length === 1) navigate("/");
-              }}
+              onClick={() => navigate(-1)}
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0 overflow-hidden">
-              <span className="font-mono shrink-0">{breadcrumbHeader.code}</span>
-              <span className="shrink-0">/</span>
-              <span className="text-foreground truncate max-w-[80px] sm:max-w-none">{breadcrumbHeader.label}</span>
-              {currentCategory && (
+            <div className="flex items-center gap-2 text-sm font-medium min-w-0 truncate">
+              {currentArea ? (
                 <>
-                  <span className="shrink-0">/</span>
-                  <span className="truncate max-w-[80px] sm:max-w-none">{currentCategory.title}</span>
+                  <span className="text-brand-orange shrink-0">{currentArea.code}</span>
+                  <span className="text-muted-foreground shrink-0">·</span>
+                  <span className="truncate">{currentArea.title}</span>
+                  {currentCategory && (
+                    <>
+                      <span className="text-muted-foreground shrink-0">/</span>
+                      <span className="text-muted-foreground truncate">{currentCategory.title}</span>
+                    </>
+                  )}
                 </>
-              )}
-              {currentModule && (
-                <>
-                  <span className="hidden sm:inline shrink-0">/</span>
-                  <span className="hidden sm:inline text-foreground truncate">{currentModule.title}</span>
-                </>
+              ) : (
+                <span className="text-foreground">Use Contábil</span>
               )}
             </div>
 
@@ -488,17 +471,6 @@ export default function ContabilShell() {
                 <Command className="h-3 w-3" />K
               </kbd>
             </button>
-             <Button
-               variant="soft"
-               size="sm"
-               className="rounded-lg h-9 gap-2"
-               onClick={() => setApresentacaoAberta(true)}
-               title="Ver apresentação do sistema"
-             >
-               <MonitorPlay className="h-4 w-4" />
-               <span className="hidden 2xl:inline">Apresentação</span>
-             </Button>
-
              <AjudaTela />
 
 

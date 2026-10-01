@@ -76,7 +76,7 @@ export default function AuditoriaCreditos() {
           { label: "Já aproveitado", valor: brlAud(r.aproveitado) },
           { label: "Prescrito", valor: brlAud(r.prescrito) },
         ].map((k) => (
-          <Card key={k.label} className="rounded-3xl border-border/70">
+          <Card key={k.label} className="rounded-xl border-border/70">
             <CardContent className="space-y-1 p-5">
               <div className="text-[10px] uppercase leading-tight tracking-[0.06em] break-words text-muted-foreground">{k.label}</div>
               <div className="break-words font-display text-2xl">{k.valor}</div>
@@ -104,7 +104,7 @@ export default function AuditoriaCreditos() {
         </Select>
       </div>
 
-      <Card className="rounded-3xl border-border/70">
+      <Card className="rounded-xl border-border/70">
         <CardContent className="overflow-x-auto p-0">
           <Table>
             <TableHeader>
