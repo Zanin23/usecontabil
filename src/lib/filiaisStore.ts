@@ -1,7 +1,10 @@
 // Cadastro de filiais e unidades internas do grupo — armazenamento local (protótipo).
 import { useEffect, useState } from "react";
+import { getStorageSuffix } from "./praticaStore";
 
-const KEY = "usecontabil.filiais.v1";
+const KEY_BASE = "usecontabil.filiais.v1";
+/** Chave no modo atual: o modo prática grava com o sufixo `.pratica`. */
+const KEY = () => KEY_BASE + getStorageSuffix();
 
 export const FILIAIS_EVENT = "usecontabil:filiais-changed";
 
@@ -41,13 +44,13 @@ function notify() {
 }
 
 function persist(list: FilialRecord[]) {
-  localStorage.setItem(KEY, JSON.stringify(list));
+  localStorage.setItem(KEY(), JSON.stringify(list));
   notify();
 }
 
 export function loadFiliais(): FilialRecord[] {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY());
     return raw ? (JSON.parse(raw) as FilialRecord[]) : [];
   } catch {
     return [];

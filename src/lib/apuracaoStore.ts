@@ -8,8 +8,11 @@ import { useEffect, useState } from "react";
 import { usuarioAtual } from "@/lib/usuarioAtual";
 import { daEmpresa, loadDocs, moedaBR, valorBR, type DocFiscal, type DocSlug } from "@/lib/fiscalStore";
 import { getEmpresa } from "@/lib/empresasStore";
+import { getStorageSuffix } from "./praticaStore";
 
-const KEY = "usecontabil.apuracoes.v1";
+const KEY_BASE = "usecontabil.apuracoes.v1";
+/** Chave no modo atual: o modo prática grava com o sufixo `.pratica`. */
+const KEY = () => KEY_BASE + getStorageSuffix();
 export const APURACAO_EVENT = "usecontabil:apuracao-changed";
 
 export type MotorSlug =
@@ -66,7 +69,7 @@ function notify() {
 
 function loadDB(): DB {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY());
     return raw ? (JSON.parse(raw) as DB) : {};
   } catch {
     return {};
@@ -74,7 +77,7 @@ function loadDB(): DB {
 }
 
 function persist(db: DB) {
-  localStorage.setItem(KEY, JSON.stringify(db));
+  localStorage.setItem(KEY(), JSON.stringify(db));
   notify();
 }
 

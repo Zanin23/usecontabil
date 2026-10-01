@@ -1,6 +1,10 @@
 // localStorage-backed store for the "Empresa" module (Preparativos).
 // Records are scoped per empresa (company of the group).
-const KEY = "usecontabil.empresaDados.v1";
+import { getStorageSuffix } from "./praticaStore";
+
+const KEY_BASE = "usecontabil.empresaDados.v1";
+/** Chave no modo atual: o modo prática grava com o sufixo `.pratica`. */
+const KEY = () => KEY_BASE + getStorageSuffix();
 
 export const EMPRESA_DADOS_EVENT = "usecontabil:empresa-dados-changed";
 
@@ -18,7 +22,7 @@ function notify() {
 
 export function loadDB(): DB {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY());
     if (!raw) return { ...EMPTY_DB };
     const parsed = JSON.parse(raw) as Partial<DB>;
     return { ...EMPTY_DB, ...parsed };
@@ -28,7 +32,7 @@ export function loadDB(): DB {
 }
 
 function persist(db: DB) {
-  localStorage.setItem(KEY, JSON.stringify(db));
+  localStorage.setItem(KEY(), JSON.stringify(db));
   notify();
 }
 

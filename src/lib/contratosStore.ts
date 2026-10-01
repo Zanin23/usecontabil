@@ -26,6 +26,8 @@
 //      e disparam evento de atualização para todas as telas abertas.
 // ============================================================================
 
+import { getStorageSuffix } from "./praticaStore";
+
 export const CONTRATOS_EVENT = "usecontabil:contratos-changed";
 
 const KEY_CONTRATOS = "usecontabil.adm.contratos.v1";
@@ -59,14 +61,16 @@ export const addMeses = (iso: string, n: number) => {
 };
 
 const uid = (p: string) => `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+/** Chave no modo atual: o modo prática grava as mesmas coleções com o sufixo `.pratica`. */
+const chaveDe = (base: string) => base + getStorageSuffix();
 const round = (v: number) => Math.round(v * 100) / 100;
 
 function ler<T>(key: string, fallback: T[]): T[] {
   if (typeof window === "undefined") return fallback;
   try {
-    const raw = window.localStorage.getItem(key);
+    const raw = window.localStorage.getItem(chaveDe(key));
     if (!raw) {
-      window.localStorage.setItem(key, JSON.stringify(fallback));
+      window.localStorage.setItem(chaveDe(key), JSON.stringify(fallback));
       return fallback;
     }
     const dados = JSON.parse(raw);
@@ -78,7 +82,7 @@ function ler<T>(key: string, fallback: T[]): T[] {
 
 function gravar<T>(key: string, dados: T[]) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(key, JSON.stringify(dados));
+  window.localStorage.setItem(chaveDe(key), JSON.stringify(dados));
   window.dispatchEvent(new CustomEvent(CONTRATOS_EVENT));
 }
 

@@ -9,12 +9,15 @@
 // ============================================================================
 import { useEffect, useMemo, useState } from "react";
 import { cnpjValido, cpfValido, documentoValido } from "./documentos";
+import { getStorageSuffix } from "./praticaStore";
 
 export const ORIGEM_ERP = "ERP Principal · Protheus/Sync";
 export const READ_ONLY_MSG =
   "Cadastro somente leitura. Ainda não há integração com um ERP: estes dados são de exemplo.";
 
-const ACESSO_KEY = "usecontabil.admin.acessos.v1";
+const ACESSO_KEY_BASE = "usecontabil.admin.acessos.v1";
+/** Chave no modo atual: o modo prática grava com o sufixo `.pratica`. */
+const ACESSO_KEY = () => ACESSO_KEY_BASE + getStorageSuffix();
 export const ADMIN_EVENT = "usecontabil:admin-changed";
 
 /* ============================== tipos =================================== */
@@ -751,7 +754,7 @@ export function pesquisaGlobal(termo: string, limitePorDominio = 8): ResultadoBu
 export type Acesso = { id: string; em: string; usuario: string; recurso: string; acao: string };
 
 const readAcessos = (): Acesso[] => {
-  try { return JSON.parse(localStorage.getItem(ACESSO_KEY) ?? "[]"); } catch { return []; }
+  try { return JSON.parse(localStorage.getItem(ACESSO_KEY()) ?? "[]"); } catch { return []; }
 };
 
 export function registrarAcesso(recurso: string, acao = "Consulta") {
@@ -763,7 +766,7 @@ export function registrarAcesso(recurso: string, acao = "Consulta") {
     recurso,
     acao,
   });
-  localStorage.setItem(ACESSO_KEY, JSON.stringify(lista.slice(0, 300)));
+  localStorage.setItem(ACESSO_KEY(), JSON.stringify(lista.slice(0, 300)));
   window.dispatchEvent(new CustomEvent(ADMIN_EVENT));
 }
 
@@ -872,7 +875,8 @@ export function exportar(
 
 /* ======================== agendamento de exportações ===================== */
 
-const AGENDA_KEY = "usecontabil.admin.agenda.v1";
+const AGENDA_KEY_BASE = "usecontabil.admin.agenda.v1";
+const AGENDA_KEY = () => AGENDA_KEY_BASE + getStorageSuffix();
 export type Agendamento = {
   id: string;
   nome: string;
@@ -884,18 +888,18 @@ export type Agendamento = {
 };
 
 const readAgenda = (): Agendamento[] => {
-  try { return JSON.parse(localStorage.getItem(AGENDA_KEY) ?? "[]"); } catch { return []; }
+  try { return JSON.parse(localStorage.getItem(AGENDA_KEY()) ?? "[]"); } catch { return []; }
 };
 
 export function agendarExportacao(a: Omit<Agendamento, "id" | "criadoEm">) {
   const lista = readAgenda();
   lista.unshift({ ...a, id: crypto.randomUUID(), criadoEm: new Date().toLocaleString("pt-BR") });
-  localStorage.setItem(AGENDA_KEY, JSON.stringify(lista.slice(0, 50)));
+  localStorage.setItem(AGENDA_KEY(), JSON.stringify(lista.slice(0, 50)));
   window.dispatchEvent(new CustomEvent(ADMIN_EVENT));
 }
 
 export function removerAgendamento(id: string) {
-  localStorage.setItem(AGENDA_KEY, JSON.stringify(readAgenda().filter((a) => a.id !== id)));
+  localStorage.setItem(AGENDA_KEY(), JSON.stringify(readAgenda().filter((a) => a.id !== id)));
   window.dispatchEvent(new CustomEvent(ADMIN_EVENT));
 }
 

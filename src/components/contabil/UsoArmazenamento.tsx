@@ -3,6 +3,10 @@ import { Database } from "lucide-react";
 import { LIMITE_ESTIMADO_CARACTERES, usoArmazenamento, type UsoArmazenamento as Uso } from "@/lib/armazenamento";
 
 const fmt = (n: number) => n.toLocaleString("pt-BR");
+/** Nome amigável da chave, ignorando o sufixo do modo prática e o recorte por usuário. */
+const nomeDaChave = (chave: string) =>
+  NOMES[chave.replace(/\.pratica$/, "").replace(/\.u\.[^.]+\.v1(?=\.|$)/, ".v1")] ?? chave;
+
 const NOMES: Record<string, string> = {
   "usecontabil.tributario.v1": "Base tributária (Financeiro)",
   "usecontabil.fiscal.docs.v1": "Documentos fiscais",
@@ -33,7 +37,7 @@ export default function UsoArmazenamento() {
       <ul className="text-xs text-muted-foreground space-y-0.5">
         {uso.maiores.map((m) => (
           <li key={m.chave} className="flex justify-between gap-3">
-            <span className="truncate">{NOMES[m.chave] ?? m.chave}</span>
+            <span className="truncate">{nomeDaChave(m.chave)}</span>
             <span className="font-mono">{fmt(m.caracteres)}</span>
           </li>
         ))}
