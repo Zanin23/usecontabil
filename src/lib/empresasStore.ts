@@ -2,9 +2,16 @@
 // Fonte de verdade: banco de dados na nuvem (tabela `empresas`, por usuário).
 // O localStorage é apenas um cache local para leitura instantânea/offline.
 import { supabase } from "@/integrations/supabase/client";
-import { isPraticaAtiva, loadEmpresasPratica, saveEmpresasPratica } from "./praticaStore";
+import { getStorageSuffix, isPraticaAtiva, loadEmpresasPratica, saveEmpresasPratica } from "./praticaStore";
 
 const CACHE_KEY = "usecontabil.empresas.cache.v1";
+/** Empresa escolhida na barra superior (gravada por `empresaAtual`; isolada no modo prática). */
+export const EMPRESA_ATUAL_KEY = "usecontabil.empresaAtual.v1";
+/** Id da empresa selecionada agora, sem passar pelo React (cargas de exemplo e rotinas de store). */
+export function empresaSelecionadaId(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(EMPRESA_ATUAL_KEY + getStorageSuffix());
+}
 const LEGACY_KEYS = ["usecontabil.empresas.v1", "usecontabil.empresas.backup.v1"];
 
 export const EMPRESAS_EVENT = "usecontabil:empresas-changed";

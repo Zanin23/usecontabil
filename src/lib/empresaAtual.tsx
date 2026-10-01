@@ -1,11 +1,10 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  EMPRESAS_EVENT, loadEmpresas, sincronizarEmpresas, type EmpresaRecord, getEmpresa
+  EMPRESA_ATUAL_KEY as SELECTED_KEY, EMPRESAS_EVENT, loadEmpresas, sincronizarEmpresas, type EmpresaRecord, getEmpresa
 } from "@/lib/empresasStore";
 export { getEmpresa };
 
-const SELECTED_KEY = "usecontabil.empresaAtual.v1";
 const EVENTO_PRATICA = "usecontabil:pratica-changed";
 
 export type EmpresaOption = {
