@@ -15,6 +15,17 @@ import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { regimeDefinido } from "@/lib/regime";
 import PageHeader from "@/components/contabil/PageHeader";
 import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
+import { secaoDaRota } from "@/lib/ux/navModelo";
+
+// ============================================================================
+// Renderizador genérico do "Índice por área (visão clássica)".
+//
+// DECISÃO (revisão de UX): esta tela continua sendo o destino oficial dos
+// módulos do índice clássico (`/:area/:categoria/:modulo`) — nenhum módulo foi
+// removido do sistema. O caminho recomendado para o usuário novo é o menu por
+// processo; quem chega pela visão clássica encontra aqui o mesmo contexto das
+// telas específicas: seção do fluxo, requisitos pendentes e próximo passo.
+// ============================================================================
 
 const statusClass = (v: string) => {
   const s = v.toLowerCase();
@@ -107,6 +118,7 @@ export default function ModulePage() {
     return okBusca && okStatus;
   });
 
+  const secao = secaoDaRota(`/${areaSlug}/${categoria}/${modulo}`);
   const acoes = (
     <div className="flex items-center gap-2">
       <ExportarMenu
@@ -150,6 +162,11 @@ export default function ModulePage() {
             <Badge variant="outline" className="rounded-md">
               {empresa ? empresa.razao : "Nenhuma empresa selecionada"}
             </Badge>
+            {secao ? (
+              <Badge variant="secondary" className="rounded-md" title={secao.resumo}>
+                {secao.codigo} · {secao.titulo}
+              </Badge>
+            ) : null}
           </>
         }
         actions={acoes}
