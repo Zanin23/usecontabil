@@ -191,7 +191,7 @@ async function inflar(dados: Uint8Array): Promise<Uint8Array> {
   }
   const fluxo = new DecompressionStream("deflate-raw");
   const escritor = fluxo.writable.getWriter();
-  void escritor.write(dados);
+  void escritor.write(dados as Uint8Array<ArrayBuffer>);
   void escritor.close();
   const leitor = fluxo.readable.getReader();
   const partes: Uint8Array[] = [];
