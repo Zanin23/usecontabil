@@ -279,6 +279,23 @@ export default function ContabilShell() {
             )}
           </NavLink>
 
+          {/* Atalho operacional enxuto para pequenos negócios */}
+          <NavLink
+            to="/simples-mei"
+            title="Controle simplificado do Simples Nacional e MEI"
+            className={({ isActive }) => navItem(isActive, recolhida)}
+          >
+            {({ isActive }) => (
+              <>
+                {!recolhida && <span className="w-5 text-[10px] font-mono text-muted-foreground/60">SN</span>}
+                <span className={navIcone(isActive)}>
+                  <Building2 className="h-4 w-4" />
+                </span>
+                {!recolhida && <span className={isActive ? "font-medium" : ""}>Simples &amp; MEI</span>}
+              </>
+            )}
+          </NavLink>
+
           {/* O botão de Modo Prática foi removido da barra lateral conforme solicitado. */}
           {/* Fica acessível apenas nas Configurações da Conta */}
         </nav>
