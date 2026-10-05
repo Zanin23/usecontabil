@@ -19,6 +19,8 @@ o que aquilo alimenta e qual é o próximo passo** sem conhecer a estrutura inte
 | **Contexto da tela** — “o que faz”, “de onde vêm os dados”, “o que alimenta”, “próximo passo” | topo das telas (`BlocoOrientacao`) |
 | **Bloqueio por dependência** — quando falta um cadastro, a tela diz o que é e leva direto para resolver | topo das telas |
 | **Próximas ações** após salvar um cadastro (endereço, dados fiscais, lançar…) | formulários de cadastro |
+| **Buscar no cadastro** — escolher o participante traz CNPJ, UF e IE sem redigitar | formulários de documento fiscal |
+| **Salvar e adicionar outro** — lançamento em série com o cabeçalho repetido | diálogos de documentos fiscais, escrituração e tabelas |
 | **Menu por processo** | barra lateral (10 seções: Início, Configuração, Cadastros, Lançamentos, Escrituração, Apuração, Conciliação, Relatórios, Fechamento, Aprender) |
 
 A navegação clássica por áreas continua acessível em **Relatórios › Índice por área**, e

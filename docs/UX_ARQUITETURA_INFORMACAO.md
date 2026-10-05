@@ -300,12 +300,29 @@ e todos os módulos genéricos (`ModulePage`).
   internet, a digitação manual continua funcionando. As funções ficaram em
   `src/lib/consultaPublica.ts` (mesma fonte usada pelo cadastro de empresa, que antes tinha
   uma cópia local).
+- **Herança do cadastro no documento fiscal** (`src/components/ux/SeletorParticipante.tsx`):
+  o campo Fornecedor/Destinatário/Tomador/Prestador/Transportador/Emitente ganhou o botão
+  **“Buscar no cadastro”**, que lista os participantes do papel da tela (nota de saída não
+  sugere fornecedor). Ao escolher, o sistema preenche **CNPJ, UF e IE** e marca os campos
+  como vindos do cadastro — não se digita de novo o que já existe. Se o cadastro estiver
+  vazio, o próprio seletor leva para Preparativos › Cadastros › Participantes.
+- **“Salvar e adicionar outro”** nos três CRUDs genéricos (documentos fiscais,
+  escrituração e tabelas financeiras): grava o registro, mantém o diálogo aberto e repete
+  o cabeçalho (data, série, natureza/CFOP, status, UF; nas tabelas, o anexo/contexto). O
+  botão só aparece em inclusão — na edição continua apenas “Salvar”.
+- **Rótulos ligados aos campos** (`htmlFor`/`id`) nos três CRUDs: clicar no rótulo foca o
+  campo e o leitor de tela anuncia o nome — antes o texto do rótulo era solto ao lado.
 
 ### 5.5 Breadcrumbs e trilha
 
 `PageHeader` (e portanto todas as telas que o usam) passou a derivar a trilha do modelo
 por processo automaticamente — **seção › tela**, com o último item marcado como página
 atual. Quem já passa `trail` continua com a trilha própria.
+
+O antigo `cadastros/CabecalhoPagina` (usado por 8 telas de cadastros e contabilidade)
+virou um **adaptador fino do `PageHeader`**: as telas continuam chamando o mesmo
+componente, mas trilha, título, descrição e ações saem de um único lugar — o sistema tem
+agora **um** padrão de cabeçalho, com o `StatusNuvem` preservado.
 
 ### 5.6 Mapa do sistema (`/mapa-sistema`)
 
@@ -324,9 +341,11 @@ Página nova (seção **Início**) que reúne, dentro do produto:
 - `npm run dev:preview` — sobe a interface com um **cliente de backend simulado**
   (`src/preview/supabaseLocal.ts`) para inspecionar a UX sem login e **sem tocar na base
   real**. Só existe nesse script: `vite.config.ts` aplica o alias quando `UC_PREVIEW=1`.
-- Testes novos: `src/test/orientacao.test.ts` (21 casos), `src/test/uxGuiado.test.tsx`
-  (12 casos) e `src/test/uxTelas.test.tsx` (24 casos — fumaça das telas que receberam o
-  bloco de orientação). Total do projeto: **295 testes passando** (antes: 238).
+- Testes novos: `src/test/orientacao.test.ts` (24 casos), `src/test/uxGuiado.test.tsx`
+  (12 casos), `src/test/uxTelas.test.tsx` (24 casos — fumaça das telas que receberam o
+  bloco de orientação), `src/test/documentosFiscaisGuiado.test.tsx` (6 casos — herança do
+  cadastro e “salvar e adicionar outro”) e `src/test/crudContinuarLancando.test.tsx`
+  (2 casos). Total do projeto: **306 testes passando** (antes: 238).
 
 ---
 
@@ -345,7 +364,7 @@ Página nova (seção **Início**) que reúne, dentro do produto:
 
 ## 7. Como validar
 
-1. `npm ci && npm test` → 268 testes.
+1. `npm ci && npm test` → 306 testes.
 2. `npm run build` → build de produção sem erros.
 3. `npm run dev:preview` → abrir e percorrer:
    - **Dashboard** com a base vazia: assistente de configuração, checklist e “continue de onde parou”.
@@ -356,24 +375,37 @@ Página nova (seção **Início**) que reúne, dentro do produto:
    - **Fiscal › Notas de entrada**: contexto com origem (participantes) e destino (livro de entradas).
    - **Clientes e fornecedores › Novo cadastro**: informar um CNPJ e usar “Buscar dados”
      preenche razão social e endereço; ao salvar, aparecem as próximas ações.
+   - **Fiscal › Notas de saída › Nova nota**: “Buscar no cadastro” lista os clientes já
+     cadastrados; escolher um preenche CNPJ/UF/IE; “Salvar e adicionar outro” grava e
+     mantém o formulário aberto com a data e o CFOP repetidos.
    - Menu lateral: dez seções, com descrição e item ativo destacado.
 
 ---
 
-## 8. Próximos passos recomendados (não feitos agora)
+## 8. Situação e próximos passos
 
-1. **Herança de dados no formulário de documento fiscal**: escolher o participante deve
-   preencher CNPJ/UF/IE automaticamente (mesma lógica já aplicada no cadastro de
-   participantes — diagnóstico 2.3, item 10).
-2. **Botão “Salvar e adicionar outro”** nos CRUDs, para lançamento em série.
-3. **Filtro por seção no menu** quando a quantidade de itens crescer (hoje são 102).
-4. **Preencher `vemDe`/`alimenta` das telas hoje sem ficha** (39 de 102 têm ficha própria;
-   as demais caem na ficha padrão).
-5. **Levar o bloqueio para dentro do formulário** (não só na abertura da tela).
-6. **Aplicar o `CabecalhoPagina` legado em `PageHeader`** para eliminar o segundo
-   componente de cabeçalho (padronização item 11 do levantamento).
-7. **Decidir o destino do `ModulePage`**: hoje toda rota do menu tem tela dedicada, então
-   o `/:area/:categoria/:modulo` genérico funciona como rede de segurança (mantido e com
-   o bloco de orientação). Vale transformá-lo de fato no fallback oficial — ou usá-lo para
-   os módulos de exemplo que hoje só existem no modelo antigo de navegação — em vez de
-   deixá-lo como caminho raramente exercitado.
+### 8.1 Concluído na segunda rodada
+
+1. **Herança de dados no formulário de documento fiscal** — seletor de participante
+   (`SeletorParticipante`) que traz CNPJ, UF e IE do cadastro único; campos herdados ficam
+   somente-leitura enquanto vinculados. Quando não há participante do papel exigido, o
+   seletor aponta o cadastro (diagnóstico 2.3, item 10).
+2. **“Salvar e adicionar outro”** nos três CRUDs genéricos, com repetição do cabeçalho.
+3. **Cobertura de fichas de tela: 102/102 itens do menu** (eram 39). As 40 fichas novas
+   cobrem configuração/controles, lançamentos financeiros, tabelas de tributação, IPI,
+   CIAP, DIFAL, ST, DEFIS, dashboards, contratos, auditoria, fluxos de fechamento e a
+   central Aprender. Rotas sem ficha escrita recebem contexto derivado do menu
+   (`fichaDoMenu`), de modo que nenhuma tela cai mais no texto genérico.
+4. **`CabecalhoPagina` legado virou adaptador do `PageHeader`** — um padrão de cabeçalho.
+5. **Destino do `ModulePage` decidido**: é o renderizador **oficial** do “Índice por área
+   (visão clássica)” (`/:area/:categoria/:modulo`) — nenhum módulo do modelo antigo foi
+   removido. Ele já usa o `PageHeader`, recebeu o bloco de orientação e passou a mostrar a
+   seção do processo a que o módulo pertence (badge com o código e o resumo da seção).
+
+### 8.2 Continua recomendado (não feito)
+
+1. **Filtro por seção no menu** quando a quantidade de itens crescer (hoje são 102).
+2. **Levar o bloqueio para dentro do formulário** (não só na abertura da tela): hoje o
+   aviso de dependências aparece no topo; o salvamento ainda valida apenas campo a campo.
+3. **Revisar as telas que só existem no índice clássico** (módulos de exemplo do modelo
+   antigo) para decidir, uma a uma, se merecem tela dedicada no fluxo por processo.
