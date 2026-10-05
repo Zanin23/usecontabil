@@ -18,6 +18,7 @@ import {
   desfazer, divergencias, fechar, limparConta, reabrir, resultado, vinculosDa,
   type Movimento, type ResultadoConta,
 } from "@/lib/conciliacaoStore";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 const CAMPOS_AJUDA = [
   { key: "extrato", label: "Extrato bancário", ajuda: "Movimentação enviada pelo banco (OFX/CNAB 240). É a fonte externa da conciliação." },
@@ -146,6 +147,8 @@ export default function ConciliacaoBancaria() {
           </Button>
         </div>
       </div>
+
+      <BlocoOrientacao />
 
       <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-5">
         <Indicador label="Contas monitoradas" valor={String(lista.length)} />

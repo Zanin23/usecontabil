@@ -11,6 +11,7 @@ import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { rotuloConta, useContas } from "@/lib/planoContasStore";
 import { dataBR, fimDaCompetencia, gerarRazao, moeda, saldoDC, useLancamentos } from "@/lib/lancamentosStore";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 export default function Razao() {
   const { empresa } = useEmpresaAtual();
@@ -67,6 +68,7 @@ export default function Razao() {
         <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
         <Badge variant="secondary" className="rounded-full">{periodo}</Badge>
       </CabecalhoPagina>
+      <BlocoOrientacao />
 
       <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-4">

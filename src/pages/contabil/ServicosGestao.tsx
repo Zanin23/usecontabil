@@ -18,6 +18,7 @@ import {
   setExecucao, useGestao,
 } from "@/lib/gestaoStore";
 import { pendenciasObrigacoes } from "@/lib/obrigacoesStore";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 const STATUS: TarefaStatus[] = ["Pendente", "Em andamento", "Concluída", "Não se aplica"];
 
@@ -126,6 +127,10 @@ export default function ServicosGestao() {
               {empresa ? empresa.razao : "Nenhuma empresa selecionada"} · competência{" "}
               {formatCompetencia(competencia)}
             </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Cada tarefa abaixo aponta para a tela que a resolve. O que está bloqueado aparece
+              com o motivo — nada é encerrado com pendência aberta.
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -137,6 +142,8 @@ export default function ServicosGestao() {
           </Button>
         </div>
       </div>
+
+      <BlocoOrientacao />
 
       {!empresa && (
         <Card className="rounded-2xl border-border/70">

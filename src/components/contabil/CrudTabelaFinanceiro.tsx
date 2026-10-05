@@ -14,6 +14,7 @@ import {
 } from "@/lib/financeiroStore";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 export type CampoTabela = {
   key: string;
@@ -135,6 +136,8 @@ export default function CrudTabelaFinanceiro({
           </Button>
         </div>
       </div>
+
+      <BlocoOrientacao />
 
       {kpis.length ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

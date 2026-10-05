@@ -20,6 +20,9 @@ import {
 } from "@/lib/planoContasStore";
 import { lancamentosDaConta } from "@/lib/lancamentosStore";
 import { confirmarExclusao } from "@/lib/confirmar";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
+import ProximosPassos from "@/components/ux/ProximosPassos";
+import { PenLine, Split } from "lucide-react";
 
 const contaVazia = (): Conta => ({
   id: "", codigo: "", descricao: "", tipo: "Analítica", natureza: "Devedora", grupo: "Ativo", exigeCentroCusto: false,
@@ -40,6 +43,8 @@ export default function PlanoContas() {
   const [aberto, setAberto] = useState(false);
   const [draft, setDraft] = useState<Conta>(contaVazia);
   const [erros, setErros] = useState<string[]>([]);
+  /** Conta recém-salva: alimenta o painel "próximas ações". */
+  const [salva, setSalva] = useState<Conta | null>(null);
 
   const codigos = useMemo(() => new Set(contas.map((c) => c.codigo)), [contas]);
   const temFilhas = useMemo(() => new Set(contas.map((c) => codigoPai(c.codigo)).filter(Boolean) as string[]), [contas]);
@@ -118,6 +123,7 @@ export default function PlanoContas() {
     const pai = codigoPai(r.registro.codigo);
     if (pai && !abertos.has(pai)) setExpandidos(new Set([...abertos, pai]));
     setAberto(false);
+    setSalva(r.registro);
   };
   const excluir = (c: Conta) => {
     const motivo = impedimentoExclusaoConta(c, contas);
@@ -155,6 +161,53 @@ export default function PlanoContas() {
           </>
         }
       />
+
+      <BlocoOrientacao />
+
+      {salva && (
+        <ProximosPassos
+          titulo={`Conta ${salva.codigo} · ${salva.descricao} salva`}
+          descricao={
+            salva.tipo === "Analítica"
+              ? "Esta conta já pode receber lançamentos contábeis."
+              : "Conta sintética: ela agrupa as analíticas abaixo dela e não recebe lançamento direto."
+          }
+          acoes={[
+            {
+              titulo: "Criar uma subconta",
+              icon: Plus,
+              principal: salva.tipo === "Sintética",
+              porque: "Contas analíticas são as que recebem lançamentos",
+              onClick: () => {
+                const pai = salva;
+                setSalva(null);
+                abrirNova(pai);
+              },
+            },
+            {
+              titulo: "Fazer um lançamento",
+              rota: "/contabil/escrituracao/lancamentos",
+              icon: PenLine,
+              principal: salva.tipo === "Analítica",
+            },
+            {
+              titulo: "Cadastrar centro de custo",
+              rota: "/contabil/cadastros/centros-custo",
+              icon: Split,
+            },
+            {
+              titulo: contas.length ? "Completar com o plano modelo" : "Carregar plano modelo",
+              icon: Sparkles,
+              porque: "Inclui as contas do modelo que ainda não existem",
+              onClick: () => {
+                setSalva(null);
+                carregarModelo();
+              },
+            },
+          ]}
+          onFechar={() => setSalva(null)}
+        />
+      )}
 
       <Kpis
         itens={[

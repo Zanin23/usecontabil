@@ -48,6 +48,13 @@ export default function AjudaTela() {
     if (aberto && licao) void marcarLicao(licao.slug, "vista");
   }, [aberto, licao]);
 
+  // O painel "Contexto da tela" aponta para cá: um único conteúdo explicativo.
+  useEffect(() => {
+    const abrir = () => setAberto(true);
+    window.addEventListener("uc:abrir-ajuda-tela", abrir);
+    return () => window.removeEventListener("uc:abrir-ajuda-tela", abrir);
+  }, []);
+
   useEffect(() => {
     fim.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgs, carregando]);
@@ -150,12 +157,16 @@ export default function AjudaTela() {
             : ""
         }`}
         onClick={() => setAberto(true)}
-        title={praticaAtiva ? "Tutor de Aprendizado Prático" : "Entender esta tela"}
-        aria-label={praticaAtiva ? "Tutor de Aprendizado Prático" : "Entender esta tela"}
+        title={
+          praticaAtiva
+            ? "Tutor de Aprendizado Prático"
+            : "Conceito da tela, base legal e perguntas à IA"
+        }
+        aria-label={praticaAtiva ? "Tutor de Aprendizado Prático" : "Conceito e dúvidas"}
       >
         {praticaAtiva ? <BrainCircuit className="h-4 w-4" /> : <GraduationCap className="h-4 w-4" />}
         <span className="hidden 2xl:inline">
-          {praticaAtiva ? "Tutor Prático" : "Entender esta tela"}
+          {praticaAtiva ? "Tutor Prático" : "Conceito e dúvidas"}
         </span>
       </Button>
 

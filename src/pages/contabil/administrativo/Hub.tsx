@@ -12,6 +12,7 @@ import {
   type DominioSlug,
 } from "@/lib/adminStore";
 import PageHeader from "@/components/contabil/PageHeader";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 const ICONES: Record<DominioSlug, LucideIcon> = {
   clientes: Users2,
@@ -43,6 +44,8 @@ export default function AdministrativoHub() {
         iconAccent="purple"
         compact
       />
+
+      <BlocoOrientacao />
 
       <AvisoSimulacao className="max-w-3xl">
         A integração com o ERP ainda não está ativa: estes cadastros são exemplos fixos. Os cadastros reais do sistema ficam em{" "}

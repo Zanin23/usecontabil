@@ -14,6 +14,7 @@ import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import { moedaBR, valorBR } from "@/lib/fiscalStore";
 import { confirmarExclusao, confirmarLimpeza } from "@/lib/confirmar";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   limparPeriodoEsc, novoEscId, removeLinha, saveLinha, somar, substituirPeriodo,
   useEscrituracao, type EscLinha, type EscSlug,
@@ -185,6 +186,8 @@ export default function CrudEscrituracao({
           </Button>
         </div>
       </div>
+
+      <BlocoOrientacao />
 
       {!empresa ? (
         <Card className="rounded-xl shadow-card border-brand-orange/40">

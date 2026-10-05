@@ -15,6 +15,7 @@ import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { confirmarExclusao } from "@/lib/confirmar";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import ExportarMenu from "@/components/contabil/ExportarMenu";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   LINHAS_AJUSTAVEIS, ajustes, brl, competenciaAnterior, evolucao, montarDRE, pctFmt,
   rastreabilidade, removerAjuste, salvarAjuste, useDRE, type LinhaChave,
@@ -99,6 +100,8 @@ export default function Dre() {
             pagar, da depreciação do imobilizado e das baixas financeiras — com análise vertical,
             horizontal e ajustes de encerramento.
           </p>
+
+      <BlocoOrientacao />
           <div className="mt-2 flex flex-wrap gap-2 text-xs">
             <Badge variant="secondary" className="rounded-full">{isPeriodo ? `${formatCompetencia(competencia)} até ${formatCompetencia(competenciaFim!)}` : formatCompetencia(competencia)}</Badge>
             <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>

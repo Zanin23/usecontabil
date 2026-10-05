@@ -10,6 +10,7 @@ import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { useCentros, useContas } from "@/lib/planoContasStore";
 import { participantePorId } from "@/lib/cadastrosStore";
 import { dataBR, fimDaCompetencia, moeda, totalCreditos, totalDebitos, useLancamentos } from "@/lib/lancamentosStore";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 export default function Diario() {
   const { empresa } = useEmpresaAtual();
@@ -61,6 +62,7 @@ export default function Diario() {
         <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
         <Badge variant="secondary" className="rounded-full">{periodo}</Badge>
       </CabecalhoPagina>
+      <BlocoOrientacao />
 
       <Card className="rounded-xl shadow-card">
         <CardContent className="p-4">

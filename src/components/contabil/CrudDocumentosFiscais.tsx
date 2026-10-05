@@ -17,6 +17,7 @@ import { cfopDeEntrada, cfopPrincipal, conferirParticipacao, lerNFe, type Situac
 import { confirmarExclusao, confirmarLimpeza } from "@/lib/confirmar";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   chaveFicticia, competenciaDaData, formatarChave, limparPeriodo, loadDocs, moedaBR, novoDocId,
   primeiroDia, removeDoc, saveDoc, saveDocs, useDocsFiscais, valorBR,
@@ -399,6 +400,8 @@ export default function CrudDocumentosFiscais({
           </Button>
         </div>
       </div>
+
+      <BlocoOrientacao />
 
       {exigeEmpresa ? (
         <Card className="rounded-xl shadow-card border-brand-orange/40">

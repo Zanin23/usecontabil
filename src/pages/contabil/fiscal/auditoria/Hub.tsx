@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   CATEGORIAS, CORES, CRITICIDADES, FLUXO, brlAud, reprocessar, resumoAchados,
   resumoCertidoes, resumoCreditos, useAuditoria, useCertidoes, useLogAuditoria,
@@ -124,6 +125,8 @@ export default function AuditoriaHub() {
       </div>
 
       <Card className="rounded-xl border-border/70 shadow-card">
+      <BlocoOrientacao />
+
         <CardContent className="grid gap-6 p-6 lg:grid-cols-[minmax(0,300px)_1fr]">
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs uppercase tracking-[0.06em] text-muted-foreground">

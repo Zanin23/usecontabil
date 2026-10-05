@@ -9,6 +9,7 @@ import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { MOTORES, resumoMotor, rs, useApuracaoEstado, type MotorSlug } from "@/lib/apuracaoStore";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import PageHeader from "@/components/contabil/PageHeader";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 const ICONES: Record<MotorSlug, LucideIcon> = {
   "pis-cofins": Coins,
@@ -105,6 +106,8 @@ export default function ApuracoesHub() {
         }
         compact
       />
+
+      <BlocoOrientacao />
 
       <div className="grid gap-4 xl:grid-cols-2">
         {MOTORES.map((m) => (

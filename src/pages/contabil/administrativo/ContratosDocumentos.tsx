@@ -18,6 +18,7 @@ import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { useCompetencia } from "@/lib/competencia";
 import { confirmarExclusao } from "@/lib/confirmar";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   CATEGORIAS, CHECKLIST_MENSAL, CONTRATOS_EVENT, INDICES, TIPOS_DOCUMENTO,
   agendaConsolidada, alternarConclusao, aplicarReajuste, brl, certificadosCalculados,
@@ -1373,6 +1374,8 @@ export default function ContratosDocumentos() {
           contextoExtra={{ modulo: tela.titulo, area: "Administrativo · Contratos e documentos" }}
         />
       </div>
+
+      <BlocoOrientacao />
 
       {modulo === "contratos" && <Contratos />}
       {modulo === "certificados" && <Certificados />}

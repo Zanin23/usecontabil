@@ -9,6 +9,7 @@ import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import PageHeader from "@/components/contabil/PageHeader";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   GRUPOS, alertas, brl, calendario, dataBR, diasEntre, economiaCompensacoes,
   hojeISO, resumoGuias, resumoParcelamentos, useGuias, type GrupoSlug, type EventoCalendario,
@@ -121,6 +122,8 @@ export default function GuiasHub() {
         }
         compact
       />
+
+      <BlocoOrientacao />
 
       <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6 xl:grid-cols-9">
         {kpis.map((k) => <Indicador key={k.label} {...k} />)}

@@ -14,6 +14,7 @@ import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { regimeDefinido } from "@/lib/regime";
 import PageHeader from "@/components/contabil/PageHeader";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 const statusClass = (v: string) => {
   const s = v.toLowerCase();
@@ -154,6 +155,8 @@ export default function ModulePage() {
         actions={acoes}
       />
 
+      <BlocoOrientacao />
+
       {/* Filters */}
       <Card className="rounded-xl border-border/70">
         <CardContent className="p-4 flex flex-wrap items-center gap-3">
@@ -198,6 +201,28 @@ export default function ModulePage() {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {visiveis.length === 0 && (
+              <TableRow className="border-border">
+                <TableCell colSpan={module.columns.length + (isEmpresas ? 1 : 0)} className="py-12">
+                  <div className="mx-auto max-w-md text-center">
+                    <p className="text-sm font-medium">Nenhum registro por aqui ainda.</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {module.primaryAction
+                        ? `Use o botão “${module.primaryAction}” para começar. O bloco “Entenda esta tela” acima mostra o que é preciso cadastrar antes.`
+                        : "O bloco “Entenda esta tela” acima mostra de onde vêm os dados e o que precisa ser cadastrado antes."}
+                    </p>
+                    {module.primaryAction ? (
+                      <Button asChild size="sm" className="mt-4 rounded-lg">
+                        <Link to={`/${area.slug}/${category.slug}/${module.slug}/novo`}>
+                          <Plus className="mr-1.5 h-3.5 w-3.5" />
+                          {module.primaryAction}
+                        </Link>
+                      </Button>
+                    ) : null}
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
             {visiveis.map((row: any, ri) => {
               const empresaId = row.__empresaId as string | undefined;
               return (

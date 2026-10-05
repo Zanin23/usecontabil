@@ -11,6 +11,7 @@ import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { useContas } from "@/lib/planoContasStore";
 import { centavos, fimDaCompetencia, gerarBalancete, moeda, saldoDC, useLancamentos } from "@/lib/lancamentosStore";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 export default function Balancete() {
   const { empresa } = useEmpresaAtual();
@@ -63,6 +64,7 @@ export default function Balancete() {
         <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
         <Badge variant="secondary" className="rounded-full">{periodo}</Badge>
       </CabecalhoPagina>
+      <BlocoOrientacao />
 
       <div className="grid gap-3 md:grid-cols-2">
         <Card className={cn("rounded-xl", fechaMovimento ? "border-success/30" : "border-destructive/40")}>

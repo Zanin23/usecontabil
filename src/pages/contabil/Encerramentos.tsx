@@ -19,6 +19,7 @@ import {
 } from "@/lib/gestaoStore";
 import { pendenciasGuias } from "@/lib/guiasStore";
 import AvisoRegime from "@/components/contabil/AvisoRegime";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 export default function Encerramentos() {
   const { empresa, empresas } = useEmpresaAtual();
@@ -159,6 +160,8 @@ export default function Encerramentos() {
             </p>
           </div>
         </div>
+
+      <BlocoOrientacao />
         <div className="flex flex-wrap items-center gap-2">
           <ExportarMenu
             nome="Encerramentos"
