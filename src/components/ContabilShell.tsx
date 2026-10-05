@@ -185,23 +185,6 @@ export default function ContabilShell() {
             )}
           </NavLink>
 
-          {/* Atalho operacional enxuto para pequenos negócios */}
-          <NavLink
-            to="/simples-mei"
-            title="Controle simplificado do Simples Nacional e MEI"
-            className={({ isActive }) => navItem(isActive, recolhida)}
-          >
-            {({ isActive }) => (
-              <>
-                {!recolhida && <span className="w-5 text-[10px] font-mono text-muted-foreground/60">SN</span>}
-                <span className={navIcone(isActive)}>
-                  <Building2 className="h-4 w-4" />
-                </span>
-                {!recolhida && <span className={isActive ? "font-medium" : ""}>Simples &amp; MEI</span>}
-              </>
-            )}
-          </NavLink>
-
           {/* Areas */}
           {AREAS.map((area) => {
             const Icon = area.icon ?? AREA_ICON[area.slug as keyof typeof AREA_ICON] ?? Settings2;
