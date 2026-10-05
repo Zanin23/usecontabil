@@ -22,10 +22,30 @@ o que aquilo alimenta e qual é o próximo passo** sem conhecer a estrutura inte
 | **Buscar no cadastro** — escolher o participante traz CNPJ, UF e IE sem redigitar | formulários de documento fiscal |
 | **Salvar e adicionar outro** — lançamento em série com o cabeçalho repetido | diálogos de documentos fiscais, escrituração e tabelas |
 | **Menu por processo** | barra lateral (10 seções: Início, Configuração, Cadastros, Lançamentos, Escrituração, Apuração, Conciliação, Relatórios, Fechamento, Aprender) |
+| **Visão geral da seção** — uma tela que lista todas as telas do módulo | topo de cada seção do menu, ou `/visao-geral/<secao>` |
+| **Catálogo de telas** — todas as 105 telas numa página só, com busca e filtro “só com pendência” | `/visao-geral` |
+| **Contexto ligável/desligável** — modo direto para quem já conhece o sistema | chave “Contexto das telas” no catálogo e em Configurações da Conta › Visual |
 
 A navegação clássica por áreas continua acessível em **Relatórios › Índice por área**, e
 todas as rotas antigas continuam valendo. A análise completa (diagnóstico + mapa de
 dependências + o que mudou) está em `docs/UX_ARQUITETURA_INFORMACAO.md`.
+
+### Ver todas as telas de um módulo
+
+O menu por processo lista as telas uma a uma; as páginas de visão geral devolvem a vista de
+conjunto, no mesmo esquema das antigas telas de área:
+
+| Nível | Endereço | O que mostra |
+|---|---|---|
+| Sistema inteiro | `/visao-geral` | as 10 seções e todas as telas, agrupadas por seção e etapa |
+| Uma seção | `/visao-geral/escrituracao` | todas as telas da seção, grupo por grupo (aceita id, código `05` ou título) |
+| Uma etapa | `/visao-geral/cadastros/empresas-e-grupo` | só as telas daquele grupo |
+
+Cada card é um atalho para a tela e, no modo guiado, traz ainda *o que a tela faz* e o que
+ainda precisa estar cadastrado (com o estado real da empresa e da competência). A chave
+**Contexto das telas** alterna entre as duas leituras — o modo direto deixa só o nome e a
+linha curta, e a preferência é compartilhada com o bloco de contexto das telas e o índice
+clássico. Busca e filtro “só com pendência” valem nos três níveis.
 
 ### Ver a interface sem tocar na base real
 

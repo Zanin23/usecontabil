@@ -1079,6 +1079,20 @@ export const TELAS: TelaDef[] = [
     vemDe: [{ titulo: "Central de aprendizagem", rota: "/aprender" }],
     requisitos: ["empresa"],
   },
+
+  /* ------------------------------ Catálogo de telas ------------------------------ */
+  {
+    rota: "/visao-geral",
+    oQueFaz:
+      "Reúne numa página só todas as telas de uma seção do fluxo — ou o sistema inteiro, agrupado pelas dez seções do menu.",
+    porQue:
+      "É a vista de conjunto que falta quando se quer saber o que existe em um módulo antes de entrar em uma tela: cada card diz o que a tela faz e o que precisa estar cadastrado antes.",
+    vemDe: [{ titulo: "Menu por processo", rota: "/dashboard" }],
+    proximos: [
+      { titulo: "Dashboard", rota: "/dashboard", porque: "ver as pendências e o próximo passo do período" },
+      { titulo: "Mapa do sistema", rota: "/mapa-sistema", porque: "entender o que depende do quê" },
+    ],
+  },
 ];
 
 /** Tela genérica: usada quando a rota não está no menu nem tem ficha própria. */

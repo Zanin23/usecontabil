@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Badge, Button, cn } from "@/design-system/mj-design-system-db98fa";
 import { useOrientacao } from "@/lib/ux/useOrientacao";
+import { usePreferencias } from "@/lib/preferencias";
 import SeloRequisito from "./SeloRequisito";
 
 const CHAVE = "uc:contexto-tela";
@@ -26,19 +27,29 @@ export default function ContextoTela({
   semRequisitos?: boolean;
 }) {
   const { tela, estados, vemDe, alimenta, proximos } = useOrientacao();
-  const [aberto, setAberto] = useState(true);
+  const { prefs, definir } = usePreferencias();
+  const guiado = prefs.modo === "guiado";
+  const [aberto, setAberto] = useState(guiado);
 
+  // Quem escolhe o modo direto (experiente) recebe o bloco fechado: a resposta
+  // continua a um clique, mas deixa de ocupar a parte de cima da tela.
   useEffect(() => {
+    if (!guiado) {
+      setAberto(false);
+      return;
+    }
     try {
       setAberto(localStorage.getItem(CHAVE) !== "fechado");
     } catch {
       /* navegador sem localStorage: mantém aberto */
     }
-  }, []);
+  }, [guiado]);
 
   const alternar = () => {
     const novo = !aberto;
     setAberto(novo);
+    // Em modo direto a abertura vale só para esta visita: nada é memorizado.
+    if (!guiado) return;
     try {
       localStorage.setItem(CHAVE, novo ? "aberto" : "fechado");
     } catch {
@@ -80,6 +91,19 @@ export default function ContextoTela({
           )}
         />
       </button>
+
+      {!aberto && !guiado && (
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/60 px-4 py-2 text-[11px] text-muted-foreground">
+          <span>O contexto fica oculto no modo direto (experiente).</span>
+          <button
+            type="button"
+            className="font-medium text-foreground underline-offset-2 hover:underline"
+            onClick={() => definir({ modo: "guiado" })}
+          >
+            Mostrar contexto sempre
+          </button>
+        </div>
+      )}
 
       {aberto && (
         <div className="space-y-4 border-t border-border/60 px-4 py-4">

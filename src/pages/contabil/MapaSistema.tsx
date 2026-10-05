@@ -9,7 +9,7 @@
 // ============================================================================
 import { Link } from "react-router-dom";
 import {
-  ArrowRight, CheckCircle2, CircleAlert, GitBranch, Map as MapIcon, Route,
+  ArrowRight, CheckCircle2, CircleAlert, GitBranch, LayoutGrid, Map as MapIcon, Route,
 } from "lucide-react";
 import {
   Badge, Button, Card, CardContent, Progress, cn,
@@ -19,6 +19,7 @@ import SeloRequisito from "@/components/ux/SeloRequisito";
 import TrilhaFluxo, { useEtapasFluxo } from "@/components/ux/TrilhaFluxo";
 import { progressoFluxo } from "@/lib/ux/fluxo";
 import { SECOES } from "@/lib/ux/navModelo";
+import { rotaVisao } from "@/lib/ux/visoes";
 import { avaliar, type EstadoRequisito } from "@/lib/ux/requisitos";
 import { useContexto } from "@/lib/ux/contexto";
 import { buscarTela } from "@/lib/ux/telas";
@@ -246,6 +247,15 @@ export default function MapaSistema() {
                 </h2>
                 <p className="text-xs text-muted-foreground">{secao.resumo}</p>
               </div>
+              {/* A vista de conjunto da seção: todas as telas numa página só. */}
+              <Link
+                to={rotaVisao(secao.id)}
+                className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs text-muted-foreground transition hover:border-primary/50 hover:text-foreground"
+                title="Todas as telas desta seção em uma página só"
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                Ver todas em uma tela
+              </Link>
             </div>
 
             <div className="mt-4 divide-y divide-border/60">

@@ -5,11 +5,12 @@ import {
   Dialog, DialogContent, DialogTitle,
 } from "@/design-system/mj-design-system-db98fa";
 import {
-  LayoutDashboard, Building2, CornerDownLeft, GraduationCap, BookOpen, Library,
+  LayoutDashboard, LayoutGrid, Building2, CornerDownLeft, GraduationCap, BookOpen, Library,
   FlaskConical, type LucideIcon,
 } from "lucide-react";
 import { AREAS } from "@/lib/contabilNav";
 import { SECOES } from "@/lib/ux/navModelo";
+import { rotaVisao } from "@/lib/ux/visoes";
 import { GLOSSARIO } from "@/lib/aprendizado/glossario";
 import { LICOES } from "@/lib/aprendizado/conteudo";
 
@@ -77,6 +78,27 @@ export function useTelas(): TelaBusca[] {
         }
       }
     }
+    // Catálogo de telas: a vista de conjunto de cada seção e o índice completo.
+    lista.push({
+      path: rotaVisao(),
+      titulo: "Catálogo de telas",
+      grupo: "Geral",
+      desc: "Todas as telas do sistema em uma página, com busca e filtro por pendência",
+      icon: LayoutGrid,
+      termos: "catalogo todas as telas modulos indice visao geral lista completa",
+    });
+    for (const secao of SECOES) {
+      const quantidade = secao.subgrupos.reduce((n, sub) => n + sub.itens.length, 0);
+      lista.push({
+        path: rotaVisao(secao.id),
+        titulo: `Visão geral · ${secao.titulo}`,
+        grupo: "Catálogo de telas",
+        desc: `${quantidade} telas de ${secao.titulo.toLowerCase()}`,
+        icon: secao.icon,
+        termos: `visao geral catalogo ${secao.titulo} ${secao.codigo} ${secao.resumo} ${quantidade} telas modulos`,
+      });
+    }
+
     // Navegação por processo (mesma do menu lateral): agrupa as telas como o
     // usuário trabalha, e não pela estrutura interna de áreas.
     for (const secao of SECOES) {

@@ -6,6 +6,7 @@ import RequireAuth from "./components/RequireAuth";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/contabil/Dashboard";
 import MapaSistema from "./pages/contabil/MapaSistema";
+import VisaoGeral from "./pages/contabil/VisaoGeral";
 import { CompetenciaProvider } from "./lib/competencia";
 import { EmpresaProvider } from "./lib/empresaAtual";
 
@@ -128,6 +129,10 @@ const App = () => (
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/mapa-sistema" element={<MapaSistema />} />
+          {/* Catálogo de telas: índice completo, por seção e por grupo. */}
+          <Route path="/visao-geral" element={<VisaoGeral />} />
+          <Route path="/visao-geral/:secao" element={<VisaoGeral />} />
+          <Route path="/visao-geral/:secao/:grupo" element={<VisaoGeral />} />
           <Route path="/simples-mei" element={<SimplesMei />} />
           <Route path="/simples-mei/:view" element={<SimplesMei />} />
           <Route path="/aprender" element={<AprenderCentral />} />

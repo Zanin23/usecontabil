@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Badge, Button, cn } from "@/design-system/mj-design-system-db98fa";
 import {
-  LayoutDashboard, Search, Command, Building2, CalendarRange,
+  LayoutDashboard, LayoutGrid, Search, Command, Building2, CalendarRange,
   Settings2, ChevronRight, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut, MonitorPlay,
   SlidersHorizontal, FlaskConical, ListTree,
 } from "lucide-react";
@@ -14,6 +14,7 @@ import { usePratica, setPraticaAtiva } from "@/lib/praticaStore";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
 import { SECOES, secaoDaRota, trilhaDaRota } from "@/lib/ux/navModelo";
+import { rotaVisao } from "@/lib/ux/visoes";
 import { useTema } from "@/lib/tema";
 import { supabase } from "@/integrations/supabase/client";
 import { limparCacheEmpresas } from "@/lib/empresasStore";
@@ -28,6 +29,9 @@ import ApresentacaoSistema from "@/components/contabil/ApresentacaoSistema";
  * Menu lateral (área azul-noite): item com fundo em degradê e barra indicadora animada quando ativo.
  * O <aside> recebe a classe `dark`, então os tokens semânticos (text-foreground etc.) valem para o escuro.
  */
+/** Total de telas do menu — exibido no catálogo, para dar a medida da vista. */
+const TOTAL_TELAS = SECOES.reduce((n, secao) => n + secao.subgrupos.reduce((m, sub) => m + sub.itens.length, 0), 0);
+
 const navItem = (ativo: boolean, recolhida: boolean) =>
   cn(
     "group/nav relative flex w-full items-center gap-3 rounded-xl py-2 text-left text-sm transition-all duration-200",
@@ -211,6 +215,24 @@ export default function ContabilShell() {
                         {secao.resumo}
                       </p>
                     )}
+                    {/* Tela que lista todas as telas desta seção (a vista de conjunto). */}
+                    <NavLink
+                      to={rotaVisao(secao.id)}
+                      title={`Ver todas as ${itens.length} telas de ${secao.titulo} em uma página`}
+                      className={({ isActive: linkAtivo }) =>
+                        `flex items-center gap-2 rounded-md px-3 py-1.5 text-xs transition-all duration-150 ${
+                          linkAtivo
+                            ? "border-l-2 border-primary bg-primary/25 font-medium text-foreground -ml-px"
+                            : "text-foreground/80 hover:translate-x-0.5 hover:bg-white/[0.06] hover:text-foreground"
+                        }`
+                      }
+                    >
+                      <LayoutGrid className="h-3.5 w-3.5 shrink-0 opacity-80" />
+                      <span className="truncate">Visão geral</span>
+                      <span className="ml-auto text-[10px] font-mono text-muted-foreground/70">
+                        {itens.length}
+                      </span>
+                    </NavLink>
                     {secao.subgrupos.map((sub, i) => (
                       <div key={sub.titulo ?? i} className="space-y-0.5">
                         {sub.titulo && (
@@ -260,6 +282,25 @@ export default function ContabilShell() {
               </div>
             );
           })}
+
+          {/* Catálogo: uma página só, com todas as telas de todas as seções. */}
+          <NavLink
+            to={rotaVisao()}
+            title="Todas as telas do sistema em uma página"
+            className={({ isActive }) => navItem(isActive, recolhida)}
+          >
+            {({ isActive }) => (
+              <>
+                {!recolhida && (
+                  <span className="w-5 text-[10px] font-mono text-muted-foreground/60">{TOTAL_TELAS}</span>
+                )}
+                <span className={navIcone(isActive)}>
+                  <LayoutGrid className="h-4 w-4" />
+                </span>
+                {!recolhida && <span className={isActive ? "font-medium" : ""}>Catálogo de telas</span>}
+              </>
+            )}
+          </NavLink>
         </nav>
 
 

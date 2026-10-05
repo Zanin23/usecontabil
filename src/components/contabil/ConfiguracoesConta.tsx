@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Badge,
   Button,
@@ -177,6 +178,33 @@ export default function ConfiguracoesConta({ open, onOpenChange, usuario, perfil
                 checked={prefs.densidade === "compacta"}
                 onCheckedChange={(v) => definir({ densidade: v ? "compacta" : "confortavel" })}
               />
+            </div>
+
+            <div className={linha}>
+              <div>
+                <div className="text-sm font-medium">Contexto das telas</div>
+                <div className="text-xs text-muted-foreground">
+                  Explica o que cada tela faz, o que falta cadastrar e qual é o próximo passo.
+                  Desligue para o modo direto, de quem já conhece o sistema.
+                </div>
+              </div>
+              <Switch
+                checked={prefs.modo === "guiado"}
+                onCheckedChange={(v) => definir({ modo: v ? "guiado" : "direto" })}
+                aria-label="Mostrar contexto das telas"
+              />
+            </div>
+
+            <div className={linha}>
+              <div>
+                <div className="text-sm font-medium">Catálogo de telas</div>
+                <div className="text-xs text-muted-foreground">
+                  Todas as telas do sistema reunidas, com busca e filtro por pendência.
+                </div>
+              </div>
+              <Button asChild variant="outline" size="sm" className="rounded-lg">
+                <Link to="/visao-geral">Abrir catálogo</Link>
+              </Button>
             </div>
           </TabsContent>
 

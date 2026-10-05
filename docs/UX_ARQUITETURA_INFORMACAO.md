@@ -402,9 +402,44 @@ Página nova (seção **Início**) que reúne, dentro do produto:
    removido. Ele já usa o `PageHeader`, recebeu o bloco de orientação e passou a mostrar a
    seção do processo a que o módulo pertence (badge com o código e o resumo da seção).
 
-### 8.2 Continua recomendado (não feito)
+### 8.2 Concluído na terceira rodada — a vista de conjunto de cada módulo
 
-1. **Filtro por seção no menu** quando a quantidade de itens crescer (hoje são 102).
+A navegação por processo resolveu “o que fazer agora”, mas tirou uma tela que existia do lado
+das áreas: aquela em que **se vê, de uma vez, todas as telas do módulo**. Foi devolvida, e o
+diagnóstico 2.1 (item “o menu é um índice, não uma vista de conjunto”) passa a ter as duas
+leituras.
+
+1. **`src/lib/ux/visoes.ts`** — camada pura que monta o catálogo a partir do MESMO
+   `navModelo.ts`: `visaoDaSecao`/`visoesDeTodas` devolvem os grupos com um card por tela,
+   enriquecido pela ficha de `telas.ts` (o que faz, por que existe, o que alimenta) e pelo
+   estado real dos requisitos (`requisitos.ts` + `contexto.ts`). `filtrarCards` dá busca e
+   filtro por pendência; `rotaVisao` monta os endereços.
+2. **`/visao-geral` (três níveis, um componente)** — `src/pages/contabil/VisaoGeral.tsx`:
+   índice completo (10 seções, 105 telas) → `/visao-geral/:secao` → `/visao-geral/:secao/:grupo`.
+   A rota aceita id, código (`05`) ou título da seção; rota desconhecida cai em aviso com
+   saída para o índice. Rodapé com seção anterior/próxima para percorrer o sistema sem o menu.
+3. **`CartaoTela`** — o card do catálogo: ícone, nome, linha curta e (só no modo guiado) o que
+   a tela faz + o que falta cadastrar + quantas telas ela alimenta.
+4. **“Visão geral” de volta ao menu lateral** — primeiro item de cada seção expandida
+   (`ContabilShell`), com a contagem de telas; mais o **Catálogo de telas** no fim da barra.
+   O “Índice por área (visão clássica)” continua onde estava.
+5. **Contexto é opção, não obrigação** — nova preferência `modo: "guiado" | "direto"` em
+   `src/lib/preferencias.ts` (chave “Contexto das telas”, no catálogo e em
+   Configurações da Conta › Visual). No modo direto os cards ficam enxutos e o bloco
+   `ContextoTela` das telas começa fechado (com botão para reabrir e para voltar ao guiado),
+   sem esconder nenhuma tela nem remover dependência: o bloqueio por cadastro crítico
+   continua aparecendo normalmente.
+6. **Descoberta** — as visões gerais entram na busca `Ctrl+K` (`BuscaTelas`) e o
+   `MapaSistema` ganha, em cada seção, o atalho “Ver todas em uma tela”.
+7. **Verificação** — `src/test/visaoGeral.test.tsx` (15 casos): catálogo cobre 100% das telas
+   de cada seção, cada card aponta para a rota do menu, os três níveis, busca/filtro, ligar e
+   desligar o contexto (com persistência), bloco de contexto fechado no modo direto, item
+   “Visão geral” no menu e índice de rotas na busca. Suite: 321 testes.
+
+### 8.3 Continua recomendado (não feito)
+
+1. **Filtro por seção no menu** quando a quantidade de itens crescer (hoje são 105) — a busca
+   `Ctrl+K` e o catálogo cumprem esse papel por enquanto.
 2. **Levar o bloqueio para dentro do formulário** (não só na abertura da tela): hoje o
    aviso de dependências aparece no topo; o salvamento ainda valida apenas campo a campo.
 3. **Revisar as telas que só existem no índice clássico** (módulos de exemplo do modelo
