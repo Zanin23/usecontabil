@@ -25,6 +25,7 @@ import {
   type Lancamento, type Partida, type TipoLancamento,
 } from "@/lib/lancamentosStore";
 import { confirmarExclusao } from "@/lib/confirmar";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 const hoje = () => new Date().toISOString().slice(0, 10);
 
@@ -246,6 +247,8 @@ export default function Lancamentos() {
         <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>
         <Badge variant="secondary" className="rounded-full">{periodo}</Badge>
       </CabecalhoPagina>
+      <BlocoOrientacao />
+
 
       {!empresaId ? (
         <Card className="rounded-xl border-warn/40 bg-warn/5"><CardContent className="p-4 text-sm">Selecione uma empresa no topo da tela para ver e fazer lançamentos.</CardContent></Card>

@@ -32,6 +32,7 @@ import {
 } from "@/lib/avisosStore";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { confirmarExclusao } from "@/lib/confirmar";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 
 /* ============================== apoio visual ============================= */
@@ -1585,6 +1586,8 @@ export default function ControlesInternos() {
           contextoExtra={{ modulo: tela.titulo, area: "Administrativo · Controles internos" }}
         />
       </div>
+
+      <BlocoOrientacao />
 
       {modulo === "usuarios" && <Usuarios />}
       {modulo === "auditoria-log" && <LogAuditoria />}

@@ -11,6 +11,7 @@ import {
   FilialRecord, TIPOS_UNIDADE, UFS, nextFilialId, removeFilial, saveFilial, useFiliais,
 } from "@/lib/filiaisStore";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 const EMPTY: FilialRecord = {
   id: "", nome: "", tipo: "Filial", empresaId: "", cnpj: "", inscEstadual: "",
@@ -120,6 +121,8 @@ export default function Filiais() {
             </p>
           </div>
         </div>
+
+      <BlocoOrientacao />
         <div className="flex items-center gap-2">
           <Button asChild variant="outline" className="rounded-full">
             <Link to="/preparativos/cadastros/empresas">Empresas do grupo</Link>

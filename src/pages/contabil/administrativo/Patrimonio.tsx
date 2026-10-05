@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import AssistenteCampos, { type CampoAjuda } from "@/components/contabil/AssistenteCampos";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { useCompetencia, formatCompetencia } from "@/lib/competencia";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   CENTROS_CUSTO, CONTA_POR_GRUPO, GRUPOS, LOCALIZACOES, MOTIVOS_BAIXA, PATRIMONIO_EVENT,
   RESIDUAL_SUGERIDO, acatarLocalContagem, baixarBem, bensCalculados, brl, dataBR, estornarBaixa,
@@ -1212,6 +1213,8 @@ export default function Patrimonio() {
           contextoExtra={{ modulo: tela.titulo, area: "Administrativo · Patrimônio" }}
         />
       </div>
+
+      <BlocoOrientacao />
 
       {modulo === "bens" && <Bens />}
       {modulo === "depreciacao" && <Depreciacao />}

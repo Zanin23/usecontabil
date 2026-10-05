@@ -5,6 +5,7 @@ import { saveEmpresa, getEmpresa, loadEmpresas, findEmpresaPorCnpj, sincronizarE
 import { validarCadastroEmpresa } from "@/lib/empresaValidacao";
 import { REGIMES_TRIBUTARIOS, regimeDefinido } from "@/lib/regime";
 import { formatAtividade, loadAtividades, useAtividades } from "@/lib/atividadesStore";
+import { consultarCnpj as fetchCnpj, consultarCep as fetchCep } from "@/lib/consultaPublica";
 
 import {
   Button, Card, CardContent, Input, Label, Separator,
@@ -174,47 +175,6 @@ const fmtCep = (v: string) => {
   const d = digits(v).slice(0, 8);
   return d.replace(/^(\d{5})(\d)/, "$1-$2");
 };
-
-async function fetchCnpj(cnpj: string) {
-  const d = digits(cnpj);
-  if (d.length !== 14) throw new Error("CNPJ inválido");
-  
-  try {
-    const r = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${d}`, { mode: 'cors' });
-    
-    if (r.status === 404) throw new Error("CNPJ não encontrado na base pública.");
-    if (!r.ok) throw new Error(`Erro na consulta (Status: ${r.status})`);
-    
-    return await r.json();
-  } catch (e: any) {
-    console.error("Erro na busca de CNPJ:", e);
-    
-    // Identifica erros de rede/CORS (Failed to fetch)
-    if (e instanceof TypeError || e.message?.includes('fetch')) {
-      throw new Error("Não foi possível conectar ao serviço de busca (BrasilAPI). Tente preencher manualmente ou verifique se sua rede bloqueia o acesso.");
-    }
-    
-    throw e;
-  }
-}
-
-async function fetchCep(cep: string) {
-  const d = digits(cep);
-  if (d.length !== 8) throw new Error("CEP inválido");
-  
-  try {
-    const r = await fetch(`https://brasilapi.com.br/api/cep/v2/${d}`, { mode: 'cors' });
-    if (r.status === 404) throw new Error("CEP não encontrado.");
-    if (!r.ok) throw new Error(`Erro na consulta (Status: ${r.status})`);
-    return await r.json();
-  } catch (e: any) {
-    console.error("Erro na busca de CEP:", e);
-    if (e instanceof TypeError || e.message?.includes('fetch')) {
-      throw new Error("Falha na conexão de CEP. Verifique sua internet ou preencha o endereço manualmente.");
-    }
-    throw e;
-  }
-}
 
 /* ------------------------------ primitives ------------------------------ */
 
@@ -702,23 +662,23 @@ export default function EmpresaCadastro() {
     setLoadingCnpj(true);
     try {
       const d = await fetchCnpj(form.cnpj);
-      const abertura = d.data_inicio_atividade
-        ? d.data_inicio_atividade.split("-").reverse().join("/")
-        : "";
+      const abertura = d.abertura ? d.abertura.split("-").reverse().join("/") : "";
       set({
         cnpj: fmtCnpj(d.cnpj || form.cnpj),
-        razao: d.razao_social || "",
-        fantasia: d.nome_fantasia || d.razao_social || "",
-        cnae: String(d.cnae_fiscal || ""),
-        cnaeDesc: d.cnae_fiscal_descricao || "",
+        razao: d.razaoSocial || "",
+        fantasia: d.nomeFantasia || d.razaoSocial || "",
+        cnae: d.cnae || "",
+        cnaeDesc: d.cnaeDescricao || "",
         cep: d.cep ? fmtCep(String(d.cep)) : "",
-        endereco: [d.descricao_tipo_de_logradouro, d.logradouro].filter(Boolean).join(" "),
+        endereco: [d.tipoLogradouro, d.logradouro].filter(Boolean).join(" "),
         numero: d.numero || "",
         complemento: d.complemento || "",
         bairro: d.bairro || "",
         municipio: d.municipio || "",
         uf: d.uf || "",
-        contatoTel: d.ddd_telefone_1 ? `(${String(d.ddd_telefone_1).slice(0,2)}) ${String(d.ddd_telefone_1).slice(2)}` : "",
+        contatoTel: d.telefone
+          ? `(${String(d.telefone).slice(0, 2)}) ${String(d.telefone).slice(2)}`
+          : "",
         email: d.email || "",
         aberturaRF: abertura,
       });
@@ -734,10 +694,10 @@ export default function EmpresaCadastro() {
     try {
       const d = await fetchCep(form.cep);
       set({
-        endereco: d.street || form.endereco,
-        bairro: d.neighborhood || form.bairro,
-        municipio: d.city || form.municipio,
-        uf: d.state || form.uf,
+        endereco: d.logradouro || form.endereco,
+        bairro: d.bairro || form.bairro,
+        municipio: d.municipio || form.municipio,
+        uf: d.uf || form.uf,
       });
       toast.success("Endereço preenchido via CEP");
     } catch (e: any) {

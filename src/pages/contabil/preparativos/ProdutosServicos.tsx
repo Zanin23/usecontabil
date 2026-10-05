@@ -20,6 +20,7 @@ import {
 } from "@/lib/cadastrosStore";
 import { contaPorId, contasAnaliticasAtivas, rotuloConta, useContas } from "@/lib/planoContasStore";
 import { confirmarExclusao } from "@/lib/confirmar";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 type FiltroTipo = "todos" | "Produto" | "Serviço";
 type FiltroSituacao = "Ativo" | "Inativo" | "todas";
@@ -138,6 +139,8 @@ export default function ProdutosServicos() {
           </>
         }
       />
+
+      <BlocoOrientacao />
 
       <Kpis
         itens={[

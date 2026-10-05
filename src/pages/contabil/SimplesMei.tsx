@@ -39,6 +39,7 @@ import {
   cn,
 } from "@/design-system/mj-design-system-db98fa";
 import PageHeader from "@/components/contabil/PageHeader";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import { useCompetencia, formatCompetencia } from "@/lib/competencia";
 import { useEmpresaAtual, type EmpresaOption } from "@/lib/empresaAtual";
 import {
@@ -702,6 +703,8 @@ export default function SimplesMei() {
         actions={acoes}
         badges={<Badge variant="outline" className="rounded-md">Empresas: Simples Nacional e MEI</Badge>}
       />
+
+      <BlocoOrientacao />
 
       <div className="flex flex-col gap-3 rounded-xl border border-border/70 bg-card p-3 sm:flex-row sm:items-end sm:justify-between">
         <nav aria-label="Navegação Simples e MEI" className="flex flex-wrap gap-1">

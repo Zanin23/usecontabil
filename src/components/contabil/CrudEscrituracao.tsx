@@ -14,6 +14,7 @@ import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import { moedaBR, valorBR } from "@/lib/fiscalStore";
 import { confirmarExclusao, confirmarLimpeza } from "@/lib/confirmar";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   limparPeriodoEsc, novoEscId, removeLinha, saveLinha, somar, substituirPeriodo,
   useEscrituracao, type EscLinha, type EscSlug,
@@ -55,12 +56,14 @@ export type CrudEscrituracaoProps = {
   kpis?: (linhas: EscLinha[]) => { label: string; valor: string }[];
   painel?: (linhas: EscLinha[]) => ReactNode;
   alerta?: (linhas: EscLinha[]) => string | null;
+  /** Campos repetidos em "Salvar e adicionar outro" (padrão: todos os `select`). */
+  repetir?: string[];
   dicas: string[];
 };
 
 export default function CrudEscrituracao({
   titulo, descricao, icone: Icone, slug, prefixoId, labelNovo, campos, colunas,
-  totais = [], statusKey, statusOk, gerar, kpis, painel, alerta, dicas,
+  totais = [], statusKey, statusOk, gerar, kpis, painel, alerta, repetir, dicas,
 }: CrudEscrituracaoProps) {
   const { empresa } = useEmpresaAtual();
   const { competencia } = useCompetencia();
@@ -99,12 +102,25 @@ export default function CrudEscrituracao({
     return out;
   };
 
-  const abrirNovo = () => {
+  const rascunhoNovo = () => {
     const base: Record<string, string> = {};
     campos.forEach((c) => { base[c.key] = c.type === "select" ? (c.options?.[0] ?? "") : ""; });
-    setDraft(base);
+    return base;
+  };
+
+  const abrirNovo = () => {
+    setDraft(rascunhoNovo());
     setEditing(false);
     setOpen(true);
+  };
+
+  /** Salvar e continuar: mantém os campos de cabeçalho e limpa os demais. */
+  const repetidas = repetir ?? campos.filter((c) => c.type === "select").map((c) => c.key);
+  const continuarComCabecalho = () => {
+    const base = rascunhoNovo();
+    for (const k of repetidas) if (draft[k] !== undefined) base[k] = draft[k];
+    setDraft(base);
+    setEditing(false);
   };
 
   const abrirEdicao = (l: EscLinha) => {
@@ -113,7 +129,7 @@ export default function CrudEscrituracao({
     setOpen(true);
   };
 
-  const salvar = () => {
+  const salvar = (continuar = false) => {
     if (!empresa) return toast.error("Selecione uma empresa no cabeçalho.");
     const faltando = campos.filter((c) => c.required && !(draft[c.key] ?? "").trim());
     if (faltando.length) return toast.error(`Preencha: ${faltando.map((c) => c.label).join(", ")}`);
@@ -124,8 +140,15 @@ export default function CrudEscrituracao({
       empresaId: empresa.id,
       competencia,
     } as EscLinha);
-    setOpen(false);
-    toast.success(editing ? "Registro atualizado." : "Registro incluído.");
+    if (continuar) {
+      continuarComCabecalho();
+      toast.success("Registro incluído — formulário aberto para o próximo.", {
+        description: "Os campos de contexto (selects) foram mantidos.",
+      });
+    } else {
+      setOpen(false);
+      toast.success(editing ? "Registro atualizado." : "Registro incluído.");
+    }
   };
 
   const executarGeracao = () => {
@@ -185,6 +208,8 @@ export default function CrudEscrituracao({
           </Button>
         </div>
       </div>
+
+      <BlocoOrientacao />
 
       {!empresa ? (
         <Card className="rounded-xl shadow-card border-brand-orange/40">
@@ -354,43 +379,57 @@ export default function CrudEscrituracao({
           </DialogHeader>
           <AssistenteCampos titulo={titulo} campos={campos} draft={draft} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {campos.map((c) => (
-              <div key={c.key} className={c.span === 2 ? "md:col-span-2 space-y-1.5" : "space-y-1.5"}>
-                <Label>{c.label}{c.required ? " *" : ""}</Label>
-                {c.calc ? (
-                  <Input
-                    value={c.calc(draft)}
-                    readOnly
-                    className="font-mono text-xs bg-muted/50"
-                  />
-                ) : c.type === "select" ? (
-                  <Select value={draft[c.key] ?? ""} onValueChange={(v) => setDraft((s) => ({ ...s, [c.key]: v }))}>
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                    <SelectContent>
-                      {(c.options ?? []).map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                ) : c.type === "textarea" ? (
-                  <Textarea
-                    value={draft[c.key] ?? ""}
-                    placeholder={c.placeholder}
-                    onChange={(e) => setDraft((s) => ({ ...s, [c.key]: e.target.value }))}
-                  />
-                ) : (
-                  <Input
-                    value={draft[c.key] ?? ""}
-                    placeholder={c.placeholder}
-                    className={c.mono ? "font-mono text-xs" : undefined}
-                    onChange={(e) => setDraft((s) => ({ ...s, [c.key]: e.target.value }))}
-                  />
-                )}
-                {c.ajuda ? <p className="text-xs text-muted-foreground">{c.ajuda}</p> : null}
-              </div>
-            ))}
+            {campos.map((c) => {
+              // Rótulo ligado ao campo: clique foca, leitor de tela anuncia.
+              const idCampo = `esc-${slug}-${c.key}`;
+              return (
+                <div key={c.key} className={c.span === 2 ? "md:col-span-2 space-y-1.5" : "space-y-1.5"}>
+                  <Label htmlFor={idCampo}>{c.label}{c.required ? " *" : ""}</Label>
+                  {c.calc ? (
+                    <Input
+                      id={idCampo}
+                      value={c.calc(draft)}
+                      readOnly
+                      className="font-mono text-xs bg-muted/50"
+                    />
+                  ) : c.type === "select" ? (
+                    <Select value={draft[c.key] ?? ""} onValueChange={(v) => setDraft((s) => ({ ...s, [c.key]: v }))}>
+                      <SelectTrigger id={idCampo} aria-label={c.label}><SelectValue placeholder="Selecione" /></SelectTrigger>
+                      <SelectContent>
+                        {(c.options ?? []).map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  ) : c.type === "textarea" ? (
+                    <Textarea
+                      id={idCampo}
+                      value={draft[c.key] ?? ""}
+                      placeholder={c.placeholder}
+                      onChange={(e) => setDraft((s) => ({ ...s, [c.key]: e.target.value }))}
+                    />
+                  ) : (
+                    <Input
+                      id={idCampo}
+                      value={draft[c.key] ?? ""}
+                      placeholder={c.placeholder}
+                      className={c.mono ? "font-mono text-xs" : undefined}
+                      onChange={(e) => setDraft((s) => ({ ...s, [c.key]: e.target.value }))}
+                    />
+                  )}
+                  {c.ajuda ? <p className="text-xs text-muted-foreground">{c.ajuda}</p> : null}
+                </div>
+              );
+            })}
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:justify-between">
             <Button variant="outline" className="rounded-full" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar</Button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              {!editing ? (
+                <Button variant="outline" className="rounded-lg" onClick={() => salvar(true)}>
+                  <Plus className="h-4 w-4 mr-2" /> Salvar e adicionar outro
+                </Button>
+              ) : null}
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => salvar(false)}>Salvar</Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -14,6 +14,7 @@ import {
   type HistoricoPadrao,
 } from "@/lib/planoContasStore";
 import { confirmarExclusao } from "@/lib/confirmar";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 const vazio = (): HistoricoPadrao => ({ id: "", codigo: "", texto: "", situacao: "Ativo" });
 const EXEMPLO = { documento: "1234", participante: "Distribuidora Norte Ltda", competencia: "07/2026" };
@@ -71,6 +72,8 @@ export default function HistoricosPadrao() {
           </>
         }
       />
+
+      <BlocoOrientacao />
       <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-4">
           <div className="flex flex-wrap items-center gap-3">

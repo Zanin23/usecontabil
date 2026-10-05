@@ -21,7 +21,11 @@ import {
 import { contasAnaliticasAtivas, rotuloConta, contaPorId, useContas } from "@/lib/planoContasStore";
 import { lancamentosDoParticipante } from "@/lib/lancamentosStore";
 import { confirmarExclusao } from "@/lib/confirmar";
+import { consultarCep, consultarCnpj } from "@/lib/consultaPublica";
 import { soDigitos } from "@/lib/documentos";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
+import ProximosPassos from "@/components/ux/ProximosPassos";
+import { FileDown, FileText, MapPin, Wallet } from "lucide-react";
 
 /** Aba do formulário onde está o campo do erro (para levar a pessoa direto até ele). */
 function abaDoErro(erro = "") {
@@ -53,6 +57,10 @@ export default function Participantes() {
   const [draft, setDraft] = useState<Participante>(() => participanteVazio([]));
   const [erros, setErros] = useState<string[]>([]);
   const [aba, setAba] = useState("identificacao");
+  /** Registro recém-salvo: alimenta o painel "próximas ações". */
+  const [salvo, setSalvo] = useState<Participante | null>(null);
+  /** Consulta pública em andamento (CNPJ/CEP) — evita digitar dado que já existe. */
+  const [consultando, setConsultando] = useState<"cnpj" | "cep" | null>(null);
 
   const pendencias = useMemo(() => {
     const m = new Map<string, string[]>();
@@ -88,12 +96,71 @@ export default function Participantes() {
     setAba("identificacao");
     setAberto(true);
   };
-  const editar = (p: Participante) => {
+  const editar = (p: Participante, abaInicial = "identificacao") => {
     setDraft({ ...p, retencoes: [...(p.retencoes ?? [])] });
     setErros([]);
-    setAba("identificacao");
+    setAba(abaInicial);
     setAberto(true);
   };
+  /**
+   * Busca os dados públicos do CNPJ e preenche o que o usuário digitaria de novo
+   * (razão social, endereço, contato). Nada é sobrescrito sem confirmação do clique.
+   */
+  const buscarCnpj = async () => {
+    setConsultando("cnpj");
+    try {
+      const d = await consultarCnpj(draft.documento);
+      setDraft((atual) => ({
+        ...atual,
+        nome: atual.nome?.trim() ? atual.nome : d.razaoSocial || atual.nome,
+        fantasia: atual.fantasia?.trim() ? atual.fantasia : d.nomeFantasia || atual.fantasia,
+        cep: atual.cep?.trim() ? atual.cep : d.cep || atual.cep,
+        logradouro: atual.logradouro?.trim() ? atual.logradouro : d.logradouro || atual.logradouro,
+        numero: atual.numero?.trim() ? atual.numero : d.numero || atual.numero,
+        complemento: atual.complemento?.trim() ? atual.complemento : d.complemento || atual.complemento,
+        bairro: atual.bairro?.trim() ? atual.bairro : d.bairro || atual.bairro,
+        municipio: atual.municipio?.trim() ? atual.municipio : d.municipio || atual.municipio,
+        uf: atual.uf?.trim() ? atual.uf : d.uf || atual.uf,
+        codigoMunicipio: atual.codigoMunicipio?.trim()
+          ? atual.codigoMunicipio
+          : d.codigoMunicipio || atual.codigoMunicipio,
+        email: atual.email?.trim() ? atual.email : d.email || atual.email,
+        telefone: atual.telefone?.trim() ? atual.telefone : d.telefone || atual.telefone,
+      }));
+      toast.success("Dados públicos do CNPJ preenchidos.", {
+        description: "Campos que você já havia digitado foram mantidos.",
+      });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Falha ao consultar o CNPJ.");
+    } finally {
+      setConsultando(null);
+    }
+  };
+
+  /** Completa o endereço a partir do CEP, sem tocar no que já foi digitado. */
+  const buscarCep = async () => {
+    setConsultando("cep");
+    try {
+      const d = await consultarCep(draft.cep ?? "");
+      setDraft((atual) => ({
+        ...atual,
+        cep: d.cep || atual.cep,
+        logradouro: atual.logradouro?.trim() ? atual.logradouro : d.logradouro || atual.logradouro,
+        bairro: atual.bairro?.trim() ? atual.bairro : d.bairro || atual.bairro,
+        municipio: atual.municipio?.trim() ? atual.municipio : d.municipio || atual.municipio,
+        uf: atual.uf?.trim() ? atual.uf : d.uf || atual.uf,
+        codigoMunicipio: atual.codigoMunicipio?.trim()
+          ? atual.codigoMunicipio
+          : d.codigoMunicipio || atual.codigoMunicipio,
+      }));
+      toast.success("Endereço preenchido pelo CEP.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Falha ao consultar o CEP.");
+    } finally {
+      setConsultando(null);
+    }
+  };
+
   const salvar = () => {
     const r = salvarParticipante(draft);
     if (!r.ok) {
@@ -104,6 +171,7 @@ export default function Participantes() {
     }
     toast.success(`${r.registro.nome} ${draft.id ? "atualizado" : "cadastrado"}.`);
     setAberto(false);
+    setSalvo(r.registro);
   };
   const excluir = (p: Participante) => {
     const usos = lancamentosDoParticipante(p.id);
@@ -137,6 +205,58 @@ export default function Participantes() {
           </>
         }
       />
+
+      <BlocoOrientacao />
+
+      {salvo && (
+        <ProximosPassos
+          titulo={`${salvo.nome} salvo com sucesso`}
+          descricao="O cadastro já pode ser usado em documentos fiscais, títulos e lançamentos contábeis."
+          acoes={[
+            {
+              titulo: "Completar endereço",
+              icon: MapPin,
+              principal: true,
+              porque: "Endereço e UF são usados nos documentos fiscais",
+              onClick: () => {
+                const alvo = salvo;
+                setSalvo(null);
+                editar(alvo, "endereco");
+              },
+            },
+            {
+              titulo: "Informar dados fiscais",
+              icon: FileText,
+              porque: "IE, IM, indicador e retenções",
+              onClick: () => {
+                const alvo = salvo;
+                setSalvo(null);
+                editar(alvo, "fiscal");
+              },
+            },
+            {
+              titulo: "Lançar uma nota",
+              rota: "/fiscal/documentos/entradas",
+              icon: FileDown,
+              porque: "A nota aponta para este participante",
+            },
+            {
+              titulo: "Abrir contas a pagar",
+              rota: "/administrativo/financeiro-operacional/contas-pagar",
+              icon: Wallet,
+            },
+            {
+              titulo: "Novo cadastro",
+              icon: Plus,
+              onClick: () => {
+                setSalvo(null);
+                novo();
+              },
+            },
+          ]}
+          onFechar={() => setSalvo(null)}
+        />
+      )}
 
       <Kpis
         itens={[
@@ -287,11 +407,38 @@ export default function Participantes() {
                   obrigatorio
                 />
                 <CampoTexto
-                  rotulo={draft.pessoa === "Física" ? "CPF" : draft.pessoa === "Estrangeiro" ? "Identificação no exterior" : "CNPJ"}
+                  rotulo={
+                    draft.pessoa === "Física"
+                      ? "CPF"
+                      : draft.pessoa === "Estrangeiro"
+                        ? "Identificação no exterior"
+                        : "CNPJ"
+                  }
                   valor={draft.documento}
                   onChange={(v) => set("documento", v)}
                   obrigatorio={draft.pessoa !== "Estrangeiro"}
                   mono
+                  ajuda={
+                    draft.pessoa === "Jurídica"
+                      ? "Use “Buscar dados” para trazer razão social e endereço do CNPJ."
+                      : undefined
+                  }
+                  acao={
+                    draft.pessoa === "Jurídica" ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-9 rounded-xl"
+                        disabled={consultando === "cnpj"}
+                        onClick={buscarCnpj}
+                        title="Preencher razão social e endereço com os dados públicos do CNPJ"
+                      >
+                        <Search className="mr-1.5 h-3.5 w-3.5" />
+                        {consultando === "cnpj" ? "Buscando…" : "Buscar dados"}
+                      </Button>
+                    ) : undefined
+                  }
                 />
                 <CampoTexto rotulo="Nome / razão social" valor={draft.nome} onChange={(v) => set("nome", v)} obrigatorio span={4} />
                 <CampoTexto rotulo="Código" valor={draft.codigo} onChange={(v) => set("codigo", v)} obrigatorio mono />
@@ -334,7 +481,27 @@ export default function Participantes() {
 
             <TabsContent value="endereco" className="mt-4">
               <div className="grid gap-3 sm:grid-cols-6">
-                <CampoTexto rotulo="CEP" valor={draft.cep} onChange={(v) => set("cep", v)} mono span={2} />
+                <CampoTexto
+                  rotulo="CEP"
+                  valor={draft.cep}
+                  onChange={(v) => set("cep", v)}
+                  mono
+                  span={2}
+                  ajuda="O botão completa logradouro, bairro, município e UF."
+                  acao={
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-9 shrink-0 rounded-xl"
+                      disabled={consultando === "cep"}
+                      onClick={buscarCep}
+                      title="Preencher o endereço a partir do CEP"
+                    >
+                      {consultando === "cep" ? "Buscando…" : "Buscar"}
+                    </Button>
+                  }
+                />
                 <CampoTexto rotulo="Logradouro" valor={draft.logradouro} onChange={(v) => set("logradouro", v)} span={4} />
                 <CampoTexto rotulo="Número" valor={draft.numero} onChange={(v) => set("numero", v)} span={1} />
                 <CampoTexto rotulo="Complemento" valor={draft.complemento} onChange={(v) => set("complemento", v)} span={2} />

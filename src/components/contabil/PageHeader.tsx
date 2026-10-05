@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, Home, type LucideIcon } from "lucide-react";
 import { cn } from "@/design-system/mj-design-system-db98fa";
+import { trilhaDaRota } from "@/lib/ux/navModelo";
 
 export type BreadcrumbItem = {
   label: string;
@@ -42,6 +43,11 @@ export default function PageHeader({
   compact = false,
   className,
   children,
+  /**
+   * Monta a trilha automaticamente a partir do modelo de navegação por
+   * processo (Seção › tela) quando `trail` não é informado.
+   */
+  trilhaAutomatica = true,
 }: {
   /** Trilha de navegação EXCLUINDO "Início" (que é sempre o primeiro item). */
   trail?: BreadcrumbItem[];
@@ -58,7 +64,22 @@ export default function PageHeader({
   compact?: boolean;
   className?: string;
   children?: ReactNode;
+  /** Desligue para desenhar a trilha manualmente. */
+  trilhaAutomatica?: boolean;
 }) {
+  const { pathname } = useLocation();
+  const encontrada = trilhaDaRota(pathname);
+  const trilhaDerivada: BreadcrumbItem[] = encontrada
+    ? [
+        { label: encontrada.secao.titulo, to: encontrada.item.rota },
+        ...(encontrada.item.titulo !== encontrada.secao.titulo
+          ? [{ label: encontrada.item.titulo }]
+          : []),
+      ]
+    : [];
+  const trilhaFinal: BreadcrumbItem[] =
+    trail ?? (trilhaAutomatica ? trilhaDerivada : []);
+
   return (
     <div className={cn("space-y-4", className)}>
       {/* Breadcrumb padronizado e clicável */}
@@ -74,21 +95,29 @@ export default function PageHeader({
           <Home className="h-3 w-3" />
           <span className="hidden sm:inline">Início</span>
         </Link>
-        {trail?.map((t, i) => (
-          <span key={`${t.label}-${i}`} className="flex items-center gap-1.5">
-            <ChevronRight className="h-3 w-3 text-muted-foreground/60" />
-            {t.to ? (
-              <Link
-                to={t.to}
-                className="rounded-md px-1.5 py-0.5 hover:text-foreground hover:bg-accent/60 transition"
-              >
-                {t.label}
-              </Link>
-            ) : (
-              <span className="px-1.5 py-0.5">{t.label}</span>
-            )}
-          </span>
-        ))}
+        {trilhaFinal.map((t, i) => {
+          const ultimo = i === trilhaFinal.length - 1;
+          return (
+            <span key={`${t.label}-${i}`} className="flex items-center gap-1.5">
+              <ChevronRight className="h-3 w-3 text-muted-foreground/60" />
+              {t.to && !ultimo ? (
+                <Link
+                  to={t.to}
+                  className="rounded-md px-1.5 py-0.5 hover:text-foreground hover:bg-accent/60 transition"
+                >
+                  {t.label}
+                </Link>
+              ) : (
+                <span
+                  aria-current={ultimo ? "page" : undefined}
+                  className={cn("px-1.5 py-0.5", ultimo && "font-medium text-foreground")}
+                >
+                  {t.label}
+                </span>
+              )}
+            </span>
+          );
+        })}
       </nav>
 
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">

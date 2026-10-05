@@ -14,6 +14,7 @@ import {
 } from "@/lib/planoContasStore";
 import { lancamentosDoCentro } from "@/lib/lancamentosStore";
 import { confirmarExclusao } from "@/lib/confirmar";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 const vazio = (): CentroCusto => ({ id: "", codigo: "", descricao: "", tipo: "Administrativo", situacao: "Ativo" });
 
@@ -75,6 +76,8 @@ export default function CentrosCusto() {
           </>
         }
       />
+
+      <BlocoOrientacao />
       <Card className="rounded-xl shadow-card">
         <CardContent className="space-y-4 p-4">
           <div className="flex flex-wrap items-center gap-3">

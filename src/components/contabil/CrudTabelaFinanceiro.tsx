@@ -14,6 +14,7 @@ import {
 } from "@/lib/financeiroStore";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 
 export type CampoTabela = {
   key: string;
@@ -41,12 +42,14 @@ export type CrudTabelaProps = {
   vigencia?: string;
   padrao?: Record<string, string>[];
   indicadores?: (linhas: LinhaTabela[]) => { label: string; valor: string }[];
+  /** Campos repetidos em "Salvar e adicionar outro" (padrão: todos os `select`). */
+  repetir?: string[];
   dicas: string[];
 };
 
 export default function CrudTabelaFinanceiro({
   titulo, descricao, icone: Icone, tabela, prefixoId, labelNovo, campos, colunas,
-  badgeKey, vigencia, padrao, indicadores, dicas,
+  badgeKey, vigencia, padrao, indicadores, repetir, dicas,
 }: CrudTabelaProps) {
   const { empresa } = useEmpresaAtual();
   const linhas = useLinhas(tabela);
@@ -66,12 +69,25 @@ export default function CrudTabelaFinanceiro({
   const colunasDef = campos.filter((c) => colunas.includes(c.key));
   const kpis = indicadores?.(linhas) ?? [];
 
-  const abrirNovo = () => {
+  const rascunhoNovo = () => {
     const base: Record<string, string> = {};
     campos.forEach((c) => (base[c.key] = c.type === "select" ? (c.options?.[0] ?? "") : ""));
-    setDraft(base);
+    return base;
+  };
+
+  const abrirNovo = () => {
+    setDraft(rascunhoNovo());
     setEditing(false);
     setOpen(true);
+  };
+
+  /** Salvar e continuar: repete o contexto (ex.: o anexo) da linha anterior. */
+  const repetidas = repetir ?? campos.filter((c) => c.type === "select").map((c) => c.key);
+  const continuarComCabecalho = () => {
+    const base = rascunhoNovo();
+    for (const k of repetidas) if (draft[k] !== undefined) base[k] = draft[k];
+    setDraft(base);
+    setEditing(false);
   };
 
   const abrirEdicao = (l: LinhaTabela) => {
@@ -80,12 +96,19 @@ export default function CrudTabelaFinanceiro({
     setOpen(true);
   };
 
-  const salvar = () => {
+  const salvar = (continuar = false) => {
     const faltando = campos.filter((c) => c.required && !(draft[c.key] ?? "").trim());
     if (faltando.length) return toast.error(`Preencha: ${faltando.map((c) => c.label).join(", ")}`);
     saveLinha(tabela, { ...draft, id: draft.id || novoId(prefixoId) } as LinhaTabela);
-    setOpen(false);
-    toast.success(editing ? "Linha atualizada." : "Linha adicionada à tabela.");
+    if (continuar) {
+      continuarComCabecalho();
+      toast.success("Linha adicionada — formulário aberto para a próxima.", {
+        description: "O contexto da linha anterior foi mantido.",
+      });
+    } else {
+      setOpen(false);
+      toast.success(editing ? "Linha atualizada." : "Linha adicionada à tabela.");
+    }
   };
 
   const carregarPadrao = () => {
@@ -135,6 +158,8 @@ export default function CrudTabelaFinanceiro({
           </Button>
         </div>
       </div>
+
+      <BlocoOrientacao />
 
       {kpis.length ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -255,10 +280,13 @@ export default function CrudTabelaFinanceiro({
           </DialogHeader>
           <AssistenteCampos titulo={titulo} campos={campos} draft={draft} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 py-2">
-            {campos.map((c) => (
+            {campos.map((c) => {
+              // Rótulo ligado ao campo: clique foca, leitor de tela anuncia.
+              const idCampo = `tab-${tabela}-${c.key}`;
+              return (
               <div key={c.key} className={c.span === 2 ? "md:col-span-2 space-y-2" : "space-y-2"}>
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium">
+                  <Label htmlFor={idCampo} className="text-sm font-medium">
                     {c.label}
                     {c.required ? <span className="text-brand-orange ml-1">*</span> : ""}
                   </Label>
@@ -267,7 +295,7 @@ export default function CrudTabelaFinanceiro({
                 <div className="relative">
                   {c.type === "select" ? (
                     <Select value={draft[c.key] ?? ""} onValueChange={(v) => setDraft((d) => ({ ...d, [c.key]: v }))}>
-                      <SelectTrigger className="rounded-xl border-muted-foreground/20 h-11 bg-background focus:ring-brand-orange/20 focus:border-brand-orange">
+                      <SelectTrigger id={idCampo} aria-label={c.label} className="rounded-xl border-muted-foreground/20 h-11 bg-background focus:ring-brand-orange/20 focus:border-brand-orange">
                         <SelectValue placeholder="Selecione..." />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl border-muted-foreground/20">
@@ -280,6 +308,7 @@ export default function CrudTabelaFinanceiro({
                     </Select>
                   ) : c.type === "textarea" ? (
                     <Textarea
+                      id={idCampo}
                       className="rounded-xl border-muted-foreground/20 min-h-[100px] resize-none focus:ring-brand-orange/20 focus:border-brand-orange bg-background p-3"
                       value={draft[c.key] ?? ""}
                       placeholder={c.placeholder}
@@ -287,6 +316,7 @@ export default function CrudTabelaFinanceiro({
                     />
                   ) : (
                     <Input
+                      id={idCampo}
                       className={[
                         "rounded-xl border-muted-foreground/20 h-11 focus:ring-brand-orange/20 focus:border-brand-orange bg-background px-3",
                         c.align === "right" ? "text-right" : "",
@@ -305,13 +335,23 @@ export default function CrudTabelaFinanceiro({
                   </p>
                 ) : null}
               </div>
-            ))}
+              );
+            })}
           </div>
           <DialogFooter className="pt-6 border-t border-muted/50 mt-4 gap-3">
-            <Button variant="outline" className="rounded-full px-6 h-11 border-muted-foreground/20 hover:bg-muted/50 transition-colors" onClick={() => setOpen(false)}>
+            <Button variant="outline" className="rounded-full px-6 h-11 border-muted-foreground/20 hover:bg-muted/50 transition-colors sm:mr-auto" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90 px-8 h-11 shadow-glow transition-all active:scale-95" onClick={salvar}>
+            {!editing ? (
+              <Button
+                variant="outline"
+                className="rounded-lg px-6 h-11 border-muted-foreground/20 transition-colors"
+                onClick={() => salvar(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" /> Salvar e adicionar outro
+              </Button>
+            ) : null}
+            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90 px-8 h-11 shadow-glow transition-all active:scale-95" onClick={() => salvar(false)}>
               Salvar Registro
             </Button>
           </DialogFooter>

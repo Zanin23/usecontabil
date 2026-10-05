@@ -9,6 +9,7 @@ import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import PageHeader from "@/components/contabil/PageHeader";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   CATALOGO, monitorar, resumoMonitor, useObrEstado, vencimentoBR, diasRestantes,
   type ObrSlug,
@@ -152,6 +153,8 @@ export default function ObrigacoesHub() {
         }
         compact
       />
+
+      <BlocoOrientacao />
 
       <Card className="rounded-xl border-border/70">
         <CardContent className="p-5 space-y-3">

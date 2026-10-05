@@ -18,6 +18,7 @@ import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { useCompetencia } from "@/lib/competencia";
 import { confirmarExclusao } from "@/lib/confirmar";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   CONTAS_EVENT, CONTAS_TESOURARIA, REGUA, brl, carteira, contaPorId, dataBR,
   estornarBaixa, excluirMovimento, fluxo, hojeISO, inadimplentes, lancarMovimento,
@@ -985,6 +986,8 @@ export default function ContasCaixa() {
           />
         </div>
       </div>
+
+      <BlocoOrientacao />
 
       {modulo === "contas-pagar" && <Carteira tipo="pagar" />}
       {modulo === "contas-receber" && <Carteira tipo="receber" />}

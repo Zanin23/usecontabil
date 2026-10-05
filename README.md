@@ -6,11 +6,43 @@ Central **contábil, fiscal e administrativa interna** de um grupo de empresas: 
 >
 > Não é um sistema para escritórios de contabilidade que atendem clientes externos: no sistema, use *empresa*, *filial*, *unidade* e *grupo*.
 
+## Por onde começar (experiência guiada)
+
+O sistema foi reorganizado para que um usuário novo entenda **o que cadastrar, onde,
+o que aquilo alimenta e qual é o próximo passo** sem conhecer a estrutura interna.
+
+| Recurso | Onde fica |
+|---|---|
+| **Assistente de configuração** (progresso das etapas essenciais + “continue de onde parou”) | Dashboard |
+| **Painel de pendências** (documentos a classificar, cadastros incompletos, guias, obrigações) | Dashboard |
+| **Mapa do sistema** — o que depende do quê, com o estado real de cada requisito | Início › Mapa do sistema (`/mapa-sistema`) |
+| **Contexto da tela** — “o que faz”, “de onde vêm os dados”, “o que alimenta”, “próximo passo” | topo das telas (`BlocoOrientacao`) |
+| **Bloqueio por dependência** — quando falta um cadastro, a tela diz o que é e leva direto para resolver | topo das telas |
+| **Próximas ações** após salvar um cadastro (endereço, dados fiscais, lançar…) | formulários de cadastro |
+| **Buscar no cadastro** — escolher o participante traz CNPJ, UF e IE sem redigitar | formulários de documento fiscal |
+| **Salvar e adicionar outro** — lançamento em série com o cabeçalho repetido | diálogos de documentos fiscais, escrituração e tabelas |
+| **Menu por processo** | barra lateral (10 seções: Início, Configuração, Cadastros, Lançamentos, Escrituração, Apuração, Conciliação, Relatórios, Fechamento, Aprender) |
+
+A navegação clássica por áreas continua acessível em **Relatórios › Índice por área**, e
+todas as rotas antigas continuam valendo. A análise completa (diagnóstico + mapa de
+dependências + o que mudou) está em `docs/UX_ARQUITETURA_INFORMACAO.md`.
+
+### Ver a interface sem tocar na base real
+
+```bash
+npm run dev:preview   # abre com um backend simulado no navegador (sem login)
+```
+
+Esse script troca o cliente do Supabase por `src/preview/supabaseLocal.ts` (via
+`UC_PREVIEW=1` no `vite.config.ts`). Nada disso entra no build de produção nem nos testes;
+use-o só para conferir a experiência — os dados ficam no seu navegador.
+
 ## Áreas do sistema
 
 | Área | O que tem |
 |---|---|
-| **Dashboard** | Visão geral contábil da empresa e da competência selecionadas. |
+| **Dashboard** | Visão geral contábil da empresa e da competência selecionadas, com o assistente de configuração, as pendências do período, atalhos e últimas atividades. |
+| **Mapa do sistema** | Página de orientação: fluxo de uso, correntes de dependência e o estado real dos cadastros que cada tela exige. |
 | **Preparativos** | Cadastro de empresas e filiais; **cadastro único de clientes e fornecedores e de produtos e serviços** (alimentado à mão, pela importação de XML de NF-e ou pelos cadastros antigos); classes de atividade; inscrições, pagamentos, parâmetros e certificados; gestão do fechamento (fases, tarefas e encerramentos). |
 | **Fiscal** | Documentos fiscais, escrituração (livros, ICMS, IPI, inventário, CIAP), apurações (PIS/COFINS, ISS, IRPJ/CSLL, Simples Nacional, retenções), obrigações (SPED Fiscal, EFD-Contribuições, ECD/ECF, DCTFWeb, REINF, estaduais), guias e auditoria fiscal. |
 | **Contábil** | Plano de contas do grupo (com modelo pronto, vínculo com o referencial da RFB e **importação por planilha CSV/Excel**), centros de custo, históricos padrão, **lançamentos em partidas dobradas** (estorno e bloqueio da competência encerrada), **balancete de abertura importado de planilha** (gera lançamento do tipo "Abertura"), balancete de verificação, razão e diário. |
@@ -29,6 +61,7 @@ Requisitos: Node 18+ (testado com Node 22).
 npm ci          # instala exatamente o que está no package-lock.json
                 # (alternativa: bun install — o bun.lock é o usado pelo Lovable)
 npm run dev     # servidor de desenvolvimento em http://localhost:8080
+npm run dev:preview  # mesma interface, com backend simulado no navegador (sem login)
 npm run build   # build de produção
 npm test        # testes (Vitest + Testing Library)
 npm run lint    # ESLint (ainda acusa pendências antigas, principalmente `any` explícito)
@@ -62,6 +95,13 @@ src/
   pages/contabil/     telas por área (preparativos, contabilidade, fiscal, financeiro, administrativo, Simples & MEI, aprender)
   components/         shell do app (ContabilShell), RequireAuth e componentes contábeis reutilizáveis
   lib/                stores por domínio (regras e motores de cálculo) e a navegação (contabilNav*.tsx)
+  lib/ux/             orientação ao usuário: contexto do sistema (contexto.ts), requisitos de
+                      cada tela (requisitos.ts), fichas por tela (telas.ts), fluxo de uso
+                      (fluxo.ts), menu por processo (navModelo.ts) e useOrientacao.ts
+  components/ux/      blocos dessa camada: ContextoTela, BloqueioDependencias, RetornoProcesso,
+                      ConfiguracaoInicial, PainelPendencias, TrilhaFluxo, Atalhos,
+                      AtividadesRecentes, ProximosPassos
+  preview/            cliente de backend simulado — usado só por `npm run dev:preview`
   lib/aprendizado/    conteúdo da camada de aprendizado: lições, trilhas, glossário e laboratórios
   design-system/      design system MJ (tokens e componentes)
   integrations/       clientes gerados (Supabase e Lovable) — não editar à mão
@@ -94,4 +134,7 @@ Mudanças de banco (`supabase/migrations`) e de edge functions (`supabase/functi
 - Sem integração real com Receita Federal, SEFAZ ou prefeituras; os arquivos gerados não têm validade legal.
 - A maior parte dos dados fica só no navegador (veja "Como os dados são guardados"). Na nuvem, cada usuário só vê os próprios registros: ainda não há organização/equipe compartilhando as mesmas empresas.
 - Os lançamentos contábeis ainda são manuais (o plano de contas e o balancete de abertura já podem ser importados de planilha): a contabilização automática dos documentos fiscais e a integração com o ERP (Use Sistemas) são as próximas etapas (ver `docs/analise-sistema-contabil.md`).
-- Cobertura de testes automatizados ainda baixa (veja `src/test`).
+- Cobertura de testes automatizados ainda baixa (veja `src/test`), embora a camada de orientação
+  ao usuário esteja coberta por `src/test/orientacao.test.ts` e `src/test/uxGuiado.test.tsx`.
+- 39 das 102 telas do menu têm ficha de contexto própria (`src/lib/ux/telas.ts`); as demais
+  usam a ficha padrão e o painel de ajuda da tela.

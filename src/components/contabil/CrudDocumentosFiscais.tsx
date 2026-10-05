@@ -17,6 +17,10 @@ import { cfopDeEntrada, cfopPrincipal, conferirParticipacao, lerNFe, type Situac
 import { confirmarExclusao, confirmarLimpeza } from "@/lib/confirmar";
 import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 import AssistenteCampos from "@/components/contabil/AssistenteCampos";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
+import SeletorParticipante, { type PapelParticipante } from "@/components/ux/SeletorParticipante";
+import { OrigemCampo } from "@/components/contabil/cadastros/Campos";
+import type { Participante } from "@/lib/cadastrosStore";
 import {
   chaveFicticia, competenciaDaData, formatarChave, limparPeriodo, loadDocs, moedaBR, novoDocId,
   primeiroDia, removeDoc, saveDoc, saveDocs, useDocsFiscais, valorBR,
@@ -26,7 +30,7 @@ import {
 export type CampoDoc = {
   key: string;
   label: string;
-  type?: "text" | "select" | "textarea" | "chave";
+  type?: "text" | "select" | "textarea" | "chave" | "participante";
   options?: string[];
   required?: boolean;
   placeholder?: string;
@@ -34,6 +38,8 @@ export type CampoDoc = {
   mono?: boolean;
   align?: "right";
   ajuda?: string;
+  /** Dica de origem do dado (ex.: "vem do cadastro de participantes"). */
+  origem?: string;
 };
 
 export type CrudDocumentosProps = {
@@ -58,12 +64,18 @@ export type CrudDocumentosProps = {
   /** movimento de exemplo gerado para a competência corrente. */
   exemplo?: (competencia: string) => Record<string, string>[];
   indicadoresExtras?: (docs: DocFiscal[]) => { label: string; valor: string }[];
+  /**
+   * Campos repetidos no botão "Salvar e adicionar outro" (além da data, série,
+   * natureza, CFOP, status e UF). Útil para lançar uma sequência de documentos
+   * do mesmo tipo sem redigitar o cabeçalho.
+   */
+  repetir?: string[];
   dicas: string[];
 };
 
 export default function CrudDocumentosFiscais({
   titulo, descricao, icone: Icone, slug, prefixoId, labelNovo, labelImportar,
-  campos, colunas, statusKey, statusOk, valorKey, dataKey, exemplo, indicadoresExtras, dicas,
+  campos, colunas, statusKey, statusOk, valorKey, dataKey, exemplo, indicadoresExtras, repetir, dicas,
 }: CrudDocumentosProps) {
   const { empresa } = useEmpresaAtual();
   const { competencia, competenciasNoPeriodo } = useCompetencia();
@@ -100,7 +112,47 @@ export default function CrudDocumentosFiscais({
 
   const exigeEmpresa = !empresa;
 
-  const abrirNovo = () => {
+  /* ----- Herança do cadastro de participantes (nunca pedir duas vezes) ----- */
+  const campoParticipante = campos.find(
+    (c) => c.type === "participante" || c.key === "participante" || c.key === "emitente",
+  );
+  const PAPEL_POR_DOC: Partial<Record<DocSlug, PapelParticipante>> = {
+    entradas: "Fornecedor",
+    "servicos-tomados": "Fornecedor",
+    transporte: "Transportadora",
+    manifestacao: "Fornecedor",
+    saidas: "Cliente",
+    "servicos-prestados": "Cliente",
+    cupons: "Cliente",
+  };
+  const papelParticipante = PAPEL_POR_DOC[slug] ?? "Todos";
+  /** Campos que o cadastro do participante preenche quando existem no formulário. */
+  const CHAVES_HERDADAS = ["cnpj", "uf", "ie"];
+  const [participanteId, setParticipanteId] = useState<string | null>(null);
+
+  const herdarParticipante = (p: Participante) => {
+    setDraft((atual) => {
+      const novo = { ...atual };
+      if (campoParticipante) novo[campoParticipante.key] = p.nome;
+      for (const c of campos) {
+        if (CHAVES_HERDADAS.includes(c.key)) {
+          novo[c.key] =
+            c.key === "cnpj"
+              ? p.documento ?? ""
+              : c.key === "uf"
+                ? p.uf ?? ""
+                : p.ie ?? (p.indicadorIe === "Contribuinte isento" ? "ISENTO" : "");
+        }
+      }
+      return novo;
+    });
+    setParticipanteId(p.id);
+    toast.success(`Dados de ${p.nome} trazidos do cadastro.`, {
+      description: "CNPJ, UF e IE vieram do cadastro de participantes.",
+    });
+  };
+
+  const rascunhoNovo = () => {
     const base: Record<string, string> = {};
     campos.forEach((c) => {
       base[c.key] = c.type === "select" ? (c.options?.[0] ?? "") : "";
@@ -110,18 +162,36 @@ export default function CrudDocumentosFiscais({
       const chaveField = campos.find((c) => c.type === "chave")!;
       base[chaveField.key] = chaveFicticia();
     }
-    setDraft(base);
+    return base;
+  };
+
+  const abrirNovo = () => {
+    setDraft(rascunhoNovo());
     setEditing(false);
+    setParticipanteId(null);
     setOpen(true);
   };
 
   const abrirEdicao = (d: DocFiscal) => {
     setDraft({ ...d });
     setEditing(true);
+    setParticipanteId(null);
     setOpen(true);
   };
 
-  const salvar = () => {
+  /** Salvar e continuar lançando: repete o cabeçalho e zera o resto. */
+  const REPETIDOS_PADRAO = [dataKey, "serie", "tipo", "cfop", "status", "uf", "municipio", "alienacao"];
+  const continuarComCabecalho = () => {
+    const proximo = rascunhoNovo();
+    for (const k of [...REPETIDOS_PADRAO, ...(repetir ?? [])]) {
+      if (draft[k] !== undefined && !CHAVES_HERDADAS.includes(k)) proximo[k] = draft[k];
+    }
+    setDraft(proximo);
+    setEditing(false);
+    setParticipanteId(null);
+  };
+
+  const salvar = (continuar = false) => {
     if (!empresa) return toast.error("Selecione uma empresa no cabeçalho.");
     const faltando = campos.filter((c) => c.required && !(draft[c.key] ?? "").trim());
     if (faltando.length) return toast.error(`Preencha: ${faltando.map((c) => c.label).join(", ")}`);
@@ -147,8 +217,15 @@ export default function CrudDocumentosFiscais({
       empresaId: empresa.id,
       competencia: comp,
     } as DocFiscal);
-    setOpen(false);
-    toast.success(editing ? "Documento atualizado." : "Documento registrado.");
+    if (continuar) {
+      continuarComCabecalho();
+      toast.success("Documento registrado — formulário aberto para o próximo.", {
+        description: "A data e os dados do cabeçalho foram mantidos; ajuste o número e o valor.",
+      });
+    } else {
+      setOpen(false);
+      toast.success(editing ? "Documento atualizado." : "Documento registrado.");
+    }
   };
 
   const alternarStatus = (d: DocFiscal) => {
@@ -400,6 +477,8 @@ export default function CrudDocumentosFiscais({
         </div>
       </div>
 
+      <BlocoOrientacao />
+
       {exigeEmpresa ? (
         <Card className="rounded-xl shadow-card border-brand-orange/40">
           <CardContent className="p-5 text-sm text-muted-foreground">
@@ -584,37 +663,87 @@ export default function CrudDocumentosFiscais({
           </DialogHeader>
           <AssistenteCampos titulo={titulo} campos={campos} draft={draft} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {campos.map((c) => (
-              <div key={c.key} className={c.span === 2 ? "md:col-span-2 space-y-1.5" : "space-y-1.5"}>
-                <Label>{c.label}{c.required ? " *" : ""}</Label>
-                {c.type === "select" ? (
-                  <Select value={draft[c.key] ?? ""} onValueChange={(v) => setDraft((s) => ({ ...s, [c.key]: v }))}>
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                    <SelectContent>
-                      {(c.options ?? []).map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                ) : c.type === "textarea" ? (
-                  <Textarea
-                    value={draft[c.key] ?? ""}
-                    placeholder={c.placeholder}
-                    onChange={(e) => setDraft((s) => ({ ...s, [c.key]: e.target.value }))}
-                  />
-                ) : (
-                  <Input
-                    value={draft[c.key] ?? ""}
-                    placeholder={c.placeholder}
-                    className={c.type === "chave" || c.mono ? "font-mono text-xs" : undefined}
-                    onChange={(e) => setDraft((s) => ({ ...s, [c.key]: e.target.value }))}
-                  />
-                )}
-                {c.ajuda ? <p className="text-xs text-muted-foreground">{c.ajuda}</p> : null}
-              </div>
-            ))}
+            {campos.map((c) => {
+              const ehParticipante = campoParticipante?.key === c.key;
+              const herdado = Boolean(participanteId) && CHAVES_HERDADAS.includes(c.key);
+              // Rótulo ligado ao campo: clicar no rótulo foca o campo e o leitor de tela o anuncia.
+              const idCampo = `doc-${slug}-${c.key}`;
+              return (
+                <div key={c.key} className={c.span === 2 ? "md:col-span-2 space-y-1.5" : "space-y-1.5"}>
+                  <Label htmlFor={idCampo}>{c.label}{c.required ? " *" : ""}</Label>
+                  {c.type === "select" ? (
+                    <Select value={draft[c.key] ?? ""} onValueChange={(v) => setDraft((s) => ({ ...s, [c.key]: v }))}>
+                      <SelectTrigger id={idCampo} aria-label={c.label}><SelectValue placeholder="Selecione" /></SelectTrigger>
+                      <SelectContent>
+                        {(c.options ?? []).map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  ) : c.type === "textarea" ? (
+                    <Textarea
+                      id={idCampo}
+                      value={draft[c.key] ?? ""}
+                      placeholder={c.placeholder}
+                      onChange={(e) => setDraft((s) => ({ ...s, [c.key]: e.target.value }))}
+                    />
+                  ) : ehParticipante ? (
+                    <div className="flex gap-2">
+                      <Input
+                        id={idCampo}
+                        value={draft[c.key] ?? ""}
+                        placeholder={c.placeholder ?? "Digite ou escolha no cadastro"}
+                        onChange={(e) => {
+                          setDraft((s) => ({ ...s, [c.key]: e.target.value }));
+                          setParticipanteId(null); // voltou a digitar: deixa de estar vinculado ao cadastro
+                        }}
+                      />
+                      <SeletorParticipante
+                        papel={papelParticipante}
+                        selecionadoId={participanteId}
+                        onEscolher={herdarParticipante}
+                      />
+                    </div>
+                  ) : (
+                    <Input
+                      id={idCampo}
+                      value={draft[c.key] ?? ""}
+                      placeholder={c.placeholder}
+                      readOnly={herdado}
+                      className={[
+                        c.type === "chave" || c.mono ? "font-mono text-xs" : "",
+                        herdado ? "bg-muted/50" : "",
+                      ].join(" ").trim() || undefined}
+                      onChange={(e) => setDraft((s) => ({ ...s, [c.key]: e.target.value }))}
+                    />
+                  )}
+                  {c.ajuda ? <p className="text-xs text-muted-foreground">{c.ajuda}</p> : null}
+                  {c.origem && !herdado ? <OrigemCampo>{c.origem}</OrigemCampo> : null}
+                  {ehParticipante && participanteId ? (
+                    <OrigemCampo>
+                      CNPJ, UF e IE vieram do cadastro de participantes — altere lá para valer em todos os documentos.
+                    </OrigemCampo>
+                  ) : null}
+                  {ehParticipante && !participanteId && !c.ajuda ? (
+                    <p className="text-xs text-muted-foreground">
+                      Escolha no cadastro para trazer CNPJ, UF e IE sem digitar de novo.
+                    </p>
+                  ) : null}
+                  {herdado ? <OrigemCampo>Preenchido pelo cadastro do participante.</OrigemCampo> : null}
+                </div>
+              );
+            })}
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:justify-between">
             <Button variant="outline" className="rounded-full" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={salvar}>Salvar</Button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              {!editing ? (
+                <Button variant="outline" className="rounded-lg" onClick={() => salvar(true)}>
+                  <Plus className="h-4 w-4 mr-2" /> Salvar e adicionar outro
+                </Button>
+              ) : null}
+              <Button className="rounded-lg bg-brand-orange hover:bg-brand-orange/90" onClick={() => salvar(false)}>
+                Salvar
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

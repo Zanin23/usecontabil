@@ -93,7 +93,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "dev:preview": "UC_PREVIEW=1 vite"
   },
   "type": "module",
   "version": "0.0.0"

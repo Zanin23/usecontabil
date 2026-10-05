@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import AssistenteCampos, { type CampoAjuda } from "@/components/contabil/AssistenteCampos";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { confirmarExclusao } from "@/lib/confirmar";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   CENTROS_CUSTO, COMPRAS_EVENT, CONDICOES_PAGAMENTO, SETORES, TIPOS_FRETE, UNIDADES,
   abrirCotacao, adjudicarCotacao, aprovarRequisicao, brl, cancelarCotacao, cancelarPedido,
@@ -1244,6 +1245,8 @@ export default function Suprimentos() {
           contextoExtra={{ modulo: tela.titulo, area: "Administrativo · Compras e suprimentos" }}
         />
       </div>
+
+      <BlocoOrientacao />
 
       {modulo === "requisicoes" && <Requisicoes />}
       {modulo === "cotacoes" && <Cotacoes />}

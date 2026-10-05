@@ -14,6 +14,18 @@ import { formatCompetencia, useCompetencia } from "@/lib/competencia";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { regimeDefinido } from "@/lib/regime";
 import PageHeader from "@/components/contabil/PageHeader";
+import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
+import { secaoDaRota } from "@/lib/ux/navModelo";
+
+// ============================================================================
+// Renderizador genérico do "Índice por área (visão clássica)".
+//
+// DECISÃO (revisão de UX): esta tela continua sendo o destino oficial dos
+// módulos do índice clássico (`/:area/:categoria/:modulo`) — nenhum módulo foi
+// removido do sistema. O caminho recomendado para o usuário novo é o menu por
+// processo; quem chega pela visão clássica encontra aqui o mesmo contexto das
+// telas específicas: seção do fluxo, requisitos pendentes e próximo passo.
+// ============================================================================
 
 const statusClass = (v: string) => {
   const s = v.toLowerCase();
@@ -106,6 +118,7 @@ export default function ModulePage() {
     return okBusca && okStatus;
   });
 
+  const secao = secaoDaRota(`/${areaSlug}/${categoria}/${modulo}`);
   const acoes = (
     <div className="flex items-center gap-2">
       <ExportarMenu
@@ -149,10 +162,17 @@ export default function ModulePage() {
             <Badge variant="outline" className="rounded-md">
               {empresa ? empresa.razao : "Nenhuma empresa selecionada"}
             </Badge>
+            {secao ? (
+              <Badge variant="secondary" className="rounded-md" title={secao.resumo}>
+                {secao.codigo} · {secao.titulo}
+              </Badge>
+            ) : null}
           </>
         }
         actions={acoes}
       />
+
+      <BlocoOrientacao />
 
       {/* Filters */}
       <Card className="rounded-xl border-border/70">
@@ -198,6 +218,28 @@ export default function ModulePage() {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {visiveis.length === 0 && (
+              <TableRow className="border-border">
+                <TableCell colSpan={module.columns.length + (isEmpresas ? 1 : 0)} className="py-12">
+                  <div className="mx-auto max-w-md text-center">
+                    <p className="text-sm font-medium">Nenhum registro por aqui ainda.</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {module.primaryAction
+                        ? `Use o botão “${module.primaryAction}” para começar. O bloco “Entenda esta tela” acima mostra o que é preciso cadastrar antes.`
+                        : "O bloco “Entenda esta tela” acima mostra de onde vêm os dados e o que precisa ser cadastrado antes."}
+                    </p>
+                    {module.primaryAction ? (
+                      <Button asChild size="sm" className="mt-4 rounded-lg">
+                        <Link to={`/${area.slug}/${category.slug}/${module.slug}/novo`}>
+                          <Plus className="mr-1.5 h-3.5 w-3.5" />
+                          {module.primaryAction}
+                        </Link>
+                      </Button>
+                    ) : null}
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
             {visiveis.map((row: any, ri) => {
               const empresaId = row.__empresaId as string | undefined;
               return (

@@ -5,6 +5,7 @@ import ContabilShell from "./components/ContabilShell";
 import RequireAuth from "./components/RequireAuth";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/contabil/Dashboard";
+import MapaSistema from "./pages/contabil/MapaSistema";
 import { CompetenciaProvider } from "./lib/competencia";
 import { EmpresaProvider } from "./lib/empresaAtual";
 
@@ -126,6 +127,7 @@ const App = () => (
         <Route element={<RequireAuth><ContabilShell /></RequireAuth>}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/mapa-sistema" element={<MapaSistema />} />
           <Route path="/simples-mei" element={<SimplesMei />} />
           <Route path="/simples-mei/:view" element={<SimplesMei />} />
           <Route path="/aprender" element={<AprenderCentral />} />
