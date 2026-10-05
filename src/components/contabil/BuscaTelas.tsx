@@ -9,6 +9,7 @@ import {
   FlaskConical, type LucideIcon,
 } from "lucide-react";
 import { AREAS } from "@/lib/contabilNav";
+import { SECOES } from "@/lib/ux/navModelo";
 import { GLOSSARIO } from "@/lib/aprendizado/glossario";
 import { LICOES } from "@/lib/aprendizado/conteudo";
 
@@ -76,6 +77,23 @@ export function useTelas(): TelaBusca[] {
         }
       }
     }
+    // Navegação por processo (mesma do menu lateral): agrupa as telas como o
+    // usuário trabalha, e não pela estrutura interna de áreas.
+    for (const secao of SECOES) {
+      for (const sub of secao.subgrupos) {
+        for (const item of sub.itens) {
+          lista.push({
+            path: item.rota,
+            titulo: item.titulo,
+            grupo: sub.titulo ? `${secao.titulo} › ${sub.titulo}` : secao.titulo,
+            desc: item.desc,
+            icon: item.icon,
+            termos: `${secao.titulo} ${sub.titulo ?? ""} ${item.titulo} ${item.desc ?? ""} ${item.rota}`,
+          });
+        }
+      }
+    }
+
     lista.push(
       {
         path: "/aprender",

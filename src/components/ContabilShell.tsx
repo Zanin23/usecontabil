@@ -3,8 +3,8 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Badge, Button, cn } from "@/design-system/mj-design-system-db98fa";
 import {
   LayoutDashboard, Search, Command, Building2, CalendarRange,
-  Settings2, Users2, Wallet, ChevronRight, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut, MonitorPlay,
-  SlidersHorizontal, GraduationCap, FlaskConical,
+  Settings2, ChevronRight, PanelLeftClose, PanelLeftOpen, ArrowLeft, Menu, X, LogOut, MonitorPlay,
+  SlidersHorizontal, FlaskConical, ListTree,
 } from "lucide-react";
 import NotificacoesPainel from "@/components/contabil/NotificacoesPainel";
 import AjudaTela from "@/components/contabil/AjudaTela";
@@ -13,6 +13,7 @@ import { usePratica, setPraticaAtiva } from "@/lib/praticaStore";
 
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
+import { SECOES, secaoDaRota, trilhaDaRota } from "@/lib/ux/navModelo";
 import { useTema } from "@/lib/tema";
 import { supabase } from "@/integrations/supabase/client";
 import { limparCacheEmpresas } from "@/lib/empresasStore";
@@ -22,8 +23,6 @@ import BuscaTelas from "@/components/contabil/BuscaTelas";
 import ConfiguracoesConta from "@/components/contabil/ConfiguracoesConta";
 import { AMBIENTES, usePreferencias } from "@/lib/preferencias";
 import ApresentacaoSistema from "@/components/contabil/ApresentacaoSistema";
-
-const AREA_ICON = { preparativos: Settings2, financeiro: Wallet } as const;
 
 /**
  * Menu lateral (área azul-noite): item com fundo em degradê e barra indicadora animada quando ativo.
@@ -124,13 +123,14 @@ export default function ContabilShell() {
   const seg = pathname.split("/").filter(Boolean);
   const currentAreaSlug = seg[0];
   const currentArea = AREAS.find((a) => a.slug === currentAreaSlug);
-  const currentCategorySlug = seg[1];
-  const currentCategory = currentArea?.categories.find((c) => c.slug === currentCategorySlug);
 
-  const [openArea, setOpenArea] = useState<string | null>(currentArea?.slug ?? null);
+  // Menu por processo: abre a seção correspondente à rota atual.
+  const secaoAtiva = secaoDaRota(pathname);
+  const itemAtivo = trilhaDaRota(pathname);
+  const [openArea, setOpenArea] = useState<string | null>(secaoAtiva?.id ?? null);
   useEffect(() => {
-    if (currentArea?.slug) setOpenArea(currentArea.slug);
-  }, [currentArea?.slug]);
+    if (secaoAtiva?.id) setOpenArea(secaoAtiva.id);
+  }, [secaoAtiva?.id]);
 
   return (
     <div className="min-h-screen bg-app text-foreground">
@@ -165,49 +165,30 @@ export default function ContabilShell() {
         </div>
 
 
-        <nav className={`flex-1 overflow-y-auto py-4 space-y-4 ${recolhida ? "px-2" : "px-3"}`}>
-          {/* Dashboard */}
-          <NavLink
-            to="/dashboard"
-            title="Dashboard"
-            className={({ isActive }) => navItem(isActive, recolhida)}
-          >
-            {({ isActive }) => (
-              <>
-                {!recolhida && (
-                  <span className="text-[10px] font-mono text-muted-foreground/60 w-5">01</span>
-                )}
-                <span className={navIcone(isActive)}>
-                  <LayoutDashboard className="h-4 w-4" />
-                </span>
-                {!recolhida && <span className={isActive ? "font-medium" : ""}>Dashboard</span>}
-              </>
-            )}
-          </NavLink>
-
-          {/* Areas */}
-          {AREAS.map((area) => {
-            const Icon = area.icon ?? AREA_ICON[area.slug as keyof typeof AREA_ICON] ?? Settings2;
-            const isOpen = !recolhida && openArea === area.slug;
-            const isActive = currentArea?.slug === area.slug;
+        <nav className={`flex-1 overflow-y-auto py-4 space-y-1 ${recolhida ? "px-2" : "px-3"}`}>
+          {SECOES.map((secao) => {
+            const Icon = secao.icon;
+            const isOpen = !recolhida && openArea === secao.id;
+            const isActive = secaoAtiva?.id === secao.id;
+            const itens = secao.subgrupos.flatMap((s) => s.itens);
             return (
-              <div key={area.slug} className="space-y-1">
+              <div key={secao.id} className="space-y-0.5">
                 <button
                   type="button"
-                  title={area.title}
+                  title={secao.titulo}
                   onClick={() => {
                     if (recolhida) {
                       setRecolhida(false);
-                      setOpenArea(area.slug);
+                      setOpenArea(secao.id);
                       return;
                     }
-                    setOpenArea(isOpen ? null : area.slug);
+                    setOpenArea(isOpen ? null : secao.id);
                   }}
                   className={navItem(isActive, recolhida)}
                 >
                   {!recolhida && (
                     <span className="text-[10px] font-mono text-muted-foreground/60 w-5">
-                      {area.code}
+                      {secao.codigo}
                     </span>
                   )}
                   <span className={navIcone(isActive)}>
@@ -215,7 +196,7 @@ export default function ContabilShell() {
                   </span>
                   {!recolhida && (
                     <>
-                      <span className={cn("flex-1", isActive && "font-medium")}>{area.title}</span>
+                      <span className={cn("flex-1", isActive && "font-medium")}>{secao.titulo}</span>
                       <ChevronRight
                         className={`h-3 w-3 transition-transform duration-200 ${isOpen ? "rotate-90 text-foreground" : "text-muted-foreground/60"}`}
                       />
@@ -224,80 +205,61 @@ export default function ContabilShell() {
                 </button>
 
                 {isOpen && (
-                  <div className="pl-8 space-y-0.5 border-l border-white/10 ml-4 animate-in fade-in slide-in-from-top-1 duration-200">
-                    <NavLink
-                      to={`/${area.slug}`}
-                      end
-                      className={({ isActive: linkActive }) =>
-                        `block rounded-md px-3 py-1.5 text-xs transition-all duration-150 ${
-                          linkActive
-                            ? "text-foreground font-medium bg-primary/25 border-l-2 border-primary -ml-px"
-                            : "text-muted-foreground hover:text-foreground hover:bg-white/[0.06] hover:translate-x-0.5"
-                        }`
-                      }
-                    >
-                      Visão geral
-                    </NavLink>
-                    {area.categories.map((cat) => (
-                      <NavLink
-                        key={cat.slug}
-                        to={`/${area.slug}/${cat.slug}`}
-                        className={({ isActive }) =>
-                          `block rounded-md px-3 py-1.5 text-xs transition-all duration-150 ${
-                            isActive || currentCategory?.slug === cat.slug
-                              ? "text-foreground font-medium bg-primary/25 border-l-2 border-primary -ml-px"
-                              : "text-muted-foreground hover:text-foreground hover:bg-white/[0.06] hover:translate-x-0.5"
-                          }`
-                        }
-                      >
-                        {cat.title}
-                      </NavLink>
+                  <div className="ml-4 space-y-2 border-l border-white/10 pl-2 pt-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                    {!recolhida && (
+                      <p className="px-3 pb-1 text-[10px] leading-snug text-muted-foreground/70">
+                        {secao.resumo}
+                      </p>
+                    )}
+                    {secao.subgrupos.map((sub, i) => (
+                      <div key={sub.titulo ?? i} className="space-y-0.5">
+                        {sub.titulo && (
+                          <div className="px-3 pt-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/60">
+                            {sub.titulo}
+                          </div>
+                        )}
+                        {sub.itens.map((item) => (
+                          <NavLink
+                            key={item.rota + item.titulo}
+                            to={item.rota}
+                            title={item.desc ?? item.titulo}
+                            className={({ isActive: linkAtivo }) =>
+                              `flex items-center gap-2 rounded-md px-3 py-1.5 text-xs transition-all duration-150 ${
+                                linkAtivo
+                                  ? "border-l-2 border-primary bg-primary/25 font-medium text-foreground -ml-px"
+                                  : "text-muted-foreground hover:translate-x-0.5 hover:bg-white/[0.06] hover:text-foreground"
+                              }`
+                            }
+                          >
+                            <item.icon className="h-3.5 w-3.5 shrink-0 opacity-70" />
+                            <span className="truncate">{item.titulo}</span>
+                          </NavLink>
+                        ))}
+                      </div>
                     ))}
+                    {/* Mantém o acesso à visão antiga por área, sem esconder nada. */}
+                    {secao.id === "relatorios" && (
+                      <div className="pt-2">
+                        <NavLink
+                          to="/preparativos"
+                          className="flex items-center gap-2 rounded-md px-3 py-1.5 text-[11px] text-muted-foreground/70 hover:text-foreground"
+                          title="Índice completo de módulos por área"
+                        >
+                          <ListTree className="h-3.5 w-3.5" />
+                          Índice por área (visão clássica)
+                        </NavLink>
+                      </div>
+                    )}
+                    {itens.length === 0 && (
+                      <p className="px-3 py-1 text-[11px] text-muted-foreground/70">
+                        Nenhum item nesta seção.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
             );
           })}
-
-          <NavLink
-            to="/aprender"
-            title="Central de Aprendizado"
-            className={({ isActive }) => navItem(isActive, recolhida)}
-          >
-            {({ isActive }) => (
-              <>
-                {!recolhida && (
-                  <span className="text-[10px] font-mono text-muted-foreground/60 w-5">
-                    {String(AREAS.length + 1).padStart(2, "0")}
-                  </span>
-                )}
-                <span className={navIcone(isActive)}>
-                  <GraduationCap className="h-4 w-4" />
-                </span>
-                {!recolhida && <span className={isActive ? "font-medium" : ""}>Aprender</span>}
-              </>
-            )}
-          </NavLink>
-
-          {/* Atalho operacional enxuto para pequenos negócios */}
-          <NavLink
-            to="/simples-mei"
-            title="Controle simplificado do Simples Nacional e MEI"
-            className={({ isActive }) => navItem(isActive, recolhida)}
-          >
-            {({ isActive }) => (
-              <>
-                {!recolhida && <span className="w-5 text-[10px] font-mono text-muted-foreground/60">SN</span>}
-                <span className={navIcone(isActive)}>
-                  <Building2 className="h-4 w-4" />
-                </span>
-                {!recolhida && <span className={isActive ? "font-medium" : ""}>Simples &amp; MEI</span>}
-              </>
-            )}
-          </NavLink>
-
-          {/* O botão de Modo Prática foi removido da barra lateral conforme solicitado. */}
-          {/* Fica acessível apenas nas Configurações da Conta */}
         </nav>
 
 
@@ -402,17 +364,23 @@ export default function ContabilShell() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div className="flex items-center gap-2 text-sm font-medium min-w-0 truncate">
-              {currentArea ? (
+              {secaoAtiva ? (
+                <>
+                  <span className="text-brand-orange shrink-0">{secaoAtiva.codigo}</span>
+                  <span className="text-muted-foreground shrink-0">·</span>
+                  <span className="truncate">{secaoAtiva.titulo}</span>
+                  {itemAtivo && itemAtivo.item.titulo !== secaoAtiva.titulo && (
+                    <>
+                      <span className="text-muted-foreground shrink-0">/</span>
+                      <span className="text-muted-foreground truncate">{itemAtivo.item.titulo}</span>
+                    </>
+                  )}
+                </>
+              ) : currentArea ? (
                 <>
                   <span className="text-brand-orange shrink-0">{currentArea.code}</span>
                   <span className="text-muted-foreground shrink-0">·</span>
                   <span className="truncate">{currentArea.title}</span>
-                  {currentCategory && (
-                    <>
-                      <span className="text-muted-foreground shrink-0">/</span>
-                      <span className="text-muted-foreground truncate">{currentCategory.title}</span>
-                    </>
-                  )}
                 </>
               ) : (
                 <span className="text-foreground">Use Contábil</span>
