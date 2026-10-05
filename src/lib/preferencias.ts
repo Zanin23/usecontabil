@@ -7,10 +7,18 @@ import { useEffect, useState } from "react";
 export type Acento = "orange" | "blue" | "purple" | "pink" | "red";
 export type Ambiente = "homologacao" | "producao" | "treinamento";
 export type Densidade = "confortavel" | "compacta";
+/**
+ * `guiado` liga as ajudas de contexto (o que a tela faz, o que falta, próximo
+ * passo). `direto` é o modo de quem já conhece o sistema: mesmas telas, sem as
+ * explicações. É só leitura de interface — nenhuma regra de negócio muda.
+ */
+export type ModoUso = "guiado" | "direto";
 
 export type Preferencias = {
   acento: Acento;
   densidade: Densidade;
+  /** Modo de uso: com ou sem as explicações de contexto nas telas. */
+  modo: ModoUso;
   ambiente: Ambiente;
   notifVencimentos: boolean;
   notifFechamento: boolean;
@@ -37,6 +45,7 @@ const CHAVE = "usecontabil.preferencias";
 const PADRAO: Preferencias = {
   acento: "orange",
   densidade: "confortavel",
+  modo: "guiado",
   ambiente: "homologacao",
   notifVencimentos: true,
   notifFechamento: true,
@@ -66,6 +75,7 @@ export function aplicarPreferencias(p: Preferencias = atual) {
   else raiz.style.setProperty("--brand-orange", `var(${acento.varName})`);
   raiz.dataset.densidade = p.densidade;
   raiz.dataset.ambiente = p.ambiente;
+  raiz.dataset.modo = p.modo;
 }
 
 export function preferencias() {
