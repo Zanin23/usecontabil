@@ -35,6 +35,15 @@ function corToken(nome: string, fallback: [number, number, number]): [number, nu
 
 const TELAS_DEDICADAS: { area: string; itens: [string, string][] }[] = [
   {
+    area: "Simples & MEI",
+    itens: [
+      ["/simples-mei", "Visão compacta das empresas do Simples Nacional e MEI, do faturamento informado e das pendências."],
+      ["/simples-mei/empresas", "Carteira filtrada a partir do cadastro central de empresas."],
+      ["/simples-mei/receitas", "Registro manual de faturamento para acompanhamento mensal e anual."],
+      ["/simples-mei/obrigacoes", "Checklists e lembretes por empresa e período, sem transmissão automática."],
+    ],
+  },
+  {
     area: "Preparativos",
     itens: [
       ["/preparativos/cadastros/empresas/novo", "Cadastro de empresa com assistente de campos e busca automática de CNPJ/CEP."],
@@ -66,16 +75,16 @@ const TELAS_DEDICADAS: { area: string; itens: [string, string][] }[] = [
       ["/financeiro/movimentos/*", "Faturamento, serviços, demais documentos e conclusão fiscal da competência."],
       ["/financeiro/tributacao/*", "DIFAL, ICMS-ST, DEFIS, tributação avançada, motor tributário e painel executivo."],
       ["/financeiro/demonstracoes/dre", "DRE com análises horizontal e vertical."],
-      ["/financeiro/operacional/conciliacao-bancaria", "Conciliação lado a lado entre extrato e lançamentos."],
+      ["/financeiro/operacional/conciliacao", "Conciliação lado a lado entre extrato e lançamentos."],
     ],
   },
   {
     area: "Administrativo",
     itens: [
-      ["/administrativo/dominio/*", "Cadastros analíticos somente-leitura sincronizados do ERP de origem."],
+      ["/administrativo/cadastros/:dominio", "Cadastros analíticos somente-leitura e domínio de dados administrativos."],
       ["/administrativo/pesquisa", "Pesquisa global sobre a base analítica."],
       ["/administrativo/dashboard", "Painel executivo com concentração e volume financeiro."],
-      ["/administrativo/contas-caixa", "Contas a pagar e receber, tesouraria e fluxo de caixa."],
+      ["/administrativo/financeiro-operacional/:modulo", "Contas a pagar e receber, tesouraria e fluxo de caixa."],
       ["/administrativo/contratos", "Contratos, certificados digitais, documentos e agenda de vencimentos."],
       ["/administrativo/patrimonio", "Bens, depreciação, movimentações e inventário do imobilizado."],
       ["/administrativo/suprimentos", "Requisições, cotações com julgamento e pedidos de compra."],
@@ -119,6 +128,14 @@ const REGRAS: { motor: string; itens: string[] }[] = [
     ],
   },
   {
+    motor: "Controle simplificado Simples & MEI",
+    itens: [
+      "Usa o cadastro central da empresa, registra faturamento informado manualmente e acompanha lembretes por competência ou ano.",
+      "O quadro do MEI usa a referência interna de R$ 81.000 para comparação; não determina desenquadramento nem substitui análise contábil, e a regra aplicável deve ser conferida para cada ano.",
+      "Faturamentos e lembretes ficam no navegador e não são enviados aos portais oficiais.",
+    ],
+  },
+  {
     motor: "Gestão do fechamento",
     itens: [
       "As tarefas exibidas mudam conforme o regime tributário da empresa selecionada (Simples Nacional, MEI, Presumido, Real).",
@@ -150,6 +167,7 @@ const LIMITES = [
   "Os motores fiscais são visuais e internos: não há transmissão, consulta ou qualquer conexão real com a Receita Federal, SEFAZ ou prefeituras.",
   "Documentos, guias e arquivos gerados são simulações para conferência e estudo, sem validade legal.",
   "As preferências de aparência, som e ambiente são locais ao navegador; empresas e usuários ficam no backend.",
+  "A área Simples & MEI guarda faturamentos informados e lembretes somente no navegador; não calcula tributos nem transmite PGDAS-D, DAS, DEFIS ou DASN-SIMEI.",
 ];
 
 /* ============================== montagem ================================= */

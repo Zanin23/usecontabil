@@ -102,6 +102,7 @@ const AdmControles = lazy(() => import("./pages/contabil/administrativo/Controle
 
 const FinConciliacao = lazy(() => import("./pages/contabil/financeiro/operacional/ConciliacaoBancaria"));
 const FinDre = lazy(() => import("./pages/contabil/financeiro/demonstracoes/Dre"));
+const SimplesMei = lazy(() => import("./pages/contabil/SimplesMei"));
 const AprenderCentral = lazy(() => import("./pages/contabil/aprender/Central"));
 const AprenderTrilha = lazy(() => import("./pages/contabil/aprender/Trilha"));
 const AprenderLicao = lazy(() => import("./pages/contabil/aprender/Licao"));
@@ -125,6 +126,8 @@ const App = () => (
         <Route element={<RequireAuth><ContabilShell /></RequireAuth>}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/simples-mei" element={<SimplesMei />} />
+          <Route path="/simples-mei/:view" element={<SimplesMei />} />
           <Route path="/aprender" element={<AprenderCentral />} />
           <Route path="/aprender/glossario" element={<AprenderGlossario />} />
           <Route path="/aprender/pratica" element={<AprenderPratica />} />

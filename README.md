@@ -16,9 +16,10 @@ Central **contábil, fiscal e administrativa interna** de um grupo de empresas: 
 | **Contábil** | Plano de contas do grupo (com modelo pronto, vínculo com o referencial da RFB e **importação por planilha CSV/Excel**), centros de custo, históricos padrão, **lançamentos em partidas dobradas** (estorno e bloqueio da competência encerrada), **balancete de abertura importado de planilha** (gera lançamento do tipo "Abertura"), balancete de verificação, razão e diário. |
 | **Financeiro** | Tabelas por regime, movimentos, tributação (DIFAL, ST, DEFIS, motor tributário), conciliação bancária e DRE. |
 | **Administrativo** | Contas e caixa, contratos e documentos, patrimônio, suprimentos, controles internos (usuários, perfis e permissões), auditoria cadastral, pesquisa global e dashboard executivo. |
+| **Simples & MEI** | Fluxo simplificado: carteira de empresas desses regimes, faturamento informado manualmente, referência de receita do MEI e checklists/lembretes por período. Rotas: `/simples-mei`, `/simples-mei/empresas`, `/simples-mei/receitas` e `/simples-mei/obrigacoes`. |
 | **Aprender** | Central de aprendizado (trilhas, lições e glossário) e **modo prática**, com dados fictícios. |
 
-O seletor de **empresa** e o filtro de **competência** no cabeçalho valem para todas as telas.
+O seletor de **empresa** e o filtro de **competência** no cabeçalho são o contexto geral. A área **Simples & MEI** também oferece um filtro próprio para alternar entre todas as empresas elegíveis e uma empresa específica.
 
 ## Como rodar
 
@@ -41,7 +42,7 @@ npm run lint    # ESLint (ainda acusa pendências antigas, principalmente `any` 
 |---|---|
 | **Nuvem** (Lovable Cloud / Supabase) | Autenticação, papéis de acesso (`user_roles`), perfis (`profiles`), cadastro de usuários (`usuarios`), **empresas** (`empresas`, isoladas por usuário via RLS) e progresso de estudo (`learning_progress`). |
 | **Navegador + nuvem** (`contabil_registros`) | **Cadastros próprios e contabilidade**: clientes e fornecedores, produtos e serviços, plano de contas, centros de custo, históricos padrão e lançamentos contábeis. Gravam na hora no navegador (chaves `usecontabil.col.*`, separadas por usuário) e sincronizam com a tabela `contabil_registros` (isolada por usuário via RLS) — ver `src/lib/nuvemColecoes.ts`. Sem a tabela, ficam só no navegador e sobem sozinhos quando ela existir; o selo "Salvo na nuvem / Salvo só neste navegador" das telas mostra a situação. |
-| **Navegador** (`localStorage`) | **Todo o restante**: documentos fiscais, escrituração fiscal, apurações, obrigações, guias, contratos, patrimônio, compras etc. (chaves `usecontabil.*` e `uc:*`), além das preferências de tema, som e ambiente. |
+| **Navegador** (`localStorage`) | **Todo o restante**: documentos fiscais, escrituração fiscal, apurações, obrigações, guias, contratos, patrimônio, compras etc. (chaves `usecontabil.*` e `uc:*`), além das preferências de tema, som e ambiente. A área Simples & MEI também mantém localmente faturamentos informados e checklists/lembretes na chave `usecontabil.simples-mei.v1` (com sufixo `.pratica` no modo prática). |
 
 Consequência importante: o que não está na lista da nuvem **fica só no navegador em que foi criado** — não acompanha o usuário em outro dispositivo e se perde se os dados do navegador forem limpos.
 
@@ -58,7 +59,7 @@ O **modo prática** guarda seus dados com o sufixo `.pratica` nas mesmas chaves,
 
 ```text
 src/
-  pages/contabil/     telas por área (preparativos, contabilidade, fiscal, financeiro, administrativo, aprender)
+  pages/contabil/     telas por área (preparativos, contabilidade, fiscal, financeiro, administrativo, Simples & MEI, aprender)
   components/         shell do app (ContabilShell), RequireAuth e componentes contábeis reutilizáveis
   lib/                stores por domínio (regras e motores de cálculo) e a navegação (contabilNav*.tsx)
   lib/aprendizado/    conteúdo da camada de aprendizado: lições, trilhas, glossário e laboratórios
