@@ -8,7 +8,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/design-system/mj-design-system-db98fa";
 import {
-  ArrowUpRight, ArrowDownRight, RefreshCw, PlayCircle, AlertTriangle, Info,
+  ArrowUpRight, ArrowDownRight, RefreshCw, PlayCircle, AlertTriangle, Info, Map as MapIcon,
   AlertOctagon, TrendingUp, ChevronDown, Building2, FileStack, Wallet, Landmark, ShieldAlert,
   LayoutDashboard,
 } from "lucide-react";
@@ -20,6 +20,12 @@ import { brl, empresaDB, useTributario, type DocumentoFiscal, processarDocumento
 import { usePratica } from "@/lib/praticaStore";
 import AvisoRegime from "@/components/contabil/AvisoRegime";
 import { useDocsFiscais, valorBR } from "@/lib/fiscalStore";
+import ConfiguracaoInicial from "@/components/ux/ConfiguracaoInicial";
+import PainelPendencias from "@/components/ux/PainelPendencias";
+import Atalhos from "@/components/ux/Atalhos";
+import AtividadesRecentes from "@/components/ux/AtividadesRecentes";
+import TrilhaFluxo, { useEtapasFluxo } from "@/components/ux/TrilhaFluxo";
+import { progressoFluxo } from "@/lib/ux/fluxo";
 
 const toneMap = {
   success: "text-success",
@@ -158,6 +164,8 @@ export default function Dashboard() {
   const empresaId = empresa?.id ?? "";
   const [openKpi, setOpenKpi] = useState<string | null>(null);
   const { praticaAtiva: emPratica } = usePratica();
+  const etapasFluxo = useEtapasFluxo();
+  const progresso = progressoFluxo(etapasFluxo);
 
   const docsTributario = useTributario(() => empresaDB(empresaId).documentos, [empresaId]);
   const docsSaida = useDocsFiscais("saidas", empresaId, competenciasNoPeriodo);
@@ -401,6 +409,15 @@ export default function Dashboard() {
           <RefreshCw className="h-4 w-4 mr-1.5" /> Atualizar dados
         </Button>
         <Button
+          variant="outline"
+          size="sm"
+          className="rounded-lg h-9"
+          onClick={() => navigate("/mapa-sistema")}
+          title="O que depende do quê e o que já está pronto"
+        >
+          <MapIcon className="h-4 w-4 mr-1.5" /> Mapa do sistema
+        </Button>
+        <Button
           size="sm"
           className="rounded-lg h-9 bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground"
           onClick={() => navigate("/preparativos/servicos/gestao")}
@@ -411,29 +428,25 @@ export default function Dashboard() {
     </div>
   );
 
-  if (semEmpresa || semDados) {
-    const Icone = semEmpresa ? Building2 : FileStack;
+  if (semEmpresa) {
     return (
       <div className="space-y-6">
         {header}
+        <TrilhaFluxo rotaAtual="/preparativos/cadastros/empresas" limite={6} />
+        <div className="grid gap-4 xl:grid-cols-2">
+          <ConfiguracaoInicial />
+          <PainelPendencias />
+        </div>
         <Card className="rounded-xl border border-border bg-card shadow-card">
           <CardContent className="p-10 text-center">
-            <Icone className="h-8 w-8 mx-auto text-brand-orange" />
-            <h2 className="font-display text-2xl mt-4">
-              {semEmpresa ? "Nenhuma empresa cadastrada" : "Sem movimento nesta competência"}
-            </h2>
+            <Building2 className="h-8 w-8 mx-auto text-brand-orange" />
+            <h2 className="font-display text-2xl mt-4">Nenhuma empresa cadastrada</h2>
             <div className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto space-y-2">
               <p>
-                {semEmpresa
-                  ? "A base está zerada. Cadastre a primeira empresa do grupo para que os indicadores, apurações e obrigações passem a ser calculados."
-                  : `Nenhum documento fiscal foi escriturado para esta empresa na competência ${isPeriodo ? "selecionada (intervalo)" : formatCompetencia(competencia)}. Lance os documentos para que o painel seja calculado.`}
+                A base está zerada. Cadastre a primeira empresa do grupo para que os indicadores,
+                apurações e obrigações passem a ser calculados — o checklist acima mostra a ordem.
               </p>
-              {isPeriodo && competenciasNoPeriodo.length > 0 && !semEmpresa && (
-                <p className="text-xs text-brand-orange bg-brand-orange/5 border border-brand-orange/20 p-2 rounded-lg inline-block">
-                  <strong>Aviso:</strong> Você está visualizando o período de <strong>{formatCompetencia(competenciasNoPeriodo[0])}</strong> até <strong>{formatCompetencia(competenciasNoPeriodo[competenciasNoPeriodo.length - 1])}</strong>.
-                </p>
-              )}
-              {!semEmpresa && emPratica && (
+              {emPratica && (
                 <p className="text-brand-orange font-medium">
                   💡 No modo prática, você pode carregar cenários de treinamento na tela de Laboratórios para ver o sistema em funcionamento.
                 </p>
@@ -442,11 +455,11 @@ export default function Dashboard() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
               <Button
                 className="rounded-md bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground"
-                onClick={() => navigate(semEmpresa ? "/preparativos/cadastros/empresas/novo" : "/fiscal/documentos/saidas")}
+                onClick={() => navigate("/preparativos/cadastros/empresas/novo")}
               >
-                {semEmpresa ? "Cadastrar empresa" : "Lançar documentos"}
+                Cadastrar empresa
               </Button>
-              {!semEmpresa && emPratica && (
+              {emPratica && (
                 <Button
                   variant="outline"
                   className="rounded-md border-brand-orange text-brand-orange hover:bg-brand-orange/10"
@@ -467,6 +480,50 @@ export default function Dashboard() {
       {header}
 
       <AvisoRegime />
+
+      {/* Onde estou no ciclo + o que falta para o sistema ficar pronto */}
+      <TrilhaFluxo limite={7} />
+      {progresso.porcentagem < 100 && (
+        <div className="grid gap-4 xl:grid-cols-2">
+          <ConfiguracaoInicial />
+          <PainelPendencias />
+        </div>
+      )}
+      {progresso.porcentagem === 100 && (
+        <div className="grid gap-4 xl:grid-cols-2">
+          <PainelPendencias />
+          <ConfiguracaoInicial />
+        </div>
+      )}
+
+      {semDados && (
+        <Card className="rounded-xl border border-border bg-card shadow-card">
+          <CardContent className="p-6 text-center">
+            <FileStack className="h-7 w-7 mx-auto text-brand-orange" />
+            <h2 className="font-display text-xl mt-3">Sem movimento nesta competência</h2>
+            <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">
+              A empresa já está cadastrada, mas nenhum documento fiscal foi escriturado em{" "}
+              {isPeriodo ? "no período selecionado" : formatCompetencia(competencia)}. Lance ou
+              importe as notas para que os indicadores sejam calculados.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-5">
+              <Button
+                className="rounded-lg bg-brand-orange hover:bg-brand-orange/90 text-primary-foreground"
+                onClick={() => navigate("/fiscal/documentos/entradas")}
+              >
+                Importar / lançar documentos
+              </Button>
+              <Button
+                variant="outline"
+                className="rounded-lg"
+                onClick={() => navigate("/contabil/escrituracao/lancamentos")}
+              >
+                Fazer um lançamento contábil
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* KPIs expansíveis */}
       <div className="stagger grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
@@ -755,6 +812,12 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Produtividade: atalhos do momento e o que foi feito por último */}
+      <div className="stagger grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <Atalhos />
+        <AtividadesRecentes />
       </div>
     </div>
   );
