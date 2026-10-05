@@ -5,14 +5,18 @@
  * Estes testes protegem a promessa central do sistema: dizer ao usuário o que
  * falta cadastrar, onde cadastrar, o que isso alimenta e qual é o próximo passo.
  */
+import { readFileSync } from "node:fs";
 import { describe, expect, it, beforeEach, vi } from "vitest";
 import { coletarContexto, type Contexto } from "@/lib/ux/contexto";
 import { REQUISITOS, REQUISITO_POR_ID, avaliar, separarPendencias } from "@/lib/ux/requisitos";
 import { FLUXO, avaliarFluxo, progressoFluxo, proximaEtapa } from "@/lib/ux/fluxo";
-import { TELAS, buscarTela } from "@/lib/ux/telas";
+import { TELAS, TELA_PADRAO, buscarTela, fichaDoMenu } from "@/lib/ux/telas";
 import { SECOES, secaoDaRota, todosOsItens, trilhaDaRota } from "@/lib/ux/navModelo";
 
 import { orientar } from "@/lib/ux/useOrientacao";
+
+/** Rotas registradas no App — a mesma fonte usada pelo teste de cobertura de rotas. */
+const APP_SOURCE = readFileSync("src/App.tsx", "utf8");
 
 vi.mock("@/integrations/supabase/client", async () =>
   (await import("./supabaseFalso")).moduloSupabaseFalso(),
@@ -224,6 +228,41 @@ describe("mapa de telas", () => {
         }
       }
     }
+  });
+
+  it("todo item do menu tem ficha própria com o que faz e por que existe", () => {
+    for (const { item } of todosOsItens()) {
+      const ficha = buscarTela(item.rota);
+      expect(ficha, `sem contexto: ${item.rota}`).toBeTruthy();
+      expect(ficha!.oQueFaz, `contexto genérico em ${item.rota}`).not.toBe(TELA_PADRAO.oQueFaz);
+      expect(ficha!.oQueFaz.length, `"o que faz" curto demais em ${item.rota}`).toBeGreaterThan(20);
+      expect(ficha!.porQue.length, `"por que" curto demais em ${item.rota}`).toBeGreaterThan(20);
+    }
+  });
+
+  it("toda rota estática do app tem contexto (fora login, raiz e redirecionamentos)", () => {
+    const ROTAS_FORA = new Set([
+      "/auth", // tela de autenticação, fora do casco do sistema
+      "/", // redireciona para o dashboard
+      "/financeiro/cadastros", // aliases antigos: redirecionam para Preparativos › Cadastros
+      "/financeiro/cadastros/servicos",
+      "/financeiro/cadastros/produtos",
+      "/financeiro/cadastros/clientes-fornecedores",
+    ]);
+    const rotas = [...APP_SOURCE.matchAll(/<Route\s+path="([^"]+)"/g)]
+      .map((m) => m[1])
+      .filter((r) => r !== "*" && !r.includes(":") && !ROTAS_FORA.has(r));
+    expect(rotas.length).toBeGreaterThan(60);
+    for (const rota of rotas) {
+      const ficha = buscarTela(rota);
+      expect(ficha && ficha.oQueFaz !== TELA_PADRAO.oQueFaz, `sem contexto: ${rota}`).toBe(true);
+    }
+  });
+
+  it("deriva contexto do menu quando a rota ainda não tem ficha escrita", () => {
+    const derivada = fichaDoMenu("/dashboard");
+    expect(derivada?.oQueFaz).toBe("Dashboard — Visão geral, pendências e próximos passos");
+    expect(derivada?.porQue).toContain("Esta tela é a etapa");
   });
 
   it("encontra a ficha pelo prefixo mais longo", () => {

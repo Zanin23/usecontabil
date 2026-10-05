@@ -13,6 +13,8 @@
 // `/contabil/escrituracao/lancamentos/novo` cai na entrada dos lançamentos.
 // ============================================================================
 
+import { trilhaDaRota } from "./navModelo";
+
 export type LinkTela = { titulo: string; rota: string; porque?: string };
 
 export type TelaDef = {
@@ -581,22 +583,540 @@ export const TELAS: TelaDef[] = [
       { titulo: "Ver obrigações", rota: "/simples-mei/obrigacoes" },
     ],
   },
+
+  /* ------------------------------- 01 Início -------------------------------- */
+  {
+    rota: "/dashboard",
+    oQueFaz: "Painel da competência: indicadores, pendências de cadastro, próximos passos, atalhos e últimas atividades.",
+    porQue: "É o ponto de partida do mês — mostra o que já está pronto e o que ainda trava os lançamentos.",
+    vemDe: [
+      { titulo: "Empresas do grupo", rota: "/preparativos/cadastros/empresas" },
+      { titulo: "Clientes e fornecedores", rota: "/preparativos/cadastros/participantes" },
+      { titulo: "Documentos fiscais", rota: "/fiscal/documentos/entradas" },
+    ],
+    proximos: [
+      { titulo: "Continuar a configuração", rota: "/preparativos/cadastros/empresas" },
+      { titulo: "Lançar os documentos do mês", rota: "/fiscal/documentos/entradas" },
+      { titulo: "Ver o mapa do sistema", rota: "/mapa-sistema" },
+    ],
+  },
+  {
+    rota: "/mapa-sistema",
+    oQueFaz: "Mostra o encadeamento do sistema — configuração, cadastros, lançamentos, escrituração, apuração, conciliação, relatórios e fechamento — e o que já está pronto.",
+    porQue: "É o mapa para quando o usuário se perde: mostra o caminho completo e a tela de cada etapa.",
+    vemDe: [{ titulo: "Dashboard", rota: "/dashboard" }],
+    requisitos: ["empresa"],
+    proximos: [{ titulo: "Voltar ao dashboard", rota: "/dashboard" }],
+  },
+
+  /* ----------------------------- 02 Configuração ---------------------------- */
+  {
+    rota: "/preparativos/cadastros/resumo-classe-atividades",
+    oQueFaz: "Consolida as empresas do grupo por classe de atividade (CNAE).",
+    porQue: "Ajuda a conferir se cada CNPJ está classificado na atividade certa — a classificação define tributos e anexos.",
+    vemDe: [
+      { titulo: "Empresas do grupo", rota: "/preparativos/cadastros/empresas" },
+      { titulo: "Classe de atividades", rota: "/preparativos/cadastros/classe-atividades" },
+    ],
+    alimenta: [
+      { titulo: "Parâmetros da empresa", rota: "/preparativos/empresa/parametros" },
+      { titulo: "Apurações", rota: "/fiscal/apuracoes" },
+    ],
+    requisitos: ["empresa"],
+    proximos: [{ titulo: "Revisar parâmetros da empresa", rota: "/preparativos/empresa/parametros" }],
+  },
+  {
+    rota: "/preparativos/empresa/pagamentos",
+    oQueFaz: "Formas de pagamento, contas bancárias e caixas usados nos títulos e na conciliação.",
+    porQue: "Todo título precisa de uma forma de pagamento; sem isso o contas a pagar/receber e a conciliação ficam incompletos.",
+    vemDe: [{ titulo: "Empresas do grupo", rota: "/preparativos/cadastros/empresas" }],
+    alimenta: [
+      { titulo: "Contas a pagar e receber", rota: "/administrativo/financeiro-operacional/contas-pagar" },
+      { titulo: "Conciliação bancária", rota: "/financeiro/operacional/conciliacao" },
+    ],
+    requisitos: ["empresa"],
+  },
+  {
+    rota: "/administrativo/controles/politicas",
+    oQueFaz: "Políticas internas e alçadas de aprovação por valor e área.",
+    porQue: "Define quem aprova o quê — evita lançamento aprovado pela pessoa errada e sustenta a trilha de auditoria.",
+    alimenta: [
+      { titulo: "Contas a pagar e receber", rota: "/administrativo/financeiro-operacional/contas-pagar" },
+      { titulo: "Log de auditoria", rota: "/administrativo/controles/auditoria-log" },
+    ],
+    requisitos: ["empresa"],
+    proximos: [{ titulo: "Definir parâmetros do sistema", rota: "/administrativo/controles/parametros" }],
+  },
+  {
+    rota: "/administrativo/controles/parametros",
+    oQueFaz: "Parâmetros gerais do sistema, por empresa ou por escopo.",
+    porQue: "Concentra as chaves de comportamento (numeração, bloqueios de período, arredondamentos) que valem para todas as telas.",
+    alimenta: [
+      { titulo: "Lançamentos contábeis", rota: "/contabil/escrituracao/lancamentos" },
+      { titulo: "Apurações", rota: "/fiscal/apuracoes" },
+    ],
+    requisitos: ["empresa"],
+  },
+  {
+    rota: "/administrativo/controles/centros-custo",
+    oQueFaz: "Centros de custo, áreas e critérios de rateio.",
+    porQue: "Os lançamentos e títulos apontam para um centro de custo; sem cadastro não há rateio nem análise por área.",
+    alimenta: [
+      { titulo: "Lançamentos contábeis", rota: "/contabil/escrituracao/lancamentos" },
+      { titulo: "Relatórios", rota: "/contabil/relatorios/balancete" },
+    ],
+    requisitos: ["empresa", "plano-contas"],
+  },
+  {
+    rota: "/administrativo/controles/avisos",
+    oQueFaz: "Avisos publicados para os usuários do sistema.",
+    porQue: "É o canal para comunicar prazo de obrigação, mudança de regra ou pendência coletiva.",
+    alimenta: [{ titulo: "Log de auditoria", rota: "/administrativo/controles/auditoria-log" }],
+    requisitos: ["empresa"],
+  },
+  {
+    rota: "/administrativo/controles/auditoria-log",
+    oQueFaz: "Trilha de alterações e acessos, com autor e data de cada operação.",
+    porQue: "Serve de prova de auditoria: mostra quem alterou, quando e o que mudou.",
+    vemDe: [
+      { titulo: "Usuários e acessos", rota: "/administrativo/controles/usuarios" },
+      { titulo: "Políticas e alçadas", rota: "/administrativo/controles/politicas" },
+    ],
+    requisitos: ["empresa"],
+  },
+
+  /* ------------------------------ 03 Cadastros ------------------------------ */
+  {
+    rota: "/administrativo/contratos/contratos",
+    oQueFaz: "Contratos, aditivos, certificados digitais e procurações, com vigência e renovação.",
+    porQue: "Contrato vencido ou certificado expirado interrompe o faturamento e a assinatura de obrigações.",
+    vemDe: [{ titulo: "Clientes e fornecedores", rota: "/preparativos/cadastros/participantes" }],
+    alimenta: [
+      { titulo: "Faturamento", rota: "/financeiro/movimentos/faturamento" },
+      { titulo: "Contas a pagar e receber", rota: "/administrativo/financeiro-operacional/contas-pagar" },
+    ],
+    requisitos: ["empresa", "participantes"],
+    proximos: [{ titulo: "Conferir certificados da empresa", rota: "/preparativos/empresa/certificados" }],
+  },
+  {
+    rota: "/administrativo/cadastros",
+    oQueFaz: "Base analítica somente-leitura dos cadastros recebidos do ERP (contas, participantes, itens).",
+    porQue: "É a conferência do que veio de fora — o cadastro editável fica em Preparativos › Cadastros.",
+    vemDe: [
+      { titulo: "Clientes e fornecedores", rota: "/preparativos/cadastros/participantes" },
+      { titulo: "Produtos e serviços", rota: "/preparativos/cadastros/produtos-servicos" },
+    ],
+    alimenta: [{ titulo: "Auditoria cadastral", rota: "/administrativo/auditoria" }],
+    requisitos: ["empresa"],
+  },
+
+  /* ----------------------------- 04 Lançamentos ----------------------------- */
+  {
+    rota: "/fiscal/documentos/transporte",
+    oQueFaz: "Conhecimentos de transporte (CT-e) e manifestos de carga (MDF-e) do período.",
+    porQue: "O frete tem crédito de ICMS próprio e compõe o custo da mercadoria — sem o CT-e o crédito se perde.",
+    vemDe: [{ titulo: "Clientes e fornecedores", rota: "/preparativos/cadastros/participantes" }],
+    alimenta: [
+      { titulo: "Livro de entradas", rota: "/fiscal/escrituracao/livro-entradas" },
+      { titulo: "Apuração de ICMS", rota: "/fiscal/escrituracao/apuracao-icms" },
+    ],
+    requisitos: ["empresa", "participantes"],
+    proximos: [{ titulo: "Escriturar o livro de entradas", rota: "/fiscal/escrituracao/livro-entradas" }],
+  },
+  {
+    rota: "/fiscal/documentos/cupons",
+    oQueFaz: "Cupons fiscais (NFC-e) e reduções Z das operações de balcão.",
+    porQue: "O varejo escritura as vendas por resumo; cupom a cupom só quando há crédito a destacar.",
+    vemDe: [{ titulo: "Produtos e serviços", rota: "/preparativos/cadastros/produtos-servicos" }],
+    alimenta: [
+      { titulo: "Livro de saídas", rota: "/fiscal/escrituracao/livro-saidas" },
+      { titulo: "Apuração de ICMS", rota: "/fiscal/escrituracao/apuracao-icms" },
+    ],
+    requisitos: ["empresa", "produtos"],
+    proximos: [{ titulo: "Escriturar o livro de saídas", rota: "/fiscal/escrituracao/livro-saidas" }],
+  },
+  {
+    rota: "/fiscal/documentos/manifestacao",
+    oQueFaz: "Manifestação do destinatário: ciência, confirmação, desconhecimento e não realização das operações.",
+    porQue: "Nota não manifestada trava a empresa no SEFAZ e some do livro de entradas.",
+    vemDe: [{ titulo: "Notas de entrada", rota: "/fiscal/documentos/entradas" }],
+    alimenta: [
+      { titulo: "Livro de entradas", rota: "/fiscal/escrituracao/livro-entradas" },
+      { titulo: "Apuração de ICMS", rota: "/fiscal/escrituracao/apuracao-icms" },
+    ],
+    requisitos: ["empresa", "participantes", "certificados"],
+  },
+  {
+    rota: "/financeiro/movimentos/faturamento",
+    oQueFaz: "Movimento de faturamento do período: NF-e, NFC-e, venda balcão, pedidos e orçamentos.",
+    porQue: "É a base das receitas — alimenta a apuração de ICMS/PIS/COFINS e a DRE.",
+    vemDe: [
+      { titulo: "Produtos e serviços", rota: "/preparativos/cadastros/produtos-servicos" },
+      { titulo: "Notas de saída", rota: "/fiscal/documentos/saidas" },
+    ],
+    alimenta: [
+      { titulo: "Livro de saídas", rota: "/fiscal/escrituracao/livro-saidas" },
+      { titulo: "Conclusão fiscal", rota: "/financeiro/movimentos/conclusao-fiscal" },
+      { titulo: "DRE", rota: "/financeiro/demonstracoes/dre" },
+    ],
+    requisitos: ["empresa", "produtos"],
+    proximos: [{ titulo: "Fechar a conclusão fiscal", rota: "/financeiro/movimentos/conclusao-fiscal" }],
+  },
+  {
+    rota: "/financeiro/movimentos/servicos",
+    oQueFaz: "Serviços prestados no período (NFS-e e RPS), com ISS por município e retenções.",
+    porQue: "Serviço tem apuração municipal própria — misturar com mercadoria distorce o ISS.",
+    vemDe: [
+      { titulo: "Serviços prestados", rota: "/fiscal/documentos/servicos-prestados" },
+      { titulo: "Produtos e serviços", rota: "/preparativos/cadastros/produtos-servicos" },
+    ],
+    alimenta: [
+      { titulo: "Apuração de ISS", rota: "/fiscal/apuracoes/iss" },
+      { titulo: "Conclusão fiscal", rota: "/financeiro/movimentos/conclusao-fiscal" },
+    ],
+    requisitos: ["empresa", "produtos", "participantes"],
+  },
+  {
+    rota: "/financeiro/movimentos/demais-documentos",
+    oQueFaz: "Demais documentos do período: CT-e, MDF-e, notas complementares e de ajuste, recibos.",
+    porQue: "Documentos que não são venda nem compra típica, mas mudam bases e créditos (complemento de ICMS, ajuste, frete).",
+    vemDe: [
+      { titulo: "Conhecimentos de transporte", rota: "/fiscal/documentos/transporte" },
+      { titulo: "Notas de entrada", rota: "/fiscal/documentos/entradas" },
+    ],
+    alimenta: [{ titulo: "Conclusão fiscal", rota: "/financeiro/movimentos/conclusao-fiscal" }],
+    requisitos: ["empresa", "participantes"],
+  },
+  {
+    rota: "/financeiro/movimentos/conclusao-fiscal",
+    oQueFaz: "Confere e fecha o movimento do período, liberando escrituração e apuração.",
+    porQue: "Enquanto o movimento não fecha, os livros e as apurações ficam parciais.",
+    vemDe: [
+      { titulo: "Faturamento", rota: "/financeiro/movimentos/faturamento" },
+      { titulo: "Serviços", rota: "/financeiro/movimentos/servicos" },
+      { titulo: "Demais documentos", rota: "/financeiro/movimentos/demais-documentos" },
+    ],
+    alimenta: [
+      { titulo: "Livro de saídas", rota: "/fiscal/escrituracao/livro-saidas" },
+      { titulo: "Apurações", rota: "/fiscal/apuracoes" },
+      { titulo: "Fechamento do mês", rota: "/preparativos/servicos/gestao" },
+    ],
+    requisitos: ["empresa", "documentos"],
+    proximos: [{ titulo: "Escriturar e apurar", rota: "/fiscal/escrituracao/livro-saidas" }],
+  },
+  {
+    rota: "/administrativo/financeiro-operacional/fluxo-caixa",
+    oQueFaz: "Projeção semanal de entradas e saídas, a partir dos títulos com vencimento.",
+    porQue: "Antecipa aperto de caixa — mostra a semana em que as saídas passam as entradas.",
+    vemDe: [
+      { titulo: "Contas a pagar e receber", rota: "/administrativo/financeiro-operacional/contas-pagar" },
+      { titulo: "Conciliação bancária", rota: "/financeiro/operacional/conciliacao" },
+    ],
+    requisitos: ["empresa", "titulos"],
+  },
+  {
+    rota: "/administrativo/financeiro-operacional/cobranca",
+    oQueFaz: "Títulos vencidos e ações de cobrança (aviso, negociação, protesto).",
+    porQue: "Inadimplência vira perda e distorce o fluxo de caixa — aqui ela é acompanhada e cobrada.",
+    vemDe: [{ titulo: "Contas a pagar e receber", rota: "/administrativo/financeiro-operacional/contas-pagar" }],
+    alimenta: [
+      { titulo: "Fluxo de caixa", rota: "/administrativo/financeiro-operacional/fluxo-caixa" },
+      { titulo: "Dashboard", rota: "/dashboard" },
+    ],
+    requisitos: ["empresa", "titulos"],
+  },
+
+  /* ----------------------------- 05 Escrituração ---------------------------- */
+  {
+    rota: "/fiscal/escrituracao/apuracao-ipi",
+    oQueFaz: "Apuração de IPI do período: créditos por entrada, débitos por saída e saldo a recolher.",
+    porQue: "Só empresas industriais/importadoras apuram IPI — o saldo vira guia de recolhimento.",
+    vemDe: [
+      { titulo: "Documentos fiscais", rota: "/fiscal/documentos/entradas" },
+      { titulo: "Livro de saídas", rota: "/fiscal/escrituracao/livro-saidas" },
+    ],
+    alimenta: [{ titulo: "Guias e obrigações", rota: "/fiscal/obrigacoes" }],
+    requisitos: ["empresa", "escrituracao"],
+    proximos: [{ titulo: "Emitir guias do período", rota: "/fiscal/obrigacoes" }],
+  },
+  {
+    rota: "/fiscal/escrituracao/ciap",
+    oQueFaz: "Controle do crédito de ICMS do ativo permanente (CIAP) em 48 parcelas.",
+    porQue: "Bem do imobilizado gera crédito de ICMS parcelado — sem o CIAP o crédito é perdido ou lançado a maior.",
+    vemDe: [
+      { titulo: "Patrimônio", rota: "/administrativo/patrimonio/bens" },
+      { titulo: "Notas de entrada", rota: "/fiscal/documentos/entradas" },
+    ],
+    alimenta: [{ titulo: "Apuração de ICMS", rota: "/fiscal/escrituracao/apuracao-icms" }],
+    requisitos: ["empresa", "plano-contas"],
+  },
+
+  /* ------------------------ 06 Apuração e recolhimento ---------------------- */
+  {
+    rota: "/financeiro/tributacao/motor-tributario",
+    oQueFaz: "Regras tributárias com vigência, prioridade e correção sugerida por item de documento.",
+    porQue: "É o cérebro do cálculo — regra desatualizada ou fora de vigência produz tributo errado.",
+    vemDe: [
+      { titulo: "Produtos e serviços", rota: "/preparativos/cadastros/produtos-servicos" },
+      { titulo: "Parâmetros da empresa", rota: "/preparativos/empresa/parametros" },
+    ],
+    alimenta: [
+      { titulo: "Faturamento", rota: "/financeiro/movimentos/faturamento" },
+      { titulo: "Apurações", rota: "/fiscal/apuracoes" },
+    ],
+    requisitos: ["empresa", "regime", "produtos"],
+  },
+  {
+    rota: "/financeiro/tributacao/avancada",
+    oQueFaz: "Tratamentos especiais: monofásico, drawback, Zona Franca de Manaus e incentivos.",
+    porQue: "São exceções que mudam alíquota e base — aplicadas aqui, não em cada documento.",
+    vemDe: [{ titulo: "Motor tributário", rota: "/financeiro/tributacao/motor-tributario" }],
+    alimenta: [{ titulo: "Apurações", rota: "/fiscal/apuracoes" }],
+    requisitos: ["empresa", "produtos"],
+  },
+  {
+    rota: "/financeiro/tabelas/simples-nacional",
+    oQueFaz: "Anexos, faixas de faturamento e alíquotas do Simples Nacional.",
+    porQue: "Define a alíquota efetiva do mês a partir da receita acumulada dos últimos 12 meses.",
+    vemDe: [{ titulo: "Empresas do grupo", rota: "/preparativos/cadastros/empresas" }],
+    alimenta: [
+      { titulo: "Apuração do Simples", rota: "/fiscal/apuracoes/simples-nacional" },
+      { titulo: "Simples & MEI", rota: "/simples-mei" },
+    ],
+    requisitos: ["empresa", "regime"],
+  },
+  {
+    rota: "/financeiro/tabelas/lucro-presumido",
+    oQueFaz: "Percentuais de presunção e alíquotas do Lucro Presumido por atividade.",
+    porQue: "É a tabela usada para calcular IRPJ e CSLL do trimestre no regime presumido.",
+    vemDe: [{ titulo: "Classe de atividades", rota: "/preparativos/cadastros/classe-atividades" }],
+    alimenta: [{ titulo: "Apuração de IRPJ e CSLL", rota: "/fiscal/apuracoes/irpj-csll" }],
+    requisitos: ["empresa", "regime", "atividade"],
+  },
+  {
+    rota: "/financeiro/tabelas/lucro-real",
+    oQueFaz: "Tabelas do Lucro Real: adições, exclusões, compensações e alíquotas.",
+    porQue: "No Lucro Real o imposto sai do lucro contábil ajustado — a tabela parametriza os ajustes.",
+    vemDe: [{ titulo: "Balancete", rota: "/contabil/relatorios/balancete" }],
+    alimenta: [{ titulo: "Apuração de IRPJ e CSLL", rota: "/fiscal/apuracoes/irpj-csll" }],
+    requisitos: ["empresa", "regime", "escrituracao"],
+  },
+  {
+    rota: "/financeiro/tabelas/simei",
+    oQueFaz: "Tabela do MEI: valor fixo mensal, limites de faturamento e atividades permitidas.",
+    porQue: "Controla o teto de R$ 81 mil e o que fazer ao estourar — inclusive o desenquadramento.",
+    vemDe: [{ titulo: "Empresas do grupo", rota: "/preparativos/cadastros/empresas" }],
+    alimenta: [
+      { titulo: "Simples & MEI", rota: "/simples-mei" },
+      { titulo: "Guias e obrigações", rota: "/fiscal/obrigacoes" },
+    ],
+    requisitos: ["empresa", "regime"],
+  },
+  {
+    rota: "/financeiro/tabelas/ajuste-apuracao",
+    oQueFaz: "Ajustes da apuração do período (incentivos, estornos, adições e exclusões) com vigência.",
+    porQue: "Valores que não estão na nota mas mudam o tributo devido — sem eles a guia sai errada.",
+    vemDe: [
+      { titulo: "Motor tributário", rota: "/financeiro/tributacao/motor-tributario" },
+      { titulo: "Apurações", rota: "/fiscal/apuracoes" },
+    ],
+    alimenta: [
+      { titulo: "Apuração de ICMS", rota: "/fiscal/escrituracao/apuracao-icms" },
+      { titulo: "Guias e obrigações", rota: "/fiscal/obrigacoes" },
+    ],
+    requisitos: ["empresa", "regime"],
+  },
+  {
+    rota: "/financeiro/tabelas/ajuste-documento-fiscal",
+    oQueFaz: "Ajustes aplicados por documento fiscal antes da escrituração (CFOP, CST, base e alíquota).",
+    porQue: "Corrige o que veio errado do XML ou do ERP sem reescrever o documento original.",
+    vemDe: [
+      { titulo: "Documentos fiscais", rota: "/fiscal/documentos/entradas" },
+      { titulo: "Motor tributário", rota: "/financeiro/tributacao/motor-tributario" },
+    ],
+    alimenta: [
+      { titulo: "Livro de entradas", rota: "/fiscal/escrituracao/livro-entradas" },
+      { titulo: "Apurações", rota: "/fiscal/apuracoes" },
+    ],
+    requisitos: ["empresa", "documentos"],
+  },
+  {
+    rota: "/financeiro/tabelas/apuracao-pis-cofins",
+    oQueFaz: "Parâmetros da apuração de PIS/COFINS: regime cumulativo ou não cumulativo, alíquotas e ajustes.",
+    porQue: "Define como a contribuição é calculada no período e o que pode ser creditado.",
+    vemDe: [
+      { titulo: "Motor tributário", rota: "/financeiro/tributacao/motor-tributario" },
+      { titulo: "Faturamento", rota: "/financeiro/movimentos/faturamento" },
+    ],
+    alimenta: [
+      { titulo: "Apuração de PIS/COFINS", rota: "/fiscal/apuracoes/pis-cofins" },
+      { titulo: "EFD-Contribuições", rota: "/fiscal/obrigacoes/efd-contribuicoes" },
+    ],
+    requisitos: ["empresa", "regime"],
+  },
+  {
+    rota: "/financeiro/tributacao/difal",
+    oQueFaz: "Diferencial de alíquota (DIFAL) nas operações interestaduais para consumidor final.",
+    porQue: "Venda interestadual para contribuinte ou consumidor final tem parte do ICMS para o estado de destino.",
+    vemDe: [
+      { titulo: "Notas de saída", rota: "/fiscal/documentos/saidas" },
+      { titulo: "Motor tributário", rota: "/financeiro/tributacao/motor-tributario" },
+    ],
+    alimenta: [
+      { titulo: "Apuração de ICMS", rota: "/fiscal/escrituracao/apuracao-icms" },
+      { titulo: "Guias e obrigações", rota: "/fiscal/obrigacoes" },
+    ],
+    requisitos: ["empresa", "participantes", "documentos"],
+  },
+  {
+    rota: "/financeiro/tributacao/st-icms",
+    oQueFaz: "Substituição tributária (ICMS-ST): pauta, MVA e ressarcimento.",
+    porQue: "Na ST o imposto é retido antes da venda — quem não controla fica com crédito ou dívida escondida.",
+    vemDe: [
+      { titulo: "Motor tributário", rota: "/financeiro/tributacao/motor-tributario" },
+      { titulo: "Produtos e serviços", rota: "/preparativos/cadastros/produtos-servicos" },
+    ],
+    alimenta: [{ titulo: "Apuração de ICMS", rota: "/fiscal/escrituracao/apuracao-icms" }],
+    requisitos: ["empresa", "produtos"],
+  },
+  {
+    rota: "/financeiro/tributacao/defis",
+    oQueFaz: "Geração e conferência do DEFIS (declaração do Simples Nacional).",
+    porQue: "O DEFIS informa a receita do ano ao Fisco — divergência com a apuração gera malha.",
+    vemDe: [
+      { titulo: "Apuração do Simples", rota: "/fiscal/apuracoes/simples-nacional" },
+      { titulo: "Simples & MEI", rota: "/simples-mei" },
+    ],
+    alimenta: [{ titulo: "Guias e obrigações", rota: "/fiscal/obrigacoes" }],
+    requisitos: ["empresa", "regime", "apuracao"],
+  },
+
+  /* ------------------------ 07 Conciliação e auditoria ---------------------- */
+  {
+    rota: "/administrativo/auditoria",
+    oQueFaz: "Inconsistências nos cadastros: participantes e produtos incompletos ou inválidos.",
+    porQue: "Cadastro incompleto atravessa a escrituração e volta como rejeição de obrigação — melhor corrigir na origem.",
+    vemDe: [
+      { titulo: "Clientes e fornecedores", rota: "/preparativos/cadastros/participantes" },
+      { titulo: "Produtos e serviços", rota: "/preparativos/cadastros/produtos-servicos" },
+      { titulo: "Cadastros analíticos", rota: "/administrativo/cadastros" },
+    ],
+    requisitos: ["empresa"],
+    proximos: [{ titulo: "Corrigir participantes", rota: "/preparativos/cadastros/participantes" }],
+  },
+  {
+    rota: "/administrativo/pesquisa",
+    oQueFaz: "Pesquisa global em toda a base: participantes, produtos, documentos, títulos e lançamentos.",
+    porQue: "Evita abrir tela por tela quando o usuário só precisa localizar um registro.",
+    requisitos: ["empresa"],
+  },
+
+  /* ------------------------------ 08 Relatórios ----------------------------- */
+  {
+    rota: "/administrativo/dashboard",
+    oQueFaz: "Indicadores consolidados por área: financeiro, fiscal, contábil e administrativo.",
+    porQue: "Visão de diretoria — o outro dashboard é operacional, este compara áreas e períodos.",
+    vemDe: [
+      { titulo: "Relatórios contábeis", rota: "/contabil/relatorios/balancete" },
+      { titulo: "Painel tributário", rota: "/financeiro/tributacao/dashboard-executivo" },
+    ],
+    requisitos: ["empresa"],
+  },
+  {
+    rota: "/financeiro/tributacao/dashboard-executivo",
+    oQueFaz: "Carga tributária do período por tributo, regime e empresa, com comparativo de períodos.",
+    porQue: "Mostra para onde vai o imposto e onde o planejamento tributário pode agir.",
+    vemDe: [
+      { titulo: "Apurações", rota: "/fiscal/apuracoes" },
+      { titulo: "Guias e obrigações", rota: "/fiscal/obrigacoes" },
+    ],
+    requisitos: ["empresa", "apuracao"],
+  },
+
+  /* ------------------------------ 09 Fechamento ----------------------------- */
+  {
+    rota: "/preparativos/servicos/fases-processos",
+    oQueFaz: "Modelagem das fases e processos do ciclo mensal do escritório.",
+    porQue: "Define a ordem de execução (etapas, responsáveis e prazos) que a gestão do fechamento acompanha.",
+    vemDe: [{ titulo: "Empresas do grupo", rota: "/preparativos/cadastros/empresas" }],
+    alimenta: [
+      { titulo: "Cadastro de tarefas", rota: "/preparativos/servicos/cadastro-tarefas" },
+      { titulo: "Gestão do fechamento", rota: "/preparativos/servicos/gestao" },
+    ],
+    requisitos: ["empresa"],
+    proximos: [{ titulo: "Cadastrar tarefas por regime", rota: "/preparativos/servicos/cadastro-tarefas" }],
+  },
+  {
+    rota: "/preparativos/servicos/cadastro-tarefas",
+    oQueFaz: "Tarefas do fechamento por regime tributário, com prazo e responsável.",
+    porQue: "Cada regime tem obrigações próprias; a tarefa certa evita esquecer um prazo legal.",
+    vemDe: [{ titulo: "Fases e processos", rota: "/preparativos/servicos/fases-processos" }],
+    alimenta: [{ titulo: "Gestão do fechamento", rota: "/preparativos/servicos/gestao" }],
+    requisitos: ["empresa", "regime"],
+  },
+
+  /* -------------------------------- 10 Aprender ----------------------------- */
+  {
+    rota: "/aprender",
+    oQueFaz: "Central de aprendizagem: trilhas guiadas do ciclo contábil/fiscal e lições curtas.",
+    porQue: "Responde \"como faço isso?\" sem depender de suporte — cada lição aponta para a tela correspondente.",
+    alimenta: [
+      { titulo: "Glossário", rota: "/aprender/glossario" },
+      { titulo: "Modo prática", rota: "/aprender/pratica" },
+    ],
+    proximos: [{ titulo: "Testar no modo prática", rota: "/aprender/pratica" }],
+  },
+  {
+    rota: "/aprender/glossario",
+    oQueFaz: "Glossário de termos contábeis, fiscais e do sistema.",
+    porQue: "Traduz o jargão na hora da dúvida, sem sair da tarefa.",
+    vemDe: [{ titulo: "Central de aprendizagem", rota: "/aprender" }],
+  },
+  {
+    rota: "/aprender/pratica",
+    oQueFaz: "Laboratórios com dados fictícios para treinar o ciclo sem tocar nos dados reais.",
+    porQue: "Permite errar e refazer; o modo prática é isolado da base real da empresa.",
+    vemDe: [{ titulo: "Central de aprendizagem", rota: "/aprender" }],
+    requisitos: ["empresa"],
+  },
 ];
 
-/** Tela genérica: usada quando a rota não tem ficha própria. */
+/** Tela genérica: usada quando a rota não está no menu nem tem ficha própria. */
 export const TELA_PADRAO: TelaDef = {
   rota: "",
   oQueFaz: "Módulo do Use Contábil.",
   porQue: "Consulte o cabeçalho da tela para entender o objetivo deste módulo.",
 };
 
+/**
+ * Ficha derivada do menu: cobre qualquer rota que ainda não tenha ficha escrita
+ * (nunca deixa a tela sem responder "o que faz" e "por que existe").
+ */
+export function fichaDoMenu(rota: string): TelaDef | undefined {
+  const trilha = trilhaDaRota(rota);
+  if (!trilha) return undefined;
+  const { secao, item } = trilha;
+  return {
+    rota: item.rota,
+    oQueFaz: item.desc ? `${item.titulo} — ${item.desc}` : `${item.titulo}: etapa do fluxo do sistema.`,
+    porQue: `${secao.resumo} Esta tela é a etapa "${item.titulo}" desse fluxo.`,
+  };
+}
+
+const CACHE_FICHAS = new Map<string, TelaDef>();
+
 /** Encontra a ficha da tela pela rota (o prefixo mais longo vence). */
 export function buscarTela(rota: string): TelaDef | undefined {
+  const emCache = CACHE_FICHAS.get(rota);
+  if (emCache) return emCache;
+
   let melhor: { tela: TelaDef; tamanho: number } | undefined;
   for (const tela of TELAS) {
     if (rota === tela.rota || rota.startsWith(tela.rota + "/") || rota.startsWith(tela.rota)) {
       if (!melhor || tela.rota.length > melhor.tamanho) melhor = { tela, tamanho: tela.rota.length };
     }
   }
-  return melhor?.tela;
+  const ficha = melhor?.tela ?? fichaDoMenu(rota);
+  if (ficha) CACHE_FICHAS.set(rota, ficha);
+  return ficha;
 }
