@@ -26,8 +26,9 @@ export default function ManifestacaoDestinatario() {
       colunas={["chave", "emitente", "data", "evento", "valor", "status"]}
       campos={[
         { key: "chave", label: "Chave de acesso", type: "chave", span: 2, required: true },
-        { key: "emitente", label: "Emitente", required: true },
+        { key: "emitente", label: "Emitente", type: "participante", required: true, ajuda: "Escolha no cadastro para trazer CNPJ, UF e IE sem digitar de novo." },
         { key: "cnpj", label: "CNPJ do emitente", mono: true },
+        { key: "uf", label: "UF do participante", placeholder: "SP", ajuda: "Herdada do cadastro; entra no DIFAL e na partilha do ICMS entre estados." },
         { key: "data", label: "Emissão", mono: true, required: true, placeholder: "01/07/2026" },
         { key: "valor", label: "Valor da nota (R$)", mono: true, align: "right" },
         { key: "evento", label: "Evento", type: "select", options: EVENTOS },
