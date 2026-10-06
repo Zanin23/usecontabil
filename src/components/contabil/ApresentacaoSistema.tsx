@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   X,
   ChevronLeft,
@@ -17,6 +17,7 @@ import {
   Receipt,
   FileText,
   Landmark,
+  type LucideIcon,
 } from "lucide-react";
 import {
   Button,
@@ -39,18 +40,23 @@ const brl = (v: number) =>
   "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 
+/** Linha da prévia de tabela: valor numérico é formatado como moeda na tela. */
+type LinhaPreview = Record<string, string | number>;
+/** Prévia no formato "kpis". */
+type KpiPreview = { label: string; valor: string; sub: string };
+
 interface Slide {
   id: string;
   title: string;
   subtitle: string;
   highlight: string;
-  icon: any;
+  icon: LucideIcon;
   description: string;
   points: string[];
   image?: string;
   area?: string;
   previewType?: "chart" | "table" | "kpis" | "icon" | "image";
-  previewData?: any;
+  previewData?: LinhaPreview[] | KpiPreview[];
 }
 
 
@@ -240,15 +246,26 @@ export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => voi
     if (current > 0) setCurrent(current - 1);
   };
 
+  // Posição atual em ref: os atalhos valem para o slide visível sem que o
+  // listener precise ser recriado a cada avanço.
+  const posicao = useRef(current);
+  useEffect(() => {
+    posicao.current = current;
+  }, [current]);
+
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight" || e.key === " ") next();
-      if (e.key === "ArrowLeft") prev();
-      if (e.key === "Escape" && onFinish) onFinish();
+      const c = posicao.current;
+      if (e.key === "ArrowRight" || e.key === " ") {
+        if (c < SLIDES.length - 1) setCurrent(c + 1);
+        else onFinish?.();
+      }
+      if (e.key === "ArrowLeft" && c > 0) setCurrent(c - 1);
+      if (e.key === "Escape") onFinish?.();
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [current]);
+  }, [onFinish]);
 
   return (
     <div className="fixed inset-0 z-[100] bg-background flex flex-col overflow-hidden">
@@ -356,7 +373,7 @@ export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => voi
                     </div>
                     <div className="flex-1 min-h-0">
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={slide.previewData}>
+                        <BarChart data={slide.previewData as LinhaPreview[]}>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
                           <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
                           <YAxis hide />
@@ -386,20 +403,20 @@ export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => voi
                       <UITable>
                         <TableHeader>
                           <TableRow className="hover:bg-transparent border-border">
-                            {Object.keys(slide.previewData[0]).map(key => (
+                            {Object.keys(slide.previewData[0] as LinhaPreview).map(key => (
                               <TableHead key={key} className="text-[10px] uppercase h-8">{key}</TableHead>
                             ))}
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {slide.previewData.map((row: any, i: number) => (
+                          {(slide.previewData as LinhaPreview[]).map((row, i) => (
                             <TableRow key={i} className="border-border/50">
-                              {Object.entries(row).map(([key, val]: any, j) => (
+                              {Object.entries(row).map(([key, val], j) => (
                                 <TableCell key={j} className={cn(
                                   "text-[11px] py-2",
                                   key === 'apagar' || key === 'base' ? "font-mono" : ""
                                 )}>
-                                  {key === 'apagar' || key === 'base' ? brl(val) : String(val)}
+                                  {key === 'apagar' || key === 'base' ? brl(Number(val)) : String(val)}
                                 </TableCell>
                               ))}
                             </TableRow>
@@ -412,7 +429,7 @@ export default function ApresentacaoSistema({ onFinish }: { onFinish?: () => voi
 
                 {slide.previewType === "kpis" && (
                   <div className="flex-1 p-8 grid grid-cols-1 gap-6 content-center">
-                    {slide.previewData.map((kpi: any, i: number) => (
+                    {(slide.previewData as KpiPreview[]).map((kpi, i) => (
                       <motion.div 
                         key={i}
                         initial={{ opacity: 0, x: 20 }}

@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "./design-system/mj-design-system-db98fa";
 import ContabilShell from "./components/ContabilShell";
 import RequireAuth from "./components/RequireAuth";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/contabil/Dashboard";
 import MapaSistema from "./pages/contabil/MapaSistema";
@@ -121,6 +122,7 @@ const App = () => (
     <CompetenciaProvider>
     <EmpresaProvider>
     <Toaster />
+    <ErrorBoundary secao="o sistema">
     <Suspense fallback={<div className="min-h-screen bg-background" />}>
 
       <Routes>
@@ -265,6 +267,7 @@ const App = () => (
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
+    </ErrorBoundary>
     </EmpresaProvider>
     </CompetenciaProvider>
 

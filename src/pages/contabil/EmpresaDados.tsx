@@ -15,7 +15,7 @@ import AssistenteFechamento from "@/components/contabil/AssistenteFechamento";
 export default function EmpresaDados() {
   const { empresa } = useEmpresaAtual();
   const registro = empresa ? getEmpresa(empresa.id) : undefined;
-  const raw = (registro?.raw ?? {}) as Record<string, string>;
+  const raw = useMemo(() => (registro?.raw ?? {}) as Record<string, string>, [registro]);
 
   const inscricoes = useRegistros("inscricoes", empresa?.id ?? null);
   const pagamentos = useRegistros("pagamentos", empresa?.id ?? null);

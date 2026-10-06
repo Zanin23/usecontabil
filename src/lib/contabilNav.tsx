@@ -327,7 +327,7 @@ const preparativos: Category[] = [
         rows: [
           { campo: "Razão social", valor: "Metalúrgica Andrade S.A." },
           { campo: "Nome fantasia", valor: "Andrade Metal" },
-          { campo: "CNPJ", valor: "12.345.678/0001-90" },
+          { campo: "CNPJ", valor: "12.345.678/0001-95" },
           { campo: "Natureza jurídica", valor: "204-6 — Sociedade Anônima Fechada" },
           { campo: "Regime tributário", valor: "Lucro Real trimestral" },
           { campo: "CNAE principal", valor: "2521-7/00 — Fabricação de tanques metálicos" },
@@ -350,7 +350,7 @@ const preparativos: Category[] = [
           { key: "situacao", label: "Situação", align: "center" },
         ],
         rows: [
-          { tipo: "CNPJ", orgao: "Receita Federal", numero: "12.345.678/0001-90", situacao: "Ativa" },
+          { tipo: "CNPJ", orgao: "Receita Federal", numero: "12.345.678/0001-95", situacao: "Ativa" },
           { tipo: "Inscrição Estadual", orgao: "SEF/MG", numero: "062.184.220.0044", situacao: "Ativa" },
           { tipo: "Inscrição Estadual ST", orgao: "SEFAZ/SP", numero: "395.028.410.118", situacao: "Ativa" },
           { tipo: "Inscrição Municipal", orgao: "Prefeitura de Betim", numero: "184.221-0", situacao: "Ativa" },
@@ -378,7 +378,7 @@ const preparativos: Category[] = [
           { banco: "Bradesco", agencia: "1204-7", conta: "94.221-1", tipo: "Corrente PJ", saldo: brl(214_800.12), situacao: "Ativa" },
           { banco: "Santander", agencia: "3092-1", conta: "01.882.402-4", tipo: "Investimento", saldo: brl(1_240_800.00), situacao: "Ativa" },
           { banco: "Caixa Econômica", agencia: "0044-8", conta: "1.284-0", tipo: "FGTS convênio", saldo: brl(48_212.44), situacao: "Ativa" },
-          { banco: "PIX chave CNPJ", agencia: "—", conta: "12.345.678/0001-90", tipo: "Recebimento", saldo: brl(0), situacao: "Ativa" },
+          { banco: "PIX chave CNPJ", agencia: "—", conta: "12.345.678/0001-95", tipo: "Recebimento", saldo: brl(0), situacao: "Ativa" },
           { banco: "BB Empresas", agencia: "1220-3", conta: "48.842-6", tipo: "Folha de pagamento", saldo: brl(0), situacao: "Suspensa" },
         ],
       },

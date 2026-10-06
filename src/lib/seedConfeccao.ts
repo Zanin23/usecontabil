@@ -58,18 +58,18 @@ function produtos(): Produto[] {
 /* -------------------------------- parceiros -------------------------------- */
 
 const CLIENTES: { nome: string; doc: string; uf: UF; municipio: string; ie?: string; contribuinte: boolean; consumidorFinal: boolean; regime: string; crt: string }[] = [
-  { nome: "Lojas Vestir Bem Ltda.", doc: "18.442.910/0001-52", uf: "PR", municipio: "Londrina", ie: "9052144870", contribuinte: true, consumidorFinal: false, regime: "Lucro Presumido", crt: "3" },
-  { nome: "Moda Sul Distribuidora Ltda.", doc: "23.771.605/0001-11", uf: "SC", municipio: "Blumenau", ie: "2557712340", contribuinte: true, consumidorFinal: false, regime: "Lucro Real", crt: "3" },
-  { nome: "Boutique Aurora ME", doc: "31.884.220/0001-70", uf: "SP", municipio: "São Paulo", ie: "ISENTO", contribuinte: false, consumidorFinal: false, regime: "Simples Nacional", crt: "1" },
-  { nome: "Uniformes Paraná Eireli", doc: "27.115.998/0001-04", uf: "PR", municipio: "Maringá", ie: "9033118820", contribuinte: true, consumidorFinal: false, regime: "Simples Nacional", crt: "1" },
+  { nome: "Lojas Vestir Bem Ltda.", doc: "18.442.910/0001-90", uf: "PR", municipio: "Londrina", ie: "9052144870", contribuinte: true, consumidorFinal: false, regime: "Lucro Presumido", crt: "3" },
+  { nome: "Moda Sul Distribuidora Ltda.", doc: "23.771.605/0001-81", uf: "SC", municipio: "Blumenau", ie: "2557712340", contribuinte: true, consumidorFinal: false, regime: "Lucro Real", crt: "3" },
+  { nome: "Boutique Aurora ME", doc: "31.884.220/0001-59", uf: "SP", municipio: "São Paulo", ie: "ISENTO", contribuinte: false, consumidorFinal: false, regime: "Simples Nacional", crt: "1" },
+  { nome: "Uniformes Paraná Eireli", doc: "27.115.998/0001-26", uf: "PR", municipio: "Maringá", ie: "9033118820", contribuinte: true, consumidorFinal: false, regime: "Simples Nacional", crt: "1" },
   { nome: "Camila Ferreira (consumidora final)", doc: "084.552.310-45", uf: "PR", municipio: "Apucarana", contribuinte: false, consumidorFinal: true, regime: "Pessoa física", crt: "—" },
 ];
 
 const FORNECEDORES: { nome: string; doc: string; uf: UF; municipio: string; ie: string; regime: string; crt: string }[] = [
-  { nome: "Malharia Cianorte S.A.", doc: "76.221.043/0001-88", uf: "PR", municipio: "Cianorte", ie: "9011223344", regime: "Lucro Real", crt: "3" },
-  { nome: "Têxtil Índigo Nordeste Ltda.", doc: "12.554.881/0001-29", uf: "CE", municipio: "Fortaleza", ie: "0655412300", regime: "Lucro Presumido", crt: "3" },
-  { nome: "Aviamentos Bandeirantes Ltda.", doc: "45.902.117/0001-63", uf: "SP", municipio: "Americana", ie: "1109934470", regime: "Simples Nacional", crt: "1" },
-  { nome: "Transportes Litoral Ltda.", doc: "45.678.912/0001-33", uf: "PR", municipio: "Apucarana", ie: "9088776655", regime: "Lucro Presumido", crt: "3" },
+  { nome: "Malharia Cianorte S.A.", doc: "76.221.043/0001-69", uf: "PR", municipio: "Cianorte", ie: "9011223344", regime: "Lucro Real", crt: "3" },
+  { nome: "Têxtil Índigo Nordeste Ltda.", doc: "12.554.881/0001-71", uf: "CE", municipio: "Fortaleza", ie: "0655412300", regime: "Lucro Presumido", crt: "3" },
+  { nome: "Aviamentos Bandeirantes Ltda.", doc: "45.902.117/0001-07", uf: "SP", municipio: "Americana", ie: "1109934470", regime: "Simples Nacional", crt: "1" },
+  { nome: "Transportes Litoral Ltda.", doc: "45.678.912/0001-55", uf: "PR", municipio: "Apucarana", ie: "9088776655", regime: "Lucro Presumido", crt: "3" },
 ];
 
 function parceiros(): Parceiro[] {
@@ -155,7 +155,7 @@ function documentos(empresaId: string): DocumentoFiscal[] {
       ...base, competencia, id: novoId("doc"), grupo: "demais", tipo: "CT-e",
       numero: String(numeroEntrada), serie: "1",
       emissao: `${competencia}-26`,
-      participante: "Transportes Litoral Ltda.", participanteDoc: "45.678.912/0001-33",
+      participante: "Transportes Litoral Ltda.", participanteDoc: "45.678.912/0001-55",
       ufDestino: "PR", municipio: "Apucarana", contribuinte: true, consumidorFinal: false,
       itens: [{ id: novoId("it"), descricao: "Frete rodoviário sobre vendas — CIF", tipo: "servico", quantidade: 1, unitario: 2450 + ci * 130, aliqIss: 0 }],
       valorProdutos: 2450 + ci * 130, valorTotal: 2450 + ci * 130,
@@ -167,7 +167,7 @@ function documentos(empresaId: string): DocumentoFiscal[] {
       ...base, competencia, id: novoId("doc"), grupo: "servicos", tipo: "NFS-e",
       numero: String(numero), serie: "A",
       emissao: `${competencia}-24`,
-      participante: "Moda Sul Distribuidora Ltda.", participanteDoc: "23.771.605/0001-11",
+      participante: "Moda Sul Distribuidora Ltda.", participanteDoc: "23.771.605/0001-81",
       ufDestino: "SC", municipio: "Apucarana", contribuinte: false, consumidorFinal: false,
       itens: [{ id: novoId("it"), descricao: "Facção — costura de peças por encomenda", tipo: "servico", quantidade: 1, unitario: 18500 + ci * 900, lc116: "14.05", aliqIss: 3 }],
       valorProdutos: 18500 + ci * 900, valorTotal: 18500 + ci * 900,

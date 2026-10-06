@@ -268,6 +268,7 @@ export function useNotificacoes(empresaId: string | null, competencia: string) {
   const itens = useMemo<NotificacaoLida[]>(() => {
     const lidas = new Set(lerEstado().lidas ?? []);
     return gerarNotificacoes(empresaId, competencia).map((n) => ({ ...n, lida: lidas.has(n.id) }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recarrega quando o store avisa (tick)
   }, [empresaId, competencia, tick]);
 
   const naoLidas = itens.filter((n) => !n.lida).length;

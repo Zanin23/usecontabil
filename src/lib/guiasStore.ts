@@ -341,7 +341,34 @@ export function resumoGuias(lista: Guia[]) {
 }
 
 
-export function resumoParcelamentos(empresaId?: string | null) {
+/** Parcela individual de um parcelamento. */
+export type ParcelaParcelamento = {
+  numero: number;
+  vencimento: string;
+  valor: number;
+  status: string;
+  pagoEm?: string;
+};
+
+/** Números consolidados de um parcelamento (usados nos indicadores e no detalhe). */
+export type ResumoParcelamentos = {
+  total: number;
+  aberto: number;
+  vencido: number;
+  vencidas: number;
+  pagas: number;
+  futuras: number;
+  saldoDevedor: number;
+  proximo: string;
+  ativos: number;
+  encerrados: number;
+  saldo: number;
+  juros: number;
+  jurosAcum: number;
+  parcelas: ParcelaParcelamento[];
+};
+
+export function resumoParcelamentos(empresaId?: string | null): ResumoParcelamentos {
   return {
     total: 0,
     aberto: 0,
@@ -360,7 +387,18 @@ export function resumoParcelamentos(empresaId?: string | null) {
   };
 }
 
-export const grupoDe = (slug: GrupoSlug) => ({ titulo: slug.toUpperCase(), descricao: "" });
+const GRUPO_DEF: Record<GrupoSlug, { titulo: string; descricao: string }> = {
+  darf: { titulo: "Guia federal (DARF)", descricao: "Guias federais emitidas, pagas e em aberto da competência." },
+  das: { titulo: "DAS — Simples Nacional", descricao: "Documento de arrecadação do Simples Nacional." },
+  dare: { titulo: "DARE — Estadual", descricao: "Recolhimentos estaduais avulsos." },
+  dam: { titulo: "DAM — Municipal", descricao: "Recolhimentos municipais avulsos." },
+  gnre: { titulo: "GNRE", descricao: "Guia nacional de recolhimento de tributos estaduais." },
+  estaduais: { titulo: "Guias estaduais", descricao: "ICMS próprio, ICMS-ST, DIFAL e taxas de fiscalização." },
+  parcelamentos: { titulo: "Parcelamentos", descricao: "Parcelamentos e transações em andamento." },
+  calendario: { titulo: "Calendário fiscal", descricao: "Obrigações e guias por data de vencimento." },
+};
+
+export const grupoDe = (slug: GrupoSlug) => GRUPO_DEF[slug];
 export const pendenciasGuias = (empresaId: string | null, competencia: string | string[]) => avisos(empresaId, competencia);
 
 export function avisos(empresaId: string | null, competencia: string | string[]) {
@@ -391,7 +429,12 @@ export const FLUXO = ["Apuração", "Conferência", "Emissão", "Pagamento"];
 export const calendario = (empresaId?: string | null, competencia?: string | string[]): EventoCalendario[] => [];
 export const listarCompensacoes = (empresaId?: string | null, competencia?: string | string[]) => [];
 export const listarParcelamentos = (empresaId?: string | null) => [];
-export const detalharParcelamento = (p: any) => resumoParcelamentos();
+/**
+ * Detalhamento de um parcelamento. O módulo ainda não guarda o histórico por
+ * parcela, então devolve o resumo consolidado — o parâmetro existe para a
+ * chamada das telas seguir estável quando o detalhe por parcela chegar.
+ */
+export const detalharParcelamento = (_parcelamento: Parcelamento): ResumoParcelamentos => resumoParcelamentos();
 export const conciliarRetornoBancario = (guias: Guia[]) => 0;
 export const auditoriaDoGrupo = (guias: Guia[]) => [];
 export const GRUPOS = [
@@ -403,8 +446,8 @@ export const GRUPOS = [
 
 
 export const economiaCompensacoes = (empresaId: string | null) => 0;
-export const renegociar = (id: string | any, novas?: number) => {};
-export const salvarParcelamento = (p: any, msg?: string) => {};
+export const renegociar = (_parcelamento: Parcelamento, _novas?: number) => undefined;
+export const salvarParcelamento = (_parcelamento: Parcelamento, _msg?: string) => undefined;
 
 export const EventoCalendario = "calendario_change";
 export type EventoCalendario = { id: string; data: string; label: string; prioridade: string; titulo: string; valor: string; dias: number; status: string; detalhe?: string; responsavel?: string };
@@ -427,10 +470,24 @@ export function useGuias(empresaId?: string | null, competencia?: string | strin
       window.removeEventListener("storage", sync);
     };
   }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recarrega quando o store avisa (tick)
   return useMemo(() => listarGuias(empresaId, competencia), [empresaId, competencia, tick]);
 }
 
 export { brl, hojeISO };
 export { regimeDaEmpresa, rs } from "./apuracaoStore";
-export type Parcelamento = any;
+/** Parcelamento ou transação tributária da empresa (tela Fiscal › Guias › Parcelamentos). */
+export type Parcelamento = {
+  id: string;
+  empresaId: string;
+  tipo: string;
+  orgao: string;
+  processo: string;
+  tributos: string;
+  adesao: string;
+  parcelas: number;
+  valorParcela: number;
+  situacao: string;
+  historico: { id: string; em: string; usuario: string; detalhe: string }[];
+};
 

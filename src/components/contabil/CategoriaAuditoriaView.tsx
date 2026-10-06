@@ -30,9 +30,12 @@ function Indicador({ label, valor, hint, destaque }: { label: string; valor: str
 export default function CategoriaAuditoriaView({
   slug,
   icone: Icone,
+  titulo,
 }: {
   slug: CatSlug;
   icone: LucideIcon;
+  /** Nome da tela exibido no h1; quando ausente, usa o título da categoria. */
+  titulo?: string;
 }) {
   const navigate = useNavigate();
   const { empresa } = useEmpresaAtual();
@@ -105,9 +108,9 @@ export default function CategoriaAuditoriaView({
         <div className="min-w-0">
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Auditoria fiscal</div>
           <h1 className="flex items-center gap-2 font-display text-3xl sm:text-4xl">
-            <Icone className="h-7 w-7 text-brand-orange" /> {meta.titulo}
+            <Icone className="h-7 w-7 text-brand-orange" /> {titulo ?? meta.titulo}
           </h1>
-          <p className="max-w-2xl text-sm text-muted-foreground">{meta.descricao}</p>
+          <p className="max-w-2xl text-sm text-muted-foreground">{titulo ? `${meta.titulo} — ${meta.descricao}` : meta.descricao}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
             <Badge variant="secondary" className="rounded-full">{formatCompetencia(competencia)}</Badge>
             <Badge variant="secondary" className="rounded-full">{empresa?.razao ?? "Nenhuma empresa selecionada"}</Badge>

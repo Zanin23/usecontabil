@@ -37,7 +37,10 @@ export function getConfig() {
   return { antecipaFimDeSemana: true, notificar: true };
 }
 
-export function setConfig(cfg: any) {}
+type ConfigApuracao = ReturnType<typeof getConfig>;
+
+/** Reservado para parametrizar a apuração; hoje só devolve a configuração padrão. */
+export function setConfig(_cfg: Partial<ConfigApuracao>) {}
 
 
 export type LogEntry = {

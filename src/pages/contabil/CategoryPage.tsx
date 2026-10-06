@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/design-system/mj-design-system-db98fa";
 import { ArrowUpRight } from "lucide-react";
 import { findCategory } from "@/lib/contabilNav";
 import PageHeader from "@/components/contabil/PageHeader";
+import NotFound from "@/pages/NotFound";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
@@ -21,11 +22,8 @@ export default function CategoryPage() {
   const { area: areaSlug, categoria } = useParams();
   const { area, category } = findCategory(areaSlug, categoria);
 
-  if (!area || !category) {
-    return (
-      <div className="py-24 text-center text-muted-foreground">Categoria não encontrada.</div>
-    );
-  }
+  // Categoria inexistente também é rota inexistente: mostra a 404 do sistema.
+  if (!area || !category) return <NotFound />;
 
   return (
     <div className="space-y-8">

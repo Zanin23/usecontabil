@@ -226,13 +226,13 @@ const SEED_COT: Cotacao[] = [
     itens: SEED_REQ[0].itens,
     propostas: [
       {
-        id: "prop-seed-1", fornecedor: "Distribuidora Norte Ltda.", cnpj: "12.345.678/0001-90", contato: "comercial@norte.com.br",
+        id: "prop-seed-1", fornecedor: "Distribuidora Norte Ltda.", cnpj: "12.345.678/0001-95", contato: "comercial@norte.com.br",
         prazoEntregaDias: 12, condicaoPagamento: "30/60 dias", frete: 1_200, tipoFrete: "CIF (por conta do fornecedor)",
         validade: "2026-08-15",
         precos: { [SEED_REQ[0].itens[0].id]: 128.4, [SEED_REQ[0].itens[1].id]: 198 },
       },
       {
-        id: "prop-seed-2", fornecedor: "Aços União S.A.", cnpj: "45.987.123/0001-11", contato: "vendas@acosuniao.com.br",
+        id: "prop-seed-2", fornecedor: "Aços União S.A.", cnpj: "45.987.123/0001-04", contato: "vendas@acosuniao.com.br",
         prazoEntregaDias: 22, condicaoPagamento: "28 dias", frete: 0, tipoFrete: "CIF (por conta do fornecedor)",
         validade: "2026-08-20",
         precos: { [SEED_REQ[0].itens[0].id]: 126.9, [SEED_REQ[0].itens[1].id]: 216 },
@@ -243,7 +243,7 @@ const SEED_COT: Cotacao[] = [
 
 const SEED_PED: Pedido[] = [
   {
-    id: "ped-seed-1", numero: "PC-1039", fornecedor: "Comércio Andes Eireli", cnpj: "09.221.554/0001-32",
+    id: "ped-seed-1", numero: "PC-1039", fornecedor: "Comércio Andes Eireli", cnpj: "09.221.554/0001-93",
     emissao: "2026-07-02", previsao: "2026-07-22", condicaoPagamento: "28 dias", frete: 340,
     tipoFrete: "CIF (por conta do fornecedor)", centroCusto: "Administrativo",
     contaContabil: "4.1.02.010 — Material de uso e consumo", status: "Recebido",
@@ -251,7 +251,7 @@ const SEED_PED: Pedido[] = [
     recebimentos: [{ data: "2026-07-21", item: "Material de escritório — kit trimestral", quantidade: 24, nota: "NF-e 8842", responsavel: "Almoxarifado" }],
   },
   {
-    id: "ped-seed-2", numero: "PC-1043", fornecedor: "TechCore Sistemas ME", cnpj: "31.004.778/0001-05",
+    id: "ped-seed-2", numero: "PC-1043", fornecedor: "TechCore Sistemas ME", cnpj: "31.004.778/0001-00",
     emissao: "2026-07-18", previsao: "2026-08-14", condicaoPagamento: "30/60 dias", frete: 0,
     tipoFrete: "CIF (por conta do fornecedor)", centroCusto: "Administrativo",
     contaContabil: "1.2.01.004 — Computadores e periféricos", status: "Aguardando envio",

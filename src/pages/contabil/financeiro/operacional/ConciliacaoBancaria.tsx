@@ -95,6 +95,7 @@ export default function ConciliacaoBancaria() {
   );
   const res = resultados.find((r) => r.conta.id === contaId)!;
   const divs = useMemo(() => divergencias(res), [res]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recarrega quando o store avisa (tick)
   const vinculos = useMemo(() => vinculosDa(contaId, competenciasNoPeriodo), [contaId, competenciasNoPeriodo, tick]);
 
   const filtro = (m: Movimento) =>

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { saveEmpresa, getEmpresa, loadEmpresas, findEmpresaPorCnpj, sincronizarEmpresas, type EmpresaRecord } from "@/lib/empresasStore";
 import { validarCadastroEmpresa } from "@/lib/empresaValidacao";
+import { mensagemDeErro } from "@/lib/erros";
 import { REGIMES_TRIBUTARIOS, regimeDefinido } from "@/lib/regime";
 import { formatAtividade, loadAtividades, useAtividades } from "@/lib/atividadesStore";
 import { consultarCnpj as fetchCnpj, consultarCep as fetchCep } from "@/lib/consultaPublica";
@@ -18,11 +19,12 @@ import {
   Landmark, KeyRound, Users2, DollarSign, FileSignature,
   Users, MessageSquare, HelpCircle, CircleAlert, Sparkles, Loader2,
   Lightbulb, ExternalLink, Wand2, X, GripVertical, Info, History, MapPin, Phone, Mail,
+  type LucideIcon,
 } from "lucide-react";
 
 type SectionKey = "dados" | "senhas" | "fiscal" | "societario";
 
-const SECTION_TABS: { key: SectionKey; label: string; icon: any }[] = [
+const SECTION_TABS: { key: SectionKey; label: string; icon: LucideIcon }[] = [
   { key: "dados", label: "Dados empresa", icon: Landmark },
   { key: "senhas", label: "Senhas e Certificados", icon: KeyRound },
   { key: "fiscal", label: "Fiscal", icon: DollarSign },
@@ -528,7 +530,7 @@ function AssistantPanel({
 /* -------------------------- Tributações (right) ------------------------- */
 
 type TribKind = "federal" | "municipal" | "estadual";
-const TRIB: Record<TribKind, { label: string; icon: any; accent: string }> = {
+const TRIB: Record<TribKind, { label: string; icon: LucideIcon; accent: string }> = {
   federal: { label: "Federal", icon: Landmark, accent: "text-brand-blue" },
   municipal: { label: "Municipal", icon: Landmark, accent: "text-brand-blue" },
   estadual: { label: "Estadual", icon: Landmark, accent: "text-brand-purple" },
@@ -590,7 +592,20 @@ export default function EmpresaCadastro() {
       if (cancelado) return;
       setRecordId(rec.id);
       setCreatedAt(rec.createdAt);
-      setForm({ ...EMPTY_FORM, ...(rec.raw as Partial<FormState>), regime: regimeDefinido(rec.regime) ? rec.regime : "" });
+      // O `raw` guarda o formulário completo quando o cadastro nasceu nesta tela;
+      // registros vindos de outros fluxos (nuvem/ERP) podem ter o `raw` parcial —
+      // por isso os campos canônicos do registro entram como base e só valores
+      // preenchidos do `raw` os sobrepõem (antes a tela abria em branco).
+      const doRaw = Object.fromEntries(
+        Object.entries(rec.raw ?? {}).filter(([, v]) => v !== undefined && v !== null && v !== ""),
+      ) as Partial<FormState>;
+      setForm({
+        ...EMPTY_FORM,
+        cnpj: rec.cnpj ?? "",
+        razao: rec.razao ?? "",
+        ...doRaw,
+        regime: regimeDefinido(rec.regime) ? rec.regime : "",
+      });
     };
     const rec = getEmpresa(routeId);
     if (rec) {
@@ -649,8 +664,8 @@ export default function EmpresaCadastro() {
         `Empresa "${salvo.razao}" ${recordId || existente ? "atualizada" : "cadastrada"}`,
       );
       navigate("/preparativos/cadastros/empresas");
-    } catch (e: any) {
-      toast.error(e?.message || "Falha ao salvar");
+    } catch (e) {
+      toast.error(mensagemDeErro(e, "Falha ao salvar"));
     } finally {
       setSaving(false);
     }
@@ -683,8 +698,8 @@ export default function EmpresaCadastro() {
         aberturaRF: abertura,
       });
       toast.success("Dados da Receita Federal preenchidos");
-    } catch (e: any) {
-      toast.error(e.message || "Falha ao consultar CNPJ");
+    } catch (e) {
+      toast.error(mensagemDeErro(e, "Falha ao consultar CNPJ"));
     } finally { setLoadingCnpj(false); }
   };
 
@@ -700,8 +715,8 @@ export default function EmpresaCadastro() {
         uf: d.uf || form.uf,
       });
       toast.success("Endereço preenchido via CEP");
-    } catch (e: any) {
-      toast.error(e.message || "Falha ao consultar CEP");
+    } catch (e) {
+      toast.error(mensagemDeErro(e, "Falha ao consultar CEP"));
     } finally { setLoadingCep(false); }
   };
 

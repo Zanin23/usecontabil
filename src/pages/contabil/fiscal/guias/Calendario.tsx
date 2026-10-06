@@ -76,6 +76,7 @@ export default function CalendarioFiscal() {
     return () => window.removeEventListener(EVENTO_KEY, sync);
   }, []);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recarrega quando o store avisa (tick)
   const eventos = useMemo(() => calendario(empresa?.id, competencia), [empresa?.id, competencia, tick]);
   const hoje = hojeISO();
   const avisosLista = alertas(empresa?.id, competencia);

@@ -27,16 +27,27 @@ export function setPraticaAtiva(v: boolean) {
 /**
  * Funções para gerenciar empresas exclusivas do modo prática (armazenadas apenas localmente).
  */
-export function loadEmpresasPratica(): any[] {
+/** Empresa do modo prática: cadastro local, sem os vínculos da nuvem. */
+export type EmpresaPratica = {
+  id: string;
+  cnpj?: string;
+  razao?: string;
+  regime?: string;
+  [chave: string]: unknown;
+};
+
+export function loadEmpresasPratica(): EmpresaPratica[] {
   try {
     const raw = localStorage.getItem(CHAVE_EMPRESAS);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    const lista: unknown = JSON.parse(raw);
+    return Array.isArray(lista) ? (lista as EmpresaPratica[]) : [];
   } catch {
     return [];
   }
 }
 
-export function saveEmpresasPratica(list: any[]) {
+export function saveEmpresasPratica(list: EmpresaPratica[]) {
   localStorage.setItem(CHAVE_EMPRESAS, JSON.stringify(list));
   window.dispatchEvent(new Event("usecontabil:empresas-changed"));
 }

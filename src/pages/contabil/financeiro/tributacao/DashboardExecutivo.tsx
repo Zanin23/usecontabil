@@ -83,7 +83,7 @@ export default function DashboardExecutivo() {
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Financeiro › Tributação</div>
           <h1 className="font-display text-3xl sm:text-4xl">
-            Dashboard <span className="text-brand-orange">executivo</span>
+            Painel <span className="text-brand-orange">tributário</span>
           </h1>
           <p className="max-w-2xl text-sm text-muted-foreground">
             Visão consolidada da operação tributária da competência: faturamento, carga fiscal,

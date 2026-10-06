@@ -18,6 +18,7 @@ import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { useCompetencia } from "@/lib/competencia";
 import { confirmarExclusao } from "@/lib/confirmar";
+import { mensagemDeErro } from "@/lib/erros";
 import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   CONTAS_EVENT, CONTAS_TESOURARIA, REGUA, brl, carteira, contaPorId, dataBR,
@@ -105,8 +106,8 @@ function DialogBaixa({
       });
       toast.success(`Baixa registrada · ${brl(totalPago)} em ${contaPorId(contaId)?.nome}`);
       onClose();
-    } catch (e: any) {
-      toast.error(e?.message || "Não foi possível registrar a baixa.");
+    } catch (e) {
+      toast.error(mensagemDeErro(e, "Não foi possível registrar a baixa."));
     }
   };
 
@@ -456,6 +457,7 @@ function CaixaTesouraria() {
     return () => window.removeEventListener(CONTAS_EVENT, refresh);
   }, [refresh]);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recarrega quando o store avisa (tick)
   const contas = useMemo(() => saldos(competenciasNoPeriodo), [competenciasNoPeriodo, tick]);
   const [contaId, setContaId] = useState(contas[0]?.id);
   const conta = contas.find((c) => c.id === contaId)!;
@@ -471,8 +473,8 @@ function CaixaTesouraria() {
       });
       toast.success("Movimento lançado na conta.");
       setNovo({ data: hojeISO(), historico: "", tipo: "Entrada", valor: "" });
-    } catch (e: any) {
-      toast.error(e?.message || "Não foi possível lançar o movimento.");
+    } catch (e) {
+      toast.error(mensagemDeErro(e, "Não foi possível lançar o movimento."));
     }
   };
 
@@ -620,6 +622,7 @@ function FluxoCaixa() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [empresa, competenciasNoPeriodo, semanas, tick],
   );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recarrega quando o store avisa (tick)
   const saldoAtual = useMemo(() => saldos(competenciasNoPeriodo).reduce((a, c) => a + c.saldo, 0), [competenciasNoPeriodo, tick]);
   const pior = dados.reduce((min, s) => (s.acumulado < min.acumulado ? s : min), dados[0]);
   const entradas = dados.reduce((a, s) => a + s.entradas, 0);

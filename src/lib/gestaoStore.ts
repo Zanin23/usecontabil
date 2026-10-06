@@ -307,8 +307,8 @@ export function pendenciasCadastro(empresaId: string | null): PendenciaCadastro[
   const empresas = loadEmpresas();
   const empresa: EmpresaRecord | undefined = empresas.find((e) => e.id === empresaId);
   const filiais = loadFiliais().filter((f) => f.empresaId === empresaId);
-  const raw = (empresa?.raw ?? {}) as Record<string, any>;
-  const has = (v: any) => typeof v === "string" && v.trim().length > 0;
+  const raw = (empresa?.raw ?? {}) as Record<string, unknown>;
+  const has = (v: unknown) => typeof v === "string" && v.trim().length > 0;
 
   const items: PendenciaCadastro[] = [
     {

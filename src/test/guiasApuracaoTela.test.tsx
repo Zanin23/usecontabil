@@ -10,7 +10,7 @@ const mock = vi.hoisted(() => ({
   empresa: { id: "EMP-1", razao: "Empresa Teste", cnpj: "11.222.333/0001-81", regime: "Lucro Presumido" },
   empresas: [
     { id: "EMP-1", razao: "Empresa Teste", cnpj: "11.222.333/0001-81", regime: "Lucro Presumido" },
-    { id: "EMP-2", razao: "Empresa Alternativa", cnpj: "22.333.444/0001-82", regime: "Lucro Presumido" },
+    { id: "EMP-2", razao: "Empresa Alternativa", cnpj: "22.333.444/0001-81", regime: "Lucro Presumido" },
   ],
   competencia: "2026-07",
   estado: {

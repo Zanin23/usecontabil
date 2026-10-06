@@ -60,7 +60,7 @@ export const PARCEIROS_TREINAMENTO: Parceiro[] = [
   {
     id: "parc1",
     nome: "Tecelagem São João Ltda",
-    documento: "11.222.333/0001-44",
+    documento: "11.222.333/0001-81",
     tipo: "Fornecedor",
     uf: "SP",
     crt: "3",
@@ -73,7 +73,7 @@ export const PARCEIROS_TREINAMENTO: Parceiro[] = [
   {
     id: "parc2",
     nome: "Lojão das Roupas ME",
-    documento: "44.555.666/0001-77",
+    documento: "44.555.666/0001-81",
     tipo: "Cliente",
     uf: "RJ",
     crt: "1",

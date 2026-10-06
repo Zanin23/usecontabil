@@ -110,8 +110,8 @@ export default function GuiasHub() {
       <PageHeader
         trail={[{ label: "Fiscal", to: "/fiscal" }]}
         eyebrow="Fiscal · Guias e recolhimentos"
-        title="Guias e"
-        titleAccent="Tributos"
+        title="Painel de"
+        titleAccent="guias"
         description="Emissão, controle e pagamento de guias federais, estaduais e parcelamentos ativos."
         icon={Wallet2}
         badges={
@@ -147,7 +147,7 @@ export default function GuiasHub() {
       </Card>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        {GRUPOS.map((g: any) => {
+        {GRUPOS.map((g) => {
           const rota = rotas[g.slug as GrupoSlug] || "#";
           const Icone = ICONES[g.slug as GrupoSlug] || Banknote;
           const inds = indicadoresPorGrupo[g.slug as GrupoSlug] || [];

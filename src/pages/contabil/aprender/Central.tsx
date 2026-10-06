@@ -20,7 +20,7 @@ export default function CentralAprendizado() {
           Central de Aprendizado
         </div>
         <h1 className="font-display text-4xl">
-          Aprenda o sistema e a <span className="text-brand-orange">contabilidade por trás dele.</span>
+          Central de <span className="text-brand-orange">aprendizado</span>
         </h1>
         <p className="max-w-3xl text-muted-foreground">
           Cada lição explica duas coisas: como operar a tela e qual conceito contábil ou fiscal ela

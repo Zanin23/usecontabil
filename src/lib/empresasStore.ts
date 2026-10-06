@@ -16,6 +16,14 @@ const LEGACY_KEYS = ["usecontabil.empresas.v1", "usecontabil.empresas.backup.v1"
 
 export const EMPRESAS_EVENT = "usecontabil:empresas-changed";
 
+/**
+ * Valores aceitos no `raw` do cadastro: o formulário da tela grava strings e
+ * booleanos, e a nuvem devolve JSON puro. Antes era `any`, o que deixava
+ * qualquer acesso passar sem checagem.
+ */
+export type ValorRaw = string | number | boolean | null | ValorRaw[] | { [k: string]: ValorRaw };
+export type EmpresaRaw = Record<string, ValorRaw>;
+
 export type EmpresaRecord = {
   id: string;
   cnpj: string;
@@ -24,10 +32,20 @@ export type EmpresaRecord = {
   atividade: string;
   status: string;
   createdAt: string;
-  raw: Record<string, any>;
+  raw: EmpresaRaw;
 };
 
 export const soDigitos = (v: string) => (v ?? "").replace(/\D/g, "");
+
+/**
+ * Lê o vínculo de classe de atividade guardado no `raw` do cadastro, que pode
+ * vir de telas diferentes e nem sempre está presente.
+ */
+export function classeAtividadeIdDe(raw: unknown): string | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const v = (raw as Record<string, unknown>).classeAtividadeId;
+  return typeof v === "string" && v.trim() ? v : undefined;
+}
 
 function notify() {
   window.dispatchEvent(new Event(EMPRESAS_EVENT));
@@ -45,7 +63,17 @@ function parseList(raw: string | null): EmpresaRecord[] | null {
 
 function lerCacheLocal(): EmpresaRecord[] {
   if (isPraticaAtiva()) {
-    return loadEmpresasPratica();
+    // O modo prática guarda só o essencial; completa o resto do cadastro.
+    return loadEmpresasPratica().map((e) => ({
+      id: String(e.id),
+      cnpj: String(e.cnpj ?? ""),
+      razao: String(e.razao ?? ""),
+      regime: String(e.regime ?? ""),
+      atividade: String(e.atividade ?? ""),
+      status: String(e.status ?? "Ativa"),
+      createdAt: String(e.createdAt ?? new Date().toISOString()),
+      raw: (e.raw ?? {}) as EmpresaRaw,
+    }));
   }
   const atual = parseList(localStorage.getItem(CACHE_KEY));
   if (atual) return atual;
@@ -103,7 +131,7 @@ type Row = {
   regime: string;
   atividade: string;
   status: string;
-  raw: any;
+  raw: unknown;
   created_at: string;
 };
 
@@ -115,7 +143,7 @@ const toRecord = (r: Row): EmpresaRecord => ({
   atividade: r.atividade,
   status: r.status,
   createdAt: r.created_at,
-  raw: (r.raw ?? {}) as Record<string, any>,
+  raw: (r.raw ?? {}) as EmpresaRaw,
 });
 
 async function userId(): Promise<string | null> {

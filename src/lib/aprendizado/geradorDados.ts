@@ -4,9 +4,84 @@
  * para que o dashboard e relatórios mostrem informações coerentes.
  */
 import { saveEmpresa, novoId, registrarAuditoria, empresaDB, TRIBUTARIO_EVENT } from "@/lib/tributarioStore";
-import { saveDocs, novoDocId, moedaBR, chaveFicticia, FISCAL_EVENT } from "@/lib/fiscalStore";
-import { registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS_BASE, lancarMovimento, CONTAS_EVENT, loadMovimentos } from "@/lib/contasCaixaStore";
+import { saveDocs, novoDocId, moedaBR, chaveFicticia, FISCAL_EVENT, type DocFiscal } from "@/lib/fiscalStore";
+import type { DocTipo, DocumentoFiscal, GrupoMovimento, Tributos } from "@/lib/tributarioStore";
+import {
+  registrarBaixa, titulos as getTitulosBase, write as writeContas, KEY_BAIXAS_BASE,
+  lancarMovimento, CONTAS_EVENT, loadMovimentos, type Baixa, type MovimentoCaixa,
+} from "@/lib/contasCaixaStore";
 import { PRODUTOS_TREINAMENTO, PARCEIROS_TREINAMENTO } from "./seedPratica";
+
+/** Linha da memória de cálculo dos documentos de treino. */
+type MemoriaTreino = { tributo: string; valor: number; base: number; aliquota?: number; descricao?: string };
+
+/**
+ * Documento de treino: o mesmo objeto alimenta o store operacional (que guarda
+ * tudo como texto) e o tributário (que guarda números). Os conversores abaixo
+ * fazem cada uma das projeções sem espalhar `as any` pelo arquivo.
+ */
+type DocTreino = {
+  id: string;
+  empresaId: string;
+  competencia: string;
+  grupo: string;
+  tipo: string;
+  numero: string;
+  serie: string;
+  emissao: string;
+  participante: string;
+  participanteDoc: string;
+  valorTotal: number;
+  valorProdutos?: number;
+  valor: string;
+  baseIcms: string;
+  icms: string;
+  status: string;
+  chave: string;
+  cfop: string;
+  tributos: Record<string, number>;
+  memoria: MemoriaTreino[];
+};
+
+const TRIBUTOS_ZERO: Tributos = {
+  icms: 0, icmsSt: 0, difal: 0, fcp: 0, ipi: 0, pis: 0, cofins: 0, iss: 0,
+  irrf: 0, inss: 0, csll: 0, retencoes: 0, total: 0,
+};
+
+/** Projeção para o store operacional: todo valor vira texto. */
+function paraDocFiscal(d: DocTreino): DocFiscal {
+  return {
+    id: d.id, empresaId: d.empresaId, competencia: d.competencia,
+    grupo: d.grupo, tipo: d.tipo, numero: d.numero, serie: d.serie,
+    emissao: d.emissao, participante: d.participante, participanteDoc: d.participanteDoc,
+    valor: d.valor, baseIcms: d.baseIcms, icms: d.icms, status: d.status,
+    chave: d.chave, cfop: d.cfop, valorTotal: String(d.valorTotal),
+    tributos: JSON.stringify(d.tributos), memoria: JSON.stringify(d.memoria),
+  };
+}
+
+/** Projeção para o store tributário: completa os campos que o motor exige. */
+function paraDocumentoTributario(d: DocTreino): DocumentoFiscal {
+  return {
+    id: d.id, empresaId: d.empresaId, competencia: d.competencia,
+    grupo: d.grupo as GrupoMovimento, tipo: d.tipo as DocTipo,
+    numero: d.numero, serie: d.serie, emissao: d.emissao,
+    participante: d.participante, participanteDoc: d.participanteDoc,
+    ufOrigem: "SP", ufDestino: "SP",
+    contribuinte: true, consumidorFinal: false, regime: "Lucro Presumido",
+    itens: [{
+      id: `${d.id}-item-1`, descricao: d.tipo, tipo: "produto",
+      quantidade: 1, unitario: d.valorTotal, cfop: d.cfop,
+    }],
+    valorProdutos: d.valorProdutos ?? d.valorTotal,
+    valorTotal: d.valorTotal,
+    status: "Autorizado",
+    chave: d.chave,
+    tributos: { ...TRIBUTOS_ZERO, ...d.tributos },
+    memoria: d.memoria.map((m) => ({ descricao: `${m.tributo} da competência`, ...m })),
+    regrasAplicadas: [], alertas: [], eventos: [],
+  };
+}
 
 export async function popularDadosPratica(empresaId: string, competencia: string, forcePratica = false) {
   if (!empresaId) return;
@@ -56,7 +131,7 @@ export async function popularDadosPratica(empresaId: string, competencia: string
       serie: "1",
       emissao: `${ano}-${String(mes).padStart(2, '0')}-02`,
       participante: "Lojão das Roupas ME",
-      participanteDoc: "44.555.666/0001-77",
+      participanteDoc: "44.555.666/0001-81",
       valorTotal: 12500.00,
       valorProdutos: 12500.00,
       valor: moedaBR(12500.00),
@@ -82,7 +157,7 @@ export async function popularDadosPratica(empresaId: string, competencia: string
       serie: "1",
       emissao: `${ano}-${String(mes).padStart(2, '0')}-05`,
       participante: "Moda Fashion Ltda",
-      participanteDoc: "22.333.444/0001-55",
+      participanteDoc: "22.333.444/0001-81",
       valorTotal: 28400.00,
       valorProdutos: 28400.00,
       valor: moedaBR(28400.00),
@@ -138,7 +213,7 @@ export async function popularDadosPratica(empresaId: string, competencia: string
       serie: "1",
       emissao: `${ano}-${String(mes).padStart(2, '0')}-02`,
       participante: "Tecelagem São João Ltda",
-      participanteDoc: "11.222.333/0001-44",
+      participanteDoc: "11.222.333/0001-81",
       valorTotal: 8500.00,
       valor: moedaBR(8500.00),
       baseIcms: moedaBR(8500.00),
@@ -159,7 +234,7 @@ export async function popularDadosPratica(empresaId: string, competencia: string
       serie: "1",
       emissao: `${ano}-${String(mes).padStart(2, '0')}-12`,
       participante: "Fios e Malhas Continental",
-      participanteDoc: "05.111.222/0001-33",
+      participanteDoc: "05.111.222/0001-03",
       valorTotal: 15750.00,
       valor: moedaBR(15750.00),
       baseIcms: moedaBR(15750.00),
@@ -174,25 +249,26 @@ export async function popularDadosPratica(empresaId: string, competencia: string
 
   if (sufixo === ".pratica") {
     const KEY_FISCAL = "usecontabil.fiscal.docs.v1" + sufixo;
-    const dbFiscal = JSON.parse(localStorage.getItem(KEY_FISCAL) || "{}");
-    dbFiscal["saidas"] = [...(docsSaida as any), ...(dbFiscal["saidas"] || [])];
-    dbFiscal["entradas"] = [...(docsEntrada as any), ...(dbFiscal["entradas"] || [])];
+    const dbFiscal: Record<string, DocFiscal[]> = JSON.parse(localStorage.getItem(KEY_FISCAL) || "{}");
+    dbFiscal["saidas"] = [...docsSaida.map(paraDocFiscal), ...(dbFiscal["saidas"] ?? [])];
+    dbFiscal["entradas"] = [...docsEntrada.map(paraDocFiscal), ...(dbFiscal["entradas"] ?? [])];
     localStorage.setItem(KEY_FISCAL, JSON.stringify(dbFiscal));
     window.dispatchEvent(new Event(FISCAL_EVENT));
   } else {
-    saveDocs("saidas", docsSaida as any);
-    saveDocs("entradas", docsEntrada as any);
+    saveDocs("saidas", docsSaida.map(paraDocFiscal));
+    saveDocs("entradas", docsEntrada.map(paraDocFiscal));
   }
   
   // Também salvar no TributarioStore para que o Dashboard (useTributario) pegue
   if (sufixo === ".pratica") {
     const KEY_TRIB = "usecontabil.tributario.v1" + sufixo;
     const dbTrib = JSON.parse(localStorage.getItem(KEY_TRIB) || "{}");
-    const emp = dbTrib[empresaId] || { produtos: [], parceiros: [], documentos: [], regras: [], auditoria: [], fechamentos: [] };
+    const emp: { documentos?: DocumentoFiscal[] } =
+      dbTrib[empresaId] || { produtos: [], parceiros: [], documentos: [], regras: [], auditoria: [], fechamentos: [] };
     emp.documentos = [
-      ...(emp.documentos || []).filter((d: any) => d.competencia !== competencia),
-      ...docsSaida as any,
-      ...docsEntrada as any
+      ...(emp.documentos ?? []).filter((d) => d.competencia !== competencia),
+      ...docsSaida.map(paraDocumentoTributario),
+      ...docsEntrada.map(paraDocumentoTributario),
     ];
     dbTrib[empresaId] = emp;
     localStorage.setItem(KEY_TRIB, JSON.stringify(dbTrib));
@@ -200,9 +276,9 @@ export async function popularDadosPratica(empresaId: string, competencia: string
     const atualTributario = empresaDB(empresaId);
     saveEmpresa(empresaId, {
       documentos: [
-        ...atualTributario.documentos.filter(d => d.competencia !== competencia),
-        ...docsSaida as any,
-        ...docsEntrada as any
+        ...atualTributario.documentos.filter((d) => d.competencia !== competencia),
+        ...docsSaida.map(paraDocumentoTributario),
+        ...docsEntrada.map(paraDocumentoTributario),
       ]
     });
   }
@@ -210,8 +286,8 @@ export async function popularDadosPratica(empresaId: string, competencia: string
   // 3. Financeiro (Contas a Pagar/Receber)
   const KEY_BAIXAS = KEY_BAIXAS_BASE + sufixo;
   const rawBaixas = localStorage.getItem(KEY_BAIXAS);
-  const todasBaixas = rawBaixas ? JSON.parse(rawBaixas) : [];
-  const outrasBaixas = todasBaixas.filter((b: any) => !b.id.includes(competencia));
+  const todasBaixas: Baixa[] = rawBaixas ? JSON.parse(rawBaixas) : [];
+  const outrasBaixas = todasBaixas.filter((b) => !b.id.includes(competencia));
   localStorage.setItem(KEY_BAIXAS, JSON.stringify(outrasBaixas));
 
   // Gerar alguns títulos e baixas automáticas para dar movimento ao fluxo
@@ -248,10 +324,10 @@ export async function popularDadosPratica(empresaId: string, competencia: string
   // 4. Movimentos de Caixa Extras (Para o Dashboard Bancário e Conciliação)
   try {
     const KEY_MOVS = "usecontabil.contas.movimentos.v1" + sufixo;
-    const movs = JSON.parse(localStorage.getItem(KEY_MOVS) || "[]");
+    const movs: MovimentoCaixa[] = JSON.parse(localStorage.getItem(KEY_MOVS) || "[]");
     
     // Filtra movimentos da competência atual para não duplicar se rodar de novo
-    const movsFiltrados = movs.filter((m: any) => !m.data.startsWith(competencia));
+    const movsFiltrados = movs.filter((m) => !m.data.startsWith(competencia));
 
     const idAporte = `mv-aporte-${Date.now()}`;
     movsFiltrados.push({

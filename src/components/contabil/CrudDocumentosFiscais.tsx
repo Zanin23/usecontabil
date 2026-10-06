@@ -26,6 +26,8 @@ import {
   primeiroDia, removeDoc, saveDoc, saveDocs, useDocsFiscais, valorBR,
   type DocFiscal, type DocSlug,
 } from "@/lib/fiscalStore";
+import type { DocTipo, GrupoMovimento, UF } from "@/lib/tributarioStore";
+import { mensagemDeErro } from "@/lib/erros";
 
 export type CampoDoc = {
   key: string;
@@ -345,8 +347,8 @@ export default function CrudDocumentosFiscais({
             const { salvarDocumento, processarDocumento, novoId: novoIdTributario } = await import("@/lib/tributarioStore");
 
             const ufEmpresa = String(getEmpresa(empresa.id)?.raw?.uf ?? "").toUpperCase();
-            const ufOrigem = (nfe.emitente.uf || ufEmpresa || "SP") as any;
-            const ufDestino = (nfe.destinatario.uf || ufEmpresa || ufOrigem) as any;
+            const ufOrigem = (nfe.emitente.uf || ufEmpresa || "SP") as UF;
+            const ufDestino = (nfe.destinatario.uf || ufEmpresa || ufOrigem) as UF;
             const itens = nfe.itens.map((it, i) => ({
               id: `item-${i + 1}`,
               descricao: it.descricao || `Item ${i + 1} da nota ${nfe.numero}`,
@@ -363,8 +365,8 @@ export default function CrudDocumentosFiscais({
               id: novoIdTributario("xml"),
               empresaId: empresa.id,
               competencia: novoDoc.competencia,
-              grupo: (isEntrada ? "demais" : "faturamento") as any,
-              tipo: (isEntrada ? "Nota de entrada" : "NF-e") as any,
+              grupo: (isEntrada ? "demais" : "faturamento") as GrupoMovimento,
+              tipo: (isEntrada ? "Nota de entrada" : "NF-e") as DocTipo,
               numero: novoDoc.numero,
               serie: novoDoc.serie,
               emissao: novoDoc.data.split("/").reverse().join("-"),
@@ -409,9 +411,9 @@ export default function CrudDocumentosFiscais({
           toast.success(`Nota ${novoDoc.numero} importada com sucesso!`);
         }
         if (resumoCadastros) toast.info(`Cadastros atualizados: ${resumoCadastros}.`, { description: "Confira em Preparativos › Cadastros." });
-      } catch (err: any) {
+      } catch (err) {
         console.error("XML Import Error:", err);
-        toast.error(err.message || "Falha ao processar XML: formato inválido.");
+        toast.error(mensagemDeErro(err, "Falha ao processar XML: formato inválido."));
       }
     };
     reader.onerror = () => {

@@ -12,14 +12,14 @@ const EMPRESA_MEI = {
   ...EMPRESA,
   id: "EMP-MEI",
   razao: "Ateliê Exemplo MEI",
-  cnpj: "22.333.444/0001-55",
+  cnpj: "22.333.444/0001-81",
   regime: "MEI",
 };
 const EMPRESA_FORA_ESCOPO = {
   ...EMPRESA,
   id: "EMP-REAL",
   razao: "Empresa Lucro Real",
-  cnpj: "33.444.555/0001-66",
+  cnpj: "33.444.555/0001-81",
   regime: "Lucro Real",
 };
 

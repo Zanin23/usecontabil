@@ -52,7 +52,7 @@ export const SECOES: SecaoNav[] = [
       {
         titulo: null,
         itens: [
-          { titulo: "Dashboard", rota: "/dashboard", desc: "Visão geral, pendências e próximos passos", icon: LayoutDashboard },
+          { titulo: "Visão geral contábil", rota: "/dashboard", desc: "Visão geral, pendências e próximos passos", icon: LayoutDashboard },
           { titulo: "Mapa do sistema", rota: "/mapa-sistema", desc: "O que depende do quê e o que já está pronto", icon: MapIcon },
           { titulo: "Simples & MEI", rota: "/simples-mei", desc: "Fluxo simplificado do Simples Nacional e MEI", icon: PieChart },
         ],
@@ -73,7 +73,7 @@ export const SECOES: SecaoNav[] = [
           { titulo: "Empresas do grupo", rota: "/preparativos/cadastros/empresas", desc: "CNPJ, regime tributário e situação", icon: Building2 },
           { titulo: "Filiais e unidades", rota: "/preparativos/cadastros/filiais", desc: "Matriz, filiais e unidades operacionais", icon: Building2 },
           { titulo: "Classe de atividades", rota: "/preparativos/cadastros/classe-atividades", desc: "CNAE das atividades do grupo", icon: Flag },
-          { titulo: "Resumo por atividade", rota: "/preparativos/cadastros/resumo-classe-atividades", desc: "Consolidado de empresas por CNAE", icon: BarChart3 },
+          { titulo: "Resumo por classe de atividades", rota: "/preparativos/cadastros/resumo-classe-atividades", desc: "Consolidado de empresas por CNAE", icon: BarChart3 },
         ],
       },
       {
@@ -125,8 +125,8 @@ export const SECOES: SecaoNav[] = [
       {
         titulo: "Cadastros administrativos",
         itens: [
-          { titulo: "Patrimônio", rota: "/administrativo/patrimonio/bens", desc: "Bens do imobilizado", icon: Building2 },
-          { titulo: "Contratos e documentos", rota: "/administrativo/contratos/contratos", desc: "Contratos, certificados e documentos", icon: FileText },
+          { titulo: "Bens do imobilizado", rota: "/administrativo/patrimonio/bens", desc: "Bens do imobilizado", icon: Building2 },
+          { titulo: "Contratos", rota: "/administrativo/contratos/contratos", desc: "Contratos, certificados e documentos", icon: FileText },
           { titulo: "Cadastros analíticos", rota: "/administrativo/cadastros", desc: "Base somente-leitura vinda do ERP", icon: Briefcase },
         ],
       },
@@ -238,7 +238,7 @@ export const SECOES: SecaoNav[] = [
           { titulo: "SIMEI", rota: "/financeiro/tabelas/simei", desc: "Tabela do MEI", icon: Percent },
           { titulo: "Ajustes de apuração", rota: "/financeiro/tabelas/ajuste-apuracao", desc: "Ajustes que entram na apuração do período", icon: Scale },
           { titulo: "Ajustes de documento fiscal", rota: "/financeiro/tabelas/ajuste-documento-fiscal", desc: "Correções por documento antes de escriturar", icon: Scale },
-          { titulo: "Apuração de PIS/COFINS", rota: "/financeiro/tabelas/apuracao-pis-cofins", desc: "Base, alíquotas e ajustes do PIS/COFINS", icon: Percent },
+          { titulo: "Apuração de PIS e COFINS", rota: "/financeiro/tabelas/apuracao-pis-cofins", desc: "Base, alíquotas e ajustes do PIS/COFINS", icon: Percent },
           { titulo: "DIFAL", rota: "/financeiro/tributacao/difal", desc: "Diferencial de alíquota", icon: Scale },
           { titulo: "Substituição tributária", rota: "/financeiro/tributacao/st-icms", desc: "ICMS-ST", icon: Scale },
           { titulo: "DEFIS", rota: "/financeiro/tributacao/defis", desc: "Declaração do Simples", icon: FileText },
@@ -261,7 +261,7 @@ export const SECOES: SecaoNav[] = [
           { titulo: "Agenda fiscal", rota: "/fiscal/obrigacoes/agenda", desc: "Prazos da competência", icon: CalendarClock },
           { titulo: "SPED Fiscal", rota: "/fiscal/obrigacoes/sped-fiscal", desc: "Escrituração fiscal digital", icon: FileSpreadsheet },
           { titulo: "EFD-Contribuições", rota: "/fiscal/obrigacoes/efd-contribuicoes", desc: "PIS/COFINS", icon: FileSpreadsheet },
-          { titulo: "ECD / ECF", rota: "/fiscal/obrigacoes/ecd-ecf", desc: "Escrituração contábil e fiscal", icon: FileSpreadsheet },
+          { titulo: "ECD e ECF", rota: "/fiscal/obrigacoes/ecd-ecf", desc: "Escrituração contábil e fiscal", icon: FileSpreadsheet },
           { titulo: "DCTFWeb", rota: "/fiscal/obrigacoes/dctfweb", desc: "Declaração de débitos e créditos", icon: FileText },
           { titulo: "REINF", rota: "/fiscal/obrigacoes/reinf", desc: "Retenções na fonte", icon: FileText },
           { titulo: "Estaduais", rota: "/fiscal/obrigacoes/estaduais", desc: "Obrigações estaduais", icon: Landmark },

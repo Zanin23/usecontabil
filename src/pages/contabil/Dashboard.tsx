@@ -16,7 +16,10 @@ import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line,
   Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
-import { brl, empresaDB, useTributario, type DocumentoFiscal, processarDocumento } from "@/lib/tributarioStore";
+import {
+  brl, empresaDB, useTributario, processarDocumento,
+  type DocTipo, type DocumentoFiscal, type GrupoMovimento,
+} from "@/lib/tributarioStore";
 import { usePratica } from "@/lib/praticaStore";
 import AvisoRegime from "@/components/contabil/AvisoRegime";
 import { useDocsFiscais, valorBR } from "@/lib/fiscalStore";
@@ -119,21 +122,60 @@ function SwatchFatia({ cor, textura }: { cor: string; textura: string }) {
 const compact = (v: number) =>
   "R$ " + (v / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 0 }) + "k";
 
-function ChartTip({ active, payload, label, money = true }: any) {
+/** Item que o recharts entrega em `payload` para o tooltip. */
+type ItemTooltip = {
+  name?: string | number;
+  value?: string | number;
+  color?: string;
+  fill?: string;
+  dataKey?: string | number;
+};
+
+function ChartTip({
+  active, payload, label, money = true,
+}: {
+  active?: boolean;
+  payload?: ItemTooltip[];
+  label?: string | number;
+  money?: boolean;
+}) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-elevated">
       <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
-      {payload.map((p: any) => (
+      {payload.map((p) => (
         <div key={p.dataKey ?? p.name} className="flex items-center gap-2 text-xs mt-1">
           <span className="h-1.5 w-1.5 rounded-full" style={{ background: p.color ?? p.fill }} />
           <span className="text-muted-foreground capitalize">{p.name}</span>
-          <span className="ml-auto font-mono">{money ? brl(p.value) : p.value}</span>
+          <span className="ml-auto font-mono">{money ? brl(Number(p.value)) : p.value}</span>
         </div>
       ))}
     </div>
   );
 }
+
+/**
+ * Documento vindo de qualquer um dos stores fiscais (o operacional guarda
+ * `valor`/`data` como texto; o tributário, `valorTotal`/`emissao`). O conversor
+ * abaixo aceita os dois formatos.
+ */
+type DocLoose = {
+  id: string;
+  empresaId: string;
+  competencia: string;
+  tipo?: string;
+  numero?: string;
+  serie?: string;
+  data?: string;
+  emissao?: string;
+  participante?: string;
+  participanteDoc?: string;
+  cnpj?: string;
+  status?: string;
+  valor?: string | number;
+  valorTotal?: string | number;
+  icms?: string | number;
+};
 
 /* --------------------------- derivações --------------------------- */
 
@@ -173,25 +215,17 @@ export default function Dashboard() {
   const docsServTomados = useDocsFiscais("servicos-tomados", empresaId, competenciasNoPeriodo);
   const docsServPrestados = useDocsFiscais("servicos-prestados", empresaId, competenciasNoPeriodo);
 
-  // Filtro radical para garantir que nada de outra empresa ou modo vaze
-  const isDocValido = (d: any) => {
-    if (!empresaId) return false;
-    // Se d.empresaId não bate, descarta
-    if (d.empresaId !== empresaId) return false;
-    // Se estivermos em modo Real e o ID do doc tiver indicação de prática (ou vice-versa via sufixo de store)
-    // Mas os stores já separam por sufixo no localStorage.
-    // O problema pode ser o cache do useTributario ou useDocsFiscais.
-    return true;
-  };
-
   const documentos = useMemo(() => {
     if (!empresaId) return [];
+    // Filtro radical: só entra documento da empresa selecionada (os stores já
+    // separam modo real/prática pelo sufixo do localStorage).
+    const isDocValido = (d: { empresaId: string }) => d.empresaId === empresaId;
     // 1. Unificar documentos dos dois principais stores fiscais
     const docsFiscaisStore: DocumentoFiscal[] = [];
 
-    
-    const converter = (d: any, grupo: any, tipo: any): DocumentoFiscal => {
-      const valor = valorBR(d.valor || d.valorTotal);
+
+    const converter = (d: DocLoose, grupo: GrupoMovimento, tipo: DocTipo): DocumentoFiscal => {
+      const valor = valorBR(String(d.valor ?? d.valorTotal ?? ""));
       return processarDocumento({
         id: d.id,
         empresaId: d.empresaId,
@@ -212,7 +246,7 @@ export default function Dashboard() {
         valorProdutos: valor,
         valorTotal: valor,
         status: (d.status === "Autorizada" || d.status === "Autorizado") ? "Autorizado" : "Rascunho",
-        tributos: { icms: valorBR(d.icms), pis: 0, cofins: 0, ipi: 0, iss: 0, irrf: 0, inss: 0, csll: 0, retencoes: 0, icmsSt: 0, difal: 0, fcp: 0, total: valorBR(d.icms) },
+        tributos: { icms: valorBR(String(d.icms ?? "")), pis: 0, cofins: 0, ipi: 0, iss: 0, irrf: 0, inss: 0, csll: 0, retencoes: 0, icmsSt: 0, difal: 0, fcp: 0, total: valorBR(String(d.icms ?? "")) },
         memoria: [],
         regrasAplicadas: [],
         alertas: [],
@@ -230,15 +264,8 @@ export default function Dashboard() {
 
     const todosDocumentos = [...docsTributarioFiltrados, ...docsFiscaisStore];
 
-    // Se estivermos em modo prática e não houver documentos no período,
-    // mas houver uma empresa selecionada, tentamos popular a base de prática.
-    // Isso resolve o problema do dashboard vazio após reset.
-    if (emPratica && todosDocumentos.length === 0 && empresaId && competencia === "2026-07") {
-       // Não chamamos popularDadosPratica diretamente aqui para evitar loop de render.
-       // O botão "Popular base" já existe no Pratica.tsx e o aviso de labs aparece abaixo.
-    }
-
-
+    // A base de treino é populada pela própria tela de Modo prática (botão
+    // "Popular base"): nada de semear dados durante a renderização aqui.
     // FILTRO DE SEGURANÇA RADICAL: Garante que apenas documentos da empresa atual
     // e do MODO ATUAL (Prática ou Real) sejam exibidos.
     // Como os stores já filtram por sufixo no load, aqui fazemos a conferência final.
@@ -328,7 +355,7 @@ export default function Dashboard() {
       serieResultado, porDia, porStatus, alertas: alertas.slice(0, 6), bloqueios, autorizados,
       progresso, variacao,
     };
-  }, [documentos, competencia]);
+  }, [documentos, competencia, competenciasNoPeriodo]);
 
   const kpis = [
     {

@@ -76,10 +76,10 @@ export default function AuditoriaRegras() {
         <div className="min-w-0">
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Auditoria fiscal</div>
           <h1 className="flex items-center gap-2 font-display text-3xl sm:text-4xl">
-            <ScrollText className="h-7 w-7 text-brand-orange" /> Motor de <span className="text-brand-orange">regras</span>
+            <ScrollText className="h-7 w-7 text-brand-orange" /> Regras de <span className="text-brand-orange">auditoria</span>
           </h1>
           <p className="max-w-2xl text-sm text-muted-foreground">
-            Catálogo de regras fiscais aplicadas no cruzamento dos módulos. Ative, ajuste a criticidade
+            Motor de regras da auditoria fiscal: catálogo de regras aplicadas no cruzamento dos módulos. Ative, ajuste a criticidade
             ou crie regras próprias com condições parametrizáveis.
           </p>
         </div>

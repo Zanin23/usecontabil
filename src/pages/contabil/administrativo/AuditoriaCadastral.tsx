@@ -36,7 +36,7 @@ export default function AuditoriaCadastral() {
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Administrativo</div>
           <h1 className="mt-2 font-display text-4xl">
-            Auditoria de <span className="text-brand-orange">cadastros.</span>
+            Auditoria <span className="text-brand-orange">cadastral</span>
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             Motor de validação sobre os dados sincronizados. {READ_ONLY_MSG}

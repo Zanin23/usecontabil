@@ -103,7 +103,7 @@ export default function AuditoriaHub() {
         <div className="min-w-0">
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Fiscal</div>
           <h1 className="font-display text-3xl sm:text-4xl">
-            Auditoria <span className="text-brand-orange">fiscal</span>
+            Painel de <span className="text-brand-orange">auditoria</span>
           </h1>
           <p className="max-w-2xl text-sm text-muted-foreground">
             Inteligência tributária: cruzamento entre documentos, escrituração, apurações e obrigações,

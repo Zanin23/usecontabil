@@ -94,7 +94,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "dev:preview": "UC_PREVIEW=1 vite"
+    "dev:preview": "UC_PREVIEW=1 vite",
+    "validar:telas": "UC_VALIDACAO=1 vitest run src/test/validacaoRotasTelas.test.tsx"
   },
   "type": "module",
   "version": "0.0.0"

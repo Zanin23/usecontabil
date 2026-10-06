@@ -161,8 +161,8 @@ export default function PraticaAprendizado() {
               } else if (c.id === 'cenario-difal') {
                 setAba('icms-difal');
                 setDifal({
-                  origem: c.origem as any,
-                  destino: c.destino as any,
+                  origem: c.origem as EntradaDifal["origem"],
+                  destino: c.destino as EntradaDifal["destino"],
                   valor: c.valor,
                   origemProduto: "0",
                   fcp: c.fcp
