@@ -1,0 +1,1729 @@
+{
+  "geradoEm": "2026-10-06T14:22:20.930Z",
+  "total": 172,
+  "ok": 172,
+  "avisos": 0,
+  "falhas": 0,
+  "resultados": [
+    {
+      "rota": "/dashboard",
+      "esperado": "Visão geral contábil",
+      "titulo": "Visão geral contábil",
+      "situacao": "ok",
+      "ms": 4909,
+      "texto": 6441,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/mapa-sistema",
+      "esperado": "Mapa do sistema",
+      "titulo": "Mapa do sistema",
+      "situacao": "ok",
+      "ms": 514,
+      "texto": 27473,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/simples-mei",
+      "esperado": "Simples & MEI",
+      "titulo": "Controle simplificado Simples & MEI",
+      "situacao": "ok",
+      "ms": 355,
+      "texto": 3218,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/cadastros/empresas",
+      "esperado": "Empresas do grupo",
+      "titulo": "Empresas do grupo",
+      "situacao": "ok",
+      "ms": 495,
+      "texto": 2976,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/cadastros/filiais",
+      "esperado": "Filiais e unidades",
+      "titulo": "Filiais e unidades",
+      "situacao": "ok",
+      "ms": 365,
+      "texto": 3103,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/cadastros/classe-atividades",
+      "esperado": "Classe de atividades",
+      "titulo": "Classe de atividades",
+      "situacao": "ok",
+      "ms": 211,
+      "texto": 2823,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/cadastros/resumo-classe-atividades",
+      "esperado": "Resumo por classe de atividades",
+      "titulo": "Resumo por classe de atividades",
+      "situacao": "ok",
+      "ms": 157,
+      "texto": 2517,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/empresa/dados-empresa",
+      "esperado": "Dados da empresa",
+      "titulo": "Dados da empresa",
+      "situacao": "ok",
+      "ms": 180,
+      "texto": 2812,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/empresa/inscricoes",
+      "esperado": "Inscrições",
+      "titulo": "Inscrições",
+      "situacao": "ok",
+      "ms": 170,
+      "texto": 2636,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/empresa/parametros",
+      "esperado": "Parâmetros",
+      "titulo": "Parâmetros",
+      "situacao": "ok",
+      "ms": 133,
+      "texto": 2662,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/empresa/certificados",
+      "esperado": "Certificados",
+      "titulo": "Certificados",
+      "situacao": "ok",
+      "ms": 129,
+      "texto": 2668,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/empresa/pagamentos",
+      "esperado": "Pagamentos",
+      "titulo": "Pagamentos",
+      "situacao": "ok",
+      "ms": 130,
+      "texto": 2668,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/controles/usuarios",
+      "esperado": "Usuários e permissões",
+      "titulo": "Usuários e permissões",
+      "situacao": "ok",
+      "ms": 490,
+      "texto": 2902,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/controles/politicas",
+      "esperado": "Políticas e alçadas",
+      "titulo": "Políticas e alçadas",
+      "situacao": "ok",
+      "ms": 274,
+      "texto": 3834,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/controles/parametros",
+      "esperado": "Parâmetros do sistema",
+      "titulo": "Parâmetros do sistema",
+      "situacao": "ok",
+      "ms": 203,
+      "texto": 3799,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/controles/centros-custo",
+      "esperado": "Centros de custo e rateio",
+      "titulo": "Centros de custo e rateio",
+      "situacao": "ok",
+      "ms": 171,
+      "texto": 3685,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/controles/avisos",
+      "esperado": "Avisos",
+      "titulo": "Avisos e notificações",
+      "situacao": "ok",
+      "ms": 170,
+      "texto": 2887,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/controles/auditoria-log",
+      "esperado": "Log de auditoria",
+      "titulo": "Log de auditoria",
+      "situacao": "ok",
+      "ms": 193,
+      "texto": 3576,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/cadastros/participantes",
+      "esperado": "Clientes e fornecedores",
+      "titulo": "Clientes e fornecedores",
+      "situacao": "ok",
+      "ms": 421,
+      "texto": 3538,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/cadastros/produtos-servicos",
+      "esperado": "Produtos e serviços",
+      "titulo": "Produtos e serviços",
+      "situacao": "ok",
+      "ms": 285,
+      "texto": 3287,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/contabil/cadastros/plano-contas",
+      "esperado": "Plano de contas",
+      "titulo": "Plano de contas",
+      "situacao": "ok",
+      "ms": 419,
+      "texto": 5605,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/contabil/cadastros/centros-custo",
+      "esperado": "Centros de custo",
+      "titulo": "Centros de custo",
+      "situacao": "ok",
+      "ms": 224,
+      "texto": 2865,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/contabil/cadastros/historicos",
+      "esperado": "Históricos padrão",
+      "titulo": "Históricos padrão",
+      "situacao": "ok",
+      "ms": 238,
+      "texto": 3870,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/patrimonio/bens",
+      "esperado": "Bens do imobilizado",
+      "titulo": "Bens do imobilizado",
+      "situacao": "ok",
+      "ms": 598,
+      "texto": 5136,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/contratos/contratos",
+      "esperado": "Contratos",
+      "titulo": "Contratos",
+      "situacao": "ok",
+      "ms": 445,
+      "texto": 4088,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros",
+      "esperado": "Cadastros analíticos",
+      "titulo": "Cadastros analíticos",
+      "situacao": "ok",
+      "ms": 239,
+      "texto": 4944,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/documentos/entradas",
+      "esperado": "Notas de entrada",
+      "titulo": "Notas de entrada",
+      "situacao": "ok",
+      "ms": 383,
+      "texto": 3439,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/documentos/saidas",
+      "esperado": "Notas de saída",
+      "titulo": "Notas de saída",
+      "situacao": "ok",
+      "ms": 225,
+      "texto": 3383,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/documentos/servicos-tomados",
+      "esperado": "Serviços tomados",
+      "titulo": "Serviços tomados",
+      "situacao": "ok",
+      "ms": 172,
+      "texto": 3271,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/documentos/servicos-prestados",
+      "esperado": "Serviços prestados",
+      "titulo": "Serviços prestados",
+      "situacao": "ok",
+      "ms": 149,
+      "texto": 3184,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/documentos/transporte",
+      "esperado": "Conhecimentos de transporte",
+      "titulo": "Conhecimentos de transporte",
+      "situacao": "ok",
+      "ms": 225,
+      "texto": 3412,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/documentos/cupons",
+      "esperado": "Cupons fiscais",
+      "titulo": "Cupons fiscais",
+      "situacao": "ok",
+      "ms": 218,
+      "texto": 3385,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/documentos/manifestacao",
+      "esperado": "Manifestação do destinatário",
+      "titulo": "Manifestação do destinatário",
+      "situacao": "ok",
+      "ms": 221,
+      "texto": 3447,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/movimentos/faturamento",
+      "esperado": "Faturamento",
+      "titulo": "Faturamento",
+      "situacao": "ok",
+      "ms": 184,
+      "texto": 3129,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/movimentos/servicos",
+      "esperado": "Serviços",
+      "titulo": "Serviços — NFS-e e RPS",
+      "situacao": "ok",
+      "ms": 186,
+      "texto": 2988,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/movimentos/demais-documentos",
+      "esperado": "Demais documentos",
+      "titulo": "Demais documentos",
+      "situacao": "ok",
+      "ms": 122,
+      "texto": 2981,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/movimentos/conclusao-fiscal",
+      "esperado": "Conclusão fiscal",
+      "titulo": "Conclusão fiscal",
+      "situacao": "ok",
+      "ms": 130,
+      "texto": 3455,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/contabil/escrituracao/lancamentos",
+      "esperado": "Lançamentos contábeis",
+      "titulo": "Lançamentos contábeis",
+      "situacao": "ok",
+      "ms": 315,
+      "texto": 3401,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/financeiro-operacional/contas-pagar",
+      "esperado": "Contas a pagar",
+      "titulo": "Contas a pagar",
+      "situacao": "ok",
+      "ms": 361,
+      "texto": 5989,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/financeiro-operacional/contas-receber",
+      "esperado": "Contas a receber",
+      "titulo": "Contas a receber",
+      "situacao": "ok",
+      "ms": 224,
+      "texto": 5476,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/financeiro-operacional/caixa",
+      "esperado": "Caixa e tesouraria",
+      "titulo": "Caixa e tesouraria",
+      "situacao": "ok",
+      "ms": 120,
+      "texto": 3516,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/financeiro-operacional/fluxo-caixa",
+      "esperado": "Fluxo de caixa",
+      "titulo": "Fluxo de caixa",
+      "situacao": "ok",
+      "ms": 118,
+      "texto": 3715,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/financeiro-operacional/cobranca",
+      "esperado": "Cobrança",
+      "titulo": "Cobrança e inadimplência",
+      "situacao": "ok",
+      "ms": 120,
+      "texto": 5460,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/suprimentos/requisicoes",
+      "esperado": "Requisições",
+      "titulo": "Requisições de compra",
+      "situacao": "ok",
+      "ms": 496,
+      "texto": 3362,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/suprimentos/cotacoes",
+      "esperado": "Cotações",
+      "titulo": "Cotações",
+      "situacao": "ok",
+      "ms": 245,
+      "texto": 3196,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/suprimentos/pedidos",
+      "esperado": "Pedidos de compra",
+      "titulo": "Pedidos de compra",
+      "situacao": "ok",
+      "ms": 193,
+      "texto": 3331,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/escrituracao/livro-entradas",
+      "esperado": "Livro de entradas",
+      "titulo": "Livro de entradas",
+      "situacao": "ok",
+      "ms": 316,
+      "texto": 3728,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/escrituracao/livro-saidas",
+      "esperado": "Livro de saídas",
+      "titulo": "Livro de saídas",
+      "situacao": "ok",
+      "ms": 241,
+      "texto": 3650,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/escrituracao/apuracao-icms",
+      "esperado": "Apuração de ICMS",
+      "titulo": "Apuração de ICMS",
+      "situacao": "ok",
+      "ms": 252,
+      "texto": 4068,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/escrituracao/apuracao-ipi",
+      "esperado": "Apuração de IPI",
+      "titulo": "Apuração de IPI",
+      "situacao": "ok",
+      "ms": 168,
+      "texto": 3349,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/escrituracao/inventario",
+      "esperado": "Inventário",
+      "titulo": "Inventário (Bloco H)",
+      "situacao": "ok",
+      "ms": 278,
+      "texto": 3090,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/escrituracao/ciap",
+      "esperado": "CIAP",
+      "titulo": "CIAP",
+      "situacao": "ok",
+      "ms": 213,
+      "texto": 3187,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/apuracoes",
+      "esperado": "Painel de apurações",
+      "titulo": "Painel de apurações",
+      "situacao": "ok",
+      "ms": 299,
+      "texto": 4635,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/apuracoes/pis-cofins",
+      "esperado": "PIS / COFINS",
+      "titulo": "PIS / COFINS",
+      "situacao": "ok",
+      "ms": 346,
+      "texto": 3577,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/apuracoes/iss",
+      "esperado": "ISS",
+      "titulo": "ISS",
+      "situacao": "ok",
+      "ms": 186,
+      "texto": 3312,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/apuracoes/irpj-csll",
+      "esperado": "IRPJ / CSLL",
+      "titulo": "IRPJ / CSLL",
+      "situacao": "ok",
+      "ms": 162,
+      "texto": 3468,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/apuracoes/simples-nacional",
+      "esperado": "Simples Nacional",
+      "titulo": "Simples Nacional",
+      "situacao": "ok",
+      "ms": 154,
+      "texto": 3466,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/apuracoes/retencoes",
+      "esperado": "Retenções",
+      "titulo": "Retenções na fonte",
+      "situacao": "ok",
+      "ms": 160,
+      "texto": 3256,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tributacao/motor-tributario",
+      "esperado": "Motor tributário",
+      "titulo": "Motor tributário",
+      "situacao": "ok",
+      "ms": 190,
+      "texto": 3632,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tributacao/avancada",
+      "esperado": "Tributação avançada",
+      "titulo": "Tributação avançada",
+      "situacao": "ok",
+      "ms": 143,
+      "texto": 4701,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tabelas/simples-nacional",
+      "esperado": "Simples Nacional",
+      "titulo": "Simples Nacional",
+      "situacao": "ok",
+      "ms": 359,
+      "texto": 3299,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tabelas/lucro-presumido",
+      "esperado": "Lucro Presumido",
+      "titulo": "Lucro Presumido",
+      "situacao": "ok",
+      "ms": 242,
+      "texto": 3369,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tabelas/lucro-real",
+      "esperado": "Lucro Real",
+      "titulo": "Lucro Real",
+      "situacao": "ok",
+      "ms": 246,
+      "texto": 3373,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tabelas/simei",
+      "esperado": "SIMEI",
+      "titulo": "SIMEI",
+      "situacao": "ok",
+      "ms": 236,
+      "texto": 3332,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tabelas/ajuste-apuracao",
+      "esperado": "Ajustes de apuração",
+      "titulo": "Ajustes de apuração",
+      "situacao": "ok",
+      "ms": 241,
+      "texto": 3448,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tabelas/ajuste-documento-fiscal",
+      "esperado": "Ajustes de documento fiscal",
+      "titulo": "Ajustes de documento fiscal",
+      "situacao": "ok",
+      "ms": 261,
+      "texto": 3882,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tabelas/apuracao-pis-cofins",
+      "esperado": "Apuração de PIS e COFINS",
+      "titulo": "Apuração de PIS e COFINS",
+      "situacao": "ok",
+      "ms": 279,
+      "texto": 3449,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tributacao/difal",
+      "esperado": "DIFAL",
+      "titulo": "DIFAL EC 87/2015",
+      "situacao": "ok",
+      "ms": 153,
+      "texto": 3326,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tributacao/st-icms",
+      "esperado": "Substituição tributária",
+      "titulo": "Substituição tributária ICMS-ST",
+      "situacao": "ok",
+      "ms": 126,
+      "texto": 3235,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tributacao/defis",
+      "esperado": "DEFIS",
+      "titulo": "DEFIS 2026",
+      "situacao": "ok",
+      "ms": 160,
+      "texto": 3174,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/guias",
+      "esperado": "Painel de guias",
+      "titulo": "Painel de guias",
+      "situacao": "ok",
+      "ms": 250,
+      "texto": 4671,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/guias/darf",
+      "esperado": "DARF",
+      "titulo": "Guia federal (DARF)",
+      "situacao": "ok",
+      "ms": 241,
+      "texto": 2729,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/guias/estaduais",
+      "esperado": "Guias estaduais",
+      "titulo": "Guias estaduais",
+      "situacao": "ok",
+      "ms": 153,
+      "texto": 2731,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/guias/parcelamentos",
+      "esperado": "Parcelamentos",
+      "titulo": "Parcelamentos",
+      "situacao": "ok",
+      "ms": 144,
+      "texto": 2516,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/guias/calendario",
+      "esperado": "Calendário",
+      "titulo": "Calendário Fiscal",
+      "situacao": "ok",
+      "ms": 128,
+      "texto": 2478,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/obrigacoes",
+      "esperado": "Painel de obrigações",
+      "titulo": "Painel de obrigações",
+      "situacao": "ok",
+      "ms": 646,
+      "texto": 5710,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/obrigacoes/agenda",
+      "esperado": "Agenda fiscal",
+      "titulo": "Agenda fiscal",
+      "situacao": "ok",
+      "ms": 235,
+      "texto": 4642,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/obrigacoes/sped-fiscal",
+      "esperado": "SPED Fiscal",
+      "titulo": "SPED Fiscal (EFD ICMS/IPI)",
+      "situacao": "ok",
+      "ms": 304,
+      "texto": 3961,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/obrigacoes/efd-contribuicoes",
+      "esperado": "EFD-Contribuições",
+      "titulo": "EFD-Contribuições",
+      "situacao": "ok",
+      "ms": 209,
+      "texto": 3904,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/obrigacoes/ecd-ecf",
+      "esperado": "ECD e ECF",
+      "titulo": "ECD e ECF",
+      "situacao": "ok",
+      "ms": 196,
+      "texto": 3776,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/obrigacoes/dctfweb",
+      "esperado": "DCTFWeb",
+      "titulo": "DCTFWeb",
+      "situacao": "ok",
+      "ms": 161,
+      "texto": 3896,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/obrigacoes/reinf",
+      "esperado": "REINF",
+      "titulo": "EFD-Reinf",
+      "situacao": "ok",
+      "ms": 165,
+      "texto": 3890,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/obrigacoes/estaduais",
+      "esperado": "Estaduais",
+      "titulo": "Obrigações estaduais e municipais",
+      "situacao": "ok",
+      "ms": 177,
+      "texto": 4043,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/operacional/conciliacao",
+      "esperado": "Conciliação bancária",
+      "titulo": "Conciliação bancária",
+      "situacao": "ok",
+      "ms": 359,
+      "texto": 3616,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/auditoria",
+      "esperado": "Painel de auditoria",
+      "titulo": "Painel de auditoria",
+      "situacao": "ok",
+      "ms": 369,
+      "texto": 4577,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/auditoria/xml-escrituracao",
+      "esperado": "XML × escrituração",
+      "titulo": "XML × Escrituração",
+      "situacao": "ok",
+      "ms": 318,
+      "texto": 2694,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/auditoria/classificacao",
+      "esperado": "Classificação fiscal",
+      "titulo": "Classificação fiscal",
+      "situacao": "ok",
+      "ms": 245,
+      "texto": 2630,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/auditoria/creditos",
+      "esperado": "Créditos",
+      "titulo": "Créditos extemporâneos",
+      "situacao": "ok",
+      "ms": 115,
+      "texto": 2311,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/auditoria/certidoes",
+      "esperado": "Certidões",
+      "titulo": "Certidões e regularidade",
+      "situacao": "ok",
+      "ms": 83,
+      "texto": 3202,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/auditoria/regras",
+      "esperado": "Regras de auditoria",
+      "titulo": "Regras de auditoria",
+      "situacao": "ok",
+      "ms": 168,
+      "texto": 7661,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/auditoria",
+      "esperado": "Auditoria cadastral",
+      "titulo": "Auditoria cadastral",
+      "situacao": "ok",
+      "ms": 489,
+      "texto": 45997,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/pesquisa",
+      "esperado": "Pesquisa global",
+      "titulo": "Pesquisa global.",
+      "situacao": "ok",
+      "ms": 141,
+      "texto": 2072,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/contabil/relatorios/balancete",
+      "esperado": "Balancete de verificação",
+      "titulo": "Balancete de verificação",
+      "situacao": "ok",
+      "ms": 367,
+      "texto": 3380,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/contabil/relatorios/razao",
+      "esperado": "Razão",
+      "titulo": "Razão",
+      "situacao": "ok",
+      "ms": 263,
+      "texto": 2681,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/contabil/relatorios/diario",
+      "esperado": "Diário",
+      "titulo": "Diário",
+      "situacao": "ok",
+      "ms": 165,
+      "texto": 2859,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/demonstracoes/dre",
+      "esperado": "DRE",
+      "titulo": "DRE — demonstração do resultado",
+      "situacao": "ok",
+      "ms": 349,
+      "texto": 5070,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/dashboard",
+      "esperado": "Dashboard executivo",
+      "titulo": "Dashboard executivo.",
+      "situacao": "ok",
+      "ms": 132,
+      "texto": 3087,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tributacao/dashboard-executivo",
+      "esperado": "Painel tributário",
+      "titulo": "Painel tributário",
+      "situacao": "ok",
+      "ms": 131,
+      "texto": 2702,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/servicos/gestao",
+      "esperado": "Gestão do fechamento",
+      "titulo": "Gestão do fechamento",
+      "situacao": "ok",
+      "ms": 528,
+      "texto": 8870,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/servicos/fases-processos",
+      "esperado": "Fases e processos",
+      "titulo": "Fases e processos",
+      "situacao": "ok",
+      "ms": 120,
+      "texto": 3454,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/servicos/cadastro-tarefas",
+      "esperado": "Cadastro de tarefas",
+      "titulo": "Cadastro de tarefas",
+      "situacao": "ok",
+      "ms": 159,
+      "texto": 4980,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/servicos/encerramentos",
+      "esperado": "Encerramentos",
+      "titulo": "Encerramentos",
+      "situacao": "ok",
+      "ms": 336,
+      "texto": 7746,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/aprender",
+      "esperado": "Central",
+      "titulo": "Central de aprendizado",
+      "situacao": "ok",
+      "ms": 251,
+      "texto": 3149,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/aprender/glossario",
+      "esperado": "Glossário",
+      "titulo": "Glossário técnico.",
+      "situacao": "ok",
+      "ms": 152,
+      "texto": 16269,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/aprender/pratica",
+      "esperado": "Modo prática",
+      "titulo": "Modo prática.",
+      "situacao": "ok",
+      "ms": 244,
+      "texto": 3955,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos",
+      "esperado": "Preparativos",
+      "titulo": "Preparativos",
+      "situacao": "ok",
+      "ms": 217,
+      "texto": 3046,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/cadastros",
+      "esperado": "Cadastros",
+      "titulo": "Cadastros",
+      "situacao": "ok",
+      "ms": 108,
+      "texto": 2246,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/servicos",
+      "esperado": "Serviços",
+      "titulo": "Serviços",
+      "situacao": "ok",
+      "ms": 56,
+      "texto": 1995,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/empresa",
+      "esperado": "Empresa",
+      "titulo": "Empresa",
+      "situacao": "ok",
+      "ms": 63,
+      "texto": 2071,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal",
+      "esperado": "Fiscal",
+      "titulo": "Fiscal",
+      "situacao": "ok",
+      "ms": 67,
+      "texto": 3966,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/documentos",
+      "esperado": "Documentos fiscais",
+      "titulo": "Documentos fiscais",
+      "situacao": "ok",
+      "ms": 69,
+      "texto": 2140,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/fiscal/escrituracao",
+      "esperado": "Escrituração",
+      "titulo": "Escrituração",
+      "situacao": "ok",
+      "ms": 51,
+      "texto": 2041,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/contabil",
+      "esperado": "Contábil",
+      "titulo": "Contábil",
+      "situacao": "ok",
+      "ms": 88,
+      "texto": 2602,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/contabil/cadastros",
+      "esperado": "Cadastros",
+      "titulo": "Cadastros",
+      "situacao": "ok",
+      "ms": 120,
+      "texto": 2011,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/contabil/escrituracao",
+      "esperado": "Escrituração",
+      "titulo": "Escrituração",
+      "situacao": "ok",
+      "ms": 109,
+      "texto": 1852,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/contabil/relatorios",
+      "esperado": "Relatórios",
+      "titulo": "Relatórios",
+      "situacao": "ok",
+      "ms": 41,
+      "texto": 1968,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro",
+      "esperado": "Financeiro",
+      "titulo": "Financeiro",
+      "situacao": "ok",
+      "ms": 69,
+      "texto": 3100,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tabelas",
+      "esperado": "Tabelas",
+      "titulo": "Tabelas",
+      "situacao": "ok",
+      "ms": 55,
+      "texto": 2086,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/movimentos",
+      "esperado": "Movimentos",
+      "titulo": "Movimentos",
+      "situacao": "ok",
+      "ms": 51,
+      "texto": 1907,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/tributacao",
+      "esperado": "Tributação",
+      "titulo": "Tributação",
+      "situacao": "ok",
+      "ms": 48,
+      "texto": 2099,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/operacional",
+      "esperado": "Operacional",
+      "titulo": "Operacional",
+      "situacao": "ok",
+      "ms": 37,
+      "texto": 1796,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/demonstracoes",
+      "esperado": "Demonstrações",
+      "titulo": "Demonstrações",
+      "situacao": "ok",
+      "ms": 46,
+      "texto": 1824,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo",
+      "esperado": "Administrativo",
+      "titulo": "Administrativo",
+      "situacao": "ok",
+      "ms": 70,
+      "texto": 3768,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/financeiro-operacional",
+      "esperado": "Contas e caixa",
+      "titulo": "Contas e caixa",
+      "situacao": "ok",
+      "ms": 46,
+      "texto": 2040,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/contratos",
+      "esperado": "Contratos e documentos",
+      "titulo": "Contratos e documentos",
+      "situacao": "ok",
+      "ms": 64,
+      "texto": 2013,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/patrimonio",
+      "esperado": "Patrimônio",
+      "titulo": "Patrimônio",
+      "situacao": "ok",
+      "ms": 57,
+      "texto": 2002,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/suprimentos",
+      "esperado": "Compras e suprimentos",
+      "titulo": "Compras e suprimentos",
+      "situacao": "ok",
+      "ms": 55,
+      "texto": 1928,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/controles",
+      "esperado": "Controles internos",
+      "titulo": "Controles internos",
+      "situacao": "ok",
+      "ms": 59,
+      "texto": 2120,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/",
+      "esperado": "Visão geral contábil",
+      "titulo": "Visão geral contábil",
+      "situacao": "ok",
+      "ms": 661,
+      "texto": 6445,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/dashboard",
+      "esperado": "Visão geral contábil",
+      "titulo": "Visão geral contábil",
+      "situacao": "ok",
+      "ms": 267,
+      "texto": 6441,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/mapa-sistema",
+      "esperado": "Mapa do sistema",
+      "titulo": "Mapa do sistema",
+      "situacao": "ok",
+      "ms": 265,
+      "texto": 27473,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral",
+      "esperado": "Catálogo de telas",
+      "titulo": "Catálogo de telas",
+      "situacao": "ok",
+      "ms": 296,
+      "texto": 20457,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/aprender/glossario",
+      "esperado": "Glossário",
+      "titulo": "Glossário técnico.",
+      "situacao": "ok",
+      "ms": 137,
+      "texto": 16269,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/aprender/pratica",
+      "esperado": "Modo prática",
+      "titulo": "Modo prática.",
+      "situacao": "ok",
+      "ms": 189,
+      "texto": 3955,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/simples-mei/receitas",
+      "esperado": "",
+      "titulo": "Faturamento",
+      "situacao": "ok",
+      "ms": 158,
+      "texto": 3435,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/simples-mei/empresas",
+      "esperado": "",
+      "titulo": "Empresas",
+      "situacao": "ok",
+      "ms": 72,
+      "texto": 3412,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/simples-mei/obrigacoes",
+      "esperado": "",
+      "titulo": "Obrigações e lembretes",
+      "situacao": "ok",
+      "ms": 62,
+      "texto": 3418,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/cadastros/empresas/novo",
+      "esperado": "",
+      "titulo": "Novo Cadastro de Empresa",
+      "situacao": "ok",
+      "ms": 305,
+      "texto": 3307,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/empresa/dados-empresa/novo",
+      "esperado": "",
+      "titulo": "Novo Cadastro de Empresa",
+      "situacao": "ok",
+      "ms": 140,
+      "texto": 3306,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/preparativos/cadastros/empresas/EMP-1",
+      "esperado": "",
+      "titulo": "Novo Cadastro de Empresa",
+      "situacao": "ok",
+      "ms": 145,
+      "texto": 3312,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/cadastros",
+      "esperado": "Cadastros",
+      "titulo": "Cadastros",
+      "situacao": "ok",
+      "ms": 87,
+      "texto": 2387,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/cadastros/produtos",
+      "esperado": "",
+      "titulo": "Produtos e serviços",
+      "situacao": "ok",
+      "ms": 153,
+      "texto": 3695,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/cadastros/clientes-fornecedores",
+      "esperado": "",
+      "titulo": "Clientes e fornecedores",
+      "situacao": "ok",
+      "ms": 126,
+      "texto": 4013,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/financeiro/cadastros/servicos",
+      "esperado": "",
+      "titulo": "Produtos e serviços",
+      "situacao": "ok",
+      "ms": 100,
+      "texto": 3695,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros",
+      "esperado": "",
+      "titulo": "Cadastros analíticos",
+      "situacao": "ok",
+      "ms": 282,
+      "texto": 5580,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/clientes",
+      "esperado": "",
+      "titulo": "Clientes",
+      "situacao": "ok",
+      "ms": 147,
+      "texto": 3181,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/fornecedores",
+      "esperado": "",
+      "titulo": "Fornecedores",
+      "situacao": "ok",
+      "ms": 82,
+      "texto": 3182,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/produtos-servicos",
+      "esperado": "",
+      "titulo": "Produtos e serviços",
+      "situacao": "ok",
+      "ms": 88,
+      "texto": 3114,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/bancos",
+      "esperado": "",
+      "titulo": "Bancos e contas",
+      "situacao": "ok",
+      "ms": 73,
+      "texto": 2982,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/plano-gerencial",
+      "esperado": "",
+      "titulo": "Plano de contas gerencial",
+      "situacao": "ok",
+      "ms": 76,
+      "texto": 2662,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/condicoes-pagamento",
+      "esperado": "",
+      "titulo": "Condições de pagamento",
+      "situacao": "ok",
+      "ms": 89,
+      "texto": 2657,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/inicio",
+      "esperado": "",
+      "titulo": "Início",
+      "situacao": "ok",
+      "ms": 67,
+      "texto": 2750,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/configuracao",
+      "esperado": "",
+      "titulo": "Configuração",
+      "situacao": "ok",
+      "ms": 82,
+      "texto": 4493,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/configuracao/empresas-e-unidades",
+      "esperado": "",
+      "titulo": "Empresas e unidades",
+      "situacao": "ok",
+      "ms": 60,
+      "texto": 2744,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/cadastros",
+      "esperado": "",
+      "titulo": "Cadastros",
+      "situacao": "ok",
+      "ms": 62,
+      "texto": 3706,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/cadastros/cadastros-do-grupo",
+      "esperado": "",
+      "titulo": "Cadastros do grupo",
+      "situacao": "ok",
+      "ms": 75,
+      "texto": 2466,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/lancamentos",
+      "esperado": "",
+      "titulo": "Lançamentos",
+      "situacao": "ok",
+      "ms": 90,
+      "texto": 5346,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/lancamentos/documentos-fiscais",
+      "esperado": "",
+      "titulo": "Documentos fiscais",
+      "situacao": "ok",
+      "ms": 62,
+      "texto": 3163,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/escrituracao",
+      "esperado": "",
+      "titulo": "Escrituração",
+      "situacao": "ok",
+      "ms": 78,
+      "texto": 3091,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/apuracao",
+      "esperado": "",
+      "titulo": "Apuração e recolhimento",
+      "situacao": "ok",
+      "ms": 140,
+      "texto": 7291,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/apuracao/apuracoes",
+      "esperado": "",
+      "titulo": "Apurações",
+      "situacao": "ok",
+      "ms": 87,
+      "texto": 3028,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/conciliacao",
+      "esperado": "",
+      "titulo": "Conciliação e auditoria",
+      "situacao": "ok",
+      "ms": 83,
+      "texto": 3640,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/relatorios",
+      "esperado": "",
+      "titulo": "Relatórios",
+      "situacao": "ok",
+      "ms": 60,
+      "texto": 3166,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/relatorios/contabeis",
+      "esperado": "",
+      "titulo": "Contábeis",
+      "situacao": "ok",
+      "ms": 65,
+      "texto": 2534,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/fechamento",
+      "esperado": "",
+      "titulo": "Fechamento",
+      "situacao": "ok",
+      "ms": 58,
+      "texto": 2782,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/visao-geral/aprender",
+      "esperado": "",
+      "titulo": "Aprender",
+      "situacao": "ok",
+      "ms": 65,
+      "texto": 2550,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/clientes",
+      "esperado": "",
+      "titulo": "Clientes",
+      "situacao": "ok",
+      "ms": 68,
+      "texto": 3185,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/fornecedores",
+      "esperado": "",
+      "titulo": "Fornecedores",
+      "situacao": "ok",
+      "ms": 81,
+      "texto": 3186,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/produtos-servicos",
+      "esperado": "",
+      "titulo": "Produtos e serviços",
+      "situacao": "ok",
+      "ms": 91,
+      "texto": 3114,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/bancos",
+      "esperado": "",
+      "titulo": "Bancos e contas",
+      "situacao": "ok",
+      "ms": 78,
+      "texto": 2986,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/plano-gerencial",
+      "esperado": "",
+      "titulo": "Plano de contas gerencial",
+      "situacao": "ok",
+      "ms": 57,
+      "texto": 2658,
+      "observacoes": [],
+      "erros": []
+    },
+    {
+      "rota": "/administrativo/cadastros/condicoes-pagamento",
+      "esperado": "",
+      "titulo": "Condições de pagamento",
+      "situacao": "ok",
+      "ms": 83,
+      "texto": 2657,
+      "observacoes": [],
+      "erros": []
+    }
+  ]
+}

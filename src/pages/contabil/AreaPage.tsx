@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { Badge, Card, CardContent } from "@/design-system/mj-design-system-db98fa";
 import { findArea } from "@/lib/contabilNav";
 import PageHeader from "@/components/contabil/PageHeader";
+import NotFound from "@/pages/NotFound";
 
 const accentText: Record<string, string> = {
   orange: "text-brand-orange",
@@ -20,9 +21,9 @@ export default function AreaPage() {
   const { area: areaSlug } = useParams();
   const area = findArea(areaSlug);
 
-  if (!area) {
-    return <div className="py-24 text-center text-muted-foreground">Área não encontrada.</div>;
-  }
+  // Área inexistente é rota inexistente: cai na 404 do sistema (o `path="*"` da
+  // raiz nunca é alcançado porque `/:area` captura qualquer caminho curto).
+  if (!area) return <NotFound />;
 
   const Icon = area.icon;
   const totalModulos = area.categories.reduce((n, c) => n + c.modules.length, 0);
@@ -36,7 +37,7 @@ export default function AreaPage() {
     <div className="space-y-10">
       <PageHeader
         icon={Icon}
-        iconAccent={area.accent as any}
+        iconAccent={area.accent}
         eyebrow={`${area.code} · ${area.eyebrow}`}
         title={titleFirst}
         titleAccent={titleAccent || undefined}

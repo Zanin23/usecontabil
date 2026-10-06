@@ -13,6 +13,7 @@ import { usePratica, setPraticaAtiva } from "@/lib/praticaStore";
 
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { AREAS } from "@/lib/contabilNav";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { SECOES, secaoDaRota, trilhaDaRota } from "@/lib/ux/navModelo";
 import { rotaVisao } from "@/lib/ux/visoes";
 import { useTema } from "@/lib/tema";
@@ -557,8 +558,10 @@ export default function ContabilShell() {
         )}
 
         <main key={pathname} className="animate-page-enter px-4 lg:px-8 py-6 lg:py-8">
-
-          <Outlet />
+          {/* Trocar de rota remonta o <main> e, com ele, limpa o erro da barreira. */}
+          <ErrorBoundary secao="esta tela">
+            <Outlet />
+          </ErrorBoundary>
         </main>
 
       </div>

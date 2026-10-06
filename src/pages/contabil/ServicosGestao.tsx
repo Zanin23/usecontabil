@@ -44,13 +44,16 @@ export default function ServicosGestao() {
   const fechado = fechamentos.find((f) => f.key === `${empresaId}|${competencia}`);
   const regime = empresa ? normalizarRegime(empresa.regime) : null;
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reprocessa quando a auditoria conclui (execucoes)
   const pendCadastro = useMemo(() => pendenciasCadastro(empresa?.id ?? null), [empresa, execucoes]);
   const pendEscrituracao = useMemo(
     () => pendenciasEscrituracao(empresa?.id ?? null, competencia),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reprocessa quando a auditoria conclui (execucoes)
     [empresa, competencia, execucoes],
   );
   const pendObrigacoes = useMemo(
     () => pendenciasObrigacoes(empresa?.id ?? null, competencia),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reprocessa quando a auditoria conclui (execucoes)
     [empresa, competencia, execucoes],
   );
   const cadastrosPendentes = pendCadastro.filter((p) => !p.resolvida);

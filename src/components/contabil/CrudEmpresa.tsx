@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import {
   Badge, Button, Card, CardContent, Dialog, DialogContent, DialogFooter, DialogHeader,
   DialogTitle, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -51,6 +51,8 @@ export default function CrudEmpresa({
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Record<string, string>>({});
+  /** Prefixo dos ids do formulário: liga cada rótulo ao seu campo (`htmlFor`/`id`). */
+  const idForm = useId();
 
   const filtered = useMemo(
     () =>
@@ -234,12 +236,14 @@ export default function CrudEmpresa({
           </DialogHeader>
           <AssistenteCampos titulo={titulo} campos={campos} draft={draft} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {campos.map((c) => (
+            {campos.map((c) => {
+              const idCampo = `${idForm}-${c.key}`;
+              return (
               <div key={c.key} className={c.span === 2 ? "md:col-span-2 space-y-1.5" : "space-y-1.5"}>
-                <Label>{c.label}{c.required ? " *" : ""}</Label>
+                <Label htmlFor={c.type === "select" ? undefined : idCampo}>{c.label}{c.required ? " *" : ""}</Label>
                 {c.type === "select" ? (
                   <Select value={draft[c.key] ?? ""} onValueChange={(v) => setDraft((d) => ({ ...d, [c.key]: v }))}>
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectTrigger aria-label={c.label}><SelectValue placeholder="Selecione" /></SelectTrigger>
                     <SelectContent>
                       {(c.options ?? []).map((o) => (
                         <SelectItem key={o} value={o}>{o}</SelectItem>
@@ -248,12 +252,14 @@ export default function CrudEmpresa({
                   </Select>
                 ) : c.type === "textarea" ? (
                   <Textarea
+                    id={idCampo}
                     value={draft[c.key] ?? ""}
                     placeholder={c.placeholder}
                     onChange={(e) => setDraft((d) => ({ ...d, [c.key]: e.target.value }))}
                   />
                 ) : (
                   <Input
+                    id={idCampo}
                     type={c.type === "date" ? "date" : "text"}
                     value={draft[c.key] ?? ""}
                     placeholder={c.placeholder}
@@ -262,7 +268,8 @@ export default function CrudEmpresa({
                 )}
                 {c.ajuda ? <p className="text-xs text-muted-foreground">{c.ajuda}</p> : null}
               </div>
-            ))}
+              );
+            })}
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-full" onClick={() => setOpen(false)}>Cancelar</Button>

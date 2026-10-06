@@ -11,7 +11,7 @@ import {
   AtividadeRecord, TIPOS_ATIVIDADE, nextAtividadeId, removeAtividade, saveAtividade,
   useAtividades,
 } from "@/lib/atividadesStore";
-import { loadEmpresas } from "@/lib/empresasStore";
+import { classeAtividadeIdDe, loadEmpresas } from "@/lib/empresasStore";
 
 const EMPTY: AtividadeRecord = {
   id: "", cnae: "", descricao: "", tipo: "Serviços", grupo: "", aliqIss: "", status: "Ativa",
@@ -28,7 +28,7 @@ export default function ClasseAtividades() {
   const usoPorClasse = useMemo(() => {
     const map = new Map<string, number>();
     empresas.forEach((e) => {
-      const id = (e.raw as any)?.classeAtividadeId as string | undefined;
+      const id = classeAtividadeIdDe(e.raw);
       if (id) map.set(id, (map.get(id) ?? 0) + 1);
     });
     return map;

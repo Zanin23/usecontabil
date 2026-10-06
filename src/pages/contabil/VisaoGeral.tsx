@@ -249,7 +249,7 @@ export default function VisaoGeral() {
   const anterior = idx > 0 ? todas[idx - 1] : undefined;
   const proxima = idx >= 0 && idx < todas.length - 1 ? todas[idx + 1] : undefined;
 
-  const titulo = grupo?.titulo ?? visao?.secao.titulo ?? "Todas as telas";
+  const titulo = grupo?.titulo ?? visao?.secao.titulo ?? "Catálogo de telas";
   const [primeiraPalavra, ...resto] = titulo.split(" ");
   const acentoAtual = acentos[visao?.secao.accent ?? "orange"];
 

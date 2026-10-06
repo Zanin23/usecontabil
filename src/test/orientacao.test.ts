@@ -261,7 +261,7 @@ describe("mapa de telas", () => {
 
   it("deriva contexto do menu quando a rota ainda não tem ficha escrita", () => {
     const derivada = fichaDoMenu("/dashboard");
-    expect(derivada?.oQueFaz).toBe("Dashboard — Visão geral, pendências e próximos passos");
+    expect(derivada?.oQueFaz).toBe("Visão geral contábil — Visão geral, pendências e próximos passos");
     expect(derivada?.porQue).toContain("Esta tela é a etapa");
   });
 

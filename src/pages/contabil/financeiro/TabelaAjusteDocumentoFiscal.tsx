@@ -5,7 +5,7 @@ import { numeroBR } from "@/lib/financeiroStore";
 export default function TabelaAjusteDocumentoFiscal() {
   return (
     <CrudTabelaFinanceiro
-      titulo="Ajuste de documento fiscal"
+      titulo="Ajustes de documento fiscal"
       descricao="Correções aplicadas em documentos fiscais já escriturados — CFOP, NCM, bases e valores."
       icone={FileSpreadsheet}
       tabela="ajuste-documento-fiscal"

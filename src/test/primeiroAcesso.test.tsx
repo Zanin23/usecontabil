@@ -21,7 +21,7 @@ const nuvem = vi.hoisted(() => ({
   empresas: [
     {
       id: "11111111-1111-4111-8111-111111111111",
-      cnpj: "12.345.678/0001-90",
+      cnpj: "12.345.678/0001-95",
       razao: "Empresa Exemplo Ltda",
       regime: "Simples Nacional",
       atividade: "Confecção de artigos do vestuário",

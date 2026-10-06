@@ -5,7 +5,7 @@ import { numeroBR } from "@/lib/financeiroStore";
 export default function TabelaAjusteApuracao() {
   return (
     <CrudTabelaFinanceiro
-      titulo="Ajuste de apuração"
+      titulo="Ajustes de apuração"
       descricao="Adições, exclusões e estornos lançados na apuração mensal dos tributos das empresas do grupo."
       icone={FileCog}
       tabela="ajuste-apuracao"

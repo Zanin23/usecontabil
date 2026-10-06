@@ -6,8 +6,10 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/design-system/mj-design-system-db98fa";
 import { toast } from "sonner";
+import { mensagemDeErro } from "@/lib/erros";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { findModule } from "@/lib/contabilNav";
+import NotFound from "@/pages/NotFound";
 import { EMPRESAS_EVENT, loadEmpresas, removeEmpresa, type EmpresaRecord } from "@/lib/empresasStore";
 import ExportarMenu from "@/components/contabil/ExportarMenu";
 import { formatCompetencia, useCompetencia } from "@/lib/competencia";
@@ -34,6 +36,9 @@ const statusClass = (v: string) => {
   if (/(ok|ativ|conclu|aceit|gerad|assinad|import|transmit|pago|emit|retif)/.test(s)) return "text-success";
   return "text-muted-foreground";
 };
+
+/** Linha do índice genérico: colunas do módulo + vínculos internos (`__empresaId`). */
+type LinhaTabela = Record<string, string | number | undefined>;
 
 export default function ModulePage() {
   const { area: areaSlug, categoria, modulo } = useParams();
@@ -72,14 +77,14 @@ export default function ModulePage() {
     try {
       await removeEmpresa(rec.id);
       toast.success(`Empresa "${rec.razao}" removida`);
-    } catch (e: any) {
-      toast.error(e?.message || "Não foi possível excluir na nuvem");
+    } catch (e) {
+      toast.error(mensagemDeErro(e, "Não foi possível excluir na nuvem"));
     }
     refreshEmpresas();
   };
 
 
-  const extraRows = savedEmpresas.map((e) => ({
+  const extraRows: LinhaTabela[] = savedEmpresas.map((e) => ({
     __empresaId: e.id,
     cnpj: e.cnpj,
     razao: e.razao,
@@ -88,23 +93,12 @@ export default function ModulePage() {
     status: e.status,
   }));
 
-  if (!area || !category || !module) {
-    return (
-      <div className="max-w-xl mx-auto py-24 text-center space-y-4">
-        <h1 className="font-display text-3xl">Módulo não encontrado</h1>
-        <p className="text-sm text-muted-foreground">
-          Verifique a navegação na barra lateral.
-        </p>
-        <Button asChild variant="outline" className="rounded-full">
-          <Link to="/dashboard">Voltar ao painel</Link>
-        </Button>
-      </div>
-    );
-  }
+  // Módulo inexistente é rota inexistente: mostra a mesma 404 das outras rotas.
+  if (!area || !category || !module) return <NotFound />;
 
   const Icon = module.icon;
 
-  const todasLinhas: any[] = [...extraRows, ...module.rows];
+  const todasLinhas: LinhaTabela[] = [...extraRows, ...module.rows];
   const statusKey = module.columns.find((c) =>
     ["status", "situacao", "resultado", "abonada"].includes(c.key),
   )?.key;
@@ -124,7 +118,7 @@ export default function ModulePage() {
       <ExportarMenu
         nome={module.title}
         colunas={module.columns.map((c) => ({ key: c.key, label: c.label }))}
-        linhas={visiveis.map((r: any) =>
+        linhas={visiveis.map((r) =>
           Object.fromEntries(module.columns.map((c) => [c.key, String(r[c.key] ?? "")])),
         )}
       />
@@ -150,7 +144,7 @@ export default function ModulePage() {
           { label: category.title, to: `/${area.slug}/${category.slug}` },
         ]}
         icon={Icon}
-        iconAccent={area.accent as any}
+        iconAccent={area.accent}
         eyebrow={`${area.title} · ${category.title}`}
         title={module.title}
         description={module.desc}
@@ -240,8 +234,8 @@ export default function ModulePage() {
                 </TableCell>
               </TableRow>
             )}
-            {visiveis.map((row: any, ri) => {
-              const empresaId = row.__empresaId as string | undefined;
+            {visiveis.map((row, ri) => {
+              const empresaId = typeof row.__empresaId === "string" ? row.__empresaId : undefined;
               return (
                 <TableRow
                   key={ri}
@@ -263,7 +257,7 @@ export default function ModulePage() {
                           isStatus && typeof v === "string" ? statusClass(v) : "",
                         ].join(" ")}
                       >
-                        {v as any}
+                        {v}
                       </TableCell>
                     );
                   })}

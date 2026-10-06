@@ -31,6 +31,7 @@ function Cartao({ slug }: { slug: ObrSlug }) {
   const estado = useObrEstado(slug, empresa?.id, competencia);
   const linha = useMemo(
     () => monitorar(empresa?.id ?? null, competencia).find((l) => l.obr === slug)!,
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recalcula quando o estado da obrigação muda (estado)
     [empresa, competencia, slug, estado],
   );
   const Icone = ICONES[slug];
@@ -134,8 +135,8 @@ export default function ObrigacoesHub() {
       <PageHeader
         trail={[{ label: "Fiscal", to: "/fiscal" }]}
         eyebrow="Fiscal · Obrigações acessórias"
-        title="Obrigações"
-        titleAccent="acessórias"
+        title="Painel de"
+        titleAccent="obrigações"
         description="Cada obrigação possui motor próprio de geração, validação e transmissão, sobre uma camada comum de auditoria, versionamento e monitoramento."
         icon={CalendarClock}
         badges={

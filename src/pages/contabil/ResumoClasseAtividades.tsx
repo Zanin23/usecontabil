@@ -6,7 +6,7 @@ import {
 } from "@/design-system/mj-design-system-db98fa";
 import { ChevronRight, ListTree } from "lucide-react";
 import { useAtividades } from "@/lib/atividadesStore";
-import { loadEmpresas } from "@/lib/empresasStore";
+import { classeAtividadeIdDe, loadEmpresas } from "@/lib/empresasStore";
 
 export default function ResumoClasseAtividades() {
   const { atividades } = useAtividades();
@@ -20,7 +20,7 @@ export default function ResumoClasseAtividades() {
       cur.classes += 1;
       cur.cnaes.push(a.cnae);
       cur.empresas += empresas.filter(
-        (e) => ((e.raw as any)?.classeAtividadeId as string | undefined) === a.id,
+        (e) => classeAtividadeIdDe(e.raw) === a.id,
       ).length;
       grupos.set(g, cur);
     });
@@ -29,7 +29,7 @@ export default function ResumoClasseAtividades() {
       .sort((a, b) => b.empresas - a.empresas || a.grupo.localeCompare(b.grupo));
   }, [atividades, empresas]);
 
-  const semClasse = empresas.filter((e) => !((e.raw as any)?.classeAtividadeId)).length;
+  const semClasse = empresas.filter((e) => !classeAtividadeIdDe(e.raw)).length;
 
   return (
     <div className="space-y-6">
@@ -52,7 +52,7 @@ export default function ResumoClasseAtividades() {
             <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
               Preparativos · Cadastros
             </div>
-            <h1 className="font-display text-4xl mt-1.5">Resumo classe de atividades</h1>
+            <h1 className="font-display text-4xl mt-1.5">Resumo por classe de atividades</h1>
             <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
               Consolidado das empresas do grupo por grupo CNAE, calculado a partir das classes cadastradas.
             </p>

@@ -279,6 +279,11 @@ export function empresaDB(empresaId?: string | null): EmpresaDB {
   };
 }
 
+/**
+ * Atualiza o banco **tributário** da empresa (produtos, parceiros, documentos,
+ * regras, fechamentos). Não confundir com `saveEmpresa` de `empresasStore`,
+ * que grava a ficha cadastral da empresa.
+ */
 export function saveEmpresa(empresaId: string, patch: Partial<EmpresaDB>) {
   const db = loadDB();
   db[empresaId] = { ...vazio(), ...(db[empresaId] ?? {}), ...patch };
@@ -908,9 +913,9 @@ export function carregarDemonstracao(empresaId: string, competencia: string, reg
   ];
 
   const parceiros: Parceiro[] = [
-    { id: novoId("par"), tipo: "Cliente", nome: "Distribuidora Norte Ltda.", documento: "12.345.678/0001-90", ie: "1234567890", crt: "3", regime: "Lucro Real", uf: "BA", municipio: "Salvador", contribuinte: true, consumidorFinal: false, retencoes: "Nenhuma", limiteCredito: 250000, responsavel: "Comercial", ativo: true },
+    { id: novoId("par"), tipo: "Cliente", nome: "Distribuidora Norte Ltda.", documento: "12.345.678/0001-95", ie: "1234567890", crt: "3", regime: "Lucro Real", uf: "BA", municipio: "Salvador", contribuinte: true, consumidorFinal: false, retencoes: "Nenhuma", limiteCredito: 250000, responsavel: "Comercial", ativo: true },
     { id: novoId("par"), tipo: "Cliente", nome: "Marina Costa (consumidor final)", documento: "123.456.789-00", crt: "—", regime: "Pessoa física", uf: "RS", municipio: "Porto Alegre", contribuinte: false, consumidorFinal: true, retencoes: "Nenhuma", ativo: true },
-    { id: novoId("par"), tipo: "Ambos", nome: "TechCore Sistemas ME", documento: "98.765.432/0001-10", ie: "ISENTO", im: "445566", crt: "1", regime: "Simples Nacional", uf: "SP", municipio: "São Paulo", contribuinte: false, consumidorFinal: false, retencoes: "ISS, IRRF", ativo: true },
+    { id: novoId("par"), tipo: "Ambos", nome: "TechCore Sistemas ME", documento: "98.765.432/0001-98", ie: "ISENTO", im: "445566", crt: "1", regime: "Simples Nacional", uf: "SP", municipio: "São Paulo", contribuinte: false, consumidorFinal: false, retencoes: "ISS, IRRF", ativo: true },
   ];
 
   const base = {
@@ -922,7 +927,7 @@ export function carregarDemonstracao(empresaId: string, competencia: string, reg
   const docs: DocumentoFiscal[] = [
     {
       ...base, id: novoId("doc"), grupo: "faturamento", tipo: "NF-e", numero: "10241", serie: "1",
-      emissao: `${competencia}-08`, participante: "Distribuidora Norte Ltda.", participanteDoc: "12.345.678/0001-90",
+      emissao: `${competencia}-08`, participante: "Distribuidora Norte Ltda.", participanteDoc: "12.345.678/0001-95",
       ufDestino: "BA", contribuinte: true, consumidorFinal: false,
       itens: [{ id: novoId("it"), descricao: "Chapa de aço laminado 2mm", tipo: "produto", quantidade: 400, unitario: 42.9, ncm: "72085100", cfop: "6102", cst: "00", aliqIpi: 5 }],
       valorProdutos: 17160, valorTotal: 17160,
@@ -936,21 +941,21 @@ export function carregarDemonstracao(empresaId: string, competencia: string, reg
     },
     {
       ...base, id: novoId("doc"), grupo: "faturamento", tipo: "NF-e", numero: "10243", serie: "1",
-      emissao: `${competencia}-18`, participante: "TechCore Sistemas ME", participanteDoc: "98.765.432/0001-10",
+      emissao: `${competencia}-18`, participante: "TechCore Sistemas ME", participanteDoc: "98.765.432/0001-98",
       ufDestino: "SP", contribuinte: false, consumidorFinal: false,
       itens: [{ id: novoId("it"), descricao: "Óleo lubrificante industrial 20L", tipo: "produto", quantidade: 24, unitario: 340, ncm: "27101932", cfop: "5405", cst: "10", mva: 56.63 }],
       valorProdutos: 8160, valorTotal: 8160,
     },
     {
       ...base, id: novoId("doc"), grupo: "servicos", tipo: "NFS-e", numero: "884", serie: "A",
-      emissao: `${competencia}-20`, participante: "TechCore Sistemas ME", participanteDoc: "98.765.432/0001-10",
+      emissao: `${competencia}-20`, participante: "TechCore Sistemas ME", participanteDoc: "98.765.432/0001-98",
       ufDestino: "SP", municipio: "São Paulo", contribuinte: false, consumidorFinal: false,
       itens: [{ id: novoId("it"), descricao: "Consultoria técnica industrial", tipo: "servico", quantidade: 1, unitario: 12500, lc116: "17.01", aliqIss: 5 }],
       valorProdutos: 12500, valorTotal: 12500,
     },
     {
       ...base, id: novoId("doc"), grupo: "demais", tipo: "CT-e", numero: "5510", serie: "1",
-      emissao: `${competencia}-22`, participante: "Transportes Litoral Ltda.", participanteDoc: "45.678.912/0001-33",
+      emissao: `${competencia}-22`, participante: "Transportes Litoral Ltda.", participanteDoc: "45.678.912/0001-55",
       ufDestino: "SP", contribuinte: true, consumidorFinal: false,
       itens: [{ id: novoId("it"), descricao: "Frete rodoviário CIF", tipo: "servico", quantidade: 1, unitario: 3400, aliqIss: 0 }],
       valorProdutos: 3400, valorTotal: 3400, status: "Autorizado",

@@ -18,6 +18,7 @@ import AssistenteCampos from "@/components/contabil/AssistenteCampos";
 import { useEmpresaAtual } from "@/lib/empresaAtual";
 import { useCompetencia } from "@/lib/competencia";
 import { confirmarExclusao } from "@/lib/confirmar";
+import { mensagemDeErro } from "@/lib/erros";
 import BlocoOrientacao from "@/components/ux/BlocoOrientacao";
 import {
   CATEGORIAS, CHECKLIST_MENSAL, CONTRATOS_EVENT, INDICES, TIPOS_DOCUMENTO,
@@ -151,8 +152,8 @@ function DialogContrato({ registro, onClose }: { registro: ContratoCalculado | n
       });
       toast.success(novo ? "Contrato cadastrado." : "Contrato atualizado.");
       onClose();
-    } catch (e: any) {
-      toast.error(e?.message || "Não foi possível salvar o contrato.");
+    } catch (e) {
+      toast.error(mensagemDeErro(e, "Não foi possível salvar o contrato."));
     }
   };
 
@@ -271,8 +272,8 @@ function DialogAditivo({ contrato, onClose }: { contrato: ContratoCalculado; onC
       });
       toast.success(`Aditivo de ${tipo.toLowerCase()} registrado em ${contrato.numero}.`);
       onClose();
-    } catch (e: any) {
-      toast.error(e?.message || "Não foi possível registrar o aditivo.");
+    } catch (e) {
+      toast.error(mensagemDeErro(e, "Não foi possível registrar o aditivo."));
     }
   };
 
@@ -565,7 +566,7 @@ function Contratos() {
                                   <div>Valor projetado: <span className="font-mono text-brand-orange">{brl(c.valorReajustado)}</span></div>
                                   <Button
                                     size="sm" variant="outline" className="mt-1 rounded-full"
-                                    onClick={() => { try { aplicarReajuste(c.id); toast.success("Reajuste aplicado como aditivo de valor."); } catch (e: any) { toast.error(e.message); } }}
+                                    onClick={() => { try { aplicarReajuste(c.id); toast.success("Reajuste aplicado como aditivo de valor."); } catch (e) { toast.error(mensagemDeErro(e)); } }}
                                   >
                                     <TrendingUp className="mr-2 h-3.5 w-3.5" />Aplicar reajuste
                                   </Button>
@@ -574,7 +575,7 @@ function Contratos() {
                               <div className="pt-2">
                                 <Button
                                   size="sm" variant="outline" className="rounded-full"
-                                  onClick={() => { try { renovarContrato(c.id, 12); toast.success("Vigência renovada por 12 meses."); } catch (e: any) { toast.error(e.message); } }}
+                                  onClick={() => { try { renovarContrato(c.id, 12); toast.success("Vigência renovada por 12 meses."); } catch (e) { toast.error(mensagemDeErro(e)); } }}
                                 >
                                   <RefreshCw className="mr-2 h-3.5 w-3.5" />Renovar 12 meses
                                 </Button>
@@ -644,7 +645,7 @@ function DialogCertificado({ registro, onClose }: { registro: Certificado | "nov
       salvarCertificado({ id: atual?.id, empresaId: atual?.empresaId ?? empresa?.id, ...form });
       toast.success(novo ? "Certificado cadastrado." : "Certificado atualizado.");
       onClose();
-    } catch (e: any) { toast.error(e?.message || "Não foi possível salvar."); }
+    } catch (e) { toast.error(mensagemDeErro(e, "Não foi possível salvar.")); }
   };
 
   return (
@@ -853,7 +854,7 @@ function DialogDocumento({ registro, competencia, onClose }: { registro: Documen
       });
       toast.success(novo ? "Documento anexado ao cofre." : "Documento atualizado.");
       onClose();
-    } catch (e: any) { toast.error(e?.message || "Não foi possível salvar."); }
+    } catch (e) { toast.error(mensagemDeErro(e, "Não foi possível salvar.")); }
   };
 
   return (
@@ -1176,7 +1177,7 @@ function Agenda() {
       toast.success("Compromisso adicionado à agenda.");
       setNovo(false);
       setForm({ titulo: "", data: hojeISO(), responsavel: "Administrativo", detalhe: "" });
-    } catch (e: any) { toast.error(e?.message || "Não foi possível salvar."); }
+    } catch (e) { toast.error(mensagemDeErro(e, "Não foi possível salvar.")); }
   };
 
   return (

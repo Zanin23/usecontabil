@@ -1,3 +1,9 @@
+> **Rodada mais recente (execução real, não revisão estática):** [VALIDACAO_ROTAS_E_TELAS_2026-10-06.md](VALIDACAO_ROTAS_E_TELAS_2026-10-06.md) —
+> varredura de **172 rotas/telas (0 avisos, 0 falhas)**, **17 fluxos funcionais**, lint em **0 erros** e a suíte completa em **342 testes**.
+> Nove defeitos reais corrigidos, incluindo o cadastro de empresa que abria em branco, rotas inexistentes sem 404,
+> a barreira de erro do app e 28 CNPJs de demonstração com dígito verificador inválido.
+> O texto abaixo é o registro da rodada anterior (05/10/2026), mantido como histórico.
+
 # Validação de rotas e telas — Use Contábil
 
 **Data:** 05/10/2026  

@@ -223,7 +223,7 @@ export const CHECKLIST_MENSAL: { tipo: string; nome: string; ajuda: string }[] =
 const SEED_CONTRATOS: Contrato[] = [
   {
     id: "ct-001", numero: "CT-2024-011", contraparte: "Distribuidora Norte Ltda.",
-    documento: "12.345.678/0001-90", categoria: "Fornecimento", natureza: "Despesa",
+    documento: "12.345.678/0001-95", categoria: "Fornecimento", natureza: "Despesa",
     inicio: "2024-02-01", fim: "2027-01-31", valorMensal: 18400, indice: "IPCA",
     diaVencimento: 10, avisoPrevioDias: 60, renovacaoAutomatica: true,
     responsavel: "Suprimentos", centroCusto: "CC-101 · Operações",
@@ -232,7 +232,7 @@ const SEED_CONTRATOS: Contrato[] = [
   },
   {
     id: "ct-002", numero: "CT-2025-004", contraparte: "TechCore Sistemas ME",
-    documento: "21.876.543/0001-11", categoria: "Software / SaaS", natureza: "Despesa",
+    documento: "21.876.543/0001-47", categoria: "Software / SaaS", natureza: "Despesa",
     inicio: "2025-05-15", fim: "2027-05-14", valorMensal: 6200, indice: "IGP-M",
     diaVencimento: 5, avisoPrevioDias: 30, renovacaoAutomatica: true,
     responsavel: "TI", centroCusto: "CC-301 · Tecnologia",
@@ -241,7 +241,7 @@ const SEED_CONTRATOS: Contrato[] = [
   },
   {
     id: "ct-003", numero: "CT-2026-002", contraparte: "Transportes Litoral Ltda.",
-    documento: "33.221.114/0001-05", categoria: "Prestação de serviços", natureza: "Despesa",
+    documento: "33.221.114/0001-10", categoria: "Prestação de serviços", natureza: "Despesa",
     inicio: "2026-03-01", fim: "2026-09-30", valorMensal: 9800, indice: "INPC",
     diaVencimento: 15, avisoPrevioDias: 30, renovacaoAutomatica: false,
     responsavel: "Logística", centroCusto: "CC-205 · Distribuição",
@@ -250,7 +250,7 @@ const SEED_CONTRATOS: Contrato[] = [
   },
   {
     id: "ct-004", numero: "CT-2023-007", contraparte: "Imobiliária Praça Central",
-    documento: "44.556.677/0001-22", categoria: "Locação", natureza: "Despesa",
+    documento: "44.556.677/0001-86", categoria: "Locação", natureza: "Despesa",
     inicio: "2023-09-01", fim: "2028-08-31", valorMensal: 24500, indice: "IGP-M",
     diaVencimento: 5, avisoPrevioDias: 90, renovacaoAutomatica: false,
     responsavel: "Administrativo", centroCusto: "CC-001 · Sede",
@@ -259,7 +259,7 @@ const SEED_CONTRATOS: Contrato[] = [
   },
   {
     id: "ct-005", numero: "CT-2026-008", contraparte: "Comércio Andes Eireli",
-    documento: "55.667.788/0001-33", categoria: "Prestação de serviços", natureza: "Receita",
+    documento: "55.667.788/0001-86", categoria: "Prestação de serviços", natureza: "Receita",
     inicio: "2026-01-01", fim: "2026-08-31", valorMensal: 32000, indice: "IPCA",
     diaVencimento: 20, avisoPrevioDias: 60, renovacaoAutomatica: true,
     responsavel: "Comercial", centroCusto: "CC-401 · Receita recorrente",
@@ -279,9 +279,9 @@ const SEED_DOCUMENTOS: Documento[] = [
 ];
 
 const SEED_CERTIFICADOS: Certificado[] = [
-  { id: "cert-1", tipo: "e-CNPJ A1", titular: "Matriz", documento: "12.345.678/0001-90", emissao: "2026-02-02", validade: "2027-02-02", responsavel: "Contabilidade", senhaCofre: true },
-  { id: "cert-2", tipo: "Procuração e-CAC", titular: "Contabilidade interna", documento: "12.345.678/0001-90", emissao: "2026-01-10", validade: "2028-01-10", responsavel: "Contabilidade", senhaCofre: false, observacoes: "Procuração eletrônica com poderes fiscais." },
-  { id: "cert-3", tipo: "Certificado NFS-e", titular: "Filial RS", documento: "12.345.678/0002-70", emissao: "2025-08-20", validade: "2026-08-20", responsavel: "TI", senhaCofre: true },
+  { id: "cert-1", tipo: "e-CNPJ A1", titular: "Matriz", documento: "12.345.678/0001-95", emissao: "2026-02-02", validade: "2027-02-02", responsavel: "Contabilidade", senhaCofre: true },
+  { id: "cert-2", tipo: "Procuração e-CAC", titular: "Contabilidade interna", documento: "12.345.678/0001-95", emissao: "2026-01-10", validade: "2028-01-10", responsavel: "Contabilidade", senhaCofre: false, observacoes: "Procuração eletrônica com poderes fiscais." },
+  { id: "cert-3", tipo: "Certificado NFS-e", titular: "Filial RS", documento: "12.345.678/0002-76", emissao: "2025-08-20", validade: "2026-08-20", responsavel: "TI", senhaCofre: true },
   { id: "cert-4", tipo: "e-CPF A3", titular: "Sócio administrador", documento: "123.456.789-00", emissao: "2024-11-04", validade: "2027-11-04", responsavel: "Jurídico", senhaCofre: false },
 ];
 

@@ -382,6 +382,7 @@ function Usuarios() {
       if (!t) return true;
       return [u.nome, u.email, u.perfil, u.cargo].join(" ").toLowerCase().includes(t);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recarrega quando o store avisa (tick)
   }, [busca, filtro, tick]);
 
   const r = resumoUsuarios();

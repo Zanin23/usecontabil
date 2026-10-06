@@ -27,6 +27,7 @@ function CartaoMotor({
   const estado = useApuracaoEstado(slug, empresa?.id, competencia);
   const r = useMemo(
     () => resumoMotor(slug, empresa?.id ?? null, competencia),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- recalcula quando o estado da obrigação muda (estado)
     [slug, empresa, competencia, estado],
   );
   const Icone = ICONES[slug];
@@ -95,8 +96,8 @@ export default function ApuracoesHub() {
       <PageHeader
         trail={[{ label: "Fiscal", to: "/fiscal" }]}
         eyebrow="Fiscal · Apurações"
-        title="Apurações"
-        titleAccent="automatizadas"
+        title="Painel de"
+        titleAccent="apurações"
         description="Cada tributo é um motor independente que lê os documentos fiscais da competência, aplica as regras parametrizadas e devolve base, créditos, débitos, guias e memória de cálculo."
         badges={
           <>

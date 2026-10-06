@@ -281,9 +281,9 @@ export function conciliarAutomatico(
       c.valor === ext.valor && c.tipo === ext.tipo &&
       Math.abs(new Date(c.data).getTime() - new Date(ext.data).getTime()) <= 3 * 86400000;
 
-    tentar(ext, exato, "Automático", 100) ||
-      tentar(ext, valorData, "Automático", 96) ||
-      tentar(ext, janela, "Regra", 88);
+    // Tenta na ordem de confiança e para no primeiro vínculo encontrado.
+    const vinculou = tentar(ext, exato, "Automático", 100) || tentar(ext, valorData, "Automático", 96);
+    if (!vinculou) tentar(ext, janela, "Regra", 88);
   }
 
   const e = ler();

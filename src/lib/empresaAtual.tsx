@@ -41,9 +41,9 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
       
       const suf = typeof window !== "undefined" && localStorage.getItem("uc:pratica:ativo") === "1" ? ".pratica" : "";
       const stored = localStorage.getItem(SELECTED_KEY + suf);
-      if (stored !== empresaId) {
-        setEmpresaIdState(stored);
-      }
+      // Valor mais recente por updater: evita closure velha sem re-registrar
+      // os listeners a cada troca de empresa.
+      setEmpresaIdState((atual) => (stored !== atual ? stored : atual));
     };
     
     window.addEventListener(EMPRESAS_EVENT, refresh);
